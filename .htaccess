@@ -1,0 +1,164 @@
+# INICIO Cache-Control Headers
+<ifModule mod_headers.c>
+	<filesMatch "\.(css)$">
+	Header set Cache-Control "private, no-cache"
+	</filesMatch>
+	<FilesMatch "\.(js)$">
+	Header set Cache-Control "private, no-cache"
+	</FilesMatch>
+	<FilesMatch ".(woff2|woff|ttf|otf|eot)$">
+	Header set Cache-Control "max-age=31536000, private"
+	</FilesMatch>
+	<filesMatch "\.(x?html?|php)$">
+	Header set Cache-Control "private, no-cache"
+	</filesMatch>
+</ifModule>
+# FINAL Cache-Control Headers
+<IfModule mod_rewrite.c>
+			RewriteEngine on
+			RewriteBase /
+            #Redirecciones
+            RewriteRule ^masajistas-eroticos-en-madrid/pagina=1/$ /masajistas-eroticos-en-madrid/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-eroticos-en-madrid/pagina=2/$ /masajistas-eroticos-en-madrid/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-eroticos-en-madrid/pagina=3/$ /masajistas-eroticos-en-madrid/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-eroticos-en-madrid/pagina=4/$ /masajistas-eroticos-en-madrid/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-eroticos-en-madrid/pagina=5/$ /masajistas-eroticos-en-madrid/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-eroticos-en-madrid/pagina=6/$ /masajistas-eroticos-en-madrid/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-eroticos-en-madrid/pagina=7/$ /masajistas-eroticos-en-madrid/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-eroticos-en-madrid/pagina=8/$ /masajistas-eroticos-en-madrid/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-eroticos-en-madrid/pagina=9/$ /masajistas-eroticos-en-madrid/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-eroticos-en-madrid/pagina=10/$ /masajistas-eroticos-en-madrid/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-eroticos-en-barcelona/pagina=1/$ /masajistas-eroticos-en-barcelona/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-eroticos-en-barcelona/pagina=2/$ /masajistas-eroticos-en-barcelona/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-eroticos-en-barcelona/pagina=3/$ /masajistas-eroticos-en-barcelona/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-eroticos-en-barcelona/pagina=4/$ /masajistas-eroticos-en-barcelona/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-eroticos-en-barcelona/pagina=5/$ /masajistas-eroticos-en-barcelona/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-eroticos-en-barcelona/pagina=6/$ /masajistas-eroticos-en-barcelona/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-eroticos-en-barcelona/pagina=7/$ /masajistas-eroticos-en-barcelona/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-eroticos-en-barcelona/pagina=8/$ /masajistas-eroticos-en-barcelona/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-eroticos-en-barcelona/pagina=9/$ /masajistas-eroticos-en-barcelona/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-eroticos-en-barcelona/pagina=10/$ /masajistas-eroticos-en-barcelona/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-terapeuticos-en-madrid/pagina=1/$ /masajistas-terapeuticos-en-madrid/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-terapeuticos-en-madrid/pagina=2/$ /masajistas-terapeuticos-en-madrid/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-terapeuticos-en-madrid/pagina=3/$ /masajistas-terapeuticos-en-madrid/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-terapeuticos-en-madrid/pagina=4/$ /masajistas-terapeuticos-en-madrid/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-terapeuticos-en-madrid/pagina=5/$ /masajistas-terapeuticos-en-madrid/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-terapeuticos-en-madrid/pagina=6/$ /masajistas-terapeuticos-en-madrid/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-terapeuticos-en-madrid/pagina=7/$ /masajistas-terapeuticos-en-madrid/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-terapeuticos-en-madrid/pagina=8/$ /masajistas-terapeuticos-en-madrid/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-terapeuticos-en-madrid/pagina=9/$ /masajistas-terapeuticos-en-madrid/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-terapeuticos-en-madrid/pagina=10/$ /masajistas-terapeuticos-en-madrid/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-terapeuticos-en-barcelona/pagina=1/$ /masajistas-terapeuticos-en-barcelona/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-terapeuticos-en-barcelona/pagina=2/$ /masajistas-terapeuticos-en-barcelona/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-terapeuticos-en-barcelona/pagina=3/$ /masajistas-terapeuticos-en-barcelona/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-terapeuticos-en-barcelona/pagina=4/$ /masajistas-terapeuticos-en-barcelona/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-terapeuticos-en-barcelona/pagina=5/$ /masajistas-terapeuticos-en-barcelona/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-terapeuticos-en-barcelona/pagina=6/$ /masajistas-terapeuticos-en-barcelona/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-terapeuticos-en-barcelona/pagina=7/$ /masajistas-terapeuticos-en-barcelona/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-terapeuticos-en-barcelona/pagina=8/$ /masajistas-terapeuticos-en-barcelona/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-terapeuticos-en-barcelona/pagina=9/$ /masajistas-terapeuticos-en-barcelona/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-terapeuticos-en-barcelona/pagina=10/$ /masajistas-terapeuticos-en-barcelona/ [R=301,NC,L,QSD]
+            #redireccion de pagina
+
+            RewriteRule ^masajistas-eroticos-en-([a-zA-Z-]*)/pagina=(\w+)/?$ /masajistas-eroticos-en-$1/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-eroticos/([a-zA-Z0-9-]*)/pagina=(\w+)/?$ /masajistas-eroticos/ [R=301,NC,L,QSD]
+            RewriteRule ^([a-zA-Z-]*)/pagina=(\w+)/?$ /$1/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-terapeuticos-en-barcelona/localidad-centro/$ /masajistas-terapeuticos-en-barcelona/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-terapeuticos-en-madrid/localidad-centro/$ /masajistas-terapeuticos-en-madrid/ [R=301,NC,L,QSD]
+            RewriteRule ^escorts-en-barcelona/$ /masajistas-eroticos-en-barcelona/ [R=301,NC,L,QSD]
+            RewriteRule ^escorts/$ /masajistas-eroticos/ [R=301,NC,L,QSD]
+            RewriteRule ^escorts-en-madrid/$ /masajistas-eroticos-en-madrid/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-eroticos-en-madrid/masajes-lingam/$ /masajistas-eroticos-en-madrid/ [R=301,NC,L,QSD]
+            RewriteRule ^travestis-en-madrid/$ /masajistas-eroticos-en-madrid/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-eroticos-en-barcelona/masajes-lingam/$ /masajistas-eroticos-en-barcelona/ [R=301,NC,L,QSD]
+            RewriteRule ^travestis-en-barcelona/$ /masajistas-eroticos-en-barcelona/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-eroticos-en-madrid/masaje-tantrico/$ /masajistas-eroticos-en-madrid/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-eroticos-en-barcelona/masaje-tantrico/$ /masajistas-eroticos-en-barcelona/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-eroticos-en-madrid/masajes-nuru/$ /masajistas-eroticos-en-madrid/ [R=301,NC,L,QSD]
+            RewriteRule ^masajistas-eroticos-en-barcelona/masajes-nuru/$ /masajistas-eroticos-en-barcelona/ [R=301,NC,L,QSD]
+            RewriteRule ^centros-spas-eroticos-en-barcelona/$ /masajistas-eroticos-en-barcelona/ [R=301,NC,L,QSD]
+            RewriteRule ^centros-spas-eroticos-en-madrid/$ /masajistas-eroticos-en-madrid/ [R=301,NC,L,QSD]
+
+            RewriteRule ^masajes-terapeuticos-en-([a-zA-Z-]*)/?$ /masajistas-terapeuticos-en-$1/ [R=301,NC,L,QSD]
+            RewriteRule ^escorts-en-([a-zA-Z-]*)/([a-zA-Z-]*)/?$ /masajistas-eroticos-en-$1/$2/ [R=301,NC,L,QSD]	
+            RewriteRule ^escorts-en-([a-zA-Z-]*)/?$ /masajistas-eroticos-en-$1/ [R=301,NC,L,QSD]	
+            RewriteRule ^travestis-en-([a-zA-Z-]*)/([a-zA-Z-]*)/?$ /masajistas-eroticos-en-$1/$2/ [R=301,NC,L,QSD]
+
+
+            RewriteRule ^travestis-en-([a-zA-Z-]*)/?$ /masajistas-eroticos-en-$1/ [R=301,NC,L,QSD]	
+            RewriteRule ^heteros-en-([a-zA-Z-]*)/?$ /masajistas-gays-en-$1 [R=301,NC,L,QSD]
+            RewriteRule ^travestis/?$ /masajistas-eroticos/ [R=301,NC,L,QSD]	
+            RewriteRule ^escorts/?$ /masajistas-eroticos/ [R=301,NC,L,QSD]	
+            RewriteRule ^masajes-eroticos/?$ /masajistas-eroticos/ [R=301,NC,L,QSD]	
+            RewriteRule ^masajes-eroticos-en-([a-zA-Z-]*)/?$ /masajistas-eroticos-en-$1/ [R=301,NC,L,QSD]
+			
+			#REGLAS
+			RewriteRule ^amp/anuncio/([a-z_-]+)/([a-z_0-9-]+)-([0-9]+).html$ sc-includes/item_amp.php?i=$3&amp=1 [L]
+			RewriteRule ^([a-zA-Z-]*)/([a-zA-Z0-9-]*)-(\w+).html?$ index.php?id=item&i=$3 [QSA,L]
+			RewriteRule ^anuncio/([a-z_-]+)/([a-z_0-9-]+)-([0-9]+).html$ index.php?id=item&i=$3 [QSA,L]
+			
+			# si no existe un archivo que coincida con la solicitud...
+			RewriteCond %{REQUEST_FILENAME} !-f
+			# y si no termina con una barra, redireccionar a la misma dirección pero con la barra
+			RewriteRule ^(.*[^/]$) $1/ [R,QSA,L]
+			
+			#RewriteRule $ mantenimiento.php [R=302,L]
+			RewriteRule ^sc-admin/?$ sc-admin/index.php [L]
+            RewriteRule ^sc-admin/descargar/(.+)?$ sc-admin/backup/$1 [L]
+            RewriteRule ^feed/?$ feed.php [L]
+            RewriteRule ^404$ index.php?id=404 [L]
+            RewriteRule ^destacar-anuncio/([0-9]{0,7})/?([1])?$ index.php?id=premium&i=$1&new=$2 [L]
+			RewriteRule ^importar/?$ importador/index.php [QSA,L]
+            RewriteRule ^comprar-creditos/?$ index.php?id=account&p=5 [QSA,L]
+            RewriteRule ^publicar-anuncio-gratis/?$ index.php?id=post_item [QSA,L]
+            RewriteRule ^contactar/?$ index.php?id=contact [QSA,L]
+            RewriteRule ^mis-anuncios/modificar/([0-9]+)/?$ index.php?id=edit&i=$1 [L]
+            RewriteRule ^mis-anuncios/renovar/([0-9]+)/?$ index.php?id=account&re=$1 [L]
+            RewriteRule ^mis-anuncios/?$ index.php?id=account [QSA,L]
+            RewriteRule ^mis-notificaciones/?$ index.php?id=notices [QSA,L]
+            RewriteRule ^mis-mensajes/?$ index.php?id=account&p=3 [QSA,L]
+            RewriteRule ^mis-tickets/?$ index.php?id=account&p=4 [QSA,L]
+            RewriteRule ^mi-cuenta/?$ index.php?id=account&p=1 [QSA,L]
+			RewriteRule ^mis-precios/?$ index.php?id=account&p=6  [QSA,L]
+            RewriteRule ^mis-favoritos/?$ index.php?id=account&p=2 [QSA,L]
+            RewriteRule ^favoritos/?$ index.php?id=favorites [QSA,L]
+            RewriteRule ^crear-cuenta/?$ index.php?id=register [QSA,L]
+            RewriteRule ^cerrar-sesion/?$ index.php?logout [QSA,L]
+            RewriteRule ^terminos-y-condiciones-de-uso/?$ index.php?id=terms [QSA,L]
+            RewriteRule ^aviso-legal/?$ index.php?id=aviso-legal [QSA,L]
+            RewriteRule ^politica-de-cookies/?$ index.php?id=cookies_policy [QSA,L]
+            RewriteRule ^quienes-somos/?$ index.php?id=quienes_somos [QSA,L]
+            RewriteRule ^proteccion-de-datos/?$ index.php?id=proteccion_de_datos [QSA,L]
+            RewriteRule ^precios/?$ index.php?id=pricing [QSA,L]
+            RewriteRule ^publicado/?$ index.php?id=post_message [QSA,L]
+            RewriteRule ^preguntas-frecuentes/?$ index.php?id=faq [QSA,L]
+            RewriteRule ^compartir-email/?$ index.php?id=share-mail [QSA,L]
+            RewriteRule ^compartir-email/([0-9]+)/?$ index.php?id=share-mail&id_ad=$1 [QSA,L]
+            RewriteRule ^anuncios/(.+).html$ index.php?id=list&q=$1&busq [QSA,L]
+            RewriteRule ^buscar/(.+).html$ index.php?id=list&q=$1&busq [QSA,L]
+			RewriteRule ^ayuda/?$ index.php?id=ayuda [QSA,L]
+            RewriteRule ^normas-publicacion/?$ index.php?id=normas [QSA,L]
+            RewriteRule ^servicios-pago/?$ index.php?id=servicios-pago [QSA,L]
+            RewriteRule ^por-que/?$ index.php?id=por-que [QSA,L]
+
+			RewriteRule ^usuario/([0-9]+)/?$ index.php?id=list&u=$1 [QSA,L]
+			RewriteRule ^anuncios/?$ index.php?id=list [QSA,L]
+            
+            RewriteRule ^([a-z_-]+)-en-([a-z_-]+)/keyword/([a-z_-]+)/?$ index.php?zone=$2&id=list&s=$1&fs=$3 [QSA,L]
+            RewriteRule ^([a-z_-]+)-en-([a-z_-]+)/localidad-([a-z_-]+)/?$ index.php?zone=$2&id=list&s=$1&location=$3 [QSA,L]
+            RewriteRule ^([a-z_-]+)-en-([a-z_-]+)/([a-z_-]+)/?$ index.php?zone=$2&id=list&s=$1&q=$3 [QSA,L]
+            RewriteRule ^([a-z_-]+)-en-([a-z_-]+)/?$ index.php?zone=$2&id=list&s=$1 [QSA,L]
+			RewriteRule ^([a-z_-]+)/?$ index.php?s=$1&id=list [QSA,L]
+
+			RewriteRule ^anuncios-en-([a-z_-]+)/([a-z_-]+)/([a-z_-]+)/?$ index.php?pob=$1&id=list&s=$2&se=$3 [QSA,L]
+			RewriteRule ^anuncios-en-([a-z_-]+)/([a-z_-]+)/?$ index.php?pob=$1&id=list&s=$2 [QSA,L]
+			RewriteRule ^anuncios-en-([a-z_-]+)/?$ index.php?pob=$1&id=list [QSA,L]
+            RewriteRule ^anuncios-([a-z_-]+)/([a-z_-]+)/location-([a-z_-]+)/?$ index.php?zone=$1&id=list&s=$2&location=$3 [QSA,L]
+			RewriteRule ^anuncios-([a-z_-]+)/([a-z_-]+)/([a-z_-]+)/?$ index.php?zone=$1&id=list&s=$2&se=$3 [QSA,L]
+			
+
+			RewriteRule ^([a-z_-]+)/([a-z_-]+)/?$ index.php?id=list&s=$1&se=$2 [QSA,L]
+			RewriteRule ^([a-z_-]+)/?$ index.php?id=list&s=$1&pag=0 [QSA,L]
+			
+
+</IfModule>

@@ -1,0 +1,155 @@
+<?
+$exito_div=false;
+if(isset($_POST['credit_type'])){
+    console_log($_POST);
+    $user = selectSQL('sc_user', $w= array('ID_user'=>$_POST['id_user']));
+    $new_credits = $user[0][$_POST['credit_type']] + $_POST['credit_qty'];
+    updateSQL('sc_user', $d = array($_POST['credit_type']=>$new_credits), $w= array('ID_user'=>$_POST['id_user']));
+    $exito_div = "Créditos actualizados exitosamente";
+}
+
+if(isset($_GET['delete'])) {
+	deleteUser($_GET['delete'],true);
+	$exito_div=$language_admin['manage_user.user_deleted'];
+}
+if(isset($_GET['disabled'])){
+	$usu = updateSQL("sc_user",$d=array('active'=>0),$w=array('ID_user'=>$_GET['disabled']));
+	$ad = updateSQL("sc_ad",$d=array('active'=>0),$w=array('ID_user'=>$_GET['disabled']));
+}
+if(isset($_GET['enabled'])){
+	$usu = updateSQL("sc_user",$d=array('active'=>1),$w=array('ID_user'=>$_GET['enabled']));
+	$ad = updateSQL("sc_ad",$d=array('active'=>1),$w=array('ID_user'=>$_GET['enabled']));
+}
+
+$w=array();
+if(isset($_GET['q'])){
+	if($_GET['field']=="ID_user")
+	$w[$_GET['field']]=trim($_GET['q']);
+	else
+	$w[$_GET['field']]=trim($_GET['q'])."%";
+}
+$MAX_PAG = 20; 
+$pag = $_GET["pag"]; 
+if (!$pag){ 
+	$start = 0; 
+	$pag=1; 
+}else $start = ($pag - 1) * $MAX_PAG;
+$usuarios=selectSQL("sc_user",$w,"ID_user DESC LIMIT ".$start.",".$MAX_PAG."");
+$total_reg=countSQL("sc_user",$w,"ID_user DESC");
+$tot_pag = ceil($total_reg / $MAX_PAG);
+if($total_reg < $MAX_PAG){ 
+	if($total_reg == 0) $inn = 0; else $inn=1;
+	$por_pagina = $total_reg;
+}else{ 
+	$inn = 1+($MAX_PAG*($pag-1));
+	if($pag == $tot_pag)
+		$por_pagina=$total_reg;
+	else
+		$por_pagina = $MAX_PAG*($pag);
+}
+?>
+<h2><?=$language_admin['manage_user.title_h1']?></h2>
+<form action="index.php" method="get" class="addCat">
+<label><?=$language_admin['manage_user.search_user']?></label>
+<input name="q" type="text" value="<?=$_GET['q'];?>">
+<select name="field">
+	<option value="ID_user" <? if($_GET['field']=="ID_user") echo "selected";?>><?=$language_admin['manage_user.id_user']?></option>
+	<option value="mail" <? if($_GET['field']=="mail") echo "selected";?>><?=$language_admin['manage_user.mail']?></option>
+</select>
+<input name="Buscar" type="submit" value="<?=$language_admin['manage_user.button_search']?>" class="button_form">
+<div align="center"><a href="inc/export_user.php" target="_blank"><?=$language_admin['manage_user.export_user']?></a></div>
+<input type="hidden" name="id" value="manage_users">
+</form>
+<div><?=$language_admin['manage_user.total_user']?>: <b><?=countSQL("sc_user");?></b></div>
+<? if($exito_div!==FALSE) {?>
+<div class="info_valid"><i class="fa fa-check-circle" aria-hidden="true"></i><?=$exito_div;?></div>
+<? } ?>
+<ul class="list_categories">
+	<li>
+    	<span class="col_left">
+        	<b><?=$language_admin['manage_user.info_user']?></b>
+        </span>
+    	<span class="col_right">
+        	<b><?=$language_admin['manage_user.opt_user']?></b>        
+        </span>
+    </li>
+<? 
+for($i=0;$i<count($usuarios);$i++){?>
+    	<li>
+            <span class="col_left">
+                <span class="id_user"><?=$usuarios[$i]['ID_user'];?></span>
+                <span class="mail_user"><?=strtolower($usuarios[$i]['mail']);?></span>
+                <span class="date_user"><? if($usuarios[$i]['date_reg']!=0) echo date('d-m-Y',$usuarios[$i]['date_reg']); else echo "No consta";?></span>
+            </span>
+            <span class="col_right">
+                <span>
+                    <?=$language_admin['manage_user.add_credits']?>
+                    <a id="reg_<?=$usuarios[$i]['ID_user'];?>" onclick="show_input(this)" style="cursor: pointer">Normal</a>
+                    
+                    <a id="adult_<?=$usuarios[$i]['ID_user'];?>" onclick="show_input(this)" style="cursor: pointer">Adultos</a>
+                    
+                    <form action="<? $_SERVER['PHP_SELF'];?>" method="post" style="display: none" id="hidden_menu_<?=$usuarios[$i]['ID_user']?>">
+                        
+                        <input type="number" min="1" name="credit_qty">
+                        <input type="hidden" name="id_user" value="<?=$usuarios[$i]['ID_user']?>">
+                        <input type="hidden" name="credit_type" id="credit_type_<?=$usuarios[$i]['ID_user']?>">
+                        <input type="submit" value="aceptar" style="margin: 0;display: inline-block;margin-bottom: 5px;">
+                        
+                    </form>
+                    
+                    <a href="index.php?id=manage_items&user=<?=$usuarios[$i]['ID_user']?>"><?=$language_admin['manage_user.view_ads']?></a>
+                    <a href="<?=getPagParam('delete',$usuarios[$i]['ID_user']);?>"><?=$language_admin['manage_user.delete_user_ads']?></a>
+                    <? if($usuarios[$i]['active']==1){?>
+                    <a href="<?=getPagParam('disabled',$usuarios[$i]['ID_user'],'enabled');?>"><?=$language_admin['manage_user.block_user']?></a>
+                    <? }else{?>
+                    <a href="<?=getPagParam('enabled',$usuarios[$i]['ID_user'],'disabled');?>"><?=$language_admin['manage_user.unblock_user']?></a>
+    				<? } ?>
+                </span>        
+            </span>
+        </li>
+<? } ?>
+</ul>
+<? if($tot_pag != 0){ 
+	echo "<div id='pages'>";
+	echo pag($total_reg, $MAX_PAG, $start);
+	echo "</div>";
+}
+?>
+
+<script>
+    function show_input(elem){
+        var id_array = elem.id.split('_');
+		var user_id = id_array[id_array.length - 1];
+// 		console.log(id_array[0]);
+		
+		toggle_display("reg_" + user_id);
+		toggle_display("adult_" + user_id);
+		toggle_display("hidden_menu_" + user_id);
+		
+		if (id_array[0] == 'reg'){
+		    console.log('reg');
+		    document.getElementById("credit_type_" + user_id).value = 'credits';
+		} 
+		
+		if (id_array[0] == 'adult'){
+		    console.log('adult');
+		     document.getElementById("credit_type_" + user_id).value = 'credits_adult';
+		} 
+		
+		
+    }
+    
+    function toggle_display(elemid){
+	    if (document.getElementById(elemid).style.display === 'none'){
+	        document.getElementById(elemid).style.display = 'block';
+	    } else {
+	        document.getElementById(elemid).style.display = 'none';
+	    }
+	}
+	
+// 	function set_href(elem){
+// 	    var credits = elem.parentNode.getElementsByTagName("input")[0].value;
+// 	    console.log(elem.href + credits);
+// 	    elem.href += credits;
+// 	}
+</script>

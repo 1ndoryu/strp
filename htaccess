@@ -1,0 +1,1088 @@
+## Agrogeek cache performance
+## Inicio Expires web caching
+AddType image/webp .webp
+<IfModule mod_expires.c>
+	ExpiresActive On
+	ExpiresByType image/jpg "access 1 year"
+	ExpiresByType image/jpeg "access 1 year"
+	ExpiresByType image/gif "access 1 year"
+	ExpiresByType image/png "access 1 year"
+	ExpiresByType image/svg "access 1 year"
+	ExpiresByType image/svg "access 1 year"
+	ExpiresByType image/webp "access 1 year"
+	ExpiresByType text/css "access plus 1 year"
+	ExpiresByType application/pdf "access 1 month"
+	ExpiresByType application/javascript "access plus 1 year"
+	ExpiresByType application/x-javascript "access plus 1 year"
+	ExpiresByType application/x-shockwave-flash "access 1 month"
+	ExpiresByType image/x-icon "access 1 year"
+	ExpiresDefault "access 1 month"
+</IfModule>
+## Final Expires web caching
+
+# INICIO Cache-Control Headers
+<ifModule mod_headers.c>
+<filesMatch ".(jpg|jpeg|png|gif|ico|svg|webp)$">
+Header set Cache-Control "private, no-cache"
+</filesMatch>
+<filesMatch "\.(css)$">
+Header set Cache-Control "max-age=31536000, public"
+</filesMatch>
+<FilesMatch "\.(js)$">
+Header set Cache-Control "max-age=31536000, private"
+</FilesMatch>
+<FilesMatch ".(woff2|woff|ttf|otf|eot)$">
+Header set Cache-Control "max-age=31536000, private"
+</FilesMatch>
+<filesMatch "\.(x?html?|php)$">
+Header set Cache-Control "private, no-cache"
+</filesMatch>
+</ifModule>
+# FINAL Cache-Control Headers
+
+# INICIA deshabilitar ETag
+Header unset ETag
+FileETag None
+# FIN deshabilitar ETag
+
+<IfModule mod_deflate.c>
+    <IfModule mod_headers.c>
+        Header append Vary User-Agent env=!dont-vary
+    </IfModule>
+    AddOutputFilterByType DEFLATE text/css text/x-component application/x-javascript application/javascript text/javascript text/x-js text/html text/richtext image/svg+xml text/plain text/xsd text/xsl text/xml image/bmp application/java application/msword application/vnd.ms-fontobject application/x-msdownload image/x-icon image/webp application/json application/vnd.ms-access application/vnd.ms-project application/x-font-otf application/vnd.ms-opentype application/vnd.oasis.opendocument.database application/vnd.oasis.opendocument.chart application/vnd.oasis.opendocument.formula application/vnd.oasis.opendocument.graphics application/vnd.oasis.opendocument.presentation application/vnd.oasis.opendocument.spreadsheet application/vnd.oasis.opendocument.text audio/ogg application/pdf application/vnd.ms-powerpoint application/x-shockwave-flash image/tiff application/x-font-ttf application/vnd.ms-opentype audio/wav application/vnd.ms-write application/font-woff application/font-woff2 application/vnd.ms-excel
+    <IfModule mod_mime.c>
+        # DEFLATE by extension
+        AddOutputFilter DEFLATE js css htm html xml php webp
+    </IfModule>
+</IfModule>
+
+
+
+<IfModule mod_rewrite.c>
+	RewriteEngine on
+#redireciones para desindexar
+Redirect gone /product/J?87336=jopticianryp
+Redirect gone /product/D?2258067=pqueanishq
+Redirect gone /product/F?2385573=jinquisitorgenerald
+Redirect gone /product/C?1253797=jepigonig
+Redirect gone /product/Q?2412080=vpfropfschizophreniat
+Redirect gone /product/Q?1026062=uepiscoparianj
+Redirect gone /product/R?2591048=ffundamentr
+Redirect gone /product/Y?1367617=vinsanitaryp
+Redirect gone /product/E?1546578=csportiestq
+Redirect gone /product/Z?1076818=rconferrerh
+Redirect gone /product/D?2616442=fdiageneticallyi
+Redirect gone /product/B?1960609=emedardam
+Redirect gone /product/K?1919969=kcupuliformr
+Redirect gone /product/F?2112768=baihu
+Redirect gone /product/B?658803=ndisharmonyx
+Redirect gone /product/H?1008891=isinnedm
+Redirect gone /product/N?1390747=shypsometriste
+Redirect gone /product/R?1358892=hmauveinez
+Redirect gone /product/F?2044916=gramifyc
+Redirect gone /product/B?2334143=cpurveyorv
+Redirect gone /product/A?974117=fcelebp
+Redirect gone /product/M?326037=wsententiaristr
+Redirect gone /product/B?936344=wundefendingu
+Redirect gone /product/S?563223=qbmei
+Redirect gone /product/Q?1637155=jbleachingd
+Redirect gone /product/E?179960=kroentgenizee
+Redirect gone /product/W?2503479=spuddinglikes
+Redirect gone /product/E?1905080=cwatershedsp
+Redirect gone /product/O?555046=ccheveretz
+Redirect gone /product/D?971655=eagamogeneticz
+Redirect gone /product/D?1373266=aleaklessu
+Redirect gone /product/B?934440=fmutilationsb
+Redirect gone /product/C?722012=hisoperiboll
+Redirect gone /product/K?687743=uverticalsh
+Redirect gone /product/K?1585276=pceylonw
+Redirect gone /product/B?193033=niconicalr
+Redirect gone /product/W?1334027=cdragooningm
+Redirect gone /product/J?2229097=nandrocliniumx
+Redirect gone /product/P?1027440=pmiscalculationsy
+Redirect gone /product/W?800750=ntautonymyn
+Redirect gone /product/D?1310911=imalleablee
+Redirect gone /product/H?244457=woutpaymentb
+Redirect gone /product/F?959835=bburstinessx
+Redirect gone /product/L?2003902=emmii
+Redirect gone /product/K?2502605=knundinationm
+Redirect gone /product/Z?985814=msleptn
+Redirect gone /product/X?1009223=jberibericx
+Redirect gone /product/K?1687413=ccertifiedt
+Redirect gone /product/N?2237170=mfishlinea
+Redirect gone /product/R?2136337=zambulatingy
+Redirect gone /product/U?1660600=jexaudis
+Redirect gone /product/V?814640=oeaudeviea
+Redirect gone /product/S?572740=ktransacetylaser
+Redirect gone /product/Y?2477394=zegank
+Redirect gone /product/F?395068=noligomerh
+Redirect gone /product/A?2502737=qdiaglyphu
+Redirect gone /product/Q?1411286=abestraddledy
+Redirect gone /product/E?1428274=jplainsmanv
+Redirect gone /product/F?298296=vfiredrakei
+Redirect gone /product/D?1430360=gnicholc
+Redirect gone /product/M?632190=ychunderz
+Redirect gone /product/N?278201=ybedready
+Redirect gone /product/Q?1143332=qmischargesr
+Redirect gone /product/A?880152=ounfugitivek
+Redirect gone /product/P?2193328=gapproprited
+Redirect gone /product/C?1224196=pspaltx
+Redirect gone /product/B?639002=pskepticallym
+Redirect gone /product/B?2546839=pergophoref
+Redirect gone /product/K?2022563=mshepherdismo
+Redirect gone /product/Q?1036157=mblamelessnessh
+Redirect gone /product/Q?1550354=pfrancesvilleh
+Redirect gone /product/O?419869=kspacklingg
+Redirect gone /product/Q?478508=yalienatorc
+Redirect gone /product/Y?682279=hblankae
+Redirect gone /product/C?2540739=ytheologisedq
+Redirect gone /product/Q?1103127=jnibungg
+Redirect gone /product/W?2447127=apolytheistich
+Redirect gone /product/D?1778471=dpermselectivityh
+Redirect gone /product/T?34874=ogeminicolpatet
+Redirect gone /product/O?2275976=fegurgitatedy
+Redirect gone /product/D?900227=elopsq
+Redirect gone /product/X?459007=gnaturopathya
+Redirect gone /product/P?510506=xpothersc
+Redirect gone /product/Y?134963=msphaeritev
+Redirect gone /product/G?674411=hbockloggedg
+Redirect gone /product/O?1997721=jnishinomiyao
+Redirect gone /product/Y?1164837=dqprg
+Redirect gone /product/R?151732=ldisnaturalx
+Redirect gone /product/H?954996=crussophilismk
+Redirect gone /product/J?1503896=tmitoridineo
+Redirect gone /product/U?443894=equadrienniumutilez
+Redirect gone /product/C?1005038=rarchdioceset
+Redirect gone /product/T?1783032=vsteatosesi
+Redirect gone /product/E?1214323=geffeminationv
+Redirect gone /product/V?2280420=csanidinew
+Redirect gone /product/K?447817=boverfestoono
+Redirect gone /product/F?1518349=jflounderinglyj
+Redirect gone /product/X?1652439=bprerectals
+Redirect gone /product/T?2202286=billiciump
+Redirect gone /product/V?826441=eindiennep
+Redirect gone /product/U?1683879=bmellettet
+Redirect gone /product/I?1913509=kosphyomelitisd
+Redirect gone /product/V?881691=vsemibiologicc
+Redirect gone /product/A?2288337=wsurfacerse
+Redirect gone /product/U?2219006=urevaporizationb
+Redirect gone /product/J?1491679=snonpressinge
+Redirect gone /product/G?352446=ohypsographica
+Redirect gone /product/Q?1064170=ecerhomilitep
+Redirect gone /product/R?2387921=roverviolentnessp
+Redirect gone /product/Y?1024327=hphytochemicalw
+Redirect gone /product/P?787871=jprolegomenousn
+Redirect gone /product/B?1592120=kcatandmouseb
+Redirect gone /product/N?892940=oestampu
+Redirect gone /product/N?1859471=iunconclusivenessc
+Redirect gone /product/V?741950=ccrackbrainv
+Redirect gone /product/Q?1533978=scoeducationsp
+Redirect gone /product/O?1200165=cmadreporek
+Redirect gone /product/Z?245326=mdemonismsh
+Redirect gone /product/R?52792=thoseneti
+Redirect gone /product/R?918049=tcumulatesm
+Redirect gone /product/R?451953=qbookbinderiest
+Redirect gone /product/I?1535299=ptilepinj
+Redirect gone /product/I?753900=rpinkinessp
+Redirect gone /product/E?1908927=mhsdtz
+Redirect gone /product/H?185455=uangariase
+Redirect gone /product/O?1518269=shisselfi
+Redirect gone /product/T?1354918=linfamiliarityk
+Redirect gone /product/R?2403149=vditchwatery
+Redirect gone /product/K?2381607=othreadenk
+Redirect gone /product/W?2579949=ndieselenginedy
+Redirect gone /product/J?644218=lmotherinessg
+Redirect gone /product/J?2498792=foversuretya
+Redirect gone /product/W?424191=sallcontentr
+Redirect gone /product/C?386244=roveraboundingh
+Redirect gone /product/Q?138709=ycumulitesf
+Redirect gone /product/E?1695472=isscrollj
+Redirect gone /product/G?222979=ointertwininglyd
+Redirect gone /product/O?1186189=tnondegrees
+Redirect gone /product/P?197392=upeppergrassc
+Redirect gone /product/L?1553580=punconditionatea
+Redirect gone /product/Y?2552726=mlacemakinge
+Redirect gone /product/C?1446562=lillimitedlyy
+Redirect gone /product/Q?404092=apollokf
+Redirect gone /product/Q?775182=zhominidaet
+Redirect gone /product/G?1630348=apreoverthrewb
+Redirect gone /product/T?2295602=gtamersw
+Redirect gone /product/D?1007848=iroguishf
+Redirect gone /product/G?152408=imassproducedc
+Redirect gone /product/R?1623672=vsemifrantica
+Redirect gone /product/D?1300049=hunfeatyb
+Redirect gone /product/N?1701164=hjujuismg
+Redirect gone /product/S?2053957=ycowichev
+Redirect gone /product/W?1250622=kunvictimizedy
+Redirect gone /product/Q?224565=ccoladah
+Redirect gone /product/A?2476887=ygladlya
+Redirect gone /product/H?482717=vtwicereportedt
+Redirect gone /product/K?1691904=mtiemrothl
+Redirect gone /product/N?178493=lshroudlikeg
+Redirect gone /product/L?1897454=rtimelastingv
+Redirect gone /product/Z?806596=lquasigreekh
+Redirect gone /product/C?2500429=bhairmeald
+Redirect gone /product/S?2613248=mmessek
+Redirect gone /product/E?731731=zdaredeviltryd
+Redirect gone /product/B?568976=dscrotofemoralj
+Redirect gone /product/E?50085=ppinnaglobinn
+Redirect gone /product/G?1272114=tcanovanass
+Redirect gone /product/R?1437062=udipropylureag
+Redirect gone /product/F?851231=eunpreventedr
+Redirect gone /product/S?2071628=xspringbornm
+Redirect gone /product/K?1070709=kgyrodynamicsh
+Redirect gone /product/Z?944000=yamastiaf
+Redirect gone /product/S?2511912=jpalletizingq
+Redirect gone /product/M?2393376=depurationw
+Redirect gone /product/C?917491=cweepieo
+Redirect gone /product/T?1069529=hweathergleamn
+Redirect gone /product/S?2239146=kmuttonbirdi
+Redirect gone /product/R?1310167=gasoniak
+Redirect gone /product/M?704651=tsulphonethylmethanes
+Redirect gone /product/Z?1368738=vscogiea
+Redirect gone /product/H?1968377=xquasicomplexn
+Redirect gone /product/J?682223=akevelj
+Redirect gone /product/G?1551278=mrelictiond
+Redirect gone /product/F?271689=lpublisheri
+Redirect gone /product/D?2520890=tkaryolysusg
+Redirect gone /product/M?1845550=jpreroastn
+Redirect gone /product/U?631881=tpelvisacralz
+Redirect gone /product/L?646526=fpushbuttonv
+Redirect gone /product/L?1548042=oconcreterk
+Redirect gone /product/B?2216401=xbockloggedj
+Redirect gone /product/L?1515896=tbouclesd
+Redirect gone /product/F?501625=nmycosinf
+Redirect gone /product/G?318363=qchalicotherer
+Redirect gone /product/H?388593=raladdinr
+Redirect gone /category/browse.html?node=1&page=222
+Redirect gone /category/browse.html?node=1&page=283
+Redirect gone /category/browse.html?node=1_13&page=250
+Redirect gone /category/browse.html?node=338_360&page=24
+Redirect gone /category/browse.html?node=1_5&page=246
+Redirect gone /category/browse.html?node=1&page=145
+Redirect gone /category/browse.html?node=12_19&page=231
+Redirect gone /category/browse.html?node=1&page=79
+Redirect gone /category/browse.html?node=104_110&page=175
+Redirect gone /category/browse.html?node=153&page=46
+Redirect gone /category/browse.html?node=77_488&page=154
+Redirect gone /category/browse.html?node=51_74&page=299
+Redirect gone /category/browse.html?node=233_235&page=107
+Redirect gone /category/browse.html?node=14_15&page=279
+Redirect gone /category/browse.html?node=64_95&page=215
+Redirect gone /category/browse.html?node=79&page=125
+Redirect gone /category/browse.html?node=79_81&page=220
+Redirect gone /category/browse.html?node=1&page=256
+Redirect gone /bolsa-empleo-en-santa-cruz-de-tenerife/
+Redirect gone /masajistas-terapeuticos/pagina=13
+Redirect gone /bolsa-empleo-en-madrid/
+Redirect gone /travestis/
+Redirect gone /masajistas-eroticos/2/pagina=6
+Redirect gone /masajistas-eroticos/Es/pagina=2
+Redirect gone /centros-spas-terapeuticos-en-islas-baleares/ESTETICA-Y-MASAJE-EN-CAN-PICAFORT-34524.html
+Redirect gone /masajistas-terapeuticos/pagina=1
+Redirect gone /masajistas-terapeuticos/5/pagina=11
+Redirect gone /masajistas-eroticos/2/pagina=10
+Redirect gone /masajes-terapeuticos-en-granada/
+Redirect gone /masajistas-eroticos/3/pagina=6/
+Redirect gone /-en-madrid/Joven-Masajista-en-Alcorcon-20326.html
+Redirect gone /centros-spas-terapeuticos-en-barcelona/QIANQIANMEISHOU-MASAJE-ORIENTAL-34836.html
+Redirect gone /masajistas-eroticos/Es/pagina=18
+Redirect gone /masajes-eroticos-en-madrid/localidad-majadahonda
+Redirect gone /masajistas-terapeuticos/pagina=9
+Redirect gone /masajes-terapeuticos-en-barcelona/pagina=4
+Redirect gone /centros-spas-eroticos-en-malaga/El-Olimpo-tu-masaje-erotico-en-Malaga-35796.html
+Redirect gone /cursos-talleres-en-santa-cruz-de-tenerife/
+Redirect gone /masajistas-eroticos/pagina=21
+Redirect gone /e6u4i14
+Redirect gone /blyf0jk1i9
+Redirect gone /ttatvcllb2rp
+Redirect gone /53vjxx
+Redirect gone /66uc1ikl6
+Redirect gone /4bgs2ks4w0
+Redirect gone /9ve1csog78
+Redirect gone /6kg3f7t
+Redirect gone /ã‚¿ãƒ¡ã‚ª ãƒ¡ã‚¿ãƒ«ã‚­ãƒƒãƒˆ"
+Redirect gone /q20ts2ls
+Redirect gone /q193zwfqaz
+Redirect gone /5jopmu5duf
+Redirect gone /4s1dyxes
+Redirect gone /du1nfiqa75
+Redirect gone /9ddp0tarw277
+Redirect gone /i5sfad6
+Redirect gone /1mjjpi7
+Redirect gone /t8j5i5
+Redirect gone /in863hdfn4fn
+Redirect gone /23zioq5
+Redirect gone /7sahxuiw4
+Redirect gone /index.phpc
+Redirect gone /d4fvh13350v
+Redirect gone /fhbjlcvq
+Redirect gone /7673tudlcsg7
+Redirect gone /2vgyufkqoi7g
+Redirect gone /0znqdvt
+Redirect gone /KYOTOã€Š20220215d1ã€‹"
+Redirect gone /6wlz6jt7
+Redirect gone /nxhmo92esgv0
+Redirect gone /4rnc615r
+Redirect gone /h7om85sw
+Redirect gone /7fqj57xz4
+Redirect gone /x7hzbow
+Redirect gone /ipaaxre11l
+Redirect gone /dwfmkty
+Redirect gone /x6y55n
+Redirect gone /ndvllnbp6p
+Redirect gone /13d ãƒ ã‚­ãƒ¥ãƒ¼ãƒ ãƒ†ãƒ¼ãƒ–ãƒ« ç®¡ç †P0412IB"
+Redirect gone /30z7c7
+#Redirect gone /index.php
+Redirect gone /dkz2uwjdy
+Redirect gone /55d94zolnnf7
+Redirect gone /7mg22wuvvid
+Redirect gone /kng9ruy4d
+Redirect gone /kpsyka
+Redirect gone /6z7dvv0j
+Redirect gone /apmx2v5a
+Redirect gone /cegc1jq
+Redirect gone /aqeceqn3m
+Redirect gone /q31snlytq
+Redirect gone /rmz5fnake
+Redirect gone /6ss09t6g
+Redirect gone /vna263p59
+Redirect gone /n8a7em
+Redirect gone /hkuzvgsm03f
+Redirect gone /yusna54zck
+Redirect gone /7os4j9
+Redirect gone /escorts-en-avila/
+Redirect gone /2jcutx3e
+Redirect gone /cz9k93t
+Redirect gone /obxsl4ba1iq
+Redirect gone /yvqde50
+Redirect gone /kw74af3q4j0v
+Redirect gone /8xc4wo7jn
+Redirect gone /sp07u3akk
+Redirect gone /993nki
+Redirect gone /bogow64vmw
+Redirect gone /toyfj2h
+Redirect gone /zhgqz6
+Redirect gone /ycjhs1
+Redirect gone /dh6zqm
+Redirect gone /1efprri614m2
+Redirect gone /p6vt2p46e3u5
+Redirect gone /7q058woa
+Redirect gone /926i4v4g
+Redirect gone /mukssa
+Redirect gone /n09mkwa4aqof
+Redirect gone /9f9tz8
+Redirect gone /zndxuxg
+Redirect gone /0gbjrqkxyd
+Redirect gone /ãƒ ã‚ªãƒ³ãƒ–ãƒ«ãƒ¼ãƒ»ãƒ ã‚ªãƒ³ãƒ¬ãƒƒãƒ‰"
+Redirect gone /v0pkau1
+Redirect gone /çµµç”» å†™çœŸé›†"
+Redirect gone /u31g1ac1
+Redirect gone /r20npt
+Redirect gone /udn1seuhywwh
+Redirect gone /6lv2qu25
+Redirect gone /94olwv
+Redirect gone /60ia1pps
+Redirect gone /c0q0sck
+Redirect gone /zq7gmsl
+Redirect gone /æ–°æ™ƒ"
+Redirect gone /cl5y1fmi3g
+Redirect gone /u8ojmosa4f2
+Redirect gone /p24n1kltg
+Redirect gone /j8k8oe8ng
+Redirect gone /1382dp1u7f
+Redirect gone /ã‚¨ãƒ³ãƒ‡ãƒ¥ãƒ©ãƒ©ã‚¹ãƒˆ 37mm ç‡ƒæ–™ãƒ ãƒ³ãƒ— 16147680379"
+Redirect gone /a3chkyav
+Redirect gone /yu5hkh	
+RewriteRule ^product/ - [G]
+RewriteRule ^category/ - [G]
+Redirect Gone /zndxuxg/
+RewriteRule ^masajistas-eroticos-en-madrid/pagina=1/$ https://www.solomasajistas.com/masajistas-eroticos-en-madrid/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-eroticos-en-madrid/pagina=2/$ https://www.solomasajistas.com/masajistas-eroticos-en-madrid/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-eroticos-en-madrid/pagina=3/$ https://www.solomasajistas.com/masajistas-eroticos-en-madrid/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-eroticos-en-madrid/pagina=4/$ https://www.solomasajistas.com/masajistas-eroticos-en-madrid/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-eroticos-en-madrid/pagina=5/$ https://www.solomasajistas.com/masajistas-eroticos-en-madrid/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-eroticos-en-madrid/pagina=6/$ https://www.solomasajistas.com/masajistas-eroticos-en-madrid/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-eroticos-en-madrid/pagina=7/$ https://www.solomasajistas.com/masajistas-eroticos-en-madrid/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-eroticos-en-madrid/pagina=8/$ https://www.solomasajistas.com/masajistas-eroticos-en-madrid/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-eroticos-en-madrid/pagina=9/$ https://www.solomasajistas.com/masajistas-eroticos-en-madrid/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-eroticos-en-madrid/pagina=10/$ https://www.solomasajistas.com/masajistas-eroticos-en-madrid/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-eroticos-en-barcelona/pagina=1/$ https://www.solomasajistas.com/masajistas-eroticos-en-barcelona/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-eroticos-en-barcelona/pagina=2/$ https://www.solomasajistas.com/masajistas-eroticos-en-barcelona/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-eroticos-en-barcelona/pagina=3/$ https://www.solomasajistas.com/masajistas-eroticos-en-barcelona/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-eroticos-en-barcelona/pagina=4/$ https://www.solomasajistas.com/masajistas-eroticos-en-barcelona/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-eroticos-en-barcelona/pagina=5/$ https://www.solomasajistas.com/masajistas-eroticos-en-barcelona/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-eroticos-en-barcelona/pagina=6/$ https://www.solomasajistas.com/masajistas-eroticos-en-barcelona/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-eroticos-en-barcelona/pagina=7/$ https://www.solomasajistas.com/masajistas-eroticos-en-barcelona/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-eroticos-en-barcelona/pagina=8/$ https://www.solomasajistas.com/masajistas-eroticos-en-barcelona/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-eroticos-en-barcelona/pagina=9/$ https://www.solomasajistas.com/masajistas-eroticos-en-barcelona/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-eroticos-en-barcelona/pagina=10/$ https://www.solomasajistas.com/masajistas-eroticos-en-barcelona/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-terapeuticos-en-madrid/pagina=1/$ https://www.solomasajistas.com/masajistas-terapeuticos-en-madrid/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-terapeuticos-en-madrid/pagina=2/$ https://www.solomasajistas.com/masajistas-terapeuticos-en-madrid/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-terapeuticos-en-madrid/pagina=3/$ https://www.solomasajistas.com/masajistas-terapeuticos-en-madrid/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-terapeuticos-en-madrid/pagina=4/$ https://www.solomasajistas.com/masajistas-terapeuticos-en-madrid/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-terapeuticos-en-madrid/pagina=5/$ https://www.solomasajistas.com/masajistas-terapeuticos-en-madrid/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-terapeuticos-en-madrid/pagina=6/$ https://www.solomasajistas.com/masajistas-terapeuticos-en-madrid/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-terapeuticos-en-madrid/pagina=7/$ https://www.solomasajistas.com/masajistas-terapeuticos-en-madrid/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-terapeuticos-en-madrid/pagina=8/$ https://www.solomasajistas.com/masajistas-terapeuticos-en-madrid/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-terapeuticos-en-madrid/pagina=9/$ https://www.solomasajistas.com/masajistas-terapeuticos-en-madrid/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-terapeuticos-en-madrid/pagina=10/$ https://www.solomasajistas.com/masajistas-terapeuticos-en-madrid/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-terapeuticos-en-barcelona/pagina=1/$ https://www.solomasajistas.com/masajistas-terapeuticos-en-barcelona/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-terapeuticos-en-barcelona/pagina=2/$ https://www.solomasajistas.com/masajistas-terapeuticos-en-barcelona/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-terapeuticos-en-barcelona/pagina=3/$ https://www.solomasajistas.com/masajistas-terapeuticos-en-barcelona/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-terapeuticos-en-barcelona/pagina=4/$ https://www.solomasajistas.com/masajistas-terapeuticos-en-barcelona/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-terapeuticos-en-barcelona/pagina=5/$ https://www.solomasajistas.com/masajistas-terapeuticos-en-barcelona/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-terapeuticos-en-barcelona/pagina=6/$ https://www.solomasajistas.com/masajistas-terapeuticos-en-barcelona/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-terapeuticos-en-barcelona/pagina=7/$ https://www.solomasajistas.com/masajistas-terapeuticos-en-barcelona/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-terapeuticos-en-barcelona/pagina=8/$ https://www.solomasajistas.com/masajistas-terapeuticos-en-barcelona/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-terapeuticos-en-barcelona/pagina=9/$ https://www.solomasajistas.com/masajistas-terapeuticos-en-barcelona/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-terapeuticos-en-barcelona/pagina=10/$ https://www.solomasajistas.com/masajistas-terapeuticos-en-barcelona/ [R=301,NC,L,QSD]
+#redireccion de pagina
+
+RewriteRule ^masajistas-eroticos-en-([a-zA-Z-]*)/pagina=(\w+)/?$ https://www.solomasajistas.com/masajistas-eroticos-en-$1/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-eroticos/([a-zA-Z0-9-]*)/pagina=(\w+)/?$ https://www.solomasajistas.com/masajistas-eroticos/ [R=301,NC,L,QSD]
+RewriteRule ^([a-zA-Z-]*)/pagina=(\w+)/?$ https://www.solomasajistas.com/$1/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-terapeuticos-en-barcelona/localidad-centro/$ https://www.solomasajistas.com/masajistas-terapeuticos-en-barcelona/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-terapeuticos-en-madrid/localidad-centro/$ https://www.solomasajistas.com/masajistas-terapeuticos-en-madrid/ [R=301,NC,L,QSD]
+RewriteRule ^escorts-en-barcelona/$ https://www.solomasajistas.com/masajistas-eroticos-en-barcelona/ [R=301,NC,L,QSD]
+RewriteRule ^escorts/$ https://www.solomasajistas.com/masajistas-eroticos/ [R=301,NC,L,QSD]
+RewriteRule ^escorts-en-madrid/$ https://www.solomasajistas.com/masajistas-eroticos-en-madrid/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-eroticos-en-madrid/masajes-lingam/$ https://www.solomasajistas.com/masajistas-eroticos-en-madrid/ [R=301,NC,L,QSD]
+RewriteRule ^travestis-en-madrid/$ https://www.solomasajistas.com/masajistas-eroticos-en-madrid/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-eroticos-en-barcelona/masajes-lingam/$ https://www.solomasajistas.com/masajistas-eroticos-en-barcelona/ [R=301,NC,L,QSD]
+RewriteRule ^travestis-en-barcelona/$ https://www.solomasajistas.com/masajistas-eroticos-en-barcelona/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-eroticos-en-madrid/masaje-tantrico/$ https://www.solomasajistas.com/masajistas-eroticos-en-madrid/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-eroticos-en-barcelona/masaje-tantrico/$ https://www.solomasajistas.com/masajistas-eroticos-en-barcelona/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-eroticos-en-madrid/masajes-nuru/$ https://www.solomasajistas.com/masajistas-eroticos-en-madrid/ [R=301,NC,L,QSD]
+RewriteRule ^masajistas-eroticos-en-barcelona/masajes-nuru/$ https://www.solomasajistas.com/masajistas-eroticos-en-barcelona/ [R=301,NC,L,QSD]
+RewriteRule ^centros-spas-eroticos-en-barcelona/$ https://www.solomasajistas.com/masajistas-eroticos-en-barcelona/ [R=301,NC,L,QSD]
+RewriteRule ^centros-spas-eroticos-en-madrid/$ https://www.solomasajistas.com/masajistas-eroticos-en-madrid/ [R=301,NC,L,QSD]
+
+RewriteRule ^masajes-terapeuticos-en-([a-zA-Z-]*)/?$ https://www.solomasajistas.com/masajistas-terapeuticos-en-$1/ [R=301,NC,L,QSD]
+RewriteRule ^escorts-en-([a-zA-Z-]*)/([a-zA-Z-]*)/?$ https://www.solomasajistas.com/masajistas-eroticos-en-$1/$2/ [R=301,NC,L,QSD]	
+RewriteRule ^escorts-en-([a-zA-Z-]*)/?$ https://www.solomasajistas.com/masajistas-eroticos-en-$1/ [R=301,NC,L,QSD]	
+RewriteRule ^travestis-en-([a-zA-Z-]*)/([a-zA-Z-]*)/?$ https://www.solomasajistas.com/masajistas-eroticos-en-$1/$2/ [R=301,NC,L,QSD]
+
+
+RewriteRule ^travestis-en-([a-zA-Z-]*)/?$ https://www.solomasajistas.com/masajistas-eroticos-en-$1/ [R=301,NC,L,QSD]	
+RewriteRule ^heteros-en-([a-zA-Z-]*)/?$ https://www.solomasajistas.com/masajistas-gays-en-$1 [R=301,NC,L,QSD]
+RewriteRule ^travestis/?$ https://www.solomasajistas.com/masajistas-eroticos/ [R=301,NC,L,QSD]	
+RewriteRule ^escorts/?$ https://www.solomasajistas.com/masajistas-eroticos/ [R=301,NC,L,QSD]	
+RewriteRule ^masajes-eroticos/?$ https://www.solomasajistas.com/masajistas-eroticos/ [R=301,NC,L,QSD]	
+RewriteRule ^masajes-eroticos-en-([a-zA-Z-]*)/?$ https://www.solomasajistas.com/masajistas-eroticos-en-$1/ [R=301,NC,L,QSD]
+
+    RewriteBase /
+
+
+	RewriteCond %{HTTP_HOST} ^solomasajistas.com [NC]
+	RewriteRule (.*) https://www.solomasajistas.com/$1 [R=301,L,QSA]
+
+	
+    RewriteCond %{HTTP_HOST} ^www.solomasajistas.com [NC]
+	RewriteCond %{SCRIPT_FILENAME} !-d
+	RewriteCond %{SCRIPT_FILENAME} !-f
+	
+    RewriteCond %{HTTPS} off
+    RewriteRule (.*) https://www.%{HTTP_HOST}%{REQUEST_URI}
+	
+	RewriteRule ^modoalt/?$ backend/secciones/mantenimiento.php
+	RewriteRule ^back/?$ backend/index.php
+	RewriteRule ^back/recuperar-pass/([a-zA-Z0-9-]*)/?$ backend/index.php?seccion=recuperar-pass&rec=$1
+	RewriteRule ^descargar/(.*)?$ backend/backup/$1
+	RewriteRule ^back/salir/?$ backend/sistema/rel_acciones.php?accion=salir
+	RewriteRule ^back/([a-zA-Z0-9-]*)/?$ backend/index.php?seccion=$1 [QSA,L]
+	RewriteRule ^back/([a-zA-Z0-9-]*)/([0-9]*)/?$ backend/index.php?seccion=$1&id=$2 [QSA,L]
+	RewriteRule ^back/([a-zA-Z0-9-]*)/([a-zA-Z-]*)/([0-9]*)/?$ backend/index.php?seccion=$1&accion=$2&id=$3 [QSA,L]
+	RewriteRule ^back/([a-zA-Z0-9-]*)/([a-zA-Z-]*)/([a-zA-Z-]*)/?$ backend/index.php?seccion=$1&accion=$2&modo=$3 [QSA,L]
+    	
+    RewriteRule ^detalle/(.*)-(\w+).html?$ detalle.php?idd=$2&idc=$3 [QSA,L]
+    RewriteRule ^([a-zA-Z-]*)/([a-zA-Z0-9-]*)-(\w+).html?$ detalle.php?idd=$3 [QSA,L]
+
+    
+    RewriteRule ^/?$ index.php [QSA,L]
+
+	# si no existe un archivo que coincida con la solicitud...
+	RewriteCond %{REQUEST_FILENAME} !-f
+	# y si no termina con una barra, redireccionar a la misma dirección pero con la barra
+	RewriteRule ^(.*[^/]$) $1/ [R,QSA,L]
+    
+    #rutas
+
+	RewriteRule ^mis-anuncios/?$ gestion-anuncios.php [QSA,L]
+	RewriteRule ^mis-mensajes/?$ mensajes.php [QSA,L]
+	RewriteRule ^favoritos/?$ masajistas.php?cat=13 [QSA,L]
+    
+    #bolsa de empleo
+
+	RewriteRule ^bolsa-empleo-en-([a-zA-Z-]*)/?$ bolsa-empleo.php?buscar3&otr=4&provincia=$1 [QSA,L]
+	RewriteRule ^bolsa-empleo-en-([a-zA-Z-]*)/([a-zA-Z0-9-]*)/?$ bolsa-empleo.php?buscar3=$2&otr=4&provincia=$1 [QSA,L]
+	RewriteRule ^bolsa-empleo-en-([a-zA-Z-]*)/([a-zA-Z0-9-]*)/pagina=(\w+)/?$ bolsa-empleo.php?buscar3=$2&otr=4&provincia=$1&pagina=$3 [QSA,L]
+	RewriteRule ^bolsa-empleo/?$ bolsa-empleo.php?buscar3=&otr=4 [QSA,L]
+	RewriteRule ^bolsa-empleo/pagina=(\w+)/?$ bolsa-empleo.php?buscar3&otr=4&pagina=$1 [QSA,L]
+	RewriteRule ^bolsa-empleo/([a-zA-Z0-9-]*)/?$ bolsa-empleo.php?buscar3=$1&otr=4 [QSA,L]
+	RewriteRule ^bolsa-empleo/([a-zA-Z0-9-]*)/pagina=(\w+)/?$ bolsa-empleo.php?buscar3=$1&otr=4&pagina=$2 [QSA,L]
+
+	#cursos y talleres
+
+	RewriteRule ^cursos-talleres-en-([a-zA-Z-]*)/?$ cursos-talleres.php?buscar3&otr=3&provincia=$1 [QSA,L]
+	RewriteRule ^cursos-talleres-en-([a-zA-Z-]*)/([a-zA-Z0-9-]*)/?$ cursos-talleres.php?buscar3=$2&otr=3&provincia=$1 [QSA,L]
+	RewriteRule ^cursos-talleres-en-([a-zA-Z-]*)/([a-zA-Z0-9-]*)/pagina=(\w+)?$ cursos-talleres.php?buscar3=$2&otr=3&provincia=$1&pagina=$3 [QSA,L]
+	RewriteRule ^cursos-talleres/?$ cursos-talleres.php?buscar3=&otr=3 [QSA,L]
+	RewriteRule ^cursos-talleres/pagina=(\w+)/?$ cursos-talleres.php?buscar3&otr=3&pagina=$1 [QSA,L]
+	RewriteRule ^cursos-talleres/([a-zA-Z0-9-]*)/?$ cursos-talleres.php?buscar3=$1&otr=3 [QSA,L]
+	RewriteRule ^cursos-talleres/([a-zA-Z0-9-]*)/pagina=(\w+)/?$ cursos-talleres.php?buscar3=$1&otr=3&pagina=$2 [QSA,L]
+	
+	#todas las categorias
+	
+	RewriteRule ^todas-las-categorias/?$ masajistas.php?buscar2=&cat=0 [QSA,L]
+	RewriteRule ^todas-las-categorias/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar2=$1&cat=0 [QSA,L]
+	RewriteRule ^todas-las-categorias-en-([a-zA-Z-]*)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar2=$2&cat=0&provincia=$1 [QSA,L]
+	RewriteRule ^([a-zA-Z-]*)-en-([a-zA-Z-]*)/keyword/([a-zA-Z-]*)/?$ masajistas.php?buscar3=&categoria=$1&provincia=$2&keyword=$3 [QSA,L]
+	RewriteRule ^([a-zA-Z-]*)-en-([a-zA-Z-]*)/?$ masajistas.php?buscar3=&categoria=$1&provincia=$2 [QSA,L]
+	RewriteRule ^([a-zA-Z-]*)-en-([a-zA-Z-]*)/pagina=(\w+)/?$ masajistas.php?buscar3=&categoria=$1&provincia=$2&pagina=$3 [QSA,L]
+		RewriteRule ^([a-zA-Z-]*)-en-([a-zA-Z-]*)/localidad-([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=&barrio=$3&categoria=$1&provincia=$2 [QSA,L]
+	RewriteRule ^([a-zA-Z-]*)-en-([a-zA-Z-]*)/localidad-([a-zA-Z0-9-]*)/pagina=(\w+)/?$ masajistas.php?buscar3=&barrio=$3&categoria=$1&provincia=$2&pagina=$4 [QSA,L]
+	RewriteRule ^([a-zA-Z-]*)-en-([a-zA-Z-]*)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$3&categoria=$1&provincia=$2 [QSA,L]
+	RewriteRule ^([a-zA-Z-]*)-en-([a-zA-Z-]*)/([a-zA-Z0-9-]*)/pagina=(\w+)/?$ masajistas.php?buscar3=$3&categoria=$1&provincia=$2&pagina=$4&prueba [QSA,L]
+	RewriteRule ^([a-zA-Z-]*)/?$ masajistas.php?buscar3=&categoria=$1 [QSA,L]
+	RewriteRule ^([a-zA-Z-]*)/pagina=(\w+)/?$ masajistas.php?buscar3&categoria=$1&pagina=$2 [QSA,L]
+	RewriteRule ^([a-zA-Z-]*)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&categoria=$1 [QSA,L]
+	RewriteRule ^([a-zA-Z-]*)/([a-zA-Z0-9-]*)/pagina=(\w+)/?$ masajistas.php?buscar3=$2&categoria=$1&pagina=$3 [QSA,L]
+	
+	RewriteRule ^masajes-terapeuticos/?$ masajistas.php?cat=1&buscar3 [QSA,L]
+	RewriteRule ^masajes-terapeuticos/([0-9]*)/([a-zA-Z0-9-]*)/?$ masajistas.php?cat=1&pagina=$1&buscar3=$2 [QSA,L]
+	
+	RewriteRule ^masajes-terapeuticos-en-alava/?$ masajistas.php?buscar=&cat=1&provincia=1&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-albacete/?$ masajistas.php?buscar=&cat=1&provincia=2&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-alicante/?$ masajistas.php?buscar=&cat=1&provincia=3&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-almeria/?$ masajistas.php?buscar=&cat=1&provincia=4&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-avila/?$ masajistas.php?buscar=&cat=1&provincia=5&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-badajoz/?$ masajistas.php?buscar=&cat=1&provincia=6&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-baleares-islas/?$ masajistas.php?buscar=&cat=1&provincia=7&categoria=0 [QSA,L]	
+	RewriteRule ^masajes-terapeuticos-en-barcelona/?$ masajistas.php?buscar=&cat=1&provincia=8&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-burgos/?$ masajistas.php?buscar=&cat=1&provincia=9&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-caceres/?$ masajistas.php?buscar=&cat=1&provincia=10&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-cadiz/?$ masajistas.php?buscar=&cat=1&provincia=11&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-castellon/?$ masajistas.php?buscar=&cat=1&provincia=12&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-ciudad-real/?$ masajistas.php?buscar=&cat=1&provincia=13&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-cordoba/?$ masajistas.php?buscar=&cat=1&provincia=14&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-la-coruna/?$ masajistas.php?buscar=&cat=1&provincia=15&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-cuenca/?$ masajistas.php?buscar=&cat=1&provincia=16&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-girona/?$ masajistas.php?buscar=&cat=1&provincia=17&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-granada/?$ masajistas.php?buscar=&cat=1&provincia=18&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-guadalajara/?$ masajistas.php?buscar=&cat=1&provincia=19&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-gipuzkoa/?$ masajistas.php?buscar=&cat=1&provincia=20&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-huelva/?$ masajistas.php?buscar=&cat=1&provincia=21&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-huesca/?$ masajistas.php?buscar=&cat=1&provincia=22&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-jaen/?$ masajistas.php?buscar=&cat=1&provincia=23&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-leon/?$ masajistas.php?buscar=&cat=1&provincia=24&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-lleida/?$ masajistas.php?buscar=&cat=1&provincia=25&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-rioja/?$ masajistas.php?buscar=&cat=1&provincia=26&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-lugo/?$ masajistas.php?buscar=&cat=1&provincia=27&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-madrid/?$ masajistas.php?buscar=&cat=1&provincia=28&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-malaga/?$ masajistas.php?buscar=&cat=1&provincia=29&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-murcia/?$ masajistas.php?buscar=&cat=1&provincia=30&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-navarra/?$ masajistas.php?buscar=&cat=1&provincia=31&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-ourense/?$ masajistas.php?buscar=&cat=1&provincia=32&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-asturias/?$ masajistas.php?buscar=&cat=1&provincia=33&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-palencia/?$ masajistas.php?buscar=&cat=1&provincia=34&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-las-palmas/?$ masajistas.php?buscar=&cat=1&provincia=35&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-pontevedra/?$ masajistas.php?buscar=&cat=1&provincia=36&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-salamanca/?$ masajistas.php?buscar=&cat=1&provincia=37&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-santa-cruz-de-tenerife/?$ masajistas.php?buscar=&cat=1&provincia=38&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-cantabria/?$ masajistas.php?buscar=&cat=1&provincia=39&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-segovia/?$ masajistas.php?buscar=&cat=1&provincia=40&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-sevilla/?$ masajistas.php?buscar=&cat=1&provincia=41&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-soria/?$ masajistas.php?buscar=&cat=1&provincia=42&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-tarragona/?$ masajistas.php?buscar=&cat=1&provincia=43&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-teruel/?$ masajistas.php?buscar=&cat=1&provincia=44&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-toledo/?$ masajistas.php?buscar=&cat=1&provincia=45&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-valencia/?$ masajistas.php?buscar=&cat=1&provincia=46&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-valladolid/?$ masajistas.php?buscar=&cat=1&provincia=47&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-bizkaia/?$ masajistas.php?buscar=&cat=1&provincia=48&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-zamora/?$ masajistas.php?buscar=&cat=1&provincia=49&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-zaragoza/?$ masajistas.php?buscar=&cat=1&provincia=50&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-ceuta/?$ masajistas.php?buscar=&cat=1&provincia=51&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-melilla/?$ masajistas.php?buscar=&cat=1&provincia=52&categoria=0 [QSA,L]
+	
+	RewriteRule ^masajes-terapeuticos-en-alava/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=1&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-albacete/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=2&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-alicante/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=3&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-almeria/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=4&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-avila/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=5&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-badajoz/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=6&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-baleares-islas/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=7&categoria=0&pagina=$1 [QSA,L]	
+	RewriteRule ^masajes-terapeuticos-en-barcelona/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=8&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-burgos/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=9&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-caceres/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=10&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-cadiz/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=11&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-castellon/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=12&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-ciudad-real/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=13&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-cordoba/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=14&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-la-coruna/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=15&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-cuenca/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=16&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-girona/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=17&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-granada/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=18&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-guadalajara/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=19&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-gipuzkoa/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=20&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-huelva/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=21&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-huesca/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=22&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-jaen/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=23&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-leon/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=24&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-lleida/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=25&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-rioja/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=26&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-lugo/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=27&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-madrid/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=28&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-malaga/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=29&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-murcia/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=30&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-navarra/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=31&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-ourense/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=32&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-asturias/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=33&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-palencia/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=34&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-las-palmas/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=35&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-pontevedra/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=36&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-salamanca/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=37&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-santa-cruz-de-tenerife/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=38&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-cantabria/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=39&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-segovia/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=40&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-sevilla/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=41&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-soria/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=42&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-tarragona/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=43&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-teruel/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=44&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-toledo/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=45&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-valencia/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=46&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-valladolid/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=47&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-bizkaia/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=48&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-zamora/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=49&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-zaragoza/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=50&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-ceuta/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=51&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-melilla/pagina=(\w+)/?$ masajistas.php?buscar=&cat=1&provincia=52&categoria=0&pagina=$1 [QSA,L]
+	
+	
+	RewriteRule ^masajes-terapeuticos/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=1&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos/?$ masajistas.php?buscar3=&cat=1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=1&pagina=$1 [QSA,L]
+	
+	RewriteRule ^masajes-terapeuticos-en-alava/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=1&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-albacete/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=2&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-alicante/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=3&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-almeria/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=4&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-avila/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=5&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-badajoz/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=6&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-baleares-islas/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=7&categoria=0 [QSA,L]	
+	RewriteRule ^masajes-terapeuticos-en-barcelona/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=8&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-burgos/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=9&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-caceres/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=10&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-cadiz/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=11&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-castellon/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=12&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-ciudad-real/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=13&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-cordoba/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=14&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-la-coruna/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=15&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-cuenca/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=16&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-girona/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=17&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-granada/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=18&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-guadalajara/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=19&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-gipuzkoa/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=20&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-huelva/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=21&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-huesca/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=22&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-jaen/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=23&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-leon/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=24&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-lleida/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=25&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-rioja/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=26&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-lugo/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=27&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-madrid/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=28&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-malaga/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=29&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-murcia/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=30&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-navarra/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=31&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-ourense/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=32&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-asturias/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=33&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-palencia/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=34&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-las-palmas/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=35&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-pontevedra/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=36&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-salamanca/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=37&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-santa-cruz-de-tenerife/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=38&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-cantabria/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=39&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-segovia/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=40&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-sevilla/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=41&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-soria/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=42&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-tarragona/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=43&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-teruel/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=44&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-toledo/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=45&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-valencia/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=46&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-valladolid/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=47&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-bizkaia/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=48&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-zamora/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=49&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-zaragoza/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=50&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-ceuta/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=51&categoria=0 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-melilla/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$1&cat=1&provincia=52&categoria=0 [QSA,L]
+
+	RewriteRule ^masajes-terapeuticos-en-alava/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=1&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-albacete/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=2&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-alicante/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=3&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-almeria/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=4&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-avila/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=5&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-badajoz/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=6&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-baleares-islas/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=7&categoria=0&pagina=$1 [QSA,L]	
+	RewriteRule ^masajes-terapeuticos-en-barcelona/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=8&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-burgos/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=9&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-caceres/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=10&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-cadiz/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=11&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-castellon/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=12&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-ciudad-real/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=13&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-cordoba/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=14&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-la-coruna/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=15&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-cuenca/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=16&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-girona/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=17&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-granada/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=18&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-guadalajara/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=19&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-gipuzkoa/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=20&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-huelva/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=21&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-huesca/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=22&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-jaen/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=23&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-leon/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=24&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-lleida/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=25&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-rioja/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=26&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-lugo/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=27&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-madrid/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=28&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-malaga/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=29&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-murcia/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=30&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-navarra/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=31&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-ourense/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=32&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-asturias/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=33&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-palencia/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=34&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-las-palmas/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=35&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-pontevedra/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=36&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-salamanca/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=37&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-santa-cruz-de-tenerife/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=38&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-cantabria/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=39&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-segovia/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=40&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-sevilla/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=41&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-soria/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=42&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-tarragona/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=43&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-teruel/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=44&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-toledo/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=45&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-valencia/pagina=(\w+)/(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=46&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-valladolid/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=47&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-bizkaia/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=48&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-zamora/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=49&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-zaragoza/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=50&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-ceuta/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=51&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajes-terapeuticos-en-melilla/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar=$2&cat=1&provincia=52&categoria=0&pagina=$1 [QSA,L]
+	
+	
+	RewriteRule ^masajistas-terapeuticos/?$ masajistas.php?cat=6 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos/pagina=(\w+)/?$ masajistas.php?cat=6&pagina=$1 [QSA,L]
+	
+	RewriteRule ^masajistas-terapeuticos-en-alava/?$ masajistas.php?buscar=&cat=6&provincia=1&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-albacete/?$ masajistas.php?buscar=&cat=6&provincia=2&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-alicante/?$ masajistas.php?buscar=&cat=6&provincia=3&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-almeria/?$ masajistas.php?buscar=&cat=6&provincia=4&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-avila/?$ masajistas.php?buscar=&cat=6&provincia=5&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-badajoz/?$ masajistas.php?buscar=&cat=6&provincia=6&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-baleares-islas/?$ masajistas.php?buscar=&cat=6&provincia=7&categoria=0 [QSA,L]	
+	RewriteRule ^masajistas-terapeuticos-en-barcelona/?$ masajistas.php?buscar=&cat=6&provincia=8&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-burgos/?$ masajistas.php?buscar=&cat=6&provincia=9&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-caceres/?$ masajistas.php?buscar=&cat=6&provincia=10&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-cadiz/?$ masajistas.php?buscar=&cat=6&provincia=11&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-castellon/?$ masajistas.php?buscar=&cat=6&provincia=12&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-ciudad-real/?$ masajistas.php?buscar=&cat=6&provincia=13&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-cordoba/?$ masajistas.php?buscar=&cat=6&provincia=14&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-la-coruna/?$ masajistas.php?buscar=&cat=6&provincia=15&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-cuenca/?$ masajistas.php?buscar=&cat=6&provincia=16&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-girona/?$ masajistas.php?buscar=&cat=6&provincia=17&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-granada/?$ masajistas.php?buscar=&cat=6&provincia=18&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-guadalajara/?$ masajistas.php?buscar=&cat=6&provincia=19&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-gipuzkoa/?$ masajistas.php?buscar=&cat=6&provincia=20&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-huelva/?$ masajistas.php?buscar=&cat=6&provincia=21&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-huesca/?$ masajistas.php?buscar=&cat=6&provincia=22&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-jaen/?$ masajistas.php?buscar=&cat=6&provincia=23&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-leon/?$ masajistas.php?buscar=&cat=6&provincia=24&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-lleida/?$ masajistas.php?buscar=&cat=6&provincia=25&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-rioja/?$ masajistas.php?buscar=&cat=6&provincia=26&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-lugo/?$ masajistas.php?buscar=&cat=6&provincia=27&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-madrid/?$ masajistas.php?buscar=&cat=6&provincia=28&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-malaga/?$ masajistas.php?buscar=&cat=6&provincia=29&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-murcia/?$ masajistas.php?buscar=&cat=6&provincia=30&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-navarra/?$ masajistas.php?buscar=&cat=6&provincia=31&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-ourense/?$ masajistas.php?buscar=&cat=6&provincia=32&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-asturias/?$ masajistas.php?buscar=&cat=6&provincia=33&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-palencia/?$ masajistas.php?buscar=&cat=6&provincia=34&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-las-palmas/?$ masajistas.php?buscar=&cat=6&provincia=35&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-pontevedra/?$ masajistas.php?buscar=&cat=6&provincia=36&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-salamanca/?$ masajistas.php?buscar=&cat=6&provincia=37&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-santa-cruz-de-tenerife/?$ masajistas.php?buscar=&cat=6&provincia=38&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-cantabria/?$ masajistas.php?buscar=&cat=6&provincia=39&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-segovia/?$ masajistas.php?buscar=&cat=6&provincia=40&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-sevilla/?$ masajistas.php?buscar=&cat=6&provincia=41&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-soria/?$ masajistas.php?buscar=&cat=6&provincia=42&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-tarragona/?$ masajistas.php?buscar=&cat=6&provincia=43&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-teruel/?$ masajistas.php?buscar=&cat=6&provincia=44&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-toledo/?$ masajistas.php?buscar=&cat=6&provincia=45&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-valencia/?$ masajistas.php?buscar=&cat=6&provincia=46&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-valladolid/?$ masajistas.php?buscar=&cat=6&provincia=47&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-bizkaia/?$ masajistas.php?buscar=&cat=6&provincia=48&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-zamora/?$ masajistas.php?buscar=&cat=6&provincia=49&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-zaragoza/?$ masajistas.php?buscar=&cat=6&provincia=50&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-ceuta/?$ masajistas.php?buscar=&cat=6&provincia=51&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-melilla/?$ masajistas.php?buscar=&cat=6&provincia=52&categoria=0 [QSA,L]
+
+	RewriteRule ^masajistas-terapeuticos-en-alava/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=1&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-albacete/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=2&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-alicante/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=3&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-almeria/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=4&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-avila/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=5&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-badajoz/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=6&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-baleares-islas/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=7&categoria=0&pagina=$1 [QSA,L]	
+	RewriteRule ^masajistas-terapeuticos-en-barcelona/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=8&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-burgos/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=9&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-caceres/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=10&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-cadiz/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=11&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-castellon/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=12&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-ciudad-real/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=13&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-cordoba/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=14&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-la-coruna/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=15&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-cuenca/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=16&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-girona/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=17&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-granada/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=18&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-guadalajara/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=19&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-gipuzkoa/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=20&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-huelva/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=21&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-huesca/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=22&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-jaen/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=23&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-leon/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=24&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-lleida/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=25&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-rioja/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=26&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-lugo/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=27&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-madrid/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=28&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-malaga/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=29&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-murcia/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=30&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-navarra/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=31&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-ourense/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=32&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-asturias/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=33&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-palencia/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=34&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-las-palmas/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=35&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-pontevedra/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=36&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-salamanca/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=37&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-santa-cruz-de-tenerife/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=38&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-cantabria/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=39&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-segovia/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=40&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-sevilla/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=41&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-soria/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=42&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-tarragona/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=43&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-teruel/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=44&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-toledo/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=45&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-valencia/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=46&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-valladolid/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=47&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-bizkaia/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=48&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-zamora/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=49&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-zaragoza/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=50&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-ceuta/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=51&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-melilla/pagina=(\w+)/?$ masajistas.php?buscar=&cat=6&provincia=52&categoria=0&pagina=$1 [QSA,L]
+	
+	
+	RewriteRule ^masajistas-terapeuticos/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&pagina=$1 [QSA,L]
+
+	RewriteRule ^masajistas-terapeuticos-en-alava/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=1&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-albacete/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=2&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-alicante/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=3&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-almeria/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=4&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-avila/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=5&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-badajoz/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=6&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-baleares-islas/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=7&categoria=0 [QSA,L]	
+	RewriteRule ^masajistas-terapeuticos-en-barcelona/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=8&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-burgos/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=9&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-caceres/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=10&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-cadiz/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=11&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-castellon/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=12&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-ciudad-real/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=13&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-cordoba/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=14&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-la-coruna/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=15&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-cuenca/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=16&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-girona/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=17&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-granada/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=18&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-guadalajara/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=19&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-gipuzkoa/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=20&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-huelva/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=21&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-huesca/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=22&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-jaen/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=23&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-leon/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=24&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-lleida/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=25&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-rioja/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=26&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-lugo/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=27&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-madrid/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=28&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-malaga/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=29&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-murcia/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=30&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-navarra/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=31&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-ourense/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=32&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-asturias/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=33&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-palencia/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=34&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-las-palmas/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=35&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-pontevedra/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=36&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-salamanca/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=37&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-santa-cruz-de-tenerife/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=38&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-cantabria/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=39&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-segovia/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=40&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-sevilla/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=41&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-soria/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=42&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-tarragona/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=43&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-teruel/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=44&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-toledo/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=45&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-valencia/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=46&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-valladolid/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=47&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-bizkaia/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=48&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-zamora/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=49&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-zaragoza/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=50&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-ceuta/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=51&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-melilla/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$1&cat=6&provincia=52&categoria=0 [QSA,L]
+	
+	RewriteRule ^masajistas-terapeuticos-en-alava/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=1&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-albacete/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=2&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-alicante/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=3&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-almeria/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=4&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-avila/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=5&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-badajoz/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=6&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-baleares-islas/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=7&categoria=0&pagina=$1 [QSA,L]	
+	RewriteRule ^masajistas-terapeuticos-en-barcelona/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=8&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-burgos/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=9&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-caceres/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=10&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-cadiz/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=11&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-castellon/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=12&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-ciudad-real/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=13&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-cordoba/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=14&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-la-coruna/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=15&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-cuenca/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=16&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-girona/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=17&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-granada/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=18&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-guadalajara/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=19&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-gipuzkoa/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=20&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-huelva/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=21&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-huesca/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=22&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-jaen/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=23&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-leon/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=24&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-lleida/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=25&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-rioja/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=26&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-lugo/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=27&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-madrid/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=28&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-malaga/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=29&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-murcia/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=30&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-navarra/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=31&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-ourense/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=32&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-asturias/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=33&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-palencia/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=34&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-las-palmas/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=35&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-pontevedra/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=36&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-salamanca/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=37&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-santa-cruz-de-tenerife/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=38&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-cantabria/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=39&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-segovia/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=40&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-sevilla/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=41&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-soria/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=42&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-tarragona/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=43&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-teruel/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=44&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-toledo/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=45&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-valencia/pagina=(\w+)/(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=46&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-valladolid/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=47&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-bizkaia/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=48&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-zamora/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=49&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-zaragoza/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=50&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-ceuta/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=51&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-melilla/pagina=(\w+)/([a-zA-Z0-9-]*)/?$ masajistas.php?buscar3=$2&cat=6&provincia=52&categoria=0&pagina=$1 [QSA,L]	
+
+
+	
+	RewriteRule ^masajistas-terapeuticos/?$ masajistas.php?buscar3=&cat=6 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&pagina=$1 [QSA,L]
+
+	RewriteRule ^masajistas-terapeuticos-en-alava/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=1&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-albacete/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=2&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-alicante/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=3&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-almeria/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=4&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-avila/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=5&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-badajoz/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=6&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-baleares-islas/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=7&categoria=0&pagina=$1 [QSA,L]	
+	RewriteRule ^masajistas-terapeuticos-en-barcelona/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=8&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-burgos/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=9&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-caceres/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=10&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-cadiz/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=11&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-castellon/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=12&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-ciudad-real/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=13&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-cordoba/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=14&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-la-coruna/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=15&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-cuenca/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=16&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-girona/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=17&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-granada/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=18&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-guadalajara/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=19&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-gipuzkoa/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=20&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-huelva/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=21&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-huesca/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=22&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-jaen/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=23&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-leon/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=24&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-lleida/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=25&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-rioja/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=26&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-lugo/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=27&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-madrid/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=28&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-malaga/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=29&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-murcia/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=30&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-navarra/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=31&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-ourense/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=32&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-asturias/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=33&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-palencia/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=34&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-las-palmas/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=35&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-pontevedra/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=36&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-salamanca/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=37&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-santa-cruz-de-tenerife/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=38&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-cantabria/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=39&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-segovia/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=40&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-sevilla/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=41&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-soria/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=42&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-tarragona/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=43&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-teruel/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=44&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-toledo/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=45&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-valencia/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=46&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-valladolid/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=47&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-bizkaia/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=48&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-zamora/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=49&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-zaragoza/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=50&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-ceuta/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=51&categoria=0&pagina=$1 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-melilla/pagina=(\w+)/?$ masajistas.php?buscar3=&cat=6&provincia=52&categoria=0&pagina=$1 [QSA,L]
+
+	
+	
+	
+	
+	RewriteRule ^masajistas-terapeuticos/?$ masajistas.php?cat=7 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos/pagina=(\w+)/?$ masajistas.php?cat=7&pagina=$1 [QSA,L]
+
+	
+	RewriteRule ^masajistas-terapeuticos-en-alava/?$ masajistas.php?buscar=&cat=7&provincia=1&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-albacete/?$ masajistas.php?buscar=&cat=7&provincia=2&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-alicante/?$ masajistas.php?buscar=&cat=7&provincia=3&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-almeria/?$ masajistas.php?buscar=&cat=7&provincia=4&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-avila/?$ masajistas.php?buscar=&cat=7&provincia=5&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-badajoz/?$ masajistas.php?buscar=&cat=7&provincia=6&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-baleares-islas/?$ masajistas.php?buscar=&cat=7&provincia=7&categoria=0 [QSA,L]	
+	RewriteRule ^masajistas-terapeuticos-en-barcelona/?$ masajistas.php?buscar=&cat=7&provincia=8&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-burgos/?$ masajistas.php?buscar=&cat=7&provincia=9&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-caceres/?$ masajistas.php?buscar=&cat=7&provincia=10&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-cadiz/?$ masajistas.php?buscar=&cat=7&provincia=11&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-castellon/?$ masajistas.php?buscar=&cat=7&provincia=12&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-ciudad-real/?$ masajistas.php?buscar=&cat=7&provincia=13&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-cordoba/?$ masajistas.php?buscar=&cat=7&provincia=14&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-la-coruna/?$ masajistas.php?buscar=&cat=7&provincia=15&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-cuenca/?$ masajistas.php?buscar=&cat=7&provincia=16&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-girona/?$ masajistas.php?buscar=&cat=7&provincia=17&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-granada/?$ masajistas.php?buscar=&cat=7&provincia=18&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-guadalajara/?$ masajistas.php?buscar=&cat=7&provincia=19&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-gipuzkoa/?$ masajistas.php?buscar=&cat=7&provincia=20&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-huelva/?$ masajistas.php?buscar=&cat=7&provincia=21&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-huesca/?$ masajistas.php?buscar=&cat=7&provincia=22&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-jaen/?$ masajistas.php?buscar=&cat=7&provincia=23&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-leon/?$ masajistas.php?buscar=&cat=7&provincia=24&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-lleida/?$ masajistas.php?buscar=&cat=7&provincia=25&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-rioja/?$ masajistas.php?buscar=&cat=7&provincia=26&categoria=0 [QSA,L]
+	RewriteRule ^masajistas-terapeuticos-en-lugo/?$ masajistas.php?b
+	
+	
+	

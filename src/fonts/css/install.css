@@ -1,0 +1,61 @@
+BODY{
+    background: #fbfbfb;
+}
+#wrapper{
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 15px 5px 15px 5px;
+}
+h1{
+    color: #525252;
+    margin: 30px 0;
+    font-size: 1.8em;
+    text-transform: initial;
+}
+h2 {
+  margin: 30px 10px;
+  color: #17a02f;
+}
+.part{
+    padding: 15px;
+    background: #FFF;
+    border: 1px solid #DDD;
+    box-shadow: 0px 0px 5px #DDD;
+    margin-bottom: 30px;
+}
+p {
+  margin: 15px 10px;
+  font-size: 1.1em;
+  color: #666;
+}
+form {
+  padding: 0 15px;
+}
+form label{
+    width: 100%;
+    display: inline-block;
+    height: 32px;
+    line-height: 32px;
+    color: #252525;
+    font-size: 1.1em;
+}
+form input{
+    width: 100%;
+    border-radius: 3px;
+    padding: 8px;
+    margin-bottom: 15px;
+    box-shadow: inset 0px 0px 2px #DDD;
+    color: #000;
+    background: #fafafa;
+}
+input[type=button], input[type=submit]{
+    max-width: 80%;
+    background: #ff8100;
+    border-bottom: 2px solid #d06e0b;
+}
+p.note{
+    color: #c57676;
+    font-size: 1em;
+    margin: 30px 10px 0;
+}

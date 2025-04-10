@@ -1,0 +1,49 @@
+
+.cookie_info div {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center
+}
+
+.cookies_dialog {
+    width: 48%;
+    min-width: 387px;
+    margin: calc(17% - 120px) auto 0;
+    padding: 25px;
+    border: 1px solid #888;
+    border-radius: 10px;
+    max-width: 450px;
+    background: #fff
+}
+
+.config_cookies_content {
+    background-color: rgba(0,0,0,.3568627450980392);
+    position: fixed;
+    top: 0;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+}
+
+.cookies_config p {
+    font-weight: 600;
+    font-size: 1.2em;
+    color: #000;
+    text-align: center
+}
+
+.cookie_info p {
+    font-weight: 400;
+    font-size: 1.1em;
+    color: #000;
+    text-align: justify
+}
+
+.cookie_icon {
+    width: 150px;
+    margin-right: auto;
+    display: block;
+    margin-bottom: .8rem
+}
