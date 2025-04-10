@@ -20,6 +20,8 @@
 *.otf
 *.woff
 *.woff2
+*.ufm
+*.ufm.php
 
 # Archivos de entorno
 .env
