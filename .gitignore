@@ -15,6 +15,11 @@
 *.mp4
 *.webp
 *.mp3
+*.ttf 
+*.afm
+*.otf
+*.woff
+*.woff2
 
 # Archivos de entorno
 .env
