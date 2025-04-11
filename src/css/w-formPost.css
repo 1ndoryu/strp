@@ -31,6 +31,13 @@ body {
     padding: 0;
 }
 
+
+#boton-subir-foto {
+    position: relative; 
+    cursor: pointer;
+    overflow: hidden;
+}
+
 * {
     box-sizing: border-box;
 }
