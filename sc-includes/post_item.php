@@ -826,7 +826,7 @@ loadBlock('payment_dialog');
 <!-- ¡PERO CUIDADO! post.js interactuaba con el form antiguo (#new_item_post) -->
 <!-- Necesitarás un NUEVO archivo JS para manejar el form multi-etapa y las interacciones específicas del nuevo form -->
 <!-- <script src="<?= getConfParam('SITE_URL') ?>src/js/filter.js"></script> -->
-<!-- <script src="<?= getConfParam('SITE_URL') ?>src/js/post.js"></script> --> <!-- Probablemente necesita reemplazo/adaptación -->
+<script src="<?= getConfParam('SITE_URL') ?>src/js/newPost.js"></script> 
 
 <!-- Script para reCAPTCHA (Parece correcto) -->
 <script>
