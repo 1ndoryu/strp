@@ -1,7 +1,16 @@
 <?php
-ini_set('display_errors', 1);
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Intenta el output más simple posible y detén TODO
+    echo 'DETECCION POST - PARANDO TODO AHORA MISMO.';
+    // var_dump($_POST); // Comenta el var_dump por ahora, solo el echo simple
+    exit;
+}
+
+// --- El resto de tu código PHP empieza aquí ---
+ini_set('display_errors', 1); // Mantenlos por si el problema es ANTES del POST
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
+
 user::updateSesion();
 $limite = check_item_limit();
 $ANUNCIO_NUEVO_PREMIUM = false;
