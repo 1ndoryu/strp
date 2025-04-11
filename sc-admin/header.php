@@ -50,7 +50,7 @@ define('SECRET_KEY', '6Lf99qUZAAAAAA3N-761jR2zGSB-HHWtkZeOh9Mz');
 <script type="text/javascript" src="<?=getConfParam('SITE_URL');?><?=JS_PATH;?>jquery.sortable.min.js"></script>
 <script type="text/javascript" src="<?=getConfParam('SITE_URL');?><?=JS_PATH;?>jquerynumeric.js"></script>
 <link rel="stylesheet" type="text/css" href="src/css/style.css?v=0.1">
-<link rel="stylesheet" type="text/css" href="src/css/w-formPost.css">
+<link rel="stylesheet" type="text/css" href="src/css/w-formPost.css?v=0.2">
 <script type="text/javascript">
 var site_url = '<?=getConfParam('SITE_URL');?>';
 </script>
