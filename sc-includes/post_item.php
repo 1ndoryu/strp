@@ -1,12 +1,9 @@
 <?php
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Intenta el output más simple posible y detén TODO
-    echo 'DETECCION POST - PARANDO TODO AHORA MISMO.';
-    // var_dump($_POST); // Comenta el var_dump por ahora, solo el echo simple
-    exit;
-}
+// Determina la URL correcta para el action (con el ?id=...)
+// Si $urlfriendly['url.post_item'] ya la tiene, úsala directamente.
+// Si no, constrúyela. Asumiendo que el id es 'post_item':
+$formActionUrl = "/index.php?id=post_item"; // O usa $urlfriendly['url.post_item'] si es correcto
 
-// --- El resto de tu código PHP empieza aquí ---
 ini_set('display_errors', 1); // Mantenlos por si el problema es ANTES del POST
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -30,11 +27,9 @@ if (getConfParam('POST_ITEM_REG') == 1) {
 // Comprobamos si se ha enviado el formulario por POST y si existe un campo esencial como 'category' o 'token'
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['token']) || isset($_POST['category']))) {
 
-    echo '<pre>Datos POST recibidos:</pre>';
+    echo '<pre>¡AHORA SÍ ESTOY PROCESANDO EL POST EN EL SCRIPT CORRECTO!</pre>';
     var_dump($_POST);
-    echo '<pre>Archivos FILES recibidos:</pre>'; // Para verificar subidas si aplica directamente aquí (aunque parece que usas AJAX)
-    var_dump($_FILES);
-    exit; // DETENER AQUÍ TEMPORALMENTE
+    exit;
 
     $en_revision = false; // Inicializamos la variable
 
@@ -320,7 +315,7 @@ if (isset($_SESSION['form_error_message'])) {
     <?php // <!-- ############################################################ -->
     ?>
 
-    <form id="form-nuevo-anuncio" class="formulario-multi-etapa" method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" enctype="multipart/form-data" autocomplete="off">
+    <form id="form-nuevo-anuncio" class="formulario-multi-etapa" method="post" action="<?php echo htmlspecialchars($formActionUrl); ?>" enctype="multipart/form-data" autocomplete="off">
 
         <?php // Generar Token CSRF - Asegúrate que 'nuevoAnuncioToken' sea el nombre esperado por verifyFormToken o cambia verifyFormToken a 'nuevoAnuncioToken'
         // El código viejo usa 'postAdToken'. Usaremos ese por seguridad.
