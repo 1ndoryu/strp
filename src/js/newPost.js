@@ -58,7 +58,6 @@
     // QUITAR: Ya no se necesita siteKey para recaptcha
     // Ejemplo en PHP: echo "<script>const siteKey = '".SITE_KEY."';</script>";
 
-
     // --- Inicialización ---
     function inicializar() {
         etapas.forEach((etapa, index) => {
@@ -347,7 +346,6 @@
         console.log(`hidden_horario_final actualizado a: ${hiddenHorarioFinal.value}`);
     }
 
-
     function actualizarIdiomasOculto() {
         if (idioma1Select && hiddenLang1) {
             // Asume que el 'value' del select es el código esperado (e.g., 'es', 'en')
@@ -564,24 +562,51 @@
         // 1. Validar TODAS las etapas
         if (!validarFormularioCompleto()) {
             alert('Por favor, revisa el formulario. Hay errores o campos incompletos en alguna de las etapas.');
-            // Intenta ir a la primera etapa con error
             irAPrimeraEtapaConError();
+            console.warn('Validación fallida. Envío cancelado.'); // Log añadido
             return; // Detiene el proceso si hay errores
         }
 
-        // 2. Asegurarse que todos los mapeos ocultos estén actualizados (llamarlos explícitamente por seguridad)
+        // 2. Asegurarse que todos los mapeos ocultos estén actualizados
         console.log('Actualizando campos ocultos finales...');
         actualizarSellerTypeOculto();
         actualizarHorarioOculto();
         actualizarIdiomasOculto();
-        // Whatsapp, Out, Notificaciones, Terminos ya deberían tener el 'name' correcto y ser enviados.
 
-        console.log('Validación completa OK. Enviando formulario directamente...');
+        // <<<--- AÑADIR LOGS AQUÍ --->>>
+        console.log('--- Verificando datos antes de submit ---');
+        console.log('Token:', form.querySelector('#token')?.value);
+        console.log('Order:', form.querySelector('#new_order')?.value);
+        console.log('Seller Type (Hidden):', form.querySelector('#hidden_seller_type')?.value);
+        console.log('Dis (Hidden):', form.querySelector('#hidden_dis')?.value);
+        console.log('Horario Inicio (Hidden):', form.querySelector('#hidden_horario_inicio')?.value);
+        console.log('Horario Final (Hidden):', form.querySelector('#hidden_horario_final')?.value);
+        console.log('Lang 1 (Hidden):', form.querySelector('#hidden_lang_1')?.value);
+        console.log('Lang 2 (Hidden):', form.querySelector('#hidden_lang_2')?.value);
+        console.log(
+            'Fotos (Hidden Inputs):',
+            Array.from(hiddenPhotoInputsContainer.querySelectorAll('input[name="photo_name[]"]')).map(input => input.value)
+        );
+        // Puedes añadir más campos que consideres críticos (category, region, tit, text, phone, email, out, terminos, notifications...)
+        console.log('Categoría:', form.querySelector('#categoria')?.value);
+        console.log('Título:', form.querySelector('#titulo_anuncio')?.value);
+        console.log('Teléfono:', form.querySelector('#telefono')?.value);
+        console.log('Email:', form.querySelector('#email')?.value);
+        console.log('Términos:', form.querySelector('#terminos')?.checked);
+        console.log('---------------------------------------');
+        // Para ver TODOS los datos que se enviarían:
+        const formDataForLog = new FormData(form);
+        console.log('FormData a enviar:');
+        for (let [key, value] of formDataForLog.entries()) {
+            console.log(`${key}: ${value}`);
+        }
+        console.log('---------------------------------------');
+
+        console.log('Validación completa OK. Enviando formulario directamente vía form.submit()...');
 
         // 4. Enviar el formulario directamente
-        form.submit();
+        form.submit(); // ESTA LÍNEA CAUSA EL REINICIO DE PÁGINA
     }
-
     function validarFormularioCompleto() {
         let todoValido = true;
         for (let i = 0; i < etapas.length; i++) {
@@ -597,7 +622,7 @@
         }
         // Restablece el estado visual correcto de los errores para la etapa actual (si no es válida)
         if (!todoValido) {
-           validarEtapaActual(); // Re-valida la etapa actual para mostrar sus errores si es la que falló
+            validarEtapaActual(); // Re-valida la etapa actual para mostrar sus errores si es la que falló
         }
         return todoValido;
     }

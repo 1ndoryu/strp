@@ -21,6 +21,12 @@ if (getConfParam('POST_ITEM_REG') == 1) {
 // Comprobamos si se ha enviado el formulario por POST y si existe un campo esencial como 'category' o 'token'
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['token']) || isset($_POST['category']))) {
 
+    echo '<pre>Datos POST recibidos:</pre>';
+    var_dump($_POST);
+    echo '<pre>Archivos FILES recibidos:</pre>'; // Para verificar subidas si aplica directamente aquí (aunque parece que usas AJAX)
+    var_dump($_FILES);
+    exit; // DETENER AQUÍ TEMPORALMENTE
+
     $en_revision = false; // Inicializamos la variable
 
     // ----- Espera 'category', no 'categoria' -----
