@@ -30,7 +30,7 @@
 	date_default_timezone_set('Europe/Madrid');
 	if (!DEBUG){
 		error_reporting(0);
-		ini_set('display_errors','off');
+		ini_set('display_errors','on');
 	}else{
 		error_reporting(E_ALL | E_STRICT);
 		ini_set('display_errors','off');
