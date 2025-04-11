@@ -1,189 +1,257 @@
-/* --- Estilos Base para el Formulario --- */
+/* ================================================== */
+/* CSS BÁSICO PARA EL FORMULARIO DE NUEVO ANUNCIO   */
+/* ================================================== */
+
+/* --- Contenedor Principal y Estructura --- */
 .form-anuncio {
     max-width: 850px; /* Ancho máximo del formulario */
-    margin: 2rem auto; /* Centrar el formulario */
-    padding: 1.5rem 2rem;
+    margin: 30px auto; /* Centrar el formulario */
+    padding: 25px 35px;
     background-color: #ffffff;
     border: 1px solid #e0e0e0;
     border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Fuente limpia */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    font-family: Arial, Helvetica, sans-serif; /* Cambia por la fuente de tu CMS */
+    font-size: 16px;
+    line-height: 1.6;
     color: #333;
-    box-sizing: border-box;
+    box-sizing: border-box; /* Mejor manejo de padding/border */
 }
 
-*, *:before, *:after {
-    box-sizing: inherit;
+.form-anuncio *,
+.form-anuncio *::before,
+.form-anuncio *::after {
+    box-sizing: inherit; /* Heredar box-sizing */
 }
 
-/* --- Estilos para las Etapas (Fieldsets) --- */
+.titulo-form {
+    text-align: center;
+    color: #2c3e50; /* Azul oscuro */
+    margin-bottom: 30px;
+    font-size: 1.8em;
+    font-weight: bold;
+}
+
+/* --- Estilos de Etapas (Fieldsets) --- */
 .etapa {
     border: none; /* Quitar borde por defecto del fieldset */
-    padding: 0; /* Quitar padding por defecto */
-    margin: 0 0 2rem 0; /* Espacio debajo de cada etapa */
-    border-top: 1px solid #eee; /* Separador visual sutil */
-    padding-top: 2rem;
-}
-.etapa:first-of-type {
-    border-top: none;
-    padding-top: 0;
+    padding: 0;
+    margin: 0;
+    margin-bottom: 20px; /* Espacio antes de la siguiente etapa (si se vieran juntas) */
 }
 
 .etapa-titulo {
-    font-size: 1.6em;
-    font-weight: 600; /* Semi-bold */
-    color: #2c3e50; /* Azul oscuro */
-    margin-bottom: 2rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 2px solid #3498db; /* Línea azul debajo del título */
-    display: inline-block; /* Para que el borde no ocupe todo el ancho */
+    font-size: 1.4em;
+    color: #3498db; /* Azul claro */
+    border-bottom: 2px solid #ecf0f1; /* Gris claro */
+    padding-bottom: 10px;
+    margin-bottom: 25px;
+    width: 100%;
+    font-weight: bold;
 }
 
-/* --- Estilos Generales para Campos y Etiquetas --- */
+/* --- Campos y Etiquetas --- */
 .campo,
 .campo-grupo {
-    margin-bottom: 1.75rem; /* Espacio entre campos */
+    margin-bottom: 22px; /* Espacio entre campos/grupos */
 }
 
 .etiqueta {
     display: block;
-    margin-bottom: 0.6rem;
-    font-weight: 600; /* Semi-bold */
-    color: #555;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #555; /* Gris oscuro */
     font-size: 0.95em;
 }
 
+/* Estilo para campos en fila */
+.campo-fila {
+    display: flex;
+    flex-wrap: wrap; /* Permitir que pasen a la siguiente línea si no caben */
+    gap: 20px; /* Espacio entre campos en la misma fila */
+    align-items: flex-end; /* Alinear por la base */
+}
+
+.campo-fila > .campo {
+    flex: 1; /* Que los campos ocupen el espacio disponible */
+    min-width: 200px; /* Ancho mínimo antes de envolver */
+    margin-bottom: 0; /* Quitar margen inferior cuando están en fila */
+}
+/* Ajuste para checkbox en fila */
+.campo-fila > .campo-check {
+     flex: 0 1 auto; /* No crecer, tamaño automático */
+     padding-bottom: 10px; /* Alinear con la base de los inputs */
+}
+
+/* --- Inputs de Texto, Select, Textarea --- */
 .entrada,
 .selector,
-.textarea {
+.textarea,
+.entrada-tiempo {
     width: 100%;
-    padding: 0.8rem 1rem;
+    padding: 10px 12px;
     border: 1px solid #ccc;
-    border-radius: 5px;
+    border-radius: 4px;
     font-size: 1em;
-    color: #333;
+    line-height: 1.4;
+    background-color: #fff;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .entrada:focus,
 .selector:focus,
-.textarea:focus {
+.textarea:focus,
+.entrada-tiempo:focus {
+    border-color: #3498db; /* Azul claro al enfocar */
     outline: none;
-    border-color: #3498db; /* Azul al enfocar */
-    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
 }
 
 .textarea {
-    min-height: 130px;
+    min-height: 120px;
     resize: vertical; /* Permitir redimensionar verticalmente */
-    line-height: 1.5;
 }
 
-/* Ayuda/Descripción debajo de campos */
-.campo small, .campo-grupo small {
-    display: block;
-    margin-top: 0.4rem;
-    font-size: 0.85em;
-    color: #777;
+.selector-corto {
+    width: auto; /* Tamaño automático para selectores cortos */
+    flex-grow: 1; /* Permitir crecer en contenedores flex */
+    padding: 8px 10px;
 }
 
-/* --- Diseño en Fila (Provincia/Ciudad, Teléfono/WhatsApp) --- */
-.campo-fila {
-    display: flex;
-    gap: 1.5rem; /* Espacio entre campos en la misma fila */
-    flex-wrap: wrap; /* Permitir que se apilen en pantallas pequeñas */
-}
-.campo-fila > .campo {
-    flex: 1; /* Ocupar espacio disponible */
-    min-width: 200px; /* Ancho mínimo antes de apilar */
-}
-.campo-fila > .campo-check {
-    flex-basis: content; /* Ajustar al contenido del checkbox */
-    flex-grow: 0;
-    align-self: center; /* Centrar verticalmente el checkbox de WhatsApp */
-    padding-top: 1.5rem; /* Alinear con la etiqueta del campo anterior */
-}
-
-/* --- Estilos para Opciones (Radio / Checkbox) --- */
+/* --- Radio Buttons y Checkboxes --- */
 .opciones-radio,
 .opciones-check {
     display: flex;
     flex-direction: column;
-    gap: 0.8rem; /* Espacio entre opciones */
+    gap: 12px; /* Espacio entre opciones */
 }
 
 .opcion {
-    display: flex; /* Alinear input y texto */
-    align-items: flex-start; /* Alinear al inicio para textos largos */
-    cursor: pointer;
-    padding: 0.8rem 1rem;
+    display: flex;
+    align-items: flex-start; /* Alinear arriba si el texto tiene varias líneas */
+    gap: 10px; /* Espacio entre input y texto */
+    padding: 10px 12px;
     border: 1px solid #eee;
-    border-radius: 5px;
+    border-radius: 4px;
+    cursor: pointer;
     transition: background-color 0.2s ease, border-color 0.2s ease;
     background-color: #fdfdfd;
 }
 
 .opcion:hover {
-    background-color: #f5fafd; /* Azul muy claro al pasar el ratón */
-    border-color: #cce4f4;
+    background-color: #f7f7f7;
+    border-color: #ddd;
 }
 
 .opcion input[type="radio"],
 .opcion input[type="checkbox"] {
-    margin-right: 0.8rem;
-    margin-top: 0.2em; /* Ajuste vertical fino */
+    margin: 0;
+    margin-top: 3px; /* Ajuste vertical fino */
     flex-shrink: 0; /* Evitar que se encoja */
-    transform: scale(1.1);
+    cursor: pointer;
+    accent-color: #3498db; /* Color del check/radio (navegadores modernos) */
 }
 
-/* Estilo específico para opción seleccionada (más visual) */
-.opcion:has(input:checked) {
-    background-color: #eaf5fc;
-    border-color: #a6d5f5;
-}
-.opcion:has(input:checked) strong {
-    color: #0056b3;
-}
-
-/* Descripciones dentro de opciones (Planes, Extras) */
+/* Estilos específicos para opciones con descripción (planes, extras) */
 .opcion strong {
-    display: block;
-    margin-bottom: 0.2rem;
-    font-weight: 600;
+    color: #2980b9; /* Azul un poco más oscuro */
+    font-weight: bold;
 }
+
 .opcion small {
     display: block;
-    font-size: 0.9em;
-    color: #666;
-    line-height: 1.4;
+    font-size: 0.88em;
+    color: #777;
+    margin-top: 3px;
+    line-height: 1.3;
+    /* Quitar margen si no se usa indentación: margin-left: 0; */
+}
+.plan-gratis strong { color: #27ae60; } /* Verde para plan gratis */
+.extra-gratis strong { color: #555; }
+
+/* Para destacar visualmente la opción seleccionada (opcional) */
+.opcion input:checked {
+   /* Puedes añadir un borde o fondo sutil a la .opcion que contiene el input:checked si lo necesitas, pero requeriría JS o :has() (no soportado en viejo CMS) */
 }
 
-/* --- Estilos para Botones --- */
+
+/* --- Texto de Ayuda y Errores --- */
+small {
+    display: block;
+    font-size: 0.85em;
+    color: #7f8c8d; /* Gris azulado */
+    margin-top: 5px;
+    line-height: 1.3;
+}
+
+.error-msg {
+    color: #e74c3c; /* Rojo para errores */
+    font-size: 0.9em;
+    font-weight: bold;
+    margin-top: 6px;
+    display: block; /* Asegurar que se muestre */
+}
+
+/* Alerta general para errores (recaptcha, final, etc.) */
+.alerta {
+    padding: 15px 20px;
+    margin-bottom: 25px;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    font-size: 0.95em;
+}
+
+.alerta-error {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+}
+.alerta-aviso {
+     background-color: #fff3cd;
+     border-color: #ffeeba;
+     color: #856404;
+}
+.alerta a {
+    color: inherit;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+/* Estilo para inputs con error (requiere añadir clase 'error' con JS/PHP) */
+.entrada.error,
+.selector.error,
+.textarea.error {
+    border-color: #e74c3c !important; /* Forzar borde rojo */
+    background-color: #fffafa;
+}
+/* Para grupos con error */
+.campo-grupo.error .etiqueta {
+    color: #e74c3c;
+}
+.campo-grupo.error .opciones-radio,
+.campo-grupo.error .opciones-check {
+    border: 1px dashed #e74c3c;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+
+/* --- Botones --- */
 .boton {
-    padding: 0.9rem 1.8rem;
+    display: inline-block;
+    padding: 12px 25px;
     border: none;
     border-radius: 5px;
-    cursor: pointer;
     font-size: 1em;
-    font-weight: 600; /* Semi-bold */
+    font-weight: bold;
+    cursor: pointer;
     text-align: center;
-    transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
-    display: inline-block;
     text-decoration: none;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-.boton:hover {
-     box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    transition: background-color 0.2s ease, opacity 0.2s ease, transform 0.1s ease;
+    white-space: nowrap; /* Evitar que el texto del botón se rompa */
 }
 .boton:active {
-    transform: scale(0.98);
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-}
-.boton:disabled {
-    background-color: #ccc !important;
-    color: #888 !important;
-    cursor: not-allowed;
-    box-shadow: none;
+    transform: translateY(1px); /* Efecto pulsado */
 }
 
 .boton-primario {
@@ -191,316 +259,206 @@
     color: white;
 }
 .boton-primario:hover {
-    background-color: #2980b9;
+    background-color: #2980b9; /* Azul más oscuro */
 }
 
 .boton-secundario {
-    background-color: #95a5a6; /* Gris */
-    color: white;
+    background-color: #ecf0f1; /* Gris claro */
+    color: #34495e; /* Gris azulado oscuro */
+    border: 1px solid #bdc3c7; /* Borde gris */
 }
 .boton-secundario:hover {
-    background-color: #7f8c8d;
-}
-
-.boton-quitar {
-    background-color: #e74c3c; /* Rojo */
-    color: white;
-    padding: 0.4rem 0.8rem;
-    font-size: 0.9em;
-    margin-left: 0.5rem;
-     box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-}
-.boton-quitar:hover {
-    background-color: #c0392b;
-     box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    background-color: #dde1e2;
+    border-color: #abb1b5;
 }
 
 .boton-agregar {
     background-color: #2ecc71; /* Verde */
     color: white;
-    padding: 0.5rem 1rem;
+    padding: 6px 12px;
     font-size: 0.9em;
-    margin-top: 0.5rem; /* Espacio si está después de una lista */
-     box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    margin-top: 5px; /* Espacio si está bajo la lista */
 }
 .boton-agregar:hover {
     background-color: #27ae60;
-     box-shadow: 0 2px 4px rgba(0,0,0,0.15);
 }
 
-/* Contenedor de acciones al final de cada etapa */
+.boton-quitar {
+    background-color: #e74c3c; /* Rojo */
+    color: white;
+    padding: 4px 10px;
+    font-size: 0.85em;
+    border-radius: 3px;
+    margin-left: auto; /* Empujar a la derecha en flex */
+}
+.boton-quitar:hover {
+    background-color: #c0392b;
+}
+
+.boton-finalizar:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: #95a5a6; /* Gris cuando deshabilitado */
+}
+
 .acciones-etapa {
-    margin-top: 2.5rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid #eee;
+    margin-top: 35px;
+    padding-top: 25px;
+    border-top: 1px solid #ecf0f1;
     display: flex;
-    justify-content: space-between; /* Botón atrás a la izq, adelante a la der */
+    justify-content: space-between; /* Botones en extremos */
     align-items: center;
-    gap: 1rem;
-}
-/* Si solo hay un botón (ej. Siguiente), alinearlo a la derecha */
-.acciones-etapa > .boton:only-child {
-     margin-left: auto;
+    flex-wrap: wrap; /* Para pantallas pequeñas */
+    gap: 15px;
 }
 
-/* --- Mensajes de Error y Alertas --- */
-.error-msg {
-    color: #e74c3c; /* Rojo */
-    font-size: 0.9em;
-    margin-top: 0.4rem;
-    font-weight: 500;
-    display: block; /* Asegurar que ocupe su espacio */
-}
-/* Ocultar errores por defecto (se muestran con JS/PHP) */
-.error-msg:not(:empty) { /* Se aplica si el error tiene contenido */
-     margin-top: 0.4rem; /* Solo si hay error */
-}
-.error-msg:empty { display: none; } /* Ocultar si está vacío */
+/* --- Estilos Específicos de Secciones --- */
 
-
-/* Estilo opcional para campos inválidos */
-.entrada.invalido,
-.selector.invalido,
-.textarea.invalido {
-    border-color: #e74c3c !important;
-    box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.2) !important;
-}
-/* Estilo opcional para grupos con error */
-.campo-grupo.invalido > .etiqueta {
-    color: #e74c3c;
-}
-.campo-grupo.invalido .opciones-check,
-.campo-grupo.invalido .opciones-radio {
-    border: 1px dashed #e74c3c; /* Borde punteado alrededor del grupo */
-    padding: 0.5rem;
+/* Input de Archivo (básico, difícil de estilizar completamente) */
+.entrada-archivo {
+    padding: 8px;
+    border: 1px solid #ccc;
     border-radius: 4px;
-}
-
-
-.alerta {
-    padding: 1rem 1.5rem;
-    margin-bottom: 1.5rem;
-    border-radius: 5px;
-    border: 1px solid transparent;
+    display: block;
+    width: 100%;
     font-size: 0.95em;
 }
-.alerta-error {
-    background-color: #fdeded;
-    color: #a94442;
-    border-color: #ebccd1;
-}
-.alerta-aviso {
-     background-color: #fef9e7;
-     color: #8a6d3b;
-     border-color: #faebcc;
-}
-
-/* --- Estilos Específicos para Componentes --- */
 
 /* Previsualización de Fotos */
-.entrada-archivo {
+.previs-fotos {
+    margin-top: 15px;
     border: 1px dashed #ccc;
-    padding: 1rem;
+    padding: 15px;
+    min-height: 60px;
     background-color: #f9f9f9;
-    text-align: center;
-    cursor: pointer;
-    display: block;
-    border-radius: 5px;
-}
-.entrada-archivo:hover {
-    background-color: #f0f0f0;
-}
-
-#previsualizacion-fotos {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    margin-top: 1rem;
-    padding: 1rem;
-    border: 1px solid #e0e0e0;
-    background-color: #fdfdfd;
-    min-height: 120px;
-    border-radius: 5px;
-    align-items: flex-start; /* Alinear items al inicio */
-}
-
-.previs-item {
-    width: 130px; /* Ancho de cada previsualización */
-    border: 1px solid #eee;
-    padding: 0.6rem;
-    text-align: center;
-    background-color: #fff;
     border-radius: 4px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.previs-fotos p { margin: 0 0 10px 0; font-weight: bold; color: #555; }
+.previs-fotos div { /* Estilo para cada foto previsualizada (necesita JS) */
+    margin-bottom: 10px;
     display: flex;
-    flex-direction: column;
     align-items: center;
-}
-
-.previs-img {
-    width: 100%;
-    height: 90px; /* Altura fija */
-    object-fit: cover; /* Recortar para ajustar */
-    display: block;
-    margin-bottom: 0.6rem;
+    gap: 10px;
+    padding: 8px;
+    background-color: #fff;
+    border: 1px solid #eee;
     border-radius: 3px;
-    background-color: #f0f0f0; /* Fondo mientras carga */
 }
-
-.previs-acciones {
-    font-size: 0.9em;
-    margin-top: auto; /* Empujar acciones hacia abajo */
-    padding-top: 0.5rem;
-    width: 100%;
+.previs-fotos img { /* Si muestras miniaturas */
+    max-width: 50px;
+    height: auto;
+    border: 1px solid #ddd;
 }
-
-.opcion-principal {
-     display: block;
-     margin-bottom: 0.4rem;
-     font-size: 0.9em;
-     text-align: left;
-}
-.opcion-principal input {
-    margin-right: 0.4rem;
-    vertical-align: middle;
-}
-.previs-acciones .boton-quitar {
-     display: block; /* Botón de quitar ocupa todo el ancho */
-     width: 100%;
-     margin-left: 0; /* Resetear margen */
-     margin-top: 0.3rem;
-}
-
-
-.sin-fotos {
-    width: 100%;
-    text-align: center;
-    color: #888;
-    font-style: italic;
-    padding: 2rem 0;
-}
-
-#error_fotos_js { /* Para el error de fotos JS */
-    color: #e74c3c;
-    font-size: 0.9em;
-    margin-top: 0.5rem;
-    display: block;
-}
+.previs-fotos label { font-weight: normal; display: flex; align-items: center; gap: 5px; cursor: pointer; }
 
 /* Horario Semanal */
 .horario-semanal {
-    border: 1px solid #eee;
-    padding: 0.5rem 1rem 1rem 1rem;
-    border-radius: 5px;
-    background-color: #fdfdfd;
+    border: 1px solid #e0e0e0;
+    padding: 10px 15px 15px 15px;
+    border-radius: 4px;
+    background-color: #fafafa;
 }
 .dia-horario {
     display: flex;
+    flex-wrap: wrap; /* Para móviles */
     align-items: center;
-    gap: 0.8rem; /* Espacio reducido */
-    padding: 0.8rem 0;
-    border-bottom: 1px solid #f0f0f0;
-    flex-wrap: wrap; /* Envolver en pantallas pequeñas */
+    gap: 10px 15px; /* Espacio vertical y horizontal */
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
 }
 .dia-horario:last-child {
     border-bottom: none;
+    padding-bottom: 5px; /* Menos padding al final */
 }
 .etiqueta-dia {
-    font-weight: 600;
-    min-width: 90px; /* Alineación de los días */
+    font-weight: bold;
+    min-width: 90px; /* Alinear nombres de días */
     flex-shrink: 0;
-    color: #444;
 }
-.entrada-tiempo {
-    padding: 0.4rem 0.6rem;
-    width: auto; /* No ocupar todo el ancho */
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    font-size: 0.95em;
+.dia-horario input[type="checkbox"] {
+    margin-right: 5px;
 }
-.dia-horario label:not(.etiqueta-dia) {
+.dia-horario label:not(.etiqueta-dia) { /* Etiquetas "De:", "A:", "Disponible" */
+    font-weight: normal;
     font-size: 0.9em;
     color: #666;
 }
-.dia-horario input[type="checkbox"] {
-    margin-right: 0.3rem; /* Menos espacio */
+.entrada-tiempo {
+    width: auto; /* Ancho automático */
+    padding: 6px 8px;
+    font-size: 0.95em;
+}
+/* Hacer que los time inputs se agrupen */
+.dia-horario > label[for*="inicio"],
+.dia-horario > input[name*="inicio"] {
+    margin-left: auto; /* Empujar el horario a la derecha si hay espacio */
 }
 
 
-/* Lista de Idiomas */
-#lista-idiomas {
-     border: 1px solid #eee;
-     padding: 1rem;
-     border-radius: 5px;
-     background-color: #fdfdfd;
-     margin-bottom: 0.8rem; /* Espacio antes del botón "Añadir" */
+/* Lista Dinámica de Idiomas */
+.lista-items-dinamica {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 15px;
 }
 .item-idioma {
     display: flex;
     align-items: center;
-    gap: 0.8rem;
-    margin-bottom: 0.8rem;
-    flex-wrap: wrap; /* Envolver en pantallas pequeñas */
+    gap: 10px;
+    padding: 10px;
+    background-color: #f8f8f8;
+    border: 1px solid #eee;
+    border-radius: 4px;
 }
-.item-idioma:last-child {
-    margin-bottom: 0;
-}
-.selector-corto {
-     padding: 0.6rem 0.8rem; /* Padding ligeramente menor */
-     width: auto;
-     flex-grow: 1; /* Ocupar espacio disponible */
-     min-width: 120px; /* Ancho mínimo */
-     font-size: 0.95em;
+.item-idioma .selector-corto {
+    font-size: 0.95em;
 }
 
-
-/* --- Responsividad --- */
+/* --- Responsividad Básica (Ejemplo) --- */
 @media (max-width: 768px) {
     .form-anuncio {
-        padding: 1rem 1.5rem;
+        padding: 20px;
+        margin: 15px;
+        max-width: none; /* Ocupar más ancho */
     }
-    .etapa-titulo {
-        font-size: 1.4em;
-    }
-    .campo-fila {
-        flex-direction: column; /* Apilar campos en fila */
-        gap: 0; /* Sin espacio entre ellos cuando están apilados */
-    }
-    .campo-fila > .campo {
-        margin-bottom: 1.5rem; /* Restaurar margen inferior */
-    }
-    .campo-fila > .campo-check {
-        padding-top: 0.5rem; /* Reducir padding cuando se apila */
-        align-self: flex-start; /* Alinear a la izquierda */
-    }
-    .dia-horario {
-         gap: 0.6rem; /* Reducir espacio */
-    }
-    .etiqueta-dia { min-width: 70px; } /* Menos ancho mínimo */
-}
-
-@media (max-width: 480px) {
-    .form-anuncio {
-        padding: 1rem;
+    .titulo-form {
+        font-size: 1.6em;
     }
     .etapa-titulo {
         font-size: 1.3em;
     }
-    .boton {
-        width: 100%; /* Botones a ancho completo */
-        padding: 0.8rem 1rem;
-        font-size: 0.95em;
+    .campo-fila {
+        flex-direction: column; /* Apilar campos en fila */
+        gap: 0; /* Quitar gap horizontal */
+        align-items: stretch; /* Ocupar todo el ancho */
     }
-    .acciones-etapa {
-        flex-direction: column-reverse; /* Apilar botones, primario arriba */
-        gap: 0.8rem;
+    .campo-fila > .campo {
+        margin-bottom: 20px; /* Restaurar margen inferior */
+        min-width: 0; /* Reset min-width */
     }
-     .acciones-etapa > .boton:only-child {
-         margin-left: 0; /* Resetear margen cuando hay uno solo */
+     .campo-fila > .campo-check {
+        padding-bottom: 0; /* Reset padding */
+        margin-bottom: 20px;
      }
-     .item-idioma { gap: 0.5rem; }
-     .selector-corto { width: 100%; margin-bottom: 0.5rem; } /* Selectores de idioma a ancho completo */
-     .item-idioma .boton-quitar { width: auto; margin-left: auto; } /* Botón quitar pequeño a la derecha */
-
-     .previs-item { width: calc(50% - 0.5rem); } /* Dos previsualizaciones por fila */
+    .acciones-etapa {
+        flex-direction: column; /* Apilar botones */
+        align-items: stretch; /* Botones a ancho completo */
+    }
+    .boton {
+        width: 100%; /* Botones ocupan todo el ancho */
+    }
+    .boton-quitar {
+        margin-left: 10px; /* Ajustar botón quitar en móvil */
+        width: auto;
+    }
+    .dia-horario {
+        gap: 8px 10px; /* Reducir gaps */
+    }
+    .dia-horario > label[for*="inicio"],
+    .dia-horario > input[name*="inicio"] {
+        margin-left: 0; /* Quitar margen auto en móvil */
+    }
 }
+
+/* --- Fin CSS Formulario --- */
