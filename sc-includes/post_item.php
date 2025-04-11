@@ -167,10 +167,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $datos_ad['seller_type'] = isset($_POST['seller_type']) ? $_POST['seller_type'] : 0; // Default a 0 si no existe
             $datos_ad['notifications'] = isset($_POST['notifications']) && $_POST['notifications'] == '1' ? 1 : 0; // Asegurar que sea 0 o 1
             $datos_ad['dis'] = isset($_POST['dis']) ? $_POST['dis'] : null;
-            $datos_ad['hor_start'] = isset($_POST['horario-inicio']) ? $_POST['horario-inicio'] : null;
-            $datos_ad['hor_end'] = isset($_POST['horario-final']) ? $_POST['horario-final'] : null;
-            $datos_ad['lang1'] = isset($_POST['lang-1']) && !empty($_POST['lang-1']) ? $_POST['lang-1'] : null; // Null si está vacío
-            $datos_ad['lang2'] = isset($_POST['lang-2']) && !empty($_POST['lang-2']) ? $_POST['lang-2'] : null; // Null si está vacío
+            $datos_ad['hor_start'] = isset($_POST['horario-inicio']) && !empty($_POST['horario-inicio']) ? $_POST['horario-inicio'] : '';
+            $datos_ad['hor_end'] = isset($_POST['horario-final']) && !empty($_POST['horario-final']) ? $_POST['horario-final'] : ''; 
+            $datos_ad['lang1'] = isset($_POST['lang-1']) && !empty($_POST['lang-1']) ? (int)$_POST['lang-1'] : 0; 
+            $datos_ad['lang2'] = isset($_POST['lang-2']) && !empty($_POST['lang-2']) ? (int)$_POST['lang-2'] : 0;
             $datos_ad['out'] = isset($_POST['out']) ? $_POST['out'] : 0; // Default a 0 si no existe
             $datos_ad['ID_order'] = isset($_POST['order']) ? $_POST['order'] : 0; // Default a 0 si no existe
             $datos_ad['payment'] = "[]"; // Asignado
