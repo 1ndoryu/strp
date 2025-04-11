@@ -126,7 +126,7 @@ include("sc-includes/php/install/install.inc.php"); ?>
 		?>
 			<div class="part">
 				<div class="info_valid">
-					ScriptClasificados ya está instalado en tu web!
+					ScriptClasificados ya está instalado en tu web!!!
 				</div>
 				<p>Ahora puedes acceder al panel de administración con los datos de acceso que has indicado o ir directamente a tu web!</p>
 				<p>Para entrar al panel de administrador haz clíck aquí: <a href="sc-admin/">Panel de Administrador</a></p>

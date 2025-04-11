@@ -4,22 +4,22 @@
 <div class="row">
 	<div class="col-md-12 mt-2 mb-5 pb-2">
 		<div class="col_single categories_list">
-				<? // Categorías fercode: ord ASC
-				$listadoCat=selectSQL("sc_category",$a=array('parent_cat'=>"0<"),"ord ASC");
-				for($i=0;$i<count($listadoCat);$i++){
-					
-				?>
-				<a href="<?=$listadoCat[$i]['name_seo'];?>/" title="<?=$language['main.ads_of']?><?=$listadoCat[$i]['name'];?>">
+			<? // Categorías fercode: ord ASC
+			$listadoCat = selectSQL("sc_category", $a = array('parent_cat' => "0<"), "ord ASC");
+			for ($i = 0; $i < count($listadoCat); $i++) {
+
+			?>
+				<a href="<?= $listadoCat[$i]['name_seo']; ?>/" title="<?= $language['main.ads_of'] ?><?= $listadoCat[$i]['name']; ?>">
 					<div class="categories">
 						<div class="categorie-wraper">
-							<img src="<?=IMG_CATEGORY . $listadoCat[$i]['image'];?>?v=2" alt="">
-							<h2><?=$listadoCat[$i]['title_html'];?></h2>
+							<img src="<?= IMG_CATEGORY . $listadoCat[$i]['image']; ?>?v=2" alt="">
+							<h2><?= $listadoCat[$i]['title_html']; ?></h2>
 						</div>
 					</div>
 				</a>
-				<? $otros_html=''; 
-				}
-				?>
+			<? $otros_html = '';
+			}
+			?>
 		</div>
 	</div>
 	<div class="col-md-12">
@@ -39,10 +39,10 @@
 				<b>Este sitio web nació como un punto de encuentro entre profesionales y clientes en España.</b>
 			</p>
 			<p>
-				Publica tus anuncios gratis para ofrecer sus productos o servicios haz <a href="<?=getConfParam("SITE_URL")?>faq.php">clic aquí </a>para más información.
+				Publica tus anuncios gratis para ofrecer sus productos o servicios haz <a href="<?= getConfParam("SITE_URL") ?>faq.php">clic aquí </a>para más información.
 			</p>
 			<h5 class="title-links">Los más buscados</h5>
-      		<hr>
+			<hr>
 			<div class="main-links">
 				<a href="/masajistas-eroticos-en-madrid/">masajes eróticos <span>Madrid</span></a>
 				<a href="/masajistas-eroticos-en-barcelona/">masajes eróticos <span>Barcelona</span></a>
@@ -78,19 +78,19 @@
 
 
 
-<? 
+<?
 // $items = selectSQL("sc_ad", $w = array('price'=>'7777<'));
-		
+
 // 		console_log($items);
 loadBlock('adv-msg');
 ?>
 
 
 
-<?php if(isset($_GET['login'])): ?>
-  <script>
-	$(document).ready(function(){
-		popupLogin();
-	});
-  </script>
+<?php if (isset($_GET['login'])): ?>
+	<script>
+		$(document).ready(function() {
+			popupLogin();
+		});
+	</script>
 <?php endif ?>

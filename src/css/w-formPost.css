@@ -1,0 +1,546 @@
+/* ======================================== */
+/*          VARIABLES GLOBALES             */
+/* ======================================== */
+:root {
+    --color-primario: #007bff; /* Azul ejemplo */
+    --color-secundario: #6c757d; /* Gris ejemplo */
+    --color-exito: #28a745;    /* Verde ejemplo */
+    --color-error: #dc3545;     /* Rojo ejemplo */
+    --color-info: #17a2b8;      /* Azul claro ejemplo */
+    --color-fondo: #f8f9fa;
+    --color-borde: #dee2e6;
+    --color-texto: #333;
+    --color-texto-claro: #fff;
+    --color-texto-secundario: #555;
+    --radio-borde: 4px;
+    --espaciado-base: 1rem; /* 16px por defecto */
+    --espaciado-pequeno: calc(var(--espaciado-base) * 0.5);
+    --espaciado-mediano: calc(var(--espaciado-base) * 1.5);
+    --espaciado-grande: calc(var(--espaciado-base) * 2);
+}
+
+/* ======================================== */
+/*          ESTILOS GENERALES              */
+/* ======================================== */
+body {
+    font-family: sans-serif;
+    line-height: 1.6;
+    color: var(--color-texto);
+    background-color: var(--color-fondo);
+    margin: 0;
+    padding: 0;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+a {
+    color: var(--color-primario);
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
+
+/* ======================================== */
+/*      CONTENEDOR Y FORMULARIO BASE       */
+/* ======================================== */
+.contenedor-formulario {
+    max-width: 800px; /* Ajusta según necesites */
+    margin: var(--espaciado-mediano) auto;
+    padding: var(--espaciado-mediano);
+    background-color: #fff;
+    border-radius: var(--radio-borde);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.formulario-multi-etapa {
+    /* Estilos generales para el form si son necesarios */
+}
+
+.titulo-principal {
+    text-align: center;
+    color: var(--color-primario);
+    margin-bottom: var(--espaciado-mediano);
+}
+
+/* ======================================== */
+/*                ETAPAS                   */
+/* ======================================== */
+.etapa {
+    display: none; /* Ocultas por defecto */
+    padding: var(--espaciado-base);
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio-borde);
+    margin-bottom: var(--espaciado-mediano);
+    background-color: #fff; /* Fondo blanco para cada etapa */
+}
+
+.etapa.activa {
+    display: block; /* Muestra la etapa activa */
+}
+
+/* Clase de utilidad para ocultar elementos con JS */
+.oculto {
+    display: none !important;
+}
+
+.titulo-etapa {
+    color: var(--color-secundario);
+    margin-top: 0;
+    margin-bottom: var(--espaciado-base);
+    border-bottom: 1px solid var(--color-borde);
+    padding-bottom: var(--espaciado-pequeno);
+}
+
+/* ======================================== */
+/*      GRUPOS DE CAMPOS Y ETIQUETAS       */
+/* ======================================== */
+.frm-seccion {
+    border: 1px solid var(--color-borde);
+    padding: var(--espaciado-base);
+    margin-bottom: var(--espaciado-mediano);
+    border-radius: var(--radio-borde);
+}
+
+.frm-seccion legend {
+    font-weight: bold;
+    color: var(--color-primario);
+    padding: 0 var(--espaciado-pequeno);
+}
+
+.frm-grupo {
+    margin-bottom: var(--espaciado-base);
+}
+
+.frm-etiqueta {
+    display: block;
+    margin-bottom: var(--espaciado-pequeno);
+    font-weight: bold;
+    color: var(--color-texto-secundario);
+}
+
+/* ======================================== */
+/*      CAMPOS DE FORMULARIO (Inputs)      */
+/* ======================================== */
+.frm-campo,
+.frm-select,
+.frm-textarea {
+    width: 100%;
+    padding: var(--espaciado-pequeno) var(--espaciado-base);
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio-borde);
+    font-size: 1rem;
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.frm-campo:focus,
+.frm-select:focus,
+.frm-textarea:focus {
+    outline: none;
+    border-color: var(--color-primario);
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.frm-textarea {
+    min-height: 120px;
+    resize: vertical; /* Permite redimensionar verticalmente */
+}
+
+.frm-select.corto {
+    width: auto; /* Para selectores de hora */
+    min-width: 80px;
+}
+
+/* ======================================== */
+/*      CHECKBOXES Y RADIOS PERSONALIZADOS */
+/* ======================================== */
+.lista-opciones {
+    display: grid;
+    gap: var(--espaciado-base);
+}
+/* Ajustar columnas para diferentes listas si es necesario */
+.grupo-radios-plan {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* 3 columnas en desktop */
+}
+.grupo-checkboxes-extra {
+     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* 2 o 3 columnas */
+}
+
+.opcion-radio,
+.opcion-checkbox {
+    display: block; /* Hace que la etiqueta ocupe todo el ancho del grid item */
+    border: 2px solid var(--color-borde);
+    padding: var(--espaciado-base);
+    border-radius: var(--radio-borde);
+    cursor: pointer;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.opcion-radio:hover,
+.opcion-checkbox:hover {
+    border-color: var(--color-primario);
+    background-color: #f0f8ff; /* Un ligero fondo al pasar el ratón */
+}
+
+/* Estilo cuando el input dentro está seleccionado */
+.opcion-radio input:checked + .opcion-contenido,
+.opcion-checkbox input:checked + .opcion-contenido {
+   /* Puedes añadir algún indicador visual si quieres */
+}
+.opcion-radio input:checked,
+.opcion-checkbox input:checked {
+   /* Estilo para el borde de la opción seleccionada */
+    /* Necesitas seleccionar el padre, lo hacemos con JS o ajustando estructura. */
+    /* Alternativa: Estilar la etiqueta contenedora cuando el input está checked */
+}
+
+.opcion-radio input[type="radio"],
+.opcion-checkbox input[type="checkbox"] {
+     /* Ocultar el input por defecto si quieres un look totalmente custom */
+     /* appearance: none; margin-right: 10px; */
+     /* Por ahora, lo dejamos visible por simplicidad */
+     margin-right: var(--espaciado-pequeno);
+     vertical-align: middle;
+}
+
+
+.opcion-contenido strong {
+    display: block;
+    margin-bottom: var(--espaciado-pequeno);
+    color: var(--color-texto);
+}
+
+.opcion-contenido span {
+    display: block;
+    font-size: 0.9em;
+    color: var(--color-texto-secundario);
+}
+
+.precio-plan {
+    font-weight: bold;
+    color: var(--color-exito);
+    margin-top: var(--espaciado-pequeno);
+    font-size: 1.1em !important;
+}
+
+/* Checkboxes normales (no en lista de opciones) */
+.frm-checkbox {
+    display: inline-flex; /* O block si prefieres uno por línea */
+    align-items: center;
+    margin-right: var(--espaciado-base); /* Espacio entre checkboxes en línea */
+    margin-bottom: var(--espaciado-pequeno);
+    cursor: pointer;
+}
+.frm-checkbox input[type="checkbox"] {
+    margin-right: var(--espaciado-pequeno);
+}
+
+.grupo-checkboxes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--espaciado-pequeno) var(--espaciado-base);
+}
+
+
+/* ======================================== */
+/*         COMPONENTES ESPECÍFICOS         */
+/* ======================================== */
+
+/* --- Ayuda y Contadores --- */
+.ayuda-texto {
+    font-size: 0.85em;
+    color: var(--color-texto-secundario);
+    margin-top: var(--espaciado-pequeno);
+    margin-bottom: var(--espaciado-pequeno);
+}
+.contador-caracteres {
+    font-size: 0.8em;
+    color: var(--color-texto-secundario);
+    text-align: right;
+    margin-top: var(--espaciado-pequeno);
+}
+
+/* --- Subida de Fotos --- */
+.subida-fotos-contenedor {
+    border: 2px dashed var(--color-borde);
+    padding: var(--espaciado-mediano);
+    text-align: center;
+    border-radius: var(--radio-borde);
+    margin-bottom: var(--espaciado-base);
+}
+.boton-subir {
+    cursor: pointer;
+    color: var(--color-primario);
+    font-weight: bold;
+    padding: var(--espaciado-base);
+}
+.boton-subir:hover {
+    background-color: #f0f8ff;
+}
+.lista-fotos {
+    margin-top: var(--espaciado-base);
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: var(--espaciado-base);
+}
+/* Estilo para las previsualizaciones (necesitarás añadir elementos img/div aquí con JS) */
+.lista-fotos .foto-preview {
+    position: relative;
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio-borde);
+    overflow: hidden;
+    cursor: pointer; /* Para seleccionar principal */
+    aspect-ratio: 1 / 1; /* Mantiene cuadrada la previsualización */
+}
+.lista-fotos .foto-preview img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Escala y recorta la imagen */
+}
+.lista-fotos .foto-preview.principal {
+    border: 3px solid var(--color-primario);
+}
+.lista-fotos .foto-preview .eliminar-foto { /* Botón para eliminar (opcional) */
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: rgba(220, 53, 69, 0.8);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    line-height: 20px;
+    text-align: center;
+    cursor: pointer;
+}
+
+
+/* --- Horario Semanal --- */
+.horario-semanal {
+    /* Contenedor general */
+}
+.dia-horario {
+    display: flex;
+    align-items: center;
+    gap: var(--espaciado-base);
+    padding: var(--espaciado-pequeno) 0;
+    border-bottom: 1px dotted var(--color-borde);
+}
+.dia-horario:last-child {
+    border-bottom: none;
+}
+.dia-horario .check-dia {
+    flex-basis: 150px; /* Ancho fijo para el nombre del día */
+    flex-shrink: 0;
+    margin: 0; /* Resetear margen de frm-checkbox */
+}
+.horas-dia {
+    display: flex;
+    align-items: center;
+    gap: var(--espaciado-pequeno);
+    flex-grow: 1;
+}
+.horas-dia label {
+    font-weight: normal; /* Sobrescribir frm-etiqueta si hereda */
+    margin-bottom: 0;
+    color: var(--color-texto-secundario);
+}
+
+/* --- Grupo Teléfono --- */
+.grupo-telefono {
+    display: flex;
+    align-items: center;
+    gap: var(--espaciado-base);
+    flex-wrap: wrap; /* Para pantallas pequeñas */
+}
+.grupo-telefono .frm-campo {
+    flex-grow: 1;
+    min-width: 180px; /* Evita que sea demasiado pequeño */
+}
+.grupo-telefono .check-whatsapp {
+    margin: 0; /* Resetear margen de frm-checkbox */
+    white-space: nowrap; /* Evita que se parta el texto */
+}
+
+/* --- Grupo Idiomas --- */
+.grupo-idiomas {
+    display: grid;
+    gap: var(--espaciado-base);
+}
+.par-idioma {
+    display: flex;
+    gap: var(--espaciado-base);
+}
+.par-idioma .frm-select {
+    flex: 1; /* Ocupan espacio equitativo */
+}
+
+/* ======================================== */
+/*             NAVEGACIÓN ETAPAS           */
+/* ======================================== */
+.navegacion-etapa {
+    display: flex;
+    justify-content: space-between; /* Separa botones anterior/siguiente */
+    margin-top: var(--espaciado-mediano);
+    padding-top: var(--espaciado-base);
+    border-top: 1px solid var(--color-borde);
+}
+
+.frm-boton {
+    padding: var(--espaciado-pequeno) var(--espaciado-mediano);
+    border: none;
+    border-radius: var(--radio-borde);
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    color: var(--color-texto-claro);
+}
+
+.frm-boton:hover {
+    opacity: 0.9;
+}
+.frm-boton:active {
+    transform: scale(0.98);
+}
+
+.btn-siguiente,
+.btn-publicar {
+    background-color: var(--color-primario);
+}
+
+.btn-anterior {
+    background-color: var(--color-secundario);
+}
+
+.btn-pago {
+    background-color: var(--color-exito); /* Verde para pago */
+}
+
+/* ======================================== */
+/*           MENSAJES DE ERROR             */
+/* ======================================== */
+.error-msg {
+    color: var(--color-error);
+    font-size: 0.85em;
+    margin-top: var(--espaciado-pequeno);
+    /* display: none; */ /* Se gestiona con la clase .oculto desde JS */
+}
+
+/* Estilo opcional para campos con error (requiere JS para añadir la clase) */
+/*
+.frm-campo.error,
+.frm-select.error,
+.frm-textarea.error {
+    border-color: var(--color-error);
+}
+*/
+
+/* ======================================== */
+/*                ALERTAS PHP              */
+/* ======================================== */
+.alerta {
+    padding: var(--espaciado-base);
+    margin-bottom: var(--espaciado-mediano);
+    border: 1px solid transparent;
+    border-radius: var(--radio-borde);
+}
+.alerta.error {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+}
+.alerta.info {
+    color: #0c5460;
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
+}
+
+/* ======================================== */
+/*                OTROS ESTILOS            */
+/* ======================================== */
+.ayuda-post {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 var(--espaciado-base) 0;
+    text-align: center;
+}
+.ayuda-post-item {
+    display: inline-block;
+    margin: 0 var(--espaciado-pequeno);
+    font-size: 0.9em;
+}
+.terminos-finales {
+    margin-top: var(--espaciado-grande);
+}
+.texto-fijo {
+    padding: var(--espaciado-pequeno) 0;
+    display: inline-block;
+    color: var(--color-texto-secundario);
+}
+
+
+/* ======================================== */
+/*             RESPONSIVIDAD               */
+/* ======================================== */
+@media (max-width: 768px) {
+    .contenedor-formulario {
+        margin: var(--espaciado-base) auto;
+        padding: var(--espaciado-base);
+    }
+
+    .grupo-radios-plan,
+    .grupo-checkboxes-extra {
+        grid-template-columns: 1fr; /* Una columna en móvil */
+    }
+
+    .dia-horario {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--espaciado-pequeno);
+    }
+    .dia-horario .check-dia {
+        flex-basis: auto;
+        margin-bottom: var(--espaciado-pequeno);
+    }
+    .horas-dia {
+        flex-wrap: wrap; /* Permitir que los selects se envuelvan */
+        width: 100%;
+    }
+    .horas-dia .frm-select.corto {
+        min-width: 100px; /* Ajustar ancho mínimo */
+    }
+
+
+    .par-idioma {
+        flex-direction: column;
+    }
+
+    .navegacion-etapa {
+        flex-direction: column-reverse; /* Poner siguiente arriba */
+        gap: var(--espaciado-base);
+    }
+    .navegacion-etapa .frm-boton {
+        width: 100%; /* Botones ocupan todo el ancho */
+    }
+
+}
+
+@media (max-width: 480px) {
+    .grupo-telefono {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .grupo-telefono .frm-campo {
+        width: 100%;
+    }
+    .lista-fotos {
+       grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+       gap: var(--espaciado-pequeno);
+    }
+}
