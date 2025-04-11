@@ -22,6 +22,78 @@ if (getConfParam('POST_ITEM_REG') == 1) {
     check_login(); // Asegúrate que esta función no haga un exit/redirect inesperado si no está logueado
 }
 
+/*
+Estructura real de la base de datos de anuncios
+
+1	ID_ad Primaria	int			No	Ninguna		AUTO_INCREMENT	
+	2	ID_user	int			No	Ninguna			
+	3	ad_type	int			No	Ninguna	1. Ofertas, 2. Demandas		
+	4	seller_type	int			No	Ninguna	1. Particular, 2. Profesional		
+	5	title	varchar(50)	utf8mb3_general_ci		No	Ninguna			
+	6	title_seo	varchar(60)	utf8mb3_general_ci		No	Ninguna			
+	7	name	varchar(20)	utf8mb3_general_ci		Sí	NULL			
+	8	phone	char(30)	utf8mb3_general_ci		No	Ninguna			
+	9	whatsapp	int			Sí	0			
+	10	phone1	char(30)	utf8mb3_general_ci		No	Ninguna			
+	11	whatsapp1	int			No	0			
+	12	texto	text	utf8mb3_general_ci		No	Ninguna			
+	13	parent_cat	int			No	Ninguna			
+	14	ID_cat	int			No	Ninguna			
+	15	ID_region	int			No	Ninguna			
+	16	date_ad	int			No	Ninguna			
+	17	price	double			No	Ninguna			
+	18	visit	int			No	0			
+	19	contact_times	int			No	0			
+	20	area	varchar(15)	utf8mb3_general_ci		Sí	NULL			
+	21	room	varchar(10)	utf8mb3_general_ci		Sí	NULL			
+	22	broom	varchar(10)	utf8mb3_general_ci		Sí	NULL			
+	23	ID_city	int			Sí	NULL			
+	24	location	varchar(250)	utf8mb3_general_ci		Sí	NULL			
+	25	address	varchar(250)	utf8mb3_general_ci		Sí	NULL			
+	26	mileage	varchar(10)	utf8mb3_general_ci		Sí	NULL			
+	27	fuel	varchar(1)	utf8mb3_general_ci		Sí	NULL			
+	28	date_car	int			Sí	NULL			
+	29	premium1	int			No	0			
+	30	date_premium1	int			Sí	NULL			
+	31	premium2	int			Sí	NULL			
+	32	date_premium2	int			Sí	NULL			
+	33	premium2_frecuency	int			Sí	NULL			
+	34	premium2_night	tinyint(1)			Sí	NULL			
+	35	review	int			No	0			
+	36	active	int			No	1			
+	37	notifications	tinyint(1)			No	1			
+	38	trash	int			No	0			
+	39	date_trash	int			Sí	NULL			
+	40	motivo	int			Sí	NULL			
+	41	renovate	int			No	0			
+	42	ID_banner	int			No	0			
+	43	delay	smallint			No	0			
+	44	changelog	longtext	utf8mb4_bin		Sí	NULL			
+	45	repeat	int			No	0			
+	46	trash_comment	text	utf8mb4_general_ci		Sí	NULL			
+	47	premium3	tinyint(1)			No	0			
+	48	date_premium3	int			Sí	NULL			
+	49	premium3_limit	int			Sí	NULL			
+	50	ref	int			No	0			
+	51	hor_start	varchar(5)	utf8mb3_general_ci		No	Ninguna			
+	52	hor_end	varchar(5)	utf8mb3_general_ci		No	Ninguna			
+	53	out	tinyint(1)			No	Ninguna			
+	54	lang1	smallint			No	Ninguna			
+	55	lang2	smallint			No	Ninguna			
+	56	payment	text	utf8mb4_general_ci		No	Ninguna			
+	57	dis	tinyint(1)			No	Ninguna			
+	58	date_edit	int			No	0			
+	59	discard	tinyint(1)			No	0			
+	60	renovable	int			No	0			
+	61	renovable_limit	int			No	0			
+	62	ID_order	int			No	0			
+	63	url	varchar(150)	utf8mb3_general_ci		No		
+
+    y da este error 
+
+    mysqli_sql_exception Object ( [message:protected] => Column 'phone1' cannot be null [string:Exception:private] => [code:protected] => 1048 [file:protected] => /var/www/vhosts/41121521.servicio-online.net/httpdocs/sc-includes/php/mysql/sql.inc.php [line:protected] => 26 [trace:Exception:private] => Array ( [0] => Array ( [file] => /var/www/vhosts/41121521.servicio-online.net/httpdocs/sc-includes/php/mysql/sql.inc.php [line] => 26 [function] => mysqli_query [args] => Array ( [0] => mysqli Object ( [affected_rows] => -1 [client_info] => mysqlnd 8.3.17 [client_version] => 80317 [connect_errno] => 0 [connect_error] => [errno] => 1048 [error] => Column 'phone1' cannot be null [error_list] => Array ( [0] => Array ( [errno] => 1048 [sqlstate] => 23000 [error] => Column 'phone1' cannot be null ) ) [field_count] => 1 [host_info] => PMYSQL187.dns-servicio.com:3306 via TCP/IP [info] => [insert_id] => 0 [server_info] => 8.0.41 [server_version] => 80041 [sqlstate] => 23000 [protocol_version] => 10 [thread_id] => 149169 [warning_count] => 0 ) [1] => INSERT INTO `sc_ad` (`ID_cat`,`parent_cat`,`ID_region`,`location`,`ad_type`,`title`,`title_seo`,`texto`,`price`,`mileage`,`fuel`,`date_car`,`area`,`room`,`broom`,`address`,`name`,`phone`,`whatsapp`,`phone1`,`whatsapp1`,`seller_type`,`notifications`,`dis`,`hor_start`,`hor_end`,`lang1`,`lang2`,`out`,`ID_order`,`payment`,`ID_user`,`date_ad`,`review`) VALUES('328','105','4','test','1','test5test5','test5test5','test4test4 test4test4 test4test4','0',NULL,NULL,NULL,NULL,NULL,NULL,'test','Test5','0418545687','0',NULL,'0','1','1','1','00:00','23:30',NULL,NULL,'0','0','[]','32','1744375782','1') ) ) [1] => Array ( [file] => /var/www/vhosts/41121521.servicio-online.net/httpdocs/sc-includes/post_item.php [line] => 317 [function] => insertSQL [args] => Array ( [0] => sc_ad [1] => Array ( [ID_cat] => 328 [parent_cat] => 105 [ID_region] => 4 [location] => test [ad_type] => 1 [title] => test5test5 [title_seo] => test5test5 [texto] => test4test4 test4test4 test4test4 [price] => 0 [mileage] => [fuel] => [date_car] => [area] => [room] => [broom] => [address] => test [name] => Test5 [phone] => 0418545687 [whatsapp] => 0 [phone1] => [whatsapp1] => 0 [seller_type] => 1 [notifications] => 1 [dis] => 1 [hor_start] => 00:00 [hor_end] => 23:30 [lang1] => [lang2] => [out] => 0 [ID_order] => 0 [payment] => [] [ID_user] => 32 [date_ad] => 1744375782 [review] => 1 ) ) ) [2] => Array ( [file] => /var/www/vhosts/41121521.servicio-online.net/httpdocs/sc-includes/html/content.php [line] => 237 [args] => Array ( [0] => /var/www/vhosts/41121521.servicio-online.net/httpdocs/sc-includes/post_item.php ) [function] => include ) [3] => Array ( [file] => /var/www/vhosts/41121521.servicio-online.net/httpdocs/index.php [line] => 15 [args] => Array ( [0] => /var/www/vhosts/41121521.servicio-online.net/httpdocs/sc-includes/html/content.php ) [function] => include ) ) [previous:Exception:private] => [sqlstate:protected] => 23000 )
+*/
+
 // --- Inicio Procesamiento POST ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
@@ -90,7 +162,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $datos_ad['name'] = isset($_POST['name']) ? formatName($_POST['name']) : '';
             $datos_ad['phone'] = isset($_POST['phone']) ? $_POST['phone'] : '';
             $datos_ad['whatsapp'] = isset($_POST['whatsapp']) && $_POST['whatsapp'] == '1' ? 1 : 0; // Asegurar que sea 0 o 1
-            $datos_ad['phone1'] = null;
+            $datos_ad['phone1'] = ''; 
             $datos_ad['whatsapp1'] = 0;
             $datos_ad['seller_type'] = isset($_POST['seller_type']) ? $_POST['seller_type'] : 0; // Default a 0 si no existe
             $datos_ad['notifications'] = isset($_POST['notifications']) && $_POST['notifications'] == '1' ? 1 : 0; // Asegurar que sea 0 o 1
