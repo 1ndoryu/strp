@@ -1,4 +1,5 @@
 <?php
+# sc-includes/upload_temp_image.php
 # WANDORIUS 
 # 10/04/25
 

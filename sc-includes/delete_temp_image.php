@@ -1,4 +1,5 @@
 <?php
+# sc-includes/delete_temp_image.php
 // TODO: Incluir aquí la inicialización básica del CMS si es necesaria para usar funciones
 // como deleteSQL, selectSQL, user::getSession(), etc.
 // session_start(); // Si necesitas verificar la sesión del usuario
