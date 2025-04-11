@@ -46,8 +46,18 @@
     const hiddenLang1 = form.querySelector('#hidden_lang_1');
     const hiddenLang2 = form.querySelector('#hidden_lang_2');
     const hiddenPhotoInputsContainer = form.querySelector('#hidden-photo-inputs');
+    // ELIMINADO: Ya no necesitamos referenciar el input de recaptcha response aquí
+    // const recaptchaResponseInput = form.querySelector('#g-recaptcha-response');
 
     let etapaActualIndex = 0;
+
+    // --- Variables Globales (Asegúrate que estén definidas en tu PHP si las necesitas) ---
+    // Estas variables se usan en la subida de fotos. Deben definirse ANTES de que este script se ejecute.
+    // Ejemplo en PHP: echo "<script>const maxPhotosAllowed = ".($DATAJSON['max_photos'] ?? 3).";</script>";
+    // Ejemplo en PHP: echo "<script>const uploadUrl = '/sc-includes/php/ajax/upload_picture.php';</script>";
+    // QUITAR: Ya no se necesita siteKey para recaptcha
+    // Ejemplo en PHP: echo "<script>const siteKey = '".SITE_KEY."';</script>";
+
 
     // --- Inicialización ---
     function inicializar() {
@@ -78,7 +88,7 @@
             check.addEventListener('change', toggleHorasDia);
         });
 
-        // Listener para el envío final (maneja reCAPTCHA)
+        // Listener para el envío final (YA NO maneja reCAPTCHA directamente aquí)
         form.addEventListener('submit', manejarEnvioFinal);
     }
 
@@ -90,7 +100,6 @@
             if (etapaActualIndex < etapas.length - 1) {
                 cambiarEtapa(etapaActualIndex + 1);
             } else {
-                // Si estamos en la última etapa y se pulsa "Siguiente" (aunque debería ser "Finalizar")
                 console.warn('Se intentó ir más allá de la última etapa.');
             }
         } else {
@@ -326,6 +335,8 @@
         else if (diasSeleccionados.length === 6 && primerDia === 0 && ultimoDia === 5) valorDis = '3'; // L-S
         else if (diasSeleccionados.length === 2 && primerDia === 5 && ultimoDia === 6) valorDis = '4'; // S-D
         // Otros casos podrían mapear a '1' (Todos los días) o requerir un valor 'Otro' si existiera
+        // AJUSTE IMPORTANTE: Si no coincide con L-V, L-S, S-D o Todos, podríamos asignar '1' (Todos) o un valor específico como '5' (Otro/Personalizado) si el backend lo soporta. Usaremos '1' como fallback conservador.
+        else valorDis = '1'; // Fallback a 'Todos los días' si no es un patrón reconocido
 
         hiddenDis.value = valorDis;
         hiddenHorarioInicio.value = horarios.inicio;
@@ -335,6 +346,7 @@
         console.log(`hidden_horario_inicio actualizado a: ${hiddenHorarioInicio.value}`);
         console.log(`hidden_horario_final actualizado a: ${hiddenHorarioFinal.value}`);
     }
+
 
     function actualizarIdiomasOculto() {
         if (idioma1Select && hiddenLang1) {
@@ -543,7 +555,7 @@
         }
     }
 
-    // --- Envío Final ---
+    // --- Envío Final (Modificado para quitar reCAPTCHA) ---
     function manejarEnvioFinal(event) {
         event.preventDefault(); // Detiene el envío normal siempre
 
@@ -554,39 +566,20 @@
             alert('Por favor, revisa el formulario. Hay errores o campos incompletos en alguna de las etapas.');
             // Intenta ir a la primera etapa con error
             irAPrimeraEtapaConError();
-            return;
+            return; // Detiene el proceso si hay errores
         }
 
-        // 2. Asegurarse que todos los mapeos ocultos estén actualizados
-        // Llama a todas las funciones de actualización por si acaso
+        // 2. Asegurarse que todos los mapeos ocultos estén actualizados (llamarlos explícitamente por seguridad)
+        console.log('Actualizando campos ocultos finales...');
         actualizarSellerTypeOculto();
         actualizarHorarioOculto();
         actualizarIdiomasOculto();
-        // Whatsapp, Out, Notificaciones, Terminos ya deberían tener el 'name' correcto.
+        // Whatsapp, Out, Notificaciones, Terminos ya deberían tener el 'name' correcto y ser enviados.
 
-        console.log('Validación completa OK. Ejecutando reCAPTCHA...');
+        console.log('Validación completa OK. Enviando formulario directamente...');
 
-        // 3. Ejecutar reCAPTCHA
-        if (typeof grecaptcha === 'undefined' || typeof siteKey === 'undefined') {
-            console.error('reCAPTCHA (grecaptcha o siteKey) no está disponible.');
-            alert('Error: No se pudo verificar reCAPTCHA. Inténtalo de nuevo o contacta al soporte.');
-            return;
-        }
-
-        grecaptcha.ready(function () {
-            grecaptcha
-                .execute(siteKey, {action: 'submit'}) // Usa 'submit' o la action que espera tu backend
-                .then(function (token) {
-                    form.querySelector('#g-recaptcha-response').value = token;
-                    console.log('reCAPTCHA token obtenido. Enviando formulario...');
-                    // 4. Enviar el formulario
-                    form.submit();
-                })
-                .catch(function (error) {
-                    console.error('Error al ejecutar reCAPTCHA:', error);
-                    alert('Error al verificar reCAPTCHA. Inténtalo de nuevo.');
-                });
-        });
+        // 4. Enviar el formulario directamente
+        form.submit();
     }
 
     function validarFormularioCompleto() {
@@ -602,8 +595,10 @@
             }
             etapaActualIndex = originalIndex; // Restaura el índice visual
         }
-        // Restablece el estado visual correcto de los errores para la etapa actual
-        if (!todoValido) validarEtapaActual();
+        // Restablece el estado visual correcto de los errores para la etapa actual (si no es válida)
+        if (!todoValido) {
+           validarEtapaActual(); // Re-valida la etapa actual para mostrar sus errores si es la que falló
+        }
         return todoValido;
     }
 
@@ -613,7 +608,7 @@
             limpiarErroresEtapa(etapa); // Limpia para re-validar
             const originalIndex = etapaActualIndex;
             etapaActualIndex = i;
-            const esValida = validarEtapaActual();
+            const esValida = validarEtapaActual(); // Re-valida y muestra errores
             etapaActualIndex = originalIndex; // Restaura antes de cambiar
 
             if (!esValida) {
