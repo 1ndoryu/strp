@@ -756,7 +756,7 @@ if (isset($_SESSION['form_error_message'])) {
                         <?php
                         $servicios = ["Masaje relajante", "Masaje deportivo", "Masaje podal", "Masaje antiestrés", "Masaje linfático", "Masaje shiatsu", "Masaje descontracturante", "Masaje ayurvédico", "Masaje circulatorio", "Masaje tailandés"];
                         // Repoblar si hubo error
-            $selected_services = $form_data['servicios'] ?? [];
+                        $selected_services = $form_data['servicios'] ?? [];
                         foreach ($servicios as $servicio) {
                             $valor = strtolower(str_replace(' ', '_', $servicio));
                             $checked = in_array($valor, $selected_services) ? 'checked' : '';
@@ -905,7 +905,7 @@ if (isset($_SESSION['form_error_message'])) {
                     <div class="error-msg oculto" id="error-salidas">Debes indicar si realizas salidas.</div>
                 </div>
 
-            <?php if (!checkSession()): ?>
+                <?php if (!checkSession()): ?>
                     <div class="frm-grupo">
                         <label for="email" class="frm-etiqueta">Tu Email de Contacto *</label>
                         <!-- MAPEO: name="email" esperado por backend -->
@@ -913,15 +913,20 @@ if (isset($_SESSION['form_error_message'])) {
                         <div class="ayuda-texto">Si ya tienes cuenta, usa el mismo email. Si no, crearemos una cuenta para ti.</div>
                         <div class="error-msg oculto" id="error-email">Introduce un email válido.</div>
                     </div>
-            <?php else: ?>
+                <?php else: ?>
                     <!-- Si está logueado, el backend espera el email igualmente -->
                     <input type="hidden" name="email" value="<?php echo htmlspecialchars($_SESSION['data']['mail']); ?>">
                     <div class="frm-grupo">
                         <label class="frm-etiqueta">Email de Contacto:</label>
                         <span class="texto-fijo"><?php echo htmlspecialchars($_SESSION['data']['mail']); ?></span>
                     </div>
-            <?php endif; ?>
-            <?php /* ... resto HTML etapa 2 ... */ ?>
+                <?php endif; ?>
+            </fieldset>
+
+            <div class="navegacion-etapa">
+                <button type="button" class="frm-boton btn-anterior">Anterior</button>
+                <button type="button" class="frm-boton btn-siguiente">Siguiente (Extras Opcionales)</button>
+            </div>
         </div>
 
         <!-- ======================= ETAPA 3: EXTRAS OPCIONALES ======================= -->
@@ -990,8 +995,8 @@ if (isset($_SESSION['form_error_message'])) {
                 <button type="button" class="frm-boton btn-anterior">Anterior</button>
                 <!-- JS NECESARIO: El texto/acción de este botón podría cambiar según plan/extras -->
                 <!-- El type="submit" es correcto para enviar el formulario directamente (sin JS reCAPTCHA) -->
-            <button type="submit" id="btn-finalizar" class="frm-boton btn-publicar">Finalizar y Publicar</button>
-        </div>
+                <button type="submit" id="btn-finalizar" class="frm-boton btn-publicar">Finalizar y Publicar</button>
+            </div>
 
     </form>
     <?php // --- Fin del Formulario HTML --- 
