@@ -54,7 +54,7 @@ define('SECRET_KEY', '6Lf99qUZAAAAAA3N-761jR2zGSB-HHWtkZeOh9Mz');
 <script type="text/javascript">
 var site_url = '<?=getConfParam('SITE_URL');?>';
 </script>
-
+<!--TEST!-->
 <!--<link rel="stylesheet" href="node_modules/@glidejs/glide/dist/css/glide.core.min.css">-->
 <!--<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>-->
 <!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@glidejs/glide">-->
