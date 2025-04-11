@@ -1,4 +1,7 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 user::updateSesion();
 $limite = check_item_limit();
 $ANUNCIO_NUEVO_PREMIUM = false;
