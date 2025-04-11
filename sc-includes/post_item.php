@@ -1,877 +1,1033 @@
 <?php
-// COMENTARIO: Asegúrate de que las sesiones están iniciadas correctamente en tu CMS.
-// session_start(); // Descomenta si tu CMS no maneja el inicio de sesión automáticamente.
+// TODO: Revisar si user::updateSesion() sigue siendo relevante en el nuevo flujo.
+// user::updateSesion();
 
-// COMENTARIO: Incluye aquí las dependencias necesarias de tu CMS (clases User, Orders, Images, etc.)
-// require_once('path/to/cms/bootstrap.php');
-// require_once('path/to/user_class.php');
-// require_once('path/to/image_class.php');
-// ... etc ...
+// TODO: La lógica de límite de items podría depender ahora del TIPO de usuario y del PLAN elegido.
+// $limite = check_item_limit();
+$limite = 0; // Temporalmente desactivado para el ejemplo
 
-// COMENTARIO: Mantengo la actualización de sesión si es necesaria.
-user::updateSesion(); // Asumiendo que esta función existe y es relevante.
+// TODO: Estas variables podrían necesitarse o no dependiendo de la lógica final.
+$ANUNCIO_NUEVO_PREMIUM = false;
+$user_registered = false; // Podría usarse para seguir el estado durante el proceso multi-etapa
+$DATAJSON = array();
+$DATAJSON['max_photos'] = getConfParam('MAX_PHOTOS_AD'); // Mantener si se usa igual
+$DATAJSON['edit'] = 0; // Asumiendo que es para crear nuevo
 
-// --- Definiciones y Constantes del Nuevo Formulario ---
-define('ETAPA_TIPO_USUARIO_PLAN', 1);
-define('ETAPA_DETALLES_ANUNCIO', 2);
-define('ETAPA_EXTRAS_PAGO', 3);
-define('ETAPA_FINALIZADO', 4); // Estado después de enviar
+// TODO: Revisar si la regla de registro obligatorio para publicar sigue aplicando igual.
+// if (getConfParam('POST_ITEM_REG') == 1) {
+//     check_login(); // check_login() podría usarse para redirigir si se requiere estar logueado SIEMPRE antes del form.
+// }
 
-$tipos_usuario = [
-    'masajista' => 'Masajista Particular (1 perfil individual)',
-    'centro' => 'Centro (Perfiles individuales)',
-    'publicista' => 'Publicista (Perfiles individuales)',
-    'visitante' => 'Visitante (Guarda perfiles y contacta)',
-];
+// --- INICIO PROCESAMIENTO DEL FORMULARIO (POST) ---
+// ESTA SECCIÓN REQUIERE UNA ADAPTACIÓN PROFUNDA PARA EL NUEVO FORMULARIO MULTI-ETAPA
+if (isset($_POST['g-recaptcha-response'])) {
 
-$planes = [
-    'gratis' => ['nombre' => 'Gratis (Prueba 30 días)', 'precio' => 0, 'duracion' => 30, 'renovacion_horas' => 24],
-    'silver' => ['nombre' => 'Silver', 'precio' => 12, 'duracion' => 60, 'renovacion_horas' => 12],
-    'gold' => ['nombre' => 'Gold', 'precio' => 30, 'duracion' => 90, 'renovacion_horas' => 12],
-];
+    $Return = getCaptcha($_POST['g-recaptcha-response']);
 
-$categorias_nuevas = [
-    'terapeuticos' => 'Masajes Terapéuticos',
-    'erotica' => 'Masajista Erótica',
-    'hetero_gay' => 'Masajista Hetero/Gay',
-    'empleo' => 'Bolsa de Empleo',
-    'otros' => 'Otros', // Añadido por si acaso
-];
+    // TODO: Validar reCAPTCHA como antes
+    if ($Return->success == true && $Return->score > 0.5) {
 
-$servicios_ofrecidos = [
-    'relajante' => 'Masaje Relajante',
-    'deportivo' => 'Masaje Deportivo',
-    'podal' => 'Masaje Podal',
-    'antiestres' => 'Masaje Antiestrés',
-    'linfatico' => 'Masaje Linfático',
-    'shiatsu' => 'Masaje Shiatsu', // Corregido 'shaisu'
-    'descontracturante' => 'Masaje Descontracturante', // Corregido 'descontruactuales'
-    'ayurvedico' => 'Masaje Ayurvédico', // Corregido 'ayuvedico'
-    'circulatorio' => 'Masaje Circulatorio',
-    'tailandes' => 'Masaje Tailandés',
-];
+        // TODO: Validar Token CSRF como antes
+        if (verifyFormToken('nuevoAnuncioToken', $_POST['token']) || defined('DEBUG') && DEBUG) {
 
-$extras_disponibles = [
-    'premium' => ['nombre' => 'Premium', 'descripcion' => 'Anuncios aleatorios en la parte superior.', 'precio' => 35],
-    'premium_mini' => ['nombre' => 'Premium Mini', 'descripcion' => 'Anuncios aleatorios debajo de Premium.', 'precio' => 27], // Asumiendo 27€ como precio
-    'destacado' => ['nombre' => 'Destacado', 'descripcion' => 'Anuncios aleatorios en posiciones destacadas.', 'precio' => 20], // Asumiendo 20€ como precio
-    'autosubida' => ['nombre' => 'Autosubida', 'descripcion' => 'Anuncios aleatorios debajo de Destacados.', 'precio' => 25],
-    'banner_superior' => ['nombre' => 'Banner Superior', 'descripcion' => 'Banners aleatorios en la parte superior.', 'precio' => 50],
-    'banner_lateral' => ['nombre' => 'Banner Lateral', 'descripcion' => 'Banners aleatorios en la parte lateral.', 'precio' => 50],
-];
+            // ---------------------------------------------------------------
+            // PASO 1: Recoger datos de TODAS las etapas (asumiendo que se envían al final)
+            // ---------------------------------------------------------------
 
-$idiomas_hablados = ['Español', 'Inglés', 'Francés', 'Alemán', 'Portugués', 'Italiano', 'Otro']; // Ejemplo
-$niveles_idioma = ['Nativo', 'Alto', 'Medio', 'Bajo'];
-$dias_semana = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
+            // --- Datos Etapa 0: Tipo de Usuario (si aplica, si no está logueado) ---
+            $tipo_usuario_seleccionado = isset($_POST['tipo_usuario']) ? $_POST['tipo_usuario'] : null; // 'masajista', 'centro', 'publicista', 'visitante'
 
-// --- Lógica de Etapas y Procesamiento ---
+            // --- Datos Etapa 1: Plan ---
+            $plan_seleccionado = isset($_POST['plan']) ? $_POST['plan'] : null; // 'gratis', 'silver', 'gold'
+            // TODO: Guardar el plan seleccionado y la fecha de inicio/fin asociada.
+            // TODO: Si el plan es de pago (silver, gold), aquí podría iniciarse el proceso de pago ANTES de crear el anuncio,
+            //       o marcar el anuncio como pendiente de pago. Para este ejemplo, asumimos que se crea y luego se paga o activa.
 
-$is_logged_in = user::checkLogin(); // Verificar si el usuario está logueado
-$etapa_actual = ETAPA_DETALLES_ANUNCIO; // Por defecto, si está logueado, va a la etapa 2
-$errores = []; // Array para guardar mensajes de error
-$datos_formulario = $_SESSION['nuevo_anuncio_datos'] ?? []; // Cargar datos de sesión si existen
+            // --- Datos Etapa 2: Perfil/Anuncio ---
+            $datos_ad = array();
+            $datos_perfil = array(); // Podría ser útil separar datos del anuncio vs datos del usuario/perfil
 
-// Si no está logueado, empieza en la etapa 1
-if (!$is_logged_in) {
-    $etapa_actual = ETAPA_TIPO_USUARIO_PLAN;
-}
+            // Datos Usuario (si es un nuevo registro o para actualizar)
+            // TODO: Determinar si es un nuevo usuario o uno existente basado en el email o sesión.
+            $id_user = isset($_SESSION['data']['ID_user']) ? $_SESSION['data']['ID_user'] : null;
+            $email = isset($_POST['email']) ? filter_var($_POST['email'], FILTER_SANITIZE_EMAIL) : null;
+            $nombre_contacto = isset($_POST['nombre']) ? formatName($_POST['nombre']) : null; // Usar formatName si existe
+            $telefono = isset($_POST['telefono']) ? preg_replace('/[^0-9]/', '', $_POST['telefono']) : null;
+            $tiene_whatsapp = isset($_POST['tiene_whatsapp']) ? 1 : 0;
+            // TODO: Si es nuevo usuario, generar contraseña, definir rol inicial (basado en $tipo_usuario_seleccionado?), etc.
+            //       La lógica de registro/login necesita integrarse con las etapas 0 y 1.
 
-// Si se envió un formulario, procesar la etapa correspondiente
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['etapa_enviada'])) {
-    $etapa_enviada = (int)$_POST['etapa_enviada'];
-    // Guardar todos los datos POST en la sesión para repoblar
-    $datos_formulario = array_merge($datos_formulario, $_POST);
-    $_SESSION['nuevo_anuncio_datos'] = $datos_formulario;
+            // Datos Anuncio
+            $datos_ad['ID_cat'] = isset($_POST['categoria']) ? (int)$_POST['categoria'] : null; // Nuevo campo 'categoria'
+            // TODO: 'parent_cat' podría no ser necesario o cambiar según la nueva estructura de categorías.
+            // $category_ad = selectSQL('sc_category', $w=array('ID_cat'=>$datos_ad['ID_cat']));
+            // $datos_ad['parent_cat'] = $category_ad[0]['parent_cat'];
 
-    // --- Validación Etapa 1: Tipo Usuario y Plan (Solo si no está logueado) ---
-    if ($etapa_enviada == ETAPA_TIPO_USUARIO_PLAN && !$is_logged_in) {
-        if (empty($_POST['tipo_usuario']) || !array_key_exists($_POST['tipo_usuario'], $tipos_usuario)) {
-            $errores['tipo_usuario'] = 'Por favor, selecciona un tipo de usuario.';
-        }
-        if (empty($_POST['plan']) || !array_key_exists($_POST['plan'], $planes)) {
-            $errores['plan'] = 'Por favor, selecciona un plan.';
-        }
+            $datos_ad['ID_region'] = isset($_POST['provincia']) ? (int)$_POST['provincia'] : null; // Renombrado a 'provincia'
+            $datos_ad['location'] = isset($_POST['ciudad']) ? htmlspecialchars($_POST['ciudad']) : null; // Nuevo campo 'ciudad' (si se mantiene input text)
+            $datos_ad['title'] = isset($_POST['titulo_anuncio']) ? htmlspecialchars($_POST['titulo_anuncio']) : null; // Nuevo campo 'titulo_anuncio'
+            $datos_ad['title_seo'] = isset($_POST['titulo_anuncio']) ? toAscii($_POST['titulo_anuncio']) : null; // Usar toAscii si existe
+            $datos_ad['texto'] = isset($_POST['descripcion']) ? htmlspecialchars($_POST['descripcion']) : null; // Nuevo campo 'descripcion'
 
-        if (empty($errores)) {
-            $etapa_actual = ETAPA_DETALLES_ANUNCIO; // Avanza a la siguiente etapa
-        } else {
-            $etapa_actual = ETAPA_TIPO_USUARIO_PLAN; // Permanece en la etapa actual
-        }
-    }
+            // Servicios (Checkbox multiple)
+            $servicios_ofrecidos = isset($_POST['servicios']) && is_array($_POST['servicios']) ? $_POST['servicios'] : [];
+            // TODO: Guardar los servicios. Probablemente como JSON en un campo de la tabla de anuncios, o en una tabla relacionada (ad_services).
+            $datos_ad['servicios_json'] = json_encode($servicios_ofrecidos); // Ejemplo guardando como JSON
 
-    // --- Validación Etapa 2: Detalles del Anuncio ---
-    elseif ($etapa_enviada == ETAPA_DETALLES_ANUNCIO) {
-        // COMENTARIO: Aquí iría la validación detallada de los campos de la etapa 2.
-        // Similar a la validación que tenías en JS (longitud de título, descripción, campos obligatorios, etc.)
-        // Adaptar las validaciones del JS `pre_validate_form` aquí en PHP.
-
-        if (empty($_POST['nombre'])) $errores['nombre'] = 'El nombre es obligatorio.';
-        if (empty($_POST['categoria_nueva']) || !array_key_exists($_POST['categoria_nueva'], $categorias_nuevas)) $errores['categoria_nueva'] = 'Selecciona una categoría válida.';
-        // COMENTARIO: Usar la variable $provincias para validar. Asumiendo que $cat de tu código original son las provincias.
-        $provincias_db = selectSQL("sc_region", [], "name ASC"); // Cargar provincias para validar
-        $id_provincias_validas = array_column($provincias_db, 'ID_region');
-        if (empty($_POST['provincia']) || !in_array($_POST['provincia'], $id_provincias_validas)) $errores['provincia'] = 'Selecciona una provincia válida.';
-        if (empty($_POST['titulo']) || strlen($_POST['titulo']) < 10 || strlen($_POST['titulo']) > 50) $errores['titulo'] = 'El título debe tener entre 10 y 50 caracteres.';
-        // COMENTARIO: Aquí deberías aplicar el filtro de palabras no permitidas si es necesario.
-        if (empty($_POST['descripcion']) || strlen($_POST['descripcion']) < 30 || strlen($_POST['descripcion']) > 500) $errores['descripcion'] = 'La descripción debe tener entre 30 y 500 caracteres.';
-        // COMENTARIO: Aquí deberías aplicar el filtro de palabras no permitidas si es necesario.
-        if (!isset($_POST['servicios']) || !is_array($_POST['servicios']) || count($_POST['servicios']) == 0) $errores['servicios'] = 'Selecciona al menos un servicio.';
-        else {
-            foreach ($_POST['servicios'] as $servicio_sel) {
-                if (!array_key_exists($servicio_sel, $servicios_ofrecidos)) {
-                    $errores['servicios'] = 'Has seleccionado un servicio inválido.';
-                    break;
+            // Horario Detallado
+            $horario_detallado = isset($_POST['horario_dia']) && is_array($_POST['horario_dia']) ? $_POST['horario_dia'] : [];
+            // TODO: Procesar y guardar el horario detallado. También JSON o tabla relacionada.
+            // Ejemplo de limpieza básica:
+            $horario_final = [];
+            foreach ($horario_detallado as $dia => $horas) {
+                if (isset($horas['activo'])) {
+                    $horario_final[$dia] = [
+                        'inicio' => isset($horas['inicio']) ? htmlspecialchars($horas['inicio']) : '00:00',
+                        'fin' => isset($horas['fin']) ? htmlspecialchars($horas['fin']) : '00:00',
+                    ];
                 }
             }
-        }
-        // COMENTARIO: Validación de imágenes (existencia, tipo, tamaño) debería hacerse aquí o al procesar la subida.
-        // Por ahora, solo verificamos si se marcó una principal si hay imágenes subidas (la lógica de subida iría en el paso final).
-        if (isset($_SESSION['uploaded_images']) && count($_SESSION['uploaded_images']) > 0 && empty($_POST['foto_principal'])) {
-            $errores['foto_principal'] = 'Debes seleccionar una foto como principal.';
-        } elseif (!empty($_POST['foto_principal']) && (!isset($_SESSION['uploaded_images']) || !in_array($_POST['foto_principal'], $_SESSION['uploaded_images']))) {
-            $errores['foto_principal'] = 'La foto principal seleccionada no es válida.';
-        }
-        // COMENTARIO: Validar horario semanal, teléfono, whatsapp, idiomas, salidas...
-        if (empty($_POST['telefono'])) $errores['telefono'] = 'El teléfono es obligatorio.';
-        // COMENTARIO: Añadir validación para formato de teléfono si es necesario.
-        // COMENTARIO: Validar estructura de horario_semanal e idiomas.
+            $datos_ad['horario_detallado_json'] = json_encode($horario_final); // Ejemplo guardando como JSON
 
-        if (empty($errores)) {
-            // COMENTARIO: Procesar la subida de imágenes aquí o marcar los archivos temporales para procesarlos en la etapa final.
-            // Podrías mover los archivos subidos a una carpeta temporal y guardar sus nombres en la sesión.
-            // Ejemplo simple (necesitaría más robustez):
-            /*
-            if (isset($_FILES['fotos'])) {
-                $_SESSION['uploaded_images'] = []; // Guardar nombres de archivo temporales
-                $upload_dir = '/ruta/a/uploads/temporales/'; // Asegúrate que esta ruta exista y tenga permisos
-                $max_fotos = 3;
-                $count = 0;
-                foreach ($_FILES['fotos']['tmp_name'] as $key => $tmp_name) {
-                    if ($count >= $max_fotos) break;
-                    if ($_FILES['fotos']['error'][$key] === UPLOAD_ERR_OK) {
-                        $file_info = pathinfo($_FILES['fotos']['name'][$key]);
-                        $extension = strtolower($file_info['extension']);
-                        if (in_array($extension, ['jpg', 'jpeg', 'png']) && $_FILES['fotos']['size'][$key] <= 2 * 1024 * 1024) { // Max 2MB
-                            $new_filename = uniqid('img_', true) . '.' . $extension;
-                            if (move_uploaded_file($tmp_name, $upload_dir . $new_filename)) {
-                                $_SESSION['uploaded_images'][] = $new_filename; // Guardar nombre para referencia
-                                $count++;
-                            } else {
-                                $errores['fotos'] = 'Error al mover el archivo subido.';
-                            }
-                        } else {
-                            $errores['fotos'] = 'Archivo inválido (tipo o tamaño incorrecto).';
-                        }
-                    }
-                }
-                 if (count($_SESSION['uploaded_images']) == 0 && !isset($datos_formulario['fotos_existentes'])) { // Si no hay fotos existentes (edición)
-                     $errores['fotos'] = 'Debes subir al menos una foto.';
-                 }
-            } elseif (!isset($datos_formulario['fotos_existentes'])) { // Si no se subió nada y no hay existentes
-                 $errores['fotos'] = 'Debes subir al menos una foto.';
+            // Idiomas y Nivel
+            $idiomas = [];
+            if (!empty($_POST['idioma_1']) && !empty($_POST['nivel_idioma_1'])) {
+                $idiomas[] = ['idioma' => htmlspecialchars($_POST['idioma_1']), 'nivel' => htmlspecialchars($_POST['nivel_idioma_1'])];
             }
-            */
-            // Si no hubo errores de validación (ni de subida), avanza
-            if (empty($errores)) {
-                $etapa_actual = ETAPA_EXTRAS_PAGO;
-            } else {
-                $etapa_actual = ETAPA_DETALLES_ANUNCIO; // Quédate si hubo error de subida/validación
+            if (!empty($_POST['idioma_2']) && !empty($_POST['nivel_idioma_2'])) {
+                $idiomas[] = ['idioma' => htmlspecialchars($_POST['idioma_2']), 'nivel' => htmlspecialchars($_POST['nivel_idioma_2'])];
             }
-        } else {
-            $etapa_actual = ETAPA_DETALLES_ANUNCIO; // Permanece en la etapa actual si hay errores de validación
-        }
-    }
+            // TODO: Guardar idiomas. JSON o tabla relacionada.
+            $datos_ad['idiomas_json'] = json_encode($idiomas); // Ejemplo
 
-    // --- Procesamiento Etapa 3: Extras y Finalización ---
-    elseif ($etapa_enviada == ETAPA_EXTRAS_PAGO) {
-        // Validar selección de extras (opcional, pueden ser ninguno)
-        $extras_seleccionados = [];
-        if (isset($_POST['extras']) && is_array($_POST['extras'])) {
-            foreach ($_POST['extras'] as $extra_key) {
-                if (array_key_exists($extra_key, $extras_disponibles)) {
-                    $extras_seleccionados[] = $extra_key;
-                } else {
-                    $errores['extras'] = 'Has seleccionado un extra inválido.';
-                    break; // Salir si uno es inválido
-                }
-            }
-        }
-        // Validar Términos y Condiciones
-        if (empty($_POST['terminos'])) {
-            $errores['terminos'] = 'Debes aceptar los términos y condiciones para publicar.';
-        }
+            $datos_ad['realiza_salidas'] = isset($_POST['realiza_salidas']) ? (int)$_POST['realiza_salidas'] : 0; // Nuevo campo
 
-        // COMENTARIO: Validación reCAPTCHA (Importante en la etapa final)
-        $recaptcha_valido = false;
-        if (isset($_POST['g-recaptcha-response'])) {
-            // COMENTARIO: Reutiliza tu función `getCaptcha` si existe y funciona.
-            // $Return = getCaptcha($_POST['g-recaptcha-response']);
-            // if ($Return && $Return->success == true && $Return->score > 0.5) {
-            //     $recaptcha_valido = true;
-            // }
-            // ---- Placeholder si getCaptcha no está disponible ----
-            $secretKey = "TU_CLAVE_SECRETA_RECAPTCHA_V3"; // ¡CONFIGURA ESTO!
-            $response = $_POST['g-recaptcha-response'];
-            $remoteIp = $_SERVER['REMOTE_ADDR'];
-            $url = "https://www.google.com/recaptcha/api/siteverify";
-            $data = ['secret' => $secretKey, 'response' => $response, 'remoteip' => $remoteIp];
-            $options = ['http' => ['header' => "Content-type: application/x-www-form-urlencoded\r\n", 'method' => 'POST', 'content' => http_build_query($data)]];
-            $context = stream_context_create($options);
-            $result = file_get_contents($url, false, $context);
-            $responseKeys = json_decode($result, true);
-            if ($responseKeys["success"] && $responseKeys["score"] >= 0.5) { // Ajusta el umbral si es necesario
-                $recaptcha_valido = true;
-            }
-            // ---- Fin Placeholder ----
+            // Campos obsoletos o renombrados (a eliminar o ajustar)
+            // $datos_ad['ad_type'] = $_POST['ad_type']; // Ya no existe este campo? O se deduce del tipo de usuario/categoría?
+            // $datos_ad['price'] = $_POST['precio'] ? $_POST['precio'] : 0; // No hay campo precio en el nuevo form?
+            // $datos_ad['mileage'] = $_POST['km_car']; // Obsoleto
+            // $datos_ad['fuel'] = $_POST['fuel_car']; // Obsoleto
+            // $datos_ad['date_car'] = $_POST['date_car']; // Obsoleto
+            // $datos_ad['area'] = $_POST['area']; // Obsoleto
+            // $datos_ad['room'] = $_POST['room']; // Obsoleto
+            // $datos_ad['broom'] = $_POST['bathroom']; // Obsoleto
+            // $datos_ad['address'] = $_POST['city']; // Usar location o campo específico si se necesita dirección completa
+            // $datos_ad['phone1'] = $_POST['phone1']; // Obsoleto
+            // $datos_ad['whatsapp1'] = isset($_POST['whatsapp1']) ? 1 : 0; // Obsoleto
+            // $datos_ad['seller_type'] = $_POST['seller_type']; // Reemplazado por tipo_usuario? O sigue siendo relevante para el *anuncio*?
+            // $datos_ad['dis'] = $_POST['dis']; // Reemplazado por horario_detallado
+            // $datos_ad['hor_start'] = $_POST['horario-inicio']; // Reemplazado por horario_detallado
+            // $datos_ad['hor_end'] = $_POST['horario-final']; // Reemplazado por horario_detallado
+            // $datos_ad['payment'] = isset($_POST['pago']) ? json_encode($_POST['pago']) : "[]"; // Obsoleto? No hay formas de pago en el nuevo form.
 
-        }
-        if (!$recaptcha_valido) {
-            $errores['recaptcha'] = 'La verificación reCAPTCHA ha fallado. Inténtalo de nuevo.';
-        }
+            // --- Datos Etapa 3: Extras ---
+            $extras_seleccionados = isset($_POST['extras']) && is_array($_POST['extras']) ? $_POST['extras'] : [];
+            // TODO: Procesar los extras seleccionados. Marcar el anuncio para destacarlo según las reglas de cada extra.
+            // TODO: Calcular el coste total si hay extras de pago y proceder al pago o marcar como pendiente.
 
-
-        if (empty($errores)) {
-            // --- ¡PROCESO FINAL DE CREACIÓN DEL ANUNCIO! ---
-            $datos_finales = $_SESSION['nuevo_anuncio_datos']; // Todos los datos acumulados
-
-            // COMENTARIO: Lógica de creación/obtención de usuario (si no está logueado)
-            $id_user = null;
-            if ($is_logged_in) {
-                $id_user = $_SESSION['data']['ID_user'];
-            } else {
-                // COMENTARIO: Reutiliza o adapta tu lógica original para crear usuarios aquí.
-                // Necesitarás el email, nombre, teléfono, tipo_usuario de $datos_finales.
-                // Ejemplo adaptado:
-                $checkUser = selectSQL("sc_user", $a = array('mail' => $datos_finales['email'] ?? '')); // Asumiendo que el email se pidió en etapa 2
-                $ip = get_client_ip(); // Asumiendo que esta función existe
+            // ---------------------------------------------------------------
+            // PASO 2: Lógica de Usuario (Registro / Verificación)
+            // ---------------------------------------------------------------
+            if (!$id_user) { // Si no hay sesión activa, intentar registrar o encontrar usuario por email
+                $checkUser = selectSQL("sc_user", $a = array('mail' => $email));
+                $ip = get_client_ip(); // Asegúrate que esta función exista
 
                 if (count($checkUser) == 0) {
-                    // COMENTARIO: Revisa si `check_registered` sigue siendo relevante o si la lógica debe cambiar.
-                    // if (!User::check_registered($ip, $datos_finales['telefono'])) {
-                    $pass = randomString(6); // Asumiendo que esta función existe
-                    // COMENTARIO: El 'rol' ahora podría venir de 'tipo_usuario' o necesitar una lógica diferente.
-                    // COMENTARIO: Los límites (`anun_limit`) ahora dependerán del 'plan' seleccionado.
-                    $limit = 0; // TODO: Calcular límite según $datos_finales['plan']
-                    $rol_usuario = $datos_finales['tipo_usuario']; // Asignar rol según selección
-                    // COMENTARIO: ¿Banner de usuario? ¿De dónde sale ahora? Quizás de la foto principal del primer anuncio.
-                    $banner_img_user = ""; // TODO: Decidir cómo manejar el banner de usuario
+                    // Usuario nuevo
+                    // TODO: Verificar si el teléfono ya está registrado (User::check_registered) si esa regla aplica.
+                    // if (!User::check_registered($ip, $telefono)) {
+                        // TODO: Copiar imagen de perfil si se sube una específica (no está en el form actual)
+                        // $banner_img = "";
+                        $pass = randomString(6); // Asegúrate que esta función exista
+                        // TODO: Definir el 'rol' basado en $tipo_usuario_seleccionado
+                        $rol_usuario = UserRole::Particular; // Valor por defecto, ajustar según $tipo_usuario_seleccionado
+                        // TODO: Definir límites iniciales basados en el PLAN seleccionado ('gratis')
+                        $limite_anuncios = 1; // Ejemplo para plan gratis
 
-                    $datos_u = array(
-                        'name' => formatName($datos_finales['nombre']), // Asumiendo que formatName existe
-                        'mail' => $datos_finales['email'],
-                        'phone' => $datos_finales['telefono'],
-                        'banner_img' => $banner_img_user,
-                        'pass' => password_hash($pass, PASSWORD_DEFAULT), // ¡IMPORTANTE! Hashear la contraseña
-                        'date_reg' => time(),
-                        'active' => 1, // O quizás necesita activación por email
-                        'rol' => $rol_usuario,
-                        'date_credits' => "0", // Relacionado con el plan?
-                        'credits' => "0",      // Relacionado con el plan?
-                        'IP_user' => $ip,
-                        'anun_limit' => $limit
-                    );
-                    $result_user = insertSQL("sc_user", $datos_u);
-                    if ($result_user) {
-                        $id_user = lastIdSQL();
-                        // COMENTARIO: Enviar email de bienvenida con $pass (o un enlace de activación)
-                        // mailWelcome($datos_finales['nombre'], $datos_finales['email'], $pass);
-                    } else {
-                        $errores['final'] = "Error crítico: No se pudo crear la cuenta de usuario.";
-                    }
+                        $datos_u = array(
+                            'name' => $nombre_contacto,
+                            'mail' => $email,
+                            'phone' => $telefono,
+                            'whatsapp' => $tiene_whatsapp, // Añadido campo WhatsApp al usuario
+                            'pass' => password_hash($pass, PASSWORD_DEFAULT), // ¡Hashear contraseña!
+                            'date_reg' => time(),
+                            'active' => 1, // O 0 si requiere verificación por email
+                            'rol' => $rol_usuario,
+                            'date_credits' => "0", // Ajustar según lógica de planes/créditos si aplica
+                            'credits' => "0", // Ajustar según lógica de planes/créditos si aplica
+                            'IP_user' => $ip,
+                            'anun_limit' => $limite_anuncios // Ajustar según plan
+                        );
+                        $result_user = insertSQL("sc_user", $datos_u);
+                        if ($result_user) {
+                            $id_user = lastIdSQL();
+                            // TODO: Enviar email de bienvenida con la contraseña generada ($pass)
+                            // mailWelcome($nombre_contacto, $email, $pass);
+                            // TODO: Iniciar sesión automáticamente al nuevo usuario
+                            // user::forceLogin($id_user);
+                        } else {
+                            // Error insertando usuario
+                            $error_insert = true; // Marcar error
+                            echo '<div class="alerta error">Error al registrar el usuario. Inténtalo de nuevo.</div>';
+                        }
                     // } else {
-                    //     $errores['final'] = "Parece que ya existe un usuario registrado con datos similares.";
-                    //     $user_registered = true; // Variable del código original
+                    //     // Teléfono ya registrado
+                    //     $user_registered = true; // Marcar para mostrar mensaje
+                    //     $error_insert = true;
+                    //     echo '<div class="alerta error">El teléfono ya está registrado. Inicia sesión.</div>';
                     // }
                 } else {
+                    // Email ya existe
                     $id_user = $checkUser[0]['ID_user'];
-                    // COMENTARIO: ¿Qué pasa si el email existe pero el usuario no está logueado? ¿Forzar login? ¿Mostrar error?
-                    // Por ahora, asignamos el ID, pero esto podría necesitar revisión.
-                    $errores['final'] = "Ya existe una cuenta con este correo electrónico. Por favor, inicia sesión.";
-                    // Podrías redirigir a login o mostrar un mensaje más claro.
-                    $id_user = null; // Impedir la creación del anuncio si el email existe y no está logueado.
-
-                }
-            }
-
-            // COMENTARIO: Verificar límite de anuncios (si aplica, basado en plan/usuario)
-            // $limite = check_item_limit($id_user); // Revisa si esta función sigue siendo válida o necesita adaptarse al plan.
-            $limite_alcanzado = false; // TODO: Implementar chequeo de límite según el plan y anuncios activos del $id_user.
-            // if ($limite == 0 /* && $plan_es_gratis_o_sin_pago_extra */ ) { ... }
-
-            // --- Si el usuario es válido y no hay errores críticos ---
-            if ($id_user && empty($errores) && !$limite_alcanzado) {
-
-                // COMENTARIO: Preparar datos para la tabla `sc_ad`
-                $datos_ad = [];
-                $datos_ad['ID_user'] = $id_user;
-                // COMENTARIO: Mapear la nueva categoría. Necesitas decidir cómo guardar esto. ¿Un ID nuevo? ¿El string?
-                // Asumamos que guardas el string key por ahora. Podrías necesitar una tabla nueva o adaptar `sc_category`.
-                $datos_ad['nueva_categoria'] = $datos_finales['categoria_nueva']; // CAMPO NUEVO (o adaptar uno existente)
-                $datos_ad['ID_region'] = $datos_finales['provincia']; // Ya existía como 'region'
-                $datos_ad['location'] = $datos_finales['ciudad'] ?? ''; // Ya existía como 'city' o 'location'
-                $datos_ad['title'] = $datos_finales['titulo']; // Ya existía
-                $datos_ad['title_seo'] = toAscii($datos_finales['titulo']); // Ya existía (asumiendo toAscii existe)
-                $datos_ad['texto'] = htmlspecialchars($datos_finales['descripcion']); // Ya existía
-                $datos_ad['name'] = formatName($datos_finales['nombre']); // Ya existía
-                $datos_ad['phone'] = $datos_finales['telefono']; // Ya existía
-                $datos_ad['whatsapp'] = isset($datos_finales['whatsapp']) ? 1 : 0; // Ya existía
-                $datos_ad['out'] = $datos_finales['salidas'] ?? 0; // Ya existía (campo 'out')
-                $datos_ad['date_ad'] = time();
-                // COMENTARIO: Revisar si los anuncios necesitan revisión admin
-                $datos_ad['review'] = (getConfParam('REVIEW_ITEM') == 1) ? 1 : 0; // Lógica original
-
-                // COMENTARIO: Campos Nuevos
-                $datos_ad['servicios'] = json_encode($datos_finales['servicios'] ?? []); // Guardar como JSON
-                $datos_ad['idiomas'] = json_encode($datos_finales['idiomas'] ?? []); // Guardar como JSON { "idioma": "Español", "nivel": "Nativo" }
-                $datos_ad['horario_semanal'] = json_encode($datos_finales['horario_semanal'] ?? []); // Guardar como JSON { "lunes": {"disponible": true, "inicio": "09:00", "fin": "18:00"}, ... }
-                $datos_ad['plan_seleccionado'] = $datos_finales['plan'] ?? 'gratis'; // Guardar el plan
-                $datos_ad['extras_seleccionados'] = json_encode($extras_seleccionados); // Guardar extras como JSON
-
-                // COMENTARIO: Campos del formulario antiguo que ya no se usan directamente o se manejan diferente:
-                // ID_cat, parent_cat (reemplazado por nueva_categoria)
-                // ad_type (¿sigue siendo relevante?)
-                // price (ahora parte del plan/extras?)
-                // mileage, fuel, date_car, area, room, broom (parecen irrelevantes ahora)
-                // address (usar location/ciudad?)
-                // phone1, whatsapp1 (simplificado a un teléfono)
-                // seller_type (reemplazado por tipo_usuario/rol)
-                // notifications (mantener si es necesario)
-                // dis (reemplazado por horario_semanal)
-                // lang1, lang2 (reemplazado por idiomas JSON)
-                // hor_start, hor_end (reemplazado por horario_semanal)
-                // payment (¿formas de pago aceptadas por el masajista? Podría volver a añadirse si es necesario)
-                // ID_order (¿relacionado con pagos de planes/extras ahora?)
-
-                // COMENTARIO: Lógica de renovación basada en plan/extras (Adaptar de la original si es necesario)
-                // list($extras, $extra_limit) = User::updateExtras($id_user); // ¿Sigue siendo relevante?
-                // if ($extras) {
-                //     $datos_ad['renovable'] = renovationType::Diario; // O según plan/extras
-                //     $datos_ad['renovable_limit'] = $extra_limit; // O según plan/extras
-                // }
-
-                // COMENTARIO: Insertar el anuncio en la base de datos
-                $insert = insertSQL("sc_ad", $datos_ad);
-                if ($insert) {
-                    $last_ad = lastIdSQL();
-
-                    // COMENTARIO: Procesar imágenes guardadas temporalmente
-                    // Moverlas de la carpeta temporal a la definitiva (IMG_ADS)
-                    // Crear registros en `sc_images` asociados a $last_ad
-                    // Marcar la imagen principal
-                    /*
-                     if (isset($_SESSION['uploaded_images']) && is_array($_SESSION['uploaded_images'])) {
-                         $upload_dir_temp = '/ruta/a/uploads/temporales/';
-                         $upload_dir_final = IMG_ADS; // Constante del sistema original?
-                         $foto_principal_nombre = $datos_finales['foto_principal'] ?? null;
-
-                         foreach ($_SESSION['uploaded_images'] as $index => $temp_filename) {
-                             $origen = $upload_dir_temp . $temp_filename;
-                             $destino = $upload_dir_final . $temp_filename; // Podrías renombrar aquí si quieres
-
-                             if (rename($origen, $destino)) {
-                                 $is_principal = ($temp_filename === $foto_principal_nombre) ? 1 : 0;
-                                 $datos_imagen = [
-                                     'ID_ad' => $last_ad,
-                                     'name_image' => $temp_filename, // O el nuevo nombre si renombraste
-                                     'position' => $index,
-                                     'status' => 1, // O estado pendiente si hay revisión
-                                     'principal' => $is_principal // Nuevo campo para marcar la principal
-                                 ];
-                                 insertSQL("sc_images", $datos_imagen);
-                             } else {
-                                 // Loggear error de movimiento de archivo
-                             }
-                         }
-                     }
-                     */
-
-                    // COMENTARIO: Lógica post-inserción (limpiar sesión, notificaciones, estadísticas, redirección)
-                    // checkRepeat($last_ad); // Si sigue siendo relevante
-                    // if (!$datos_ad['notifications']) { mailAdNotNotification($last_ad); } // Si sigue siendo relevante
-                    // mailNewAd($last_ad); // Si sigue siendo relevante
-                    // Statistic::addAnuncioNuevo(); // O basado en plan/extras
-
-                    unset($_SESSION['nuevo_anuncio_datos']); // Limpiar datos del formulario de la sesión
-                    unset($_SESSION['uploaded_images']); // Limpiar imágenes temporales de la sesión
-
-                    // COMENTARIO: Redirigir a una página de éxito.
-                    // Si se seleccionaron extras de pago, redirigir a la pasarela de pago o a una página intermedia.
-                    if (!empty($extras_seleccionados)) {
-                        // COMENTARIO: Aquí iría la lógica para iniciar el proceso de pago de los extras.
-                        // Podría ser crear una orden y redirigir a una pasarela.
-                        // header('Location: /pagina_pago?ad_id=' . $last_ad);
-                        // exit;
-                        // Por ahora, redirigimos a publicado con un flag de pago pendiente
-                        header('Location: /publicado?ad_id=' . $last_ad . '&pago=pendiente');
-                        exit;
-                    } else {
-                        // Si no hay extras de pago, redirigir directamente a la página de anuncio publicado.
-                        header('Location: /publicado?ad_id=' . $last_ad);
-                        exit;
-                    }
-                } else {
-                    $errores['final'] = "Error al guardar el anuncio en la base de datos.";
-                    $etapa_actual = ETAPA_EXTRAS_PAGO; // Volver a la última etapa para mostrar error
+                    // TODO: ¿Debería permitirse publicar si el email existe pero no está logueado?
+                    //       Quizás redirigir a login o mostrar un mensaje claro.
+                    //       Por ahora, se asocia el anuncio al usuario existente.
+                    //       ¡Cuidado! Esto podría permitir a alguien añadir anuncios a otra cuenta si conoce el email.
+                    //       Es MÁS SEGURO requerir login si el email existe.
+                    echo '<div class="alerta error">El email ya está registrado. Por favor, <a href="/login">inicia sesión</a> para publicar.</div>';
+                    $error_insert = true; // Marcar error para no continuar
                 }
             } else {
-                // Si hubo error de usuario, límite o validación final, quédate en la etapa 3
-                $etapa_actual = ETAPA_EXTRAS_PAGO;
-                if ($limite_alcanzado) {
-                    $errores['limite'] = "Has alcanzado el límite de anuncios para tu plan.";
-                }
-                if (empty($errores['final']) && !$id_user && !$is_logged_in) {
-                    $errores['final'] = "No se pudo crear o verificar el usuario. Revisa los datos.";
-                }
+                 // Usuario ya logueado, $id_user ya está definido.
+                 // TODO: Opcionalmente, actualizar datos del perfil si se modificaron en el formulario (nombre, teléfono, whatsapp?)
+                 // updateSQL("sc_user", ['name' => $nombre_contacto, 'phone' => $telefono, 'whatsapp' => $tiene_whatsapp], ['ID_user' => $id_user]);
             }
-        } else {
-            // Si hay errores (extras, términos, recaptcha), permanece en la etapa 3
-            $etapa_actual = ETAPA_EXTRAS_PAGO;
-        }
-    }
-} else {
-    // Si no es POST, resetea los datos si se accede a la primera página sin estar logueado
-    if ($etapa_actual == ETAPA_TIPO_USUARIO_PLAN && !$is_logged_in) {
-        // unset($_SESSION['nuevo_anuncio_datos']); // Opcional: limpiar al empezar de cero
-        // unset($_SESSION['uploaded_images']);
-        $datos_formulario = []; // Empezar con datos vacíos
-    } elseif ($is_logged_in && !isset($_SESSION['nuevo_anuncio_datos'])) {
-        // Si está logueado y no hay datos en sesión, precargar datos del usuario si es posible
-        $datos_formulario['nombre'] = $_SESSION['data']['name'] ?? '';
-        $datos_formulario['email'] = $_SESSION['data']['mail'] ?? '';
-        $datos_formulario['telefono'] = $_SESSION['data']['phone'] ?? '';
-        // Precargar otros datos si existen en $_SESSION['data']
-    }
-}
 
-// --- Preparar datos para mostrar en el formulario ---
-// Usar $datos_formulario para rellenar los campos 'value', 'checked', 'selected'
-$form_val = function ($key, $default = '') use ($datos_formulario) {
-    return htmlspecialchars($datos_formulario[$key] ?? $default, ENT_QUOTES, 'UTF-8');
-};
-$form_check = function ($key, $value) use ($datos_formulario) {
-    return (isset($datos_formulario[$key]) && $datos_formulario[$key] == $value) ? 'checked' : '';
-};
-$form_check_array = function ($key, $value) use ($datos_formulario) {
-    return (isset($datos_formulario[$key]) && is_array($datos_formulario[$key]) && in_array($value, $datos_formulario[$key])) ? 'checked' : '';
-};
-$form_select = function ($key, $value) use ($datos_formulario) {
-    return (isset($datos_formulario[$key]) && $datos_formulario[$key] == $value) ? 'selected' : '';
-};
-$form_error = function ($key) use ($errores) {
-    return isset($errores[$key]) ? '<span class="error-msg">' . htmlspecialchars($errores[$key]) . '</span>' : '';
-};
+            // ---------------------------------------------------------------
+            // PASO 3: Validación y Creación del Anuncio (si no hubo errores previos)
+            // ---------------------------------------------------------------
+             if (isset($error_insert) && $error_insert) {
+                 // No continuar si hubo error en pasos previos (registro, email existente, etc.)
+                 echo '<div class="alerta error">No se pudo procesar el formulario debido a errores previos.</div>';
+             }
+             // TODO: Revisar la lógica de límites de anuncios ($limite) según el plan y usuario
+             // $limite = check_item_limit($id_user); // Recalcular límite si es necesario
+             // elseif ($limite == 0 /*|| es_plan_pago || tiene_extras_pago */) { // Ajustar condición de límite
+             elseif ($id_user) { // Simplificado: Si tenemos un ID de usuario válido
 
+                // TODO: Aplicar lógica de renovación basada en el PLAN seleccionado
+                // if ($plan_seleccionado == 'silver' || $plan_seleccionado == 'gold') {
+                //     $datos_ad['renovable'] = renovationType::Cada12Horas; // Asumiendo que tienes constantes/enum
+                // } elseif ($plan_seleccionado == 'gratis') {
+                //     $datos_ad['renovable'] = renovationType::Cada24Horas;
+                // }
+                // $datos_ad['renovable_limit'] = time() + (30 * 24 * 60 * 60); // Ejemplo caducidad plan gratis 30 días
 
-// Cargar provincias para el select (como en el código original)
-$provincias = selectSQL("sc_region", array(), "name ASC");
+                // TODO: Procesar rotación de imágenes si esa lógica se mantiene
+                // if (isset($_POST['photo_name']) && isset($_POST['optImgage'])) {
+                //     foreach ($_POST['photo_name'] as $photo => $name) {
+                //         if(isset($_POST['optImgage'][$photo]['rotation'])) {
+                //             Images::rotateImage($name, $_POST['optImgage'][$photo]['rotation']);
+                //         }
+                //     }
+                // }
 
-
-?>
-
-<!-- COMENTARIO: Incluir aquí el JS de reCAPTCHA v3 (similar al original) -->
-<script src='https://www.google.com/recaptcha/api.js?render=<?php echo SITE_KEY; // Asegúrate que SITE_KEY esté definida 
-                                                            ?>'></script>
-
-<!-- COMENTARIO: Aquí empiezan los bloques HTML del formulario, separados por etapas -->
-
-<h2 class="titulo-form">Publica tu Anuncio</h2>
-
-<?php
-// Mostrar errores generales o de la etapa final
-if (!empty($errores['final']) || !empty($errores['recaptcha']) || !empty($errores['limite']) || !empty($errores['user'])) {
-    echo '<div class="alerta alerta-error">';
-    if (isset($errores['final'])) echo '<p>' . htmlspecialchars($errores['final']) . '</p>';
-    if (isset($errores['recaptcha'])) echo '<p>' . htmlspecialchars($errores['recaptcha']) . '</p>';
-    if (isset($errores['limite'])) echo '<p>' . htmlspecialchars($errores['limite']) . '</p>';
-    if (isset($errores['user'])) echo '<p>' . htmlspecialchars($errores['user']) . '</p>';
-    echo '</div>';
-}
-?>
-
-<form id="nuevo_anuncio_form" class="form-anuncio" method="post" action="<?php echo $_SERVER['PHP_SELF']; // O la URL de procesamiento 
-                                                                            ?>" enctype="multipart/form-data" autocomplete="off">
-
-    <!-- Campos ocultos para manejar el estado -->
-    <input type="hidden" name="etapa_actual" value="<?php echo $etapa_actual; ?>">
-    <input type="hidden" name="etapa_enviada" value="<?php echo $etapa_actual; ?>"> <!-- Indica qué etapa se está enviando -->
-    <input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response"> <!-- Para reCAPTCHA -->
-    <?php // COMENTARIO: Incluir token CSRF si tu sistema lo usa (como el `token` original) 
-    ?>
-    <?php // $token_q = generateFormToken('nuevoAnuncioToken'); // Generar token si es necesario 
-    ?>
-    <!-- <input type="hidden" name="csrf_token" value="<?php // echo $token_q; 
-                                                        ?>"> -->
+                $datos_ad['ID_user'] = $id_user;
+                $datos_ad['date_ad'] = time();
+                // TODO: Revisar si la moderación aplica igual para todos los planes/usuarios
+                // if (getConfParam('REVIEW_ITEM') == 1) {
+                //     $datos_ad['review'] = 1; // Pendiente de revisión
+                // } else {
+                     $datos_ad['review'] = 0; // Publicado directamente
+                // }
+                // TODO: Añadir campo para el plan seleccionado
+                $datos_ad['plan_type'] = $plan_seleccionado;
+                // TODO: Añadir campo para marcar si tiene extras activos (o guardar detalles en JSON/tabla)
+                $datos_ad['has_extras'] = !empty($extras_seleccionados) ? 1 : 0;
 
 
-    <?php // ================== ETAPA 1: TIPO USUARIO Y PLAN (si no logueado) ================== 
-    ?>
-    <?php if ($etapa_actual == ETAPA_TIPO_USUARIO_PLAN && !$is_logged_in): ?>
-        <fieldset class="etapa etapa-1">
-            <legend class="etapa-titulo">Etapa 1 de 3: Elige tu acceso</legend>
+                // --- Validación de campos obligatorios del NUEVO formulario ---
+                if (
+                    !empty($datos_ad['ID_cat']) &&
+                    !empty($datos_ad['ID_region']) &&
+                    !empty($datos_ad['title']) && mb_strlen($datos_ad['title']) >= 10 && mb_strlen($datos_ad['title']) <= 50 && // Añadir validación longitud
+                    !empty($datos_ad['texto']) && mb_strlen($datos_ad['texto']) >= 30 && mb_strlen($datos_ad['texto']) <= 500 && // Añadir validación longitud
+                    !empty($nombre_contacto) &&
+                    !empty($telefono) && strlen($telefono) >= 9 && // Validar longitud mínima teléfono
+                    !empty($email) && filter_var($email, FILTER_VALIDATE_EMAIL) && // Validar formato email
+                    isset($_POST['terminos']) && $_POST['terminos'] == '1' && // Validar términos
+                    $id_user // Asegurarse de tener un ID de usuario
+                    // TODO: Añadir más validaciones si son necesarias (ej: al menos un servicio, horario válido, etc.)
+                ) {
+                    // Insertar el anuncio
+                    $insert = insertSQL("sc_ad", $datos_ad);
+                    if ($insert) {
+                        $last_ad = lastIdSQL();
 
-            <div class="campo-grupo">
-                <label class="etiqueta">Tipo de Usuario *</label>
-                <div class="opciones-radio">
-                    <?php foreach ($tipos_usuario as $key => $descripcion): ?>
-                        <label class="opcion">
-                            <input type="radio" name="tipo_usuario" value="<?php echo $key; ?>" <?php echo $form_check('tipo_usuario', $key); ?>>
-                            <?php echo htmlspecialchars($descripcion); ?>
-                        </label>
-                    <?php endforeach; ?>
-                </div>
-                <?php echo $form_error('tipo_usuario'); ?>
-            </div>
-
-            <div class="campo-grupo">
-                <label class="etiqueta">Elige un Plan *</label>
-                <div class="opciones-radio">
-                    <?php foreach ($planes as $key => $plan): ?>
-                        <label class="opcion plan plan-<?php echo $key; ?>">
-                            <input type="radio" name="plan" value="<?php echo $key; ?>" <?php echo $form_check('plan', $key); ?>>
-                            <strong><?php echo htmlspecialchars($plan['nombre']); ?></strong>
-                            (<?php echo $plan['precio'] > 0 ? $plan['precio'] . '€ / ' . $plan['duracion'] . ' días' : 'Gratis'; ?>)
-                            <small>Renovación cada <?php echo $plan['renovacion_horas']; ?>h</small>
-                        </label>
-                    <?php endforeach; ?>
-                </div>
-                <?php echo $form_error('plan'); ?>
-            </div>
-
-            <div class="acciones-etapa">
-                <button type="submit" class="boton boton-primario">Siguiente: Detalles del Anuncio</button>
-            </div>
-        </fieldset>
-    <?php endif; ?>
-
-    <?php // ================== ETAPA 2: DETALLES DEL ANUNCIO ================== 
-    ?>
-    <?php if ($etapa_actual == ETAPA_DETALLES_ANUNCIO): ?>
-        <fieldset class="etapa etapa-2">
-            <legend class="etapa-titulo">Etapa <?php echo $is_logged_in ? '1' : '2'; ?> de <?php echo $is_logged_in ? '2' : '3'; ?>: Detalles del Anuncio</legend>
-
-            <?php // Si no está logueado, mostrar info de Etapa 1 o pedirla si falta 
-            ?>
-            <?php if (!$is_logged_in): ?>
-                <?php if (!isset($datos_formulario['tipo_usuario']) || !isset($datos_formulario['plan'])): ?>
-                    <p class="alerta alerta-aviso">Por favor, <a href="<?php echo $_SERVER['PHP_SELF']; // O URL al inicio del form 
-                                                                        ?>">vuelve al paso anterior</a> para seleccionar tu tipo de usuario y plan.</p>
-                    <?php // Podrías deshabilitar el resto del formulario aquí 
-                    ?>
-                <?php else: ?>
-                    <p>Tipo Usuario: <strong><?php echo htmlspecialchars($tipos_usuario[$datos_formulario['tipo_usuario']] ?? 'N/A'); ?></strong> | Plan: <strong><?php echo htmlspecialchars($planes[$datos_formulario['plan']]['nombre'] ?? 'N/A'); ?></strong></p>
-                    <hr>
-                <?php endif; ?>
-            <?php endif; ?>
-
-
-            <div class="campo">
-                <label for="nombre" class="etiqueta">Tu Nombre o Nick *</label>
-                <input type="text" id="nombre" name="nombre" class="entrada" value="<?php echo $form_val('nombre'); ?>" required maxlength="50">
-                <?php echo $form_error('nombre'); ?>
-            </div>
-
-            <!-- COMENTARIO: Si el usuario no está logueado, pedir email aquí -->
-            <?php if (!$is_logged_in): ?>
-                <div class="campo">
-                    <label for="email" class="etiqueta">Correo Electrónico *</label>
-                    <input type="email" id="email" name="email" class="entrada" value="<?php echo $form_val('email'); ?>" required maxlength="100">
-                    <small>Se usará para crear tu cuenta si no tienes una.</small>
-                    <?php echo $form_error('email'); ?>
-                </div>
-            <?php endif; ?>
-
-            <div class="campo">
-                <label for="categoria_nueva" class="etiqueta">Categoría del Anuncio *</label>
-                <select id="categoria_nueva" name="categoria_nueva" class="selector" required>
-                    <option value="">-- Selecciona una categoría --</option>
-                    <?php foreach ($categorias_nuevas as $key => $nombre): ?>
-                        <option value="<?php echo $key; ?>" <?php echo $form_select('categoria_nueva', $key); ?>><?php echo htmlspecialchars($nombre); ?></option>
-                    <?php endforeach; ?>
-                </select>
-                <?php echo $form_error('categoria_nueva'); ?>
-            </div>
-
-            <div class="campo-fila">
-                <div class="campo">
-                    <label for="provincia" class="etiqueta">Provincia *</label>
-                    <select id="provincia" name="provincia" class="selector" required>
-                        <option value="">-- Selecciona una provincia --</option>
-                        <?php foreach ($provincias as $prov): ?>
-                            <option value="<?php echo $prov['ID_region']; ?>" <?php echo $form_select('provincia', $prov['ID_region']); ?>>
-                                <?php echo htmlspecialchars($prov['name']); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                    <?php echo $form_error('provincia'); ?>
-                </div>
-                <div class="campo">
-                    <label for="ciudad" class="etiqueta">Ciudad / Zona (Opcional)</label>
-                    <input type="text" id="ciudad" name="ciudad" class="entrada" value="<?php echo $form_val('ciudad'); ?>" maxlength="100">
-                    <?php echo $form_error('ciudad'); ?>
-                </div>
-            </div>
-
-
-            <div class="campo">
-                <label for="titulo" class="etiqueta">Título del Anuncio *</label>
-                <input type="text" id="titulo" name="titulo" class="entrada" value="<?php echo $form_val('titulo'); ?>" required minlength="10" maxlength="50">
-                <small>Entre 10 y 50 caracteres.</small>
-                <?php echo $form_error('titulo'); ?>
-            </div>
-
-            <div class="campo">
-                <label for="descripcion" class="etiqueta">Descripción del Anuncio *</label>
-                <textarea id="descripcion" name="descripcion" class="textarea" rows="6" required minlength="30" maxlength="500"><?php echo $form_val('descripcion'); ?></textarea>
-                <small>Entre 30 y 500 caracteres. Describe qué ofreces.</small>
-                <?php echo $form_error('descripcion'); ?>
-            </div>
-
-            <div class="campo-grupo">
-                <label class="etiqueta">Servicios a Ofrecer *</label>
-                <div class="opciones-check">
-                    <?php foreach ($servicios_ofrecidos as $key => $nombre): ?>
-                        <label class="opcion">
-                            <input type="checkbox" name="servicios[]" value="<?php echo $key; ?>" <?php echo $form_check_array('servicios', $key); ?>>
-                            <?php echo htmlspecialchars($nombre); ?>
-                        </label>
-                    <?php endforeach; ?>
-                </div>
-                <small>Selecciona todos los que apliquen.</small>
-                <?php echo $form_error('servicios'); ?>
-            </div>
-
-            <div class="campo-grupo">
-                <label class="etiqueta">Fotos (Máximo 3) *</label>
-                <input type="file" id="fotos" name="fotos[]" class="entrada-archivo" multiple accept="image/jpeg, image/png" data-max-files="3">
-                <small>Sube hasta 3 fotos (JPG, PNG, máx 2MB cada una). La primera que subas será la principal por defecto.</small>
-                <!-- COMENTARIO: Aquí necesitarás JS para previsualizar las fotos y permitir elegir la principal -->
-                <div id="previsualizacion-fotos" class="previs-fotos">
-                    <?php
-                    // COMENTARIO: Si se está editando o volviendo a esta etapa, mostrar fotos ya subidas (temporalmente)
-                    if (!empty($_SESSION['uploaded_images'])) {
-                        echo "<p>Fotos cargadas:</p>";
-                        foreach ($_SESSION['uploaded_images'] as $img_name) {
-                            // Deberías mostrar una miniatura y la opción de marcar como principal/eliminar
-                            echo "<div>" . htmlspecialchars($img_name) .
-                                " <label><input type='radio' name='foto_principal' value='" . htmlspecialchars($img_name) . "' " . $form_check('foto_principal', $img_name) . "> Principal</label>" .
-                                "</div>";
+                        // TODO: Asociar las imágenes subidas al anuncio recién creado
+                        //       La lógica dependerá de cómo manejes las subidas temporales.
+                        //       Asumiendo que 'photo_name' contiene los nombres de archivo temporales subidos vía AJAX.
+                        if (isset($_POST['photo_name']) && is_array($_POST['photo_name'])) {
+                            $foto_principal_index = isset($_POST['foto_principal']) ? (int)$_POST['foto_principal'] : 0;
+                            foreach ($_POST['photo_name'] as $index => $name_image) {
+                                // TODO: Mover la imagen de temporal a definitiva y actualizar la BD.
+                                // Esto es un ejemplo, la implementación real varía.
+                                $es_principal = ($index == $foto_principal_index);
+                                // updateSQL("sc_images",
+                                //           $data = array('ID_ad' => $last_ad, 'position' => $index, "status" => 1, 'is_main' => $es_principal),
+                                //           $wa = array('name_image' => $name_image, 'ID_ad' => 0) // Actualizar imagen temporal sin anuncio asociado
+                                // );
+                                echo "Procesando imagen: $name_image (Principal: $es_principal)<br>"; // Placeholder
+                            }
+                             // Limpiar imágenes temporales no usadas si es necesario
                         }
+
+                        // TODO: Actualizar estadísticas si se mantiene esa lógica
+                        // Statistic::addAnuncioNuevo(); // O Premium si aplica
+
+                        // TODO: Enviar notificaciones por email si aplica
+                        // if (!isset($_POST['notifications'])) { // Si el usuario NO quiere recibir notificaciones de contacto
+                        //      mailAdNotNotification($last_ad); // Informar al admin?
+                        // }
+                        // mailNewAd($last_ad); // Notificar al admin sobre nuevo anuncio
+
+                        // TODO: Redirigir a una página de éxito.
+                        //       Si hay pago pendiente (extras/plan), redirigir a la pasarela de pago.
+                        if (!empty($extras_seleccionados) /* || $plan_seleccionado == 'silver' || $plan_seleccionado == 'gold' */) {
+                            // Redirigir a pago, pasando ID del anuncio ($last_ad)
+                            // header('Location: /pago?ad_id=' . $last_ad);
+                             echo '<script type="text/javascript">location.href = "/publicado?id='.$last_ad.'&pago=pendiente";</script>'; // Ejemplo redirección JS
+                        } else {
+                            // Redirigir a "anuncio publicado"
+                            // header('Location: /publicado?id=' . $last_ad);
+                            echo '<script type="text/javascript">location.href = "/publicado?id='.$last_ad.'";</script>'; // Ejemplo redirección JS
+                        }
+                        exit(); // Detener script después de redirigir
+
+                    } else {
+                        // Error insertando anuncio
+                        $error_insert = true;
+                        echo '<div class="alerta error">Error al guardar el anuncio en la base de datos.</div>';
                     }
-                    ?>
-                </div>
-                <?php echo $form_error('fotos'); ?>
-                <?php echo $form_error('foto_principal'); ?>
-                <!-- Campo oculto para la foto principal seleccionada por JS -->
-                <!-- <input type="hidden" name="foto_principal_seleccionada" id="foto_principal_seleccionada" value="<?php echo $form_val('foto_principal'); ?>"> -->
-            </div>
+                } else {
+                    // Error de validación de campos
+                    $error_insert = true;
+                    echo '<div class="alerta error">Faltan campos obligatorios o algunos datos no son válidos. Por favor, revisa el formulario.</div>';
+                    // TODO: Sería ideal resaltar los campos con error en el formulario.
+                }
 
-            <div class="campo-grupo">
-                <label class="etiqueta">Horario Semanal Detallado *</label>
-                <div class="horario-semanal">
-                    <?php foreach ($dias_semana as $dia): ?>
-                        <div class="dia-horario">
-                            <label class="etiqueta-dia"><?php echo ucfirst($dia); ?></label>
-                            <input type="checkbox" name="horario_semanal[<?php echo $dia; ?>][disponible]" value="1" <?php echo isset($datos_formulario['horario_semanal'][$dia]['disponible']) ? 'checked' : ''; ?>> Disponible
-                            <label>De:</label>
-                            <input type="time" name="horario_semanal[<?php echo $dia; ?>][inicio]" value="<?php echo $form_val("horario_semanal[$dia][inicio]", '09:00'); ?>" class="entrada-tiempo">
-                            <label>A:</label>
-                            <input type="time" name="horario_semanal[<?php echo $dia; ?>][fin]" value="<?php echo $form_val("horario_semanal[$dia][fin]", '18:00'); ?>" class="entrada-tiempo">
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-                <small>Marca los días que trabajas e indica tu horario.</small>
-                <?php echo $form_error('horario_semanal'); ?>
-            </div>
+             } else {
+                  // Límite de anuncios alcanzado para el plan actual
+                  $error_insert = true;
+                  echo '<div class="alerta error">Has alcanzado el límite de anuncios para tu plan actual.</div>';
+             }
+        } else {
+             // Error de Token CSRF
+             echo '<div class="alerta error">Error de seguridad al procesar el formulario. Recarga la página e inténtalo de nuevo.</div>';
+        }
+    } else {
+        // Error de reCAPTCHA
+        echo '<div class="alerta error" id="error_recaptcha">Verificación reCAPTCHA fallida. Inténtalo de nuevo.</div><br>';
+    }
+}
+// --- FIN PROCESAMIENTO DEL FORMULARIO (POST) ---
+?>
 
-            <div class="campo-fila">
-                <div class="campo">
-                    <label for="telefono" class="etiqueta">Teléfono de Contacto *</label>
-                    <input type="tel" id="telefono" name="telefono" class="entrada" value="<?php echo $form_val('telefono'); ?>" required maxlength="15">
-                    <?php echo $form_error('telefono'); ?>
-                </div>
-                <div class="campo campo-check">
-                    <label class="opcion">
-                        <input type="checkbox" id="whatsapp" name="whatsapp" value="1" <?php echo $form_check('whatsapp', '1'); ?>>
-                        Tengo WhatsApp
-                    </label>
-                </div>
-            </div>
+<!-- Incluir JS de reCAPTCHA v3 -->
+<script src='https://www.google.com/recaptcha/api.js?render=<?php echo SITE_KEY; // Asegúrate que SITE_KEY esté definida ?>'></script>
 
-            <div class="campo-grupo">
-                <label class="etiqueta">Idiomas que Hablas</label>
-                <div id="lista-idiomas" class="lista-items-dinamica">
-                    <?php
-                    // COMENTARIO: Mostrar idiomas existentes si se vuelve a la etapa
-                    $idiomas_guardados = $datos_formulario['idiomas'] ?? [];
-                    if (empty($idiomas_guardados)) {
-                        $idiomas_guardados = [['idioma' => '', 'nivel' => '']];
-                    } // Añadir uno vacío por defecto
+<!-- TODO: Revisar si estos diálogos siguen siendo necesarios o se integran en el flujo -->
+<?php /* if (!user::checkLogin() && check_ip()): ?>
+    <dialog class="dialog" open>
+        <div class="dialog-modal">
+            <a style="color: black;" href="/"><i class="fa-times-circle fa"></i></a>
+            <p class="text-underline">Usuario ya registrado</p>
+            <p class="mb-3">Para publicar un anuncio accede a tu cuenta.</p>
+            <button onclick="gotToLogin()" class="payment-btn">
+                Acceder a mi cuenta
+            </button>
+        </div>
+    </dialog>
+<?php endif */ ?>
 
-                    foreach ($idiomas_guardados as $index => $idioma_data):
-                    ?>
-                        <div class="item-idioma">
-                            <select name="idiomas[<?php echo $index; ?>][idioma]" class="selector-corto">
-                                <option value="">-- Idioma --</option>
-                                <?php foreach ($idiomas_hablados as $idioma): ?>
-                                    <option value="<?php echo $idioma; ?>" <?php echo ($idioma_data['idioma'] ?? '') == $idioma ? 'selected' : ''; ?>><?php echo $idioma; ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                            <select name="idiomas[<?php echo $index; ?>][nivel]" class="selector-corto">
-                                <option value="">-- Nivel --</option>
-                                <?php foreach ($niveles_idioma as $nivel): ?>
-                                    <option value="<?php echo $nivel; ?>" <?php echo ($idioma_data['nivel'] ?? '') == $nivel ? 'selected' : ''; ?>><?php echo $nivel; ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                            <?php if ($index > 0): // Permitir borrar excepto el primero 
-                            ?>
-                                <button type="button" class="boton-quitar" onclick="this.parentNode.remove()">Quitar</button>
-                            <?php endif; ?>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-                <button type="button" id="agregar-idioma" class="boton-secundario boton-agregar">Añadir Idioma</button>
-                <?php echo $form_error('idiomas'); ?>
-            </div>
+<!-- TODO: Eliminar o adaptar estos enlaces de ayuda si es necesario -->
+<ul class="ayuda-post">
+    <li class="ayuda-post-item"><a target="_blank" href="/ayuda/">Normas de <b>publicación</b></a></li>
+    <li class="ayuda-post-item"><a target="_blank" href="/ayuda/">Ayuda</a></li>
+    <li class="ayuda-post-item"><a target="_blank" href="https://www.solomasajistas.com/blog/">Visita nuestro blog</a></li>
+</ul>
 
-            <div class="campo">
-                <label for="salidas" class="etiqueta">¿Realizas Salidas? *</label>
-                <select id="salidas" name="salidas" class="selector" required>
-                    <option value="0" <?php echo $form_select('salidas', '0'); ?>>No</option>
-                    <option value="1" <?php echo $form_select('salidas', '1'); ?>>Sí</option>
-                </select>
-                <?php echo $form_error('salidas'); ?>
-            </div>
+<h1 class="titulo-principal">Publica tu Anuncio</h1>
 
-            <div class="acciones-etapa">
-                <?php if (!$is_logged_in): ?>
-                    <button type="button" onclick="history.back()" class="boton boton-secundario">Volver</button>
-                <?php endif; ?>
-                <button type="submit" class="boton boton-primario">Siguiente: Extras Opcionales</button>
-            </div>
-        </fieldset>
-    <?php endif; ?>
+<div class="contenedor-formulario">
 
-
-    <?php // ================== ETAPA 3: EXTRAS Y FINALIZACIÓN ================== 
+    <?php // Mostrar errores generales si ocurrieron en el procesamiento POST y no se redirigió
+        if (isset($error_insert) && $error_insert) {
+            echo '<div class="alerta error">Hubo un problema al procesar tu solicitud. Revisa los mensajes y el formulario.</div>';
+        }
+        if (isset($user_registered) && $user_registered) {
+             echo '<div class="alerta info">Parece que ya tienes una cuenta con ese número de teléfono. <a href="/login">Inicia sesión</a>.</div>';
+        }
     ?>
-    <?php if ($etapa_actual == ETAPA_EXTRAS_PAGO): ?>
-        <fieldset class="etapa etapa-3">
-            <legend class="etapa-titulo">Etapa <?php echo $is_logged_in ? '2' : '3'; ?> de <?php echo $is_logged_in ? '2' : '3'; ?>: Extras y Publicación</legend>
 
-            <div class="campo-grupo">
-                <label class="etiqueta">Servicios Extra (Opcional)</label>
-                <p>Selecciona si quieres destacar tu anuncio (conlleva coste adicional).</p>
-                <div class="opciones-check">
-                    <?php foreach ($extras_disponibles as $key => $extra): ?>
-                        <label class="opcion extra extra-<?php echo $key; ?>">
-                            <input type="checkbox" name="extras[]" value="<?php echo $key; ?>" <?php echo $form_check_array('extras', $key); ?>>
-                            <strong><?php echo htmlspecialchars($extra['nombre']); ?> (€<?php echo $extra['precio']; ?>)</strong>
-                            <small><?php echo htmlspecialchars($extra['descripcion']); ?></small>
+    <!-- Formulario principal -->
+    <form id="form-nuevo-anuncio" class="formulario-multi-etapa" method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" enctype="multipart/form-data" autocomplete="off">
+
+        <?php // Generar Token CSRF
+            $token_q = generateFormToken('nuevoAnuncioToken');
+        ?>
+        <input type="hidden" name="token" id="token" value="<?= $token_q; ?>">
+        <input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response" />
+        <!-- TODO: Mantener el input order si la lógica de pago previo sigue existiendo -->
+        <!-- <input type="hidden" id="new_order" name="order" value="0" /> -->
+
+        <!-- ======================= ETAPA 0: TIPO DE USUARIO (Solo si no está logueado) ======================= -->
+        <?php if (!checkSession()): // Asume que checkSession() devuelve true si está logueado ?>
+        <div id="etapa-tipo-usuario" class="etapa activa">
+            <h2 class="titulo-etapa">Paso 1: Elige tu tipo de perfil</h2>
+            <p>Selecciona cómo quieres usar la plataforma.</p>
+
+            <div class="lista-opciones grupo-radios">
+                <label class="opcion-radio">
+                    <input type="radio" name="tipo_usuario" value="masajista" required>
+                    <div class="opcion-contenido">
+                        <strong>Masajista Particular</strong>
+                        <span>Crea tu perfil individual para ofrecer tus servicios.</span>
+                    </div>
+                </label>
+                <label class="opcion-radio">
+                    <input type="radio" name="tipo_usuario" value="centro">
+                     <div class="opcion-contenido">
+                        <strong>Centro de Masajes</strong>
+                        <span>Gestiona varios perfiles de masajistas de tu centro.</span>
+                     </div>
+                </label>
+                <label class="opcion-radio">
+                    <input type="radio" name="tipo_usuario" value="publicista">
+                     <div class="opcion-contenido">
+                        <strong>Publicista</strong>
+                        <span>Promociona productos o servicios relacionados.</span>
+                     </div>
+                </label>
+                <label class="opcion-radio">
+                    <input type="radio" name="tipo_usuario" value="visitante">
+                     <div class="opcion-contenido">
+                        <strong>Visitante</strong>
+                        <span>Guarda perfiles favoritos y contacta fácilmente. (No publica anuncios)</span>
+                     </div>
+                </label>
+            </div>
+             <div class="error-msg oculto" id="error-tipo-usuario">Debes seleccionar un tipo de usuario.</div>
+
+            <div class="navegacion-etapa">
+                <button type="button" class="frm-boton btn-siguiente">Siguiente</button>
+            </div>
+        </div>
+        <?php endif; ?>
+
+        <!-- ======================= ETAPA 1: ELECCIÓN DE PLAN ======================= -->
+        <div id="etapa-plan" class="etapa <?php echo checkSession() ? 'activa' : 'oculto'; // Activa si ya está logueado ?>">
+            <h2 class="titulo-etapa"><?php echo checkSession() ? 'Paso 1' : 'Paso 2'; ?>: Elige tu Plan</h2>
+            <p>Selecciona el plan que mejor se adapte a tus necesidades.</p>
+
+            <div class="lista-opciones grupo-radios-plan">
+                 <label class="opcion-radio opcion-plan">
+                    <input type="radio" name="plan" value="gratis" required checked> <!-- Marcado por defecto -->
+                    <div class="opcion-contenido">
+                        <strong>Plan Gratis</strong>
+                        <span>Prueba gratuita de 30 días.</span>
+                        <span>Renovación manual de anuncios cada 24 horas.</span>
+                        <span class="precio-plan">0 €</span>
+                    </div>
+                </label>
+                 <label class="opcion-radio opcion-plan">
+                    <input type="radio" name="plan" value="silver">
+                     <div class="opcion-contenido">
+                        <strong>Plan Silver</strong>
+                        <span>Visibilidad mejorada por 60 días.</span>
+                        <span>Renovación automática de anuncios cada 12 horas.</span>
+                        <span class="precio-plan">12 €</span>
+                     </div>
+                </label>
+                 <label class="opcion-radio opcion-plan">
+                    <input type="radio" name="plan" value="gold">
+                     <div class="opcion-contenido">
+                        <strong>Plan Gold</strong>
+                        <span>Máxima visibilidad por 90 días.</span>
+                        <span>Renovación automática de anuncios cada 12 horas.</span>
+                         <!-- TODO: Añadir beneficios extra si los hay -->
+                        <span class="precio-plan">30 €</span>
+                     </div>
+                </label>
+            </div>
+             <div class="error-msg oculto" id="error-plan">Debes seleccionar un plan.</div>
+
+            <div class="navegacion-etapa">
+                <?php if (!checkSession()): ?>
+                    <button type="button" class="frm-boton btn-anterior">Anterior</button>
+                <?php endif; ?>
+                <button type="button" class="frm-boton btn-siguiente">Siguiente</button>
+            </div>
+        </div>
+
+        <!-- ======================= ETAPA 2: DATOS DEL PERFIL/ANUNCIO ======================= -->
+        <div id="etapa-perfil" class="etapa oculto">
+            <h2 class="titulo-etapa"><?php echo checkSession() ? 'Paso 2' : 'Paso 3'; ?>: Completa tu Anuncio</h2>
+
+            <fieldset class="frm-seccion">
+                <legend>Información Básica</legend>
+
+                 <div class="frm-grupo">
+                    <label for="nombre" class="frm-etiqueta">Tu Nombre o Alias *</label>
+                    <input type="text" name="nombre" id="nombre" class="frm-campo" required maxlength="50" value="<?php echo isset($_SESSION['data']['name']) ? htmlspecialchars($_SESSION['data']['name']) : ''; ?>">
+                    <div class="error-msg oculto" id="error-nombre">El nombre es obligatorio.</div>
+                </div>
+
+                <div class="frm-grupo">
+                    <label for="categoria" class="frm-etiqueta">Categoría Principal *</label>
+                    <select name="categoria" id="categoria" class="frm-campo frm-select" required>
+                        <option value="">-- Selecciona una categoría --</option>
+                        <option value="1">Masajes Terapéuticos</option>
+                        <option value="2">Masajista Erótica</option>
+                        <option value="3">Masajista Hetero/Gay</option>
+                        <option value="4">Bolsa de Empleo</option>
+                        <!-- <option value="99">Otros</option> --> <?php // Añadir si es necesario ?>
+                    </select>
+                     <div class="error-msg oculto" id="error-categoria">Debes seleccionar una categoría.</div>
+                </div>
+
+                 <div class="frm-grupo">
+                    <label for="provincia" class="frm-etiqueta">Provincia *</label>
+                    <select name="provincia" id="provincia" class="frm-campo frm-select" required>
+                        <option value="">-- Selecciona una provincia --</option>
+                         <?php
+                            // Reutilizar la carga de provincias del código original
+                            $provincias = selectSQL("sc_region", [], "name ASC"); // Asume que la tabla es sc_region
+                            foreach ($provincias as $prov) {
+                                echo '<option value="' . $prov['ID_region'] . '">' . htmlspecialchars($prov['name']) . '</option>';
+                            }
+                         ?>
+                    </select>
+                    <div class="error-msg oculto" id="error-provincia">Debes seleccionar una provincia.</div>
+                </div>
+
+                <div class="frm-grupo">
+                    <label for="ciudad" class="frm-etiqueta">Ciudad / Zona (Opcional)</label>
+                    <input type="text" name="ciudad" id="ciudad" class="frm-campo" maxlength="100" placeholder="Ej: Centro, Nervión, etc.">
+                </div>
+
+            </fieldset>
+
+             <fieldset class="frm-seccion">
+                <legend>Detalles del Anuncio</legend>
+
+                <div class="frm-grupo">
+                    <label for="titulo_anuncio" class="frm-etiqueta">Título del Anuncio *</label>
+                    <input type="text" name="titulo_anuncio" id="titulo_anuncio" class="frm-campo" required minlength="10" maxlength="50" placeholder="Ej: Masajista Profesional en Madrid Centro">
+                    <div class="contador-caracteres">Caracteres: <span id="cont-titulo">0</span> (min 10 / máx 50)</div>
+                     <div class="error-msg oculto" id="error-titulo">El título es obligatorio (entre 10 y 50 caracteres).</div>
+                     <div class="error-msg oculto" id="error-titulo-palabras">El título contiene palabras no permitidas.</div> <!-- TODO: Añadir validación JS/PHP -->
+                </div>
+
+                 <div class="frm-grupo">
+                    <label for="descripcion" class="frm-etiqueta">Descripción del Anuncio *</label>
+                    <textarea name="descripcion" id="descripcion" class="frm-campo frm-textarea" rows="6" required minlength="30" maxlength="500" placeholder="Describe tus servicios, experiencia, ambiente, etc."></textarea>
+                    <div class="contador-caracteres">Caracteres: <span id="cont-desc">0</span> (min 30 / máx 500)</div>
+                     <div class="error-msg oculto" id="error-descripcion">La descripción es obligatoria (entre 30 y 500 caracteres).</div>
+                     <div class="error-msg oculto" id="error-desc-palabras">La descripción contiene palabras no permitidas.</div> <!-- TODO: Añadir validación JS/PHP -->
+                </div>
+
+                <div class="frm-grupo">
+                    <label class="frm-etiqueta">Servicios Ofrecidos *</label>
+                    <div class="grupo-checkboxes">
+                        <?php
+                            $servicios = ["Masaje relajante", "Masaje deportivo", "Masaje podal", "Masaje antiestrés", "Masaje linfático", "Masaje shiatsu", "Masaje descontracturante", "Masaje ayurvédico", "Masaje circulatorio", "Masaje tailandés"];
+                            foreach ($servicios as $servicio) {
+                                $valor = strtolower(str_replace(' ', '_', $servicio)); // Genera un valor simple
+                                echo '<label class="frm-checkbox"><input type="checkbox" name="servicios[]" value="'.htmlspecialchars($valor).'"> ' . htmlspecialchars($servicio) . '</label>';
+                            }
+                        ?>
+                    </div>
+                     <div class="error-msg oculto" id="error-servicios">Debes seleccionar al menos un servicio.</div>
+                </div>
+
+            </fieldset>
+
+            <fieldset class="frm-seccion">
+                <legend>Fotografías</legend>
+                 <div class="frm-grupo">
+                    <label class="frm-etiqueta">Sube tus fotos (hasta <?= htmlspecialchars($DATAJSON['max_photos'] ?? 3) ?>)</label>
+                    <div class="ayuda-texto">Puedes arrastrar y soltar las imágenes. Tamaño máx. 2MB (JPG, PNG).</div>
+                    <!-- Reutilizar la estructura de subida de fotos del código original, adaptando clases -->
+                    <div class="subida-fotos-contenedor">
+                        <div id="boton-subir-foto" class="boton-subir">
+                            <span>Haz click o arrastra para subir</span>
+                            <input type="file" name="fotos_anuncio" id="campo-subir-foto" multiple accept="image/jpeg, image/png" style="display: none;"> <!-- Ocultar input real -->
+                        </div>
+                        <div id="lista-fotos-subidas" class="lista-fotos sortable">
+                            <!-- Las previsualizaciones de las fotos se añadirán aquí vía JS -->
+                        </div>
+                        <input type="hidden" name="foto_principal" id="foto_principal_input" value="0"> <!-- Input para saber índice de la foto principal -->
+                    </div>
+                    <div class="error-msg oculto" id="error-fotos">Debes subir al menos una foto. Selecciona cuál será la principal haciendo click en ella.</div>
+                 </div>
+            </fieldset>
+
+            <fieldset class="frm-seccion">
+                <legend>Disponibilidad y Contacto</legend>
+
+                 <div class="frm-grupo">
+                     <label class="frm-etiqueta">Horario Detallado *</label>
+                     <div class="ayuda-texto">Marca los días que estás disponible y selecciona tu horario.</div>
+                     <div class="horario-semanal">
+                         <?php
+                         $dias = ['lunes' => 'Lunes', 'martes' => 'Martes', 'miercoles' => 'Miércoles', 'jueves' => 'Jueves', 'viernes' => 'Viernes', 'sabado' => 'Sábado', 'domingo' => 'Domingo'];
+                         foreach ($dias as $key => $nombre) {
+                             ?>
+                             <div class="dia-horario" id="horario-<?= $key ?>">
+                                 <label class="frm-checkbox check-dia">
+                                     <input type="checkbox" name="horario_dia[<?= $key ?>][activo]" value="1"> <?= $nombre ?>
+                                 </label>
+                                 <div class="horas-dia oculto">
+                                     <label>De:</label>
+                                     <select name="horario_dia[<?= $key ?>][inicio]" class="frm-campo frm-select corto">
+                                         <?php // Generar opciones de hora
+                                            for ($h = 0; $h < 24; $h++) {
+                                                $hora = sprintf('%02d', $h);
+                                                echo "<option value='{$hora}:00'>{$hora}:00</option>";
+                                                echo "<option value='{$hora}:30'>{$hora}:30</option>";
+                                            }
+                                         ?>
+                                     </select>
+                                     <label>A:</label>
+                                     <select name="horario_dia[<?= $key ?>][fin]" class="frm-campo frm-select corto">
+                                         <?php // Generar opciones de hora
+                                            for ($h = 0; $h < 24; $h++) {
+                                                $hora = sprintf('%02d', $h);
+                                                $selected = ($hora == 23) ? 'selected' : ''; // Preseleccionar última hora
+                                                echo "<option value='{$hora}:00'>{$hora}:00</option>";
+                                                echo "<option value='{$hora}:30' $selected>{$hora}:30</option>";
+                                            }
+                                         ?>
+                                     </select>
+                                 </div>
+                             </div>
+                         <?php } ?>
+                     </div>
+                     <div class="error-msg oculto" id="error-horario">Debes marcar al menos un día y configurar su horario.</div>
+                 </div>
+
+                <div class="frm-grupo">
+                    <label for="telefono" class="frm-etiqueta">Teléfono de Contacto *</label>
+                    <div class="grupo-telefono">
+                        <input type="tel" name="telefono" id="telefono" class="frm-campo" required pattern="[0-9]{9,15}" placeholder="Ej: 612345678" value="<?php echo isset($_SESSION['data']['phone']) ? htmlspecialchars($_SESSION['data']['phone']) : ''; ?>">
+                        <label class="frm-checkbox check-whatsapp">
+                            <input type="checkbox" name="tiene_whatsapp" value="1" <?php echo (isset($_SESSION['data']['whatsapp']) && $_SESSION['data']['whatsapp'] == 1) ? 'checked' : ''; ?>> ¿Tienes WhatsApp?
                         </label>
-                    <?php endforeach; ?>
-                    <label class="opcion extra extra-gratis">
-                        <input type="radio" name="extras[]" value="ninguno" <?php echo (!isset($datos_formulario['extras']) || empty($datos_formulario['extras']) || in_array('ninguno', $datos_formulario['extras'] ?? [])) ? 'checked' : ''; ?>>
-                        <strong>Continuar sin extras (Gratis)</strong>
+                    </div>
+                    <div class="error-msg oculto" id="error-telefono">Introduce un teléfono válido (solo números, 9-15 dígitos).</div>
+                </div>
+
+                 <div class="frm-grupo">
+                     <label class="frm-etiqueta">Idiomas que Hablas (Opcional)</label>
+                     <div class="grupo-idiomas">
+                         <div class="par-idioma">
+                             <select name="idioma_1" class="frm-campo frm-select">
+                                 <option value="">-- Idioma 1 --</option>
+                                 <?php // TODO: Cargar lista de idiomas (ej: de constantes o BD)
+                                     echo '<option value="es">Español</option><option value="en">Inglés</option><option value="fr">Francés</option>';
+                                 ?>
+                             </select>
+                             <select name="nivel_idioma_1" class="frm-campo frm-select">
+                                 <option value="">-- Nivel --</option>
+                                 <option value="basico">Básico</option>
+                                 <option value="intermedio">Intermedio</option>
+                                 <option value="avanzado">Avanzado</option>
+                                 <option value="nativo">Nativo</option>
+                             </select>
+                         </div>
+                         <div class="par-idioma">
+                              <select name="idioma_2" class="frm-campo frm-select">
+                                 <option value="">-- Idioma 2 --</option>
+                                  <?php // TODO: Cargar lista de idiomas
+                                     echo '<option value="es">Español</option><option value="en">Inglés</option><option value="fr">Francés</option><option value="de">Alemán</option>';
+                                  ?>
+                             </select>
+                             <select name="nivel_idioma_2" class="frm-campo frm-select">
+                                 <option value="">-- Nivel --</option>
+                                 <option value="basico">Básico</option>
+                                 <option value="intermedio">Intermedio</option>
+                                 <option value="avanzado">Avanzado</option>
+                                 <option value="nativo">Nativo</option>
+                             </select>
+                         </div>
+                     </div>
+                 </div>
+
+                <div class="frm-grupo">
+                    <label for="realiza_salidas" class="frm-etiqueta">¿Realizas salidas a domicilio/hotel? *</label>
+                    <select name="realiza_salidas" id="realiza_salidas" class="frm-campo frm-select" required>
+                        <option value="0">No</option>
+                        <option value="1">Sí</option>
+                    </select>
+                    <div class="error-msg oculto" id="error-salidas">Debes indicar si realizas salidas.</div>
+                </div>
+
+                <?php // Campo de email solo si no está logueado ?>
+                <?php if (!checkSession()): ?>
+                 <div class="frm-grupo">
+                    <label for="email" class="frm-etiqueta">Tu Email de Contacto *</label>
+                    <input type="email" name="email" id="email" class="frm-campo" required placeholder="Necesario para gestionar tu anuncio">
+                     <div class="ayuda-texto">Si ya tienes cuenta, usa el mismo email. Si no, crearemos una cuenta para ti.</div>
+                     <div class="error-msg oculto" id="error-email">Introduce un email válido.</div>
+                </div>
+                <?php else: ?>
+                    <input type="hidden" name="email" value="<?php echo htmlspecialchars($_SESSION['data']['mail']); ?>">
+                    <div class="frm-grupo">
+                        <label class="frm-etiqueta">Email de Contacto:</label>
+                        <span class="texto-fijo"><?php echo htmlspecialchars($_SESSION['data']['mail']); ?></span>
+                    </div>
+                <?php endif; ?>
+
+            </fieldset>
+
+            <div class="navegacion-etapa">
+                <button type="button" class="frm-boton btn-anterior">Anterior</button>
+                <button type="button" class="frm-boton btn-siguiente">Siguiente (Extras Opcionales)</button>
+                <!-- <button type="submit" class="frm-boton btn-publicar">Publicar Anuncio Gratis</button> --> <!-- Opción alternativa si no quieren extras -->
+            </div>
+        </div>
+
+        <!-- ======================= ETAPA 3: EXTRAS OPCIONALES ======================= -->
+        <div id="etapa-extras" class="etapa oculto">
+             <h2 class="titulo-etapa"><?php echo checkSession() ? 'Paso 3' : 'Paso 4'; ?>: Destaca tu Anuncio (Opcional)</h2>
+             <p>Aumenta la visibilidad de tu anuncio con nuestros servicios extra.</p>
+
+            <div class="lista-opciones grupo-checkboxes-extra">
+                <label class="opcion-checkbox opcion-extra">
+                    <input type="checkbox" name="extras[]" value="premium">
+                     <div class="opcion-contenido">
+                        <strong>Premium (35 €)</strong>
+                        <span>Tu anuncio aparecerá aleatoriamente en las posiciones superiores.</span>
+                     </div>
+                </label>
+                 <label class="opcion-checkbox opcion-extra">
+                    <input type="checkbox" name="extras[]" value="premium_mini">
+                     <div class="opcion-contenido">
+                        <strong>Premium Mini (27 €)</strong>
+                        <span>Tu anuncio aparecerá aleatoriamente bajo los Premium.</span>
+                     </div>
+                </label>
+                 <label class="opcion-checkbox opcion-extra">
+                    <input type="checkbox" name="extras[]" value="destacado">
+                     <div class="opcion-contenido">
+                        <strong>Destacado (20 €)</strong>
+                        <span>Tu anuncio aparecerá aleatoriamente con un diseño destacado.</span>
+                     </div>
+                </label>
+                 <label class="opcion-checkbox opcion-extra">
+                    <input type="checkbox" name="extras[]" value="autosubida">
+                     <div class="opcion-contenido">
+                        <strong>Autosubida (25 €)</strong>
+                        <span>Tu anuncio subirá posiciones automáticamente (debajo de Destacados).</span>
+                     </div>
+                </label>
+                <label class="opcion-checkbox opcion-extra">
+                    <input type="checkbox" name="extras[]" value="banner_superior">
+                     <div class="opcion-contenido">
+                        <strong>Banner Superior (50 €)</strong>
+                        <span>Muestra tu banner aleatoriamente en la cabecera de la página.</span>
+                         <!-- TODO: Añadir campo para subir imagen del banner si se selecciona -->
+                     </div>
+                </label>
+                 <label class="opcion-checkbox opcion-extra">
+                    <input type="checkbox" name="extras[]" value="banner_lateral">
+                     <div class="opcion-contenido">
+                        <strong>Banner Lateral (50 €)</strong>
+                        <span>Muestra tu banner aleatoriamente en la barra lateral.</span>
+                         <!-- TODO: Añadir campo para subir imagen del banner si se selecciona -->
+                     </div>
+                </label>
+            </div>
+
+            <fieldset class="frm-seccion terminos-finales">
+                 <div class="frm-grupo">
+                    <label class="frm-checkbox">
+                        <input name="terminos" type="checkbox" id="terminos" value="1" required />
+                        He leído y acepto los <a href="/terminos-y-condiciones" target="_blank">Términos y Condiciones</a> y la <a href="/politica-privacidad" target="_blank">Política de Privacidad</a>. *
+                    </label>
+                    <div class="error-msg oculto" id="error-terminos">Debes aceptar los términos y condiciones.</div>
+                </div>
+
+                <div class="frm-grupo">
+                    <label class="frm-checkbox">
+                        <input name="notifications" type="checkbox" id="notifications" value="1" checked /> <!-- Marcado por defecto -->
+                       Quiero recibir notificaciones por email cuando alguien contacte a través de mi anuncio.
                     </label>
                 </div>
-                <?php echo $form_error('extras'); ?>
+            </fieldset>
+
+             <div class="navegacion-etapa">
+                <button type="button" class="frm-boton btn-anterior">Anterior</button>
+                <!-- El texto del botón final cambiará con JS dependiendo si se eligen extras -->
+                <button type="submit" id="btn-finalizar" class="frm-boton btn-publicar">Finalizar y Publicar Gratis</button>
             </div>
+        </div>
 
-            <div class="campo-grupo">
-                <label class="opcion">
-                    <input type="checkbox" id="terminos" name="terminos" value="1" <?php echo $form_check('terminos', '1'); ?>>
-                    Acepto los <a href="/terminos-y-condiciones" target="_blank">Términos y Condiciones</a> y las <a href="/normas-publicacion" target="_blank">Normas de Publicación</a> *
-                </label>
-                <?php echo $form_error('terminos'); ?>
-            </div>
+    </form>
+</div>
 
-            <!-- COMENTARIO: Otros checkboxes opcionales del formulario original -->
-            <div class="campo-grupo">
-                <label class="opcion">
-                    <input type="checkbox" id="notifications" name="notifications" value="1" <?php echo $form_check('notifications', '1'); ?>>
-                    <?php // echo $language['post.label_notifications'] ?? 'Quiero recibir notificaciones sobre mi anuncio.'; 
-                    ?>
-                    Quiero recibir notificaciones sobre mi anuncio. <!-- Texto placeholder -->
-                </label>
-            </div>
+<!-- ======================= BLOQUES ADICIONALES (Revisar si son necesarios) ======================= -->
+<?php
+// loadBlock('post-warning'); // ¿Qué hace este bloque? Adaptar o eliminar.
 
+// TODO: La lógica de mostrar el diálogo de pago debe integrarse con la selección de Plan y Extras.
+// if ($limite == 1) $ANUNCIO_NUEVO_PREMIUM = true; // Lógica obsoleta?
+// loadBlock('payment_dialog'); // Adaptar para el nuevo flujo de pago
 
-            <div class="acciones-etapa">
-                <button type="button" onclick="window.location.href='<?php echo $_SERVER['PHP_SELF'] . '?etapa=2'; // Forzar ir a etapa 2 
-                                                                        ?>'" class="boton boton-secundario">Volver a Detalles</button>
-                <button type="submit" id="finalizar_btn" class="boton boton-primario boton-finalizar">
-                    <?php echo (!empty($datos_formulario['extras']) && !in_array('ninguno', $datos_formulario['extras'] ?? [])) ? 'Proceder al Pago y Publicar' : 'Publicar Anuncio'; ?>
-                </button>
-            </div>
-        </fieldset>
-    <?php endif; ?>
+// loadBlock('editor'); // ¿Se usa algún editor WYSIWYG? Si no, eliminar.
+?>
 
-</form>
+<!-- ======================= DIÁLOGOS DE LÍMITE (Revisar y adaptar lógica) ======================= -->
+<?php /* if (isset($_SESSION['data']['ID_user']) && $limite == 2): ?>
+    <dialog class="dialog" open>
+        <div class="dialog-modal">
+            <a href="/index.php" style="color: black;"><i class="fa-times-circle fa"></i></a>
+            <p>Haz alcanzado el límite de anuncios publicados para tu plan.</p>
+            <button onclick="location.href='/planes'" class="payment-btn">Ver Planes</button> <!-- Ejemplo -->
+        </div>
+    </dialog>
+<?php endif */ ?>
 
-<!-- COMENTARIO: Incluir JS necesario para interacciones (previsualización fotos, añadir idiomas, etc.) -->
+<?php /* if (isset($_SESSION['data']['ID_user']) && $limite == 0 && checkLastDelete($_SESSION['data']['ID_user'])): // Lógica específica de borrado reciente ?>
+    <dialog class="dialog" open>
+        <div class="dialog-modal">
+             <a href="/index.php" style="color: black;"><i class="fa-times-circle fa"></i></a>
+            <p>Aún no puedes publicar un anuncio <b>Gratis</b> debido a una publicación reciente.</p>
+            <p>Intenta más tarde o elige un plan de pago.</p>
+            <button onclick="location.href='/planes'" class="payment-btn">Ver Planes</button> <!-- Ejemplo -->
+        </div>
+    </dialog>
+<?php endif */ ?>
+
+<!-- ======================= SCRIPTS JS ======================= -->
+<!-- Incluir jQuery si no está ya incluido globalmente -->
+<!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
+
+<!-- Incluir Select2 si se sigue usando -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> -->
+<!-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" /> -->
+
+<!-- Incluir jQuery UI Sortable si se usa para ordenar fotos -->
+<!-- <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"></script> -->
+
+<!-- Scripts personalizados -->
+<!-- <script src="<?= getConfParam('SITE_URL') ?>src/js/filter.js"></script> --> <?php // ¿Necesario aquí? ?>
+<!-- <script src="<?= getConfParam('SITE_URL') ?>src/js/post.js"></script> --> <?php // El JS de post.js necesitará una REESCRITURA COMPLETA ?>
+
 <script>
-    // --- Script para añadir idiomas dinámicamente (Ejemplo básico) ---
-    document.getElementById('agregar-idioma')?.addEventListener('click', function() {
-        const contenedor = document.getElementById('lista-idiomas');
-        const index = contenedor.children.length;
-        const nuevoIdioma = document.createElement('div');
-        nuevoIdioma.classList.add('item-idioma');
-        nuevoIdioma.innerHTML = `
-        <select name="idiomas[${index}][idioma]" class="selector-corto">
-            <option value="">-- Idioma --</option>
-            <?php foreach ($idiomas_hablados as $idioma): ?>
-            <option value="<?php echo $idioma; ?>"><?php echo $idioma; ?></option>
-            <?php endforeach; ?>
-        </select>
-        <select name="idiomas[${index}][nivel]" class="selector-corto">
-             <option value="">-- Nivel --</option>
-             <?php foreach ($niveles_idioma as $nivel): ?>
-             <option value="<?php echo $nivel; ?>"><?php echo $nivel; ?></option>
-             <?php endforeach; ?>
-        </select>
-        <button type="button" class="boton-quitar" onclick="this.parentNode.remove()">Quitar</button>
-    `;
-        contenedor.appendChild(nuevoIdioma);
+// --- Lógica básica para Navegación entre Etapas y Validación Simple ---
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('form-nuevo-anuncio');
+    const etapas = form.querySelectorAll('.etapa');
+    const btnSiguiente = form.querySelectorAll('.btn-siguiente');
+    const btnAnterior = form.querySelectorAll('.btn-anterior');
+    const btnFinalizar = document.getElementById('btn-finalizar');
+    let etapaActual = 0;
+
+    function mostrarEtapa(indice) {
+        etapas.forEach((etapa, i) => {
+            etapa.classList.remove('activa');
+            etapa.classList.add('oculto');
+            if (i === indice) {
+                etapa.classList.add('activa');
+                etapa.classList.remove('oculto');
+            }
+        });
+        etapaActual = indice;
+        window.scrollTo(0, 0); // Subir al inicio de la página
+    }
+
+    function validarEtapa(indice) {
+        const etapa = etapas[indice];
+        let esValida = true;
+        // Ocultar errores previos
+        etapa.querySelectorAll('.error-msg').forEach(msg => msg.classList.add('oculto'));
+
+        // --- Validación Etapa 0: Tipo Usuario ---
+        if (etapa.id === 'etapa-tipo-usuario') {
+            const tipoUsuario = form.querySelector('input[name="tipo_usuario"]:checked');
+            if (!tipoUsuario) {
+                document.getElementById('error-tipo-usuario').classList.remove('oculto');
+                esValida = false;
+            } else if (tipoUsuario.value === 'visitante') {
+                // TODO: Si elige visitante, ¿qué pasa? ¿Se salta el resto? Redirigir?
+                alert("La opción Visitante no permite publicar anuncios. Serás redirigido...");
+                // window.location.href = '/'; // O a donde corresponda
+                esValida = false; // Prevenir seguir
+            }
+        }
+
+        // --- Validación Etapa 1: Plan ---
+        if (etapa.id === 'etapa-plan') {
+            const plan = form.querySelector('input[name="plan"]:checked');
+            if (!plan) {
+                 document.getElementById('error-plan').classList.remove('oculto');
+                esValida = false;
+            }
+        }
+
+        // --- Validación Etapa 2: Perfil/Anuncio (Más compleja) ---
+        if (etapa.id === 'etapa-perfil') {
+            const camposObligatorios = etapa.querySelectorAll('[required]');
+            camposObligatorios.forEach(campo => {
+                let errorId = 'error-' + campo.id;
+                let errorElement = document.getElementById(errorId);
+                let valido = true;
+
+                if (campo.type === 'checkbox' && !campo.checked) {
+                    valido = false;
+                } else if (campo.tagName === 'SELECT' && campo.value === '') {
+                     valido = false;
+                } else if (campo.type !== 'checkbox' && campo.tagName !== 'SELECT' && campo.value.trim() === '') {
+                     valido = false;
+                }
+                // Validaciones específicas de longitud/patrón
+                if (valido && campo.minLength > 0 && campo.value.trim().length < campo.minLength) valido = false;
+                if (valido && campo.maxLength > 0 && campo.value.trim().length > campo.maxLength) valido = false;
+                if (valido && campo.pattern && !new RegExp(campo.pattern).test(campo.value)) valido = false;
+
+                if (!valido && errorElement) {
+                    errorElement.classList.remove('oculto');
+                    esValida = false;
+                }
+            });
+
+            // Validación Servicios (al menos uno)
+            if (!etapa.querySelector('input[name="servicios[]"]:checked')) {
+                 document.getElementById('error-servicios').classList.remove('oculto');
+                 esValida = false;
+            }
+            // Validación Horario (al menos un día activo)
+            if (!etapa.querySelector('.check-dia input:checked')) {
+                 document.getElementById('error-horario').classList.remove('oculto');
+                 esValida = false;
+            }
+             // Validación Fotos (si la lógica JS de subida lo requiere)
+            // if (document.getElementById('lista-fotos-subidas').children.length === 0) {
+            //      document.getElementById('error-fotos').classList.remove('oculto');
+            //      esValida = false;
+            // }
+             // TODO: Añadir validación de palabras prohibidas si es necesario (requiere JS más complejo o AJAX)
+        }
+
+         // --- Validación Etapa 3: Extras (Solo términos) ---
+        if (etapa.id === 'etapa-extras') {
+             const terminos = document.getElementById('terminos');
+             if (!terminos.checked) {
+                 document.getElementById('error-terminos').classList.remove('oculto');
+                 esValida = false;
+             }
+        }
+
+
+        return esValida;
+    }
+
+    btnSiguiente.forEach(boton => {
+        boton.addEventListener('click', () => {
+            if (validarEtapa(etapaActual)) {
+                mostrarEtapa(etapaActual + 1);
+            }
+        });
     });
 
-    // --- Script para manejar reCAPTCHA v3 en el envío final ---
-    const form = document.getElementById('nuevo_anuncio_form');
-    const submitButton = document.getElementById('finalizar_btn');
-    const currentStageInput = form.querySelector('input[name="etapa_actual"]');
-
-    if (submitButton && currentStageInput && parseInt(currentStageInput.value, 10) === <?php echo ETAPA_EXTRAS_PAGO; ?>) {
-        submitButton.addEventListener('click', function(e) {
-            e.preventDefault(); // Prevenir envío normal
-            submitButton.disabled = true; // Deshabilitar botón
-            submitButton.textContent = 'Procesando...';
-
-            grecaptcha.ready(function() {
-                grecaptcha.execute('<?php echo SITE_KEY; // Usa tu Site Key de reCAPTCHA v3 
-                                    ?>', {
-                        action: 'submit_anuncio'
-                    }) // Acción descriptiva
-                    .then(function(token) {
-                        // Añadir token al formulario y enviarlo
-                        document.getElementById('g-recaptcha-response').value = token;
-                        form.submit();
-                    })
-                    .catch(function(error) {
-                        console.error('Error reCAPTCHA:', error);
-                        submitButton.disabled = false; // Rehabilitar botón si hay error
-                        submitButton.textContent = 'Publicar Anuncio'; // Restaurar texto
-                        // Mostrar un mensaje de error al usuario si falla la ejecución de reCAPTCHA
-                        alert('Error en la verificación reCAPTCHA. Por favor, inténtalo de nuevo.');
-                    });
-            });
+    btnAnterior.forEach(boton => {
+        boton.addEventListener('click', () => {
+            mostrarEtapa(etapaActual - 1);
         });
+    });
+
+    // --- Lógica para el botón Finalizar ---
+    const extrasCheckboxes = form.querySelectorAll('#etapa-extras input[name="extras[]"]');
+    extrasCheckboxes.forEach(check => {
+        check.addEventListener('change', actualizarBotonFinalizar);
+    });
+
+    function actualizarBotonFinalizar() {
+         const algunExtraPago = Array.from(extrasCheckboxes).some(c => c.checked);
+         if (algunExtraPago) {
+             btnFinalizar.textContent = 'Continuar al Pago';
+             btnFinalizar.classList.remove('btn-publicar');
+             btnFinalizar.classList.add('btn-pago'); // Clase diferente para estilo/lógica
+         } else {
+             btnFinalizar.textContent = 'Finalizar y Publicar Gratis';
+             btnFinalizar.classList.add('btn-publicar');
+             btnFinalizar.classList.remove('btn-pago');
+         }
+    }
+    actualizarBotonFinalizar(); // Llamar al inicio
+
+    // --- Envío final con reCAPTCHA ---
+    form.addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevenir envío normal
+
+        // Validar la última etapa antes de enviar
+        if (!validarEtapa(etapaActual)) {
+            console.error("Fallo de validación en la última etapa.");
+            return; // No enviar si la última etapa no es válida
+        }
+
+        grecaptcha.ready(function() {
+            grecaptcha.execute('<?php echo SITE_KEY; // Asegúrate que SITE_KEY esté definida ?>', { action: 'submit_anuncio' }) // Cambiar acción si es necesario
+                .then(function(token) {
+                    document.getElementById('g-recaptcha-response').value = token;
+                    console.log("reCAPTCHA token obtenido, enviando formulario...");
+                    form.submit(); // Enviar el formulario programáticamente
+                })
+                .catch(function(error){
+                    console.error("Error al obtener token reCAPTCHA:", error);
+                    alert("Error en la verificación reCAPTCHA. Inténtalo de nuevo.");
+                });
+        });
+    });
+
+    // --- Lógica Adicional (Ejemplos) ---
+
+    // Contadores de caracteres
+    const tituloInput = document.getElementById('titulo_anuncio');
+    const descInput = document.getElementById('descripcion');
+    const contTitulo = document.getElementById('cont-titulo');
+    const contDesc = document.getElementById('cont-desc');
+
+    if(tituloInput && contTitulo) {
+        tituloInput.addEventListener('input', () => contTitulo.textContent = tituloInput.value.length);
+        contTitulo.textContent = tituloInput.value.length; // Inicial
+    }
+    if(descInput && contDesc) {
+        descInput.addEventListener('input', () => contDesc.textContent = descInput.value.length);
+        contDesc.textContent = descInput.value.length; // Inicial
     }
 
-    // COMENTARIO: Añadir aquí el JS para previsualización de fotos, límite de subida, selección de principal, etc.
-    // Deberías adaptar partes del 'post.js' original o crear nuevas funciones.
+    // Mostrar/ocultar horas del día al marcar checkbox
+    const diasHorario = document.querySelectorAll('.dia-horario .check-dia input');
+    diasHorario.forEach(check => {
+        const horasDiv = check.closest('.dia-horario').querySelector('.horas-dia');
+        check.addEventListener('change', () => {
+            if (check.checked) {
+                horasDiv.classList.remove('oculto');
+            } else {
+                horasDiv.classList.add('oculto');
+            }
+        });
+        // Estado inicial
+        if (check.checked) horasDiv.classList.remove('oculto');
+    });
+
+    // TODO: Añadir aquí la lógica JS para:
+    // 1. Subida de fotos AJAX (más compleja, requiere backend para manejar subidas temporales)
+    // 2. Previsualización de fotos
+    // 3. Selección de foto principal (ej: añadir clase 'principal' al contenedor de la foto clickeada y actualizar input hidden)
+    // 4. Ordenación de fotos (Drag & Drop con SortableJS o jQuery UI)
+    // 5. Inicialización de Select2 si se usa.
+    // 6. Validación más avanzada (palabras prohibidas, etc.).
+
+    // Ejemplo inicialización Select2 (si se usa)
+    // $(document).ready(function() {
+    //     $('.frm-select').select2({ width: '100%' });
+    // });
+
+});
 </script>
 
-<?php
-// COMENTARIO: Cargar bloques adicionales si es necesario (como payment_dialog, editor, etc. del código original)
-// loadBlock('payment_dialog');
-// loadBlock('editor'); // Si el campo descripción usa un editor WYSIWYG
-?>
+<?php // loadBlock('datajson'); // ¿Necesario? ?>

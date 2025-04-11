@@ -60,7 +60,7 @@
 
   <link rel="stylesheet" href="src/css/style.css?v=0.6">
   <link rel="stylesheet" href="src/css/main.css?=v=0.5">
-  <link rel="stylesheet" type="text/css" href="src/css/w-formPost.css?v=0.2">
+  <link rel="stylesheet" type="text/css" href="src/css/w-formPost.css?v=0.3">
 
   <link rel="preload" href="src/css/item.css" rel="stylesheet" as="style" onload="this.onload=null;this.rel='stylesheet'" />
   <noscript>

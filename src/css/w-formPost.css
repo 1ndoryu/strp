@@ -1,464 +1,546 @@
-/* ================================================== */
-/* CSS BÁSICO PARA EL FORMULARIO DE NUEVO ANUNCIO   */
-/* ================================================== */
+/* ======================================== */
+/*          VARIABLES GLOBALES             */
+/* ======================================== */
+:root {
+    --color-primario: #007bff; /* Azul ejemplo */
+    --color-secundario: #6c757d; /* Gris ejemplo */
+    --color-exito: #28a745;    /* Verde ejemplo */
+    --color-error: #dc3545;     /* Rojo ejemplo */
+    --color-info: #17a2b8;      /* Azul claro ejemplo */
+    --color-fondo: #f8f9fa;
+    --color-borde: #dee2e6;
+    --color-texto: #333;
+    --color-texto-claro: #fff;
+    --color-texto-secundario: #555;
+    --radio-borde: 4px;
+    --espaciado-base: 1rem; /* 16px por defecto */
+    --espaciado-pequeno: calc(var(--espaciado-base) * 0.5);
+    --espaciado-mediano: calc(var(--espaciado-base) * 1.5);
+    --espaciado-grande: calc(var(--espaciado-base) * 2);
+}
 
-/* --- Contenedor Principal y Estructura --- */
-.form-anuncio {
-    max-width: 850px; /* Ancho máximo del formulario */
-    margin: 30px auto; /* Centrar el formulario */
-    padding: 25px 35px;
-    background-color: #ffffff;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    font-family: Arial, Helvetica, sans-serif; /* Cambia por la fuente de tu CMS */
-    font-size: 16px;
+/* ======================================== */
+/*          ESTILOS GENERALES              */
+/* ======================================== */
+body {
+    font-family: sans-serif;
     line-height: 1.6;
-    color: #333;
-    box-sizing: border-box; /* Mejor manejo de padding/border */
-}
-
-.form-anuncio *,
-.form-anuncio *::before,
-.form-anuncio *::after {
-    box-sizing: inherit; /* Heredar box-sizing */
-}
-
-.titulo-form {
-    text-align: center;
-    color: #2c3e50; /* Azul oscuro */
-    margin-bottom: 30px;
-    font-size: 1.8em;
-    font-weight: bold;
-}
-
-/* --- Estilos de Etapas (Fieldsets) --- */
-.etapa {
-    border: none; /* Quitar borde por defecto del fieldset */
+    color: var(--color-texto);
+    background-color: var(--color-fondo);
+    margin: 0;
     padding: 0;
-    margin: 0;
-    margin-bottom: 20px; /* Espacio antes de la siguiente etapa (si se vieran juntas) */
 }
 
-.etapa-titulo {
-    font-size: 1.4em;
-    color: #3498db; /* Azul claro */
-    border-bottom: 2px solid #ecf0f1; /* Gris claro */
-    padding-bottom: 10px;
-    margin-bottom: 25px;
-    width: 100%;
-    font-weight: bold;
+* {
+    box-sizing: border-box;
 }
 
-/* --- Campos y Etiquetas --- */
-.campo,
-.campo-grupo {
-    margin-bottom: 22px; /* Espacio entre campos/grupos */
+a {
+    color: var(--color-primario);
+    text-decoration: none;
 }
-
-.etiqueta {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: bold;
-    color: #555; /* Gris oscuro */
-    font-size: 0.95em;
-}
-
-/* Estilo para campos en fila */
-.campo-fila {
-    display: flex;
-    flex-wrap: wrap; /* Permitir que pasen a la siguiente línea si no caben */
-    gap: 20px; /* Espacio entre campos en la misma fila */
-    align-items: flex-end; /* Alinear por la base */
-}
-
-.campo-fila > .campo {
-    flex: 1; /* Que los campos ocupen el espacio disponible */
-    min-width: 200px; /* Ancho mínimo antes de envolver */
-    margin-bottom: 0; /* Quitar margen inferior cuando están en fila */
-}
-/* Ajuste para checkbox en fila */
-.campo-fila > .campo-check {
-     flex: 0 1 auto; /* No crecer, tamaño automático */
-     padding-bottom: 10px; /* Alinear con la base de los inputs */
-}
-
-/* --- Inputs de Texto, Select, Textarea --- */
-.entrada,
-.selector,
-.textarea,
-.entrada-tiempo {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 1em;
-    line-height: 1.4;
-    background-color: #fff;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.entrada:focus,
-.selector:focus,
-.textarea:focus,
-.entrada-tiempo:focus {
-    border-color: #3498db; /* Azul claro al enfocar */
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
-}
-
-.textarea {
-    min-height: 120px;
-    resize: vertical; /* Permitir redimensionar verticalmente */
-}
-
-.selector-corto {
-    width: auto; /* Tamaño automático para selectores cortos */
-    flex-grow: 1; /* Permitir crecer en contenedores flex */
-    padding: 8px 10px;
-}
-
-/* --- Radio Buttons y Checkboxes --- */
-.opciones-radio,
-.opciones-check {
-    display: flex;
-    flex-direction: column;
-    gap: 12px; /* Espacio entre opciones */
-}
-
-.opcion {
-    display: flex;
-    align-items: flex-start; /* Alinear arriba si el texto tiene varias líneas */
-    gap: 10px; /* Espacio entre input y texto */
-    padding: 10px 12px;
-    border: 1px solid #eee;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.2s ease, border-color 0.2s ease;
-    background-color: #fdfdfd;
-}
-
-.opcion:hover {
-    background-color: #f7f7f7;
-    border-color: #ddd;
-}
-
-.opcion input[type="radio"],
-.opcion input[type="checkbox"] {
-    margin: 0;
-    margin-top: 3px; /* Ajuste vertical fino */
-    flex-shrink: 0; /* Evitar que se encoja */
-    cursor: pointer;
-    accent-color: #3498db; /* Color del check/radio (navegadores modernos) */
-}
-
-/* Estilos específicos para opciones con descripción (planes, extras) */
-.opcion strong {
-    color: #2980b9; /* Azul un poco más oscuro */
-    font-weight: bold;
-}
-
-.opcion small {
-    display: block;
-    font-size: 0.88em;
-    color: #777;
-    margin-top: 3px;
-    line-height: 1.3;
-    /* Quitar margen si no se usa indentación: margin-left: 0; */
-}
-.plan-gratis strong { color: #27ae60; } /* Verde para plan gratis */
-.extra-gratis strong { color: #555; }
-
-/* Para destacar visualmente la opción seleccionada (opcional) */
-.opcion input:checked {
-   /* Puedes añadir un borde o fondo sutil a la .opcion que contiene el input:checked si lo necesitas, pero requeriría JS o :has() (no soportado en viejo CMS) */
-}
-
-
-/* --- Texto de Ayuda y Errores --- */
-small {
-    display: block;
-    font-size: 0.85em;
-    color: #7f8c8d; /* Gris azulado */
-    margin-top: 5px;
-    line-height: 1.3;
-}
-
-.error-msg {
-    color: #e74c3c; /* Rojo para errores */
-    font-size: 0.9em;
-    font-weight: bold;
-    margin-top: 6px;
-    display: block; /* Asegurar que se muestre */
-}
-
-/* Alerta general para errores (recaptcha, final, etc.) */
-.alerta {
-    padding: 15px 20px;
-    margin-bottom: 25px;
-    border-radius: 4px;
-    border: 1px solid transparent;
-    font-size: 0.95em;
-}
-
-.alerta-error {
-    background-color: #f8d7da;
-    border-color: #f5c6cb;
-    color: #721c24;
-}
-.alerta-aviso {
-     background-color: #fff3cd;
-     border-color: #ffeeba;
-     color: #856404;
-}
-.alerta a {
-    color: inherit;
-    font-weight: bold;
+a:hover {
     text-decoration: underline;
 }
 
-/* Estilo para inputs con error (requiere añadir clase 'error' con JS/PHP) */
-.entrada.error,
-.selector.error,
-.textarea.error {
-    border-color: #e74c3c !important; /* Forzar borde rojo */
-    background-color: #fffafa;
-}
-/* Para grupos con error */
-.campo-grupo.error .etiqueta {
-    color: #e74c3c;
-}
-.campo-grupo.error .opciones-radio,
-.campo-grupo.error .opciones-check {
-    border: 1px dashed #e74c3c;
-    padding: 10px;
-    border-radius: 4px;
+/* ======================================== */
+/*      CONTENEDOR Y FORMULARIO BASE       */
+/* ======================================== */
+.contenedor-formulario {
+    max-width: 800px; /* Ajusta según necesites */
+    margin: var(--espaciado-mediano) auto;
+    padding: var(--espaciado-mediano);
+    background-color: #fff;
+    border-radius: var(--radio-borde);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
+.formulario-multi-etapa {
+    /* Estilos generales para el form si son necesarios */
+}
 
-/* --- Botones --- */
-.boton {
-    display: inline-block;
-    padding: 12px 25px;
-    border: none;
-    border-radius: 5px;
-    font-size: 1em;
-    font-weight: bold;
-    cursor: pointer;
+.titulo-principal {
     text-align: center;
-    text-decoration: none;
-    transition: background-color 0.2s ease, opacity 0.2s ease, transform 0.1s ease;
-    white-space: nowrap; /* Evitar que el texto del botón se rompa */
-}
-.boton:active {
-    transform: translateY(1px); /* Efecto pulsado */
+    color: var(--color-primario);
+    margin-bottom: var(--espaciado-mediano);
 }
 
-.boton-primario {
-    background-color: #3498db; /* Azul */
-    color: white;
-}
-.boton-primario:hover {
-    background-color: #2980b9; /* Azul más oscuro */
-}
-
-.boton-secundario {
-    background-color: #ecf0f1; /* Gris claro */
-    color: #34495e; /* Gris azulado oscuro */
-    border: 1px solid #bdc3c7; /* Borde gris */
-}
-.boton-secundario:hover {
-    background-color: #dde1e2;
-    border-color: #abb1b5;
+/* ======================================== */
+/*                ETAPAS                   */
+/* ======================================== */
+.etapa {
+    display: none; /* Ocultas por defecto */
+    padding: var(--espaciado-base);
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio-borde);
+    margin-bottom: var(--espaciado-mediano);
+    background-color: #fff; /* Fondo blanco para cada etapa */
 }
 
-.boton-agregar {
-    background-color: #2ecc71; /* Verde */
-    color: white;
-    padding: 6px 12px;
+.etapa.activa {
+    display: block; /* Muestra la etapa activa */
+}
+
+/* Clase de utilidad para ocultar elementos con JS */
+.oculto {
+    display: none !important;
+}
+
+.titulo-etapa {
+    color: var(--color-secundario);
+    margin-top: 0;
+    margin-bottom: var(--espaciado-base);
+    border-bottom: 1px solid var(--color-borde);
+    padding-bottom: var(--espaciado-pequeno);
+}
+
+/* ======================================== */
+/*      GRUPOS DE CAMPOS Y ETIQUETAS       */
+/* ======================================== */
+.frm-seccion {
+    border: 1px solid var(--color-borde);
+    padding: var(--espaciado-base);
+    margin-bottom: var(--espaciado-mediano);
+    border-radius: var(--radio-borde);
+}
+
+.frm-seccion legend {
+    font-weight: bold;
+    color: var(--color-primario);
+    padding: 0 var(--espaciado-pequeno);
+}
+
+.frm-grupo {
+    margin-bottom: var(--espaciado-base);
+}
+
+.frm-etiqueta {
+    display: block;
+    margin-bottom: var(--espaciado-pequeno);
+    font-weight: bold;
+    color: var(--color-texto-secundario);
+}
+
+/* ======================================== */
+/*      CAMPOS DE FORMULARIO (Inputs)      */
+/* ======================================== */
+.frm-campo,
+.frm-select,
+.frm-textarea {
+    width: 100%;
+    padding: var(--espaciado-pequeno) var(--espaciado-base);
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio-borde);
+    font-size: 1rem;
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.frm-campo:focus,
+.frm-select:focus,
+.frm-textarea:focus {
+    outline: none;
+    border-color: var(--color-primario);
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.frm-textarea {
+    min-height: 120px;
+    resize: vertical; /* Permite redimensionar verticalmente */
+}
+
+.frm-select.corto {
+    width: auto; /* Para selectores de hora */
+    min-width: 80px;
+}
+
+/* ======================================== */
+/*      CHECKBOXES Y RADIOS PERSONALIZADOS */
+/* ======================================== */
+.lista-opciones {
+    display: grid;
+    gap: var(--espaciado-base);
+}
+/* Ajustar columnas para diferentes listas si es necesario */
+.grupo-radios-plan {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* 3 columnas en desktop */
+}
+.grupo-checkboxes-extra {
+     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* 2 o 3 columnas */
+}
+
+.opcion-radio,
+.opcion-checkbox {
+    display: block; /* Hace que la etiqueta ocupe todo el ancho del grid item */
+    border: 2px solid var(--color-borde);
+    padding: var(--espaciado-base);
+    border-radius: var(--radio-borde);
+    cursor: pointer;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.opcion-radio:hover,
+.opcion-checkbox:hover {
+    border-color: var(--color-primario);
+    background-color: #f0f8ff; /* Un ligero fondo al pasar el ratón */
+}
+
+/* Estilo cuando el input dentro está seleccionado */
+.opcion-radio input:checked + .opcion-contenido,
+.opcion-checkbox input:checked + .opcion-contenido {
+   /* Puedes añadir algún indicador visual si quieres */
+}
+.opcion-radio input:checked,
+.opcion-checkbox input:checked {
+   /* Estilo para el borde de la opción seleccionada */
+    /* Necesitas seleccionar el padre, lo hacemos con JS o ajustando estructura. */
+    /* Alternativa: Estilar la etiqueta contenedora cuando el input está checked */
+}
+
+.opcion-radio input[type="radio"],
+.opcion-checkbox input[type="checkbox"] {
+     /* Ocultar el input por defecto si quieres un look totalmente custom */
+     /* appearance: none; margin-right: 10px; */
+     /* Por ahora, lo dejamos visible por simplicidad */
+     margin-right: var(--espaciado-pequeno);
+     vertical-align: middle;
+}
+
+
+.opcion-contenido strong {
+    display: block;
+    margin-bottom: var(--espaciado-pequeno);
+    color: var(--color-texto);
+}
+
+.opcion-contenido span {
+    display: block;
     font-size: 0.9em;
-    margin-top: 5px; /* Espacio si está bajo la lista */
-}
-.boton-agregar:hover {
-    background-color: #27ae60;
+    color: var(--color-texto-secundario);
 }
 
-.boton-quitar {
-    background-color: #e74c3c; /* Rojo */
-    color: white;
-    padding: 4px 10px;
-    font-size: 0.85em;
-    border-radius: 3px;
-    margin-left: auto; /* Empujar a la derecha en flex */
-}
-.boton-quitar:hover {
-    background-color: #c0392b;
+.precio-plan {
+    font-weight: bold;
+    color: var(--color-exito);
+    margin-top: var(--espaciado-pequeno);
+    font-size: 1.1em !important;
 }
 
-.boton-finalizar:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    background-color: #95a5a6; /* Gris cuando deshabilitado */
-}
-
-.acciones-etapa {
-    margin-top: 35px;
-    padding-top: 25px;
-    border-top: 1px solid #ecf0f1;
-    display: flex;
-    justify-content: space-between; /* Botones en extremos */
+/* Checkboxes normales (no en lista de opciones) */
+.frm-checkbox {
+    display: inline-flex; /* O block si prefieres uno por línea */
     align-items: center;
-    flex-wrap: wrap; /* Para pantallas pequeñas */
-    gap: 15px;
+    margin-right: var(--espaciado-base); /* Espacio entre checkboxes en línea */
+    margin-bottom: var(--espaciado-pequeno);
+    cursor: pointer;
+}
+.frm-checkbox input[type="checkbox"] {
+    margin-right: var(--espaciado-pequeno);
 }
 
-/* --- Estilos Específicos de Secciones --- */
+.grupo-checkboxes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--espaciado-pequeno) var(--espaciado-base);
+}
 
-/* Input de Archivo (básico, difícil de estilizar completamente) */
-.entrada-archivo {
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+
+/* ======================================== */
+/*         COMPONENTES ESPECÍFICOS         */
+/* ======================================== */
+
+/* --- Ayuda y Contadores --- */
+.ayuda-texto {
+    font-size: 0.85em;
+    color: var(--color-texto-secundario);
+    margin-top: var(--espaciado-pequeno);
+    margin-bottom: var(--espaciado-pequeno);
+}
+.contador-caracteres {
+    font-size: 0.8em;
+    color: var(--color-texto-secundario);
+    text-align: right;
+    margin-top: var(--espaciado-pequeno);
+}
+
+/* --- Subida de Fotos --- */
+.subida-fotos-contenedor {
+    border: 2px dashed var(--color-borde);
+    padding: var(--espaciado-mediano);
+    text-align: center;
+    border-radius: var(--radio-borde);
+    margin-bottom: var(--espaciado-base);
+}
+.boton-subir {
+    cursor: pointer;
+    color: var(--color-primario);
+    font-weight: bold;
+    padding: var(--espaciado-base);
+}
+.boton-subir:hover {
+    background-color: #f0f8ff;
+}
+.lista-fotos {
+    margin-top: var(--espaciado-base);
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: var(--espaciado-base);
+}
+/* Estilo para las previsualizaciones (necesitarás añadir elementos img/div aquí con JS) */
+.lista-fotos .foto-preview {
+    position: relative;
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio-borde);
+    overflow: hidden;
+    cursor: pointer; /* Para seleccionar principal */
+    aspect-ratio: 1 / 1; /* Mantiene cuadrada la previsualización */
+}
+.lista-fotos .foto-preview img {
     display: block;
     width: 100%;
-    font-size: 0.95em;
+    height: 100%;
+    object-fit: cover; /* Escala y recorta la imagen */
+}
+.lista-fotos .foto-preview.principal {
+    border: 3px solid var(--color-primario);
+}
+.lista-fotos .foto-preview .eliminar-foto { /* Botón para eliminar (opcional) */
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: rgba(220, 53, 69, 0.8);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    line-height: 20px;
+    text-align: center;
+    cursor: pointer;
 }
 
-/* Previsualización de Fotos */
-.previs-fotos {
-    margin-top: 15px;
-    border: 1px dashed #ccc;
-    padding: 15px;
-    min-height: 60px;
-    background-color: #f9f9f9;
-    border-radius: 4px;
-}
-.previs-fotos p { margin: 0 0 10px 0; font-weight: bold; color: #555; }
-.previs-fotos div { /* Estilo para cada foto previsualizada (necesita JS) */
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px;
-    background-color: #fff;
-    border: 1px solid #eee;
-    border-radius: 3px;
-}
-.previs-fotos img { /* Si muestras miniaturas */
-    max-width: 50px;
-    height: auto;
-    border: 1px solid #ddd;
-}
-.previs-fotos label { font-weight: normal; display: flex; align-items: center; gap: 5px; cursor: pointer; }
 
-/* Horario Semanal */
+/* --- Horario Semanal --- */
 .horario-semanal {
-    border: 1px solid #e0e0e0;
-    padding: 10px 15px 15px 15px;
-    border-radius: 4px;
-    background-color: #fafafa;
+    /* Contenedor general */
 }
 .dia-horario {
     display: flex;
-    flex-wrap: wrap; /* Para móviles */
     align-items: center;
-    gap: 10px 15px; /* Espacio vertical y horizontal */
-    padding: 12px 0;
-    border-bottom: 1px solid #eee;
+    gap: var(--espaciado-base);
+    padding: var(--espaciado-pequeno) 0;
+    border-bottom: 1px dotted var(--color-borde);
 }
 .dia-horario:last-child {
     border-bottom: none;
-    padding-bottom: 5px; /* Menos padding al final */
 }
-.etiqueta-dia {
-    font-weight: bold;
-    min-width: 90px; /* Alinear nombres de días */
+.dia-horario .check-dia {
+    flex-basis: 150px; /* Ancho fijo para el nombre del día */
     flex-shrink: 0;
+    margin: 0; /* Resetear margen de frm-checkbox */
 }
-.dia-horario input[type="checkbox"] {
-    margin-right: 5px;
-}
-.dia-horario label:not(.etiqueta-dia) { /* Etiquetas "De:", "A:", "Disponible" */
-    font-weight: normal;
-    font-size: 0.9em;
-    color: #666;
-}
-.entrada-tiempo {
-    width: auto; /* Ancho automático */
-    padding: 6px 8px;
-    font-size: 0.95em;
-}
-/* Hacer que los time inputs se agrupen */
-.dia-horario > label[for*="inicio"],
-.dia-horario > input[name*="inicio"] {
-    margin-left: auto; /* Empujar el horario a la derecha si hay espacio */
-}
-
-
-/* Lista Dinámica de Idiomas */
-.lista-items-dinamica {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 15px;
-}
-.item-idioma {
+.horas-dia {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 10px;
-    background-color: #f8f8f8;
-    border: 1px solid #eee;
-    border-radius: 4px;
+    gap: var(--espaciado-pequeno);
+    flex-grow: 1;
 }
-.item-idioma .selector-corto {
-    font-size: 0.95em;
+.horas-dia label {
+    font-weight: normal; /* Sobrescribir frm-etiqueta si hereda */
+    margin-bottom: 0;
+    color: var(--color-texto-secundario);
 }
 
-/* --- Responsividad Básica (Ejemplo) --- */
+/* --- Grupo Teléfono --- */
+.grupo-telefono {
+    display: flex;
+    align-items: center;
+    gap: var(--espaciado-base);
+    flex-wrap: wrap; /* Para pantallas pequeñas */
+}
+.grupo-telefono .frm-campo {
+    flex-grow: 1;
+    min-width: 180px; /* Evita que sea demasiado pequeño */
+}
+.grupo-telefono .check-whatsapp {
+    margin: 0; /* Resetear margen de frm-checkbox */
+    white-space: nowrap; /* Evita que se parta el texto */
+}
+
+/* --- Grupo Idiomas --- */
+.grupo-idiomas {
+    display: grid;
+    gap: var(--espaciado-base);
+}
+.par-idioma {
+    display: flex;
+    gap: var(--espaciado-base);
+}
+.par-idioma .frm-select {
+    flex: 1; /* Ocupan espacio equitativo */
+}
+
+/* ======================================== */
+/*             NAVEGACIÓN ETAPAS           */
+/* ======================================== */
+.navegacion-etapa {
+    display: flex;
+    justify-content: space-between; /* Separa botones anterior/siguiente */
+    margin-top: var(--espaciado-mediano);
+    padding-top: var(--espaciado-base);
+    border-top: 1px solid var(--color-borde);
+}
+
+.frm-boton {
+    padding: var(--espaciado-pequeno) var(--espaciado-mediano);
+    border: none;
+    border-radius: var(--radio-borde);
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    color: var(--color-texto-claro);
+}
+
+.frm-boton:hover {
+    opacity: 0.9;
+}
+.frm-boton:active {
+    transform: scale(0.98);
+}
+
+.btn-siguiente,
+.btn-publicar {
+    background-color: var(--color-primario);
+}
+
+.btn-anterior {
+    background-color: var(--color-secundario);
+}
+
+.btn-pago {
+    background-color: var(--color-exito); /* Verde para pago */
+}
+
+/* ======================================== */
+/*           MENSAJES DE ERROR             */
+/* ======================================== */
+.error-msg {
+    color: var(--color-error);
+    font-size: 0.85em;
+    margin-top: var(--espaciado-pequeno);
+    /* display: none; */ /* Se gestiona con la clase .oculto desde JS */
+}
+
+/* Estilo opcional para campos con error (requiere JS para añadir la clase) */
+/*
+.frm-campo.error,
+.frm-select.error,
+.frm-textarea.error {
+    border-color: var(--color-error);
+}
+*/
+
+/* ======================================== */
+/*                ALERTAS PHP              */
+/* ======================================== */
+.alerta {
+    padding: var(--espaciado-base);
+    margin-bottom: var(--espaciado-mediano);
+    border: 1px solid transparent;
+    border-radius: var(--radio-borde);
+}
+.alerta.error {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+}
+.alerta.info {
+    color: #0c5460;
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
+}
+
+/* ======================================== */
+/*                OTROS ESTILOS            */
+/* ======================================== */
+.ayuda-post {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 var(--espaciado-base) 0;
+    text-align: center;
+}
+.ayuda-post-item {
+    display: inline-block;
+    margin: 0 var(--espaciado-pequeno);
+    font-size: 0.9em;
+}
+.terminos-finales {
+    margin-top: var(--espaciado-grande);
+}
+.texto-fijo {
+    padding: var(--espaciado-pequeno) 0;
+    display: inline-block;
+    color: var(--color-texto-secundario);
+}
+
+
+/* ======================================== */
+/*             RESPONSIVIDAD               */
+/* ======================================== */
 @media (max-width: 768px) {
-    .form-anuncio {
-        padding: 20px;
-        margin: 15px;
-        max-width: none; /* Ocupar más ancho */
+    .contenedor-formulario {
+        margin: var(--espaciado-base) auto;
+        padding: var(--espaciado-base);
     }
-    .titulo-form {
-        font-size: 1.6em;
+
+    .grupo-radios-plan,
+    .grupo-checkboxes-extra {
+        grid-template-columns: 1fr; /* Una columna en móvil */
     }
-    .etapa-titulo {
-        font-size: 1.3em;
+
+    .dia-horario {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--espaciado-pequeno);
     }
-    .campo-fila {
-        flex-direction: column; /* Apilar campos en fila */
-        gap: 0; /* Quitar gap horizontal */
-        align-items: stretch; /* Ocupar todo el ancho */
+    .dia-horario .check-dia {
+        flex-basis: auto;
+        margin-bottom: var(--espaciado-pequeno);
     }
-    .campo-fila > .campo {
-        margin-bottom: 20px; /* Restaurar margen inferior */
-        min-width: 0; /* Reset min-width */
+    .horas-dia {
+        flex-wrap: wrap; /* Permitir que los selects se envuelvan */
+        width: 100%;
     }
-     .campo-fila > .campo-check {
-        padding-bottom: 0; /* Reset padding */
-        margin-bottom: 20px;
-     }
-    .acciones-etapa {
-        flex-direction: column; /* Apilar botones */
-        align-items: stretch; /* Botones a ancho completo */
+    .horas-dia .frm-select.corto {
+        min-width: 100px; /* Ajustar ancho mínimo */
     }
-    .boton {
+
+
+    .par-idioma {
+        flex-direction: column;
+    }
+
+    .navegacion-etapa {
+        flex-direction: column-reverse; /* Poner siguiente arriba */
+        gap: var(--espaciado-base);
+    }
+    .navegacion-etapa .frm-boton {
         width: 100%; /* Botones ocupan todo el ancho */
     }
-    .boton-quitar {
-        margin-left: 10px; /* Ajustar botón quitar en móvil */
-        width: auto;
-    }
-    .dia-horario {
-        gap: 8px 10px; /* Reducir gaps */
-    }
-    .dia-horario > label[for*="inicio"],
-    .dia-horario > input[name*="inicio"] {
-        margin-left: 0; /* Quitar margen auto en móvil */
-    }
+
 }
 
-/* --- Fin CSS Formulario --- */
+@media (max-width: 480px) {
+    .grupo-telefono {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .grupo-telefono .frm-campo {
+        width: 100%;
+    }
+    .lista-fotos {
+       grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+       gap: var(--espaciado-pequeno);
+    }
+}
