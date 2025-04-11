@@ -14,8 +14,6 @@ $DATAJSON['max_photos'] = getConfParam('MAX_PHOTOS_AD');
 $DATAJSON['edit'] = 0;
 
 #AGREGADO POR WANDORIUS
-# require_once 'delete_temp_image.php'; 
-# require_once 'upload_temp_image.php';
 # WANDORIUS 
 # NO ENTIENDO QUE HACE ESTO 10/04/25
 
@@ -1111,8 +1109,8 @@ if (isset($_POST['g-recaptcha-response'])) {
     // --- Variables y Constantes de Subida de Fotos ---
     const MAX_PHOTOS = <?php echo (int)($DATAJSON['max_photos'] ?? 3); ?>; // Obtener del PHP
     const MAX_FILE_SIZE_BYTES = 2 * 1024 * 1024; // 2MB - ¡AJUSTAR SI ES NECESARIO!
-    const UPLOAD_TEMP_URL = 'upload_temp_image.php'; // Ruta al script PHP de subida
-    const DELETE_TEMP_URL = 'delete_temp_image.php'; // Ruta al script PHP de borrado
+    const UPLOAD_TEMP_URL = 'sc-includes/upload_temp_image.php'; // Ruta al script PHP de subida
+    const DELETE_TEMP_URL = 'sc-includes/delete_temp_image.php'; // Ruta al script PHP de borrado
 
     const fileInput = document.getElementById('campo-subir-foto');
     const dropZone = document.getElementById('boton-subir-foto');
