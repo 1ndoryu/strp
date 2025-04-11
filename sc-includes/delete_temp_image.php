@@ -9,10 +9,6 @@ define('TEMP_UPLOAD_DIR', __DIR__ . '/uploads/temp/'); // Misma ruta que en uplo
 header('Content-Type: application/json');
 
 // --- Validación Básica ---
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    echo json_encode(['success' => false, 'error' => 'Método no permitido.']);
-    exit;
-}
 
 if (!isset($_POST['identifier']) || empty($_POST['identifier'])) {
      echo json_encode(['success' => false, 'error' => 'Identificador no proporcionado.']);

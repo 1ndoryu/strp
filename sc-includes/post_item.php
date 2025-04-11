@@ -1,5 +1,23 @@
 <?php
 
+/*
+Falla cuando subo una imagen dice
+
+solo en el navegador 
+
+publicar-anuncio-gratis/:1181 
+ Uncaught 
+(anonymous)	@	publicar-anuncio-gratis/:1181
+publicar-anuncio-gratis/:1003 
+ Error en fetch: 
+(anonymous)	@	publicar-anuncio-gratis/:1003
+Promise.catch		
+uploadFile	@	publicar-anuncio-gratis/:1002
+(anonymous)	@	publicar-anuncio-gratis/:975
+handleFiles	@	publicar-anuncio-gratis/:961
+(anonymous)	@	publicar-anuncio-gratis/:1148
+*/
+
 user::updateSesion();
 
 // TODO: La lógica de límite de items podría depender ahora del TIPO de usuario y del PLAN elegido.

@@ -15,10 +15,6 @@ define('TEMP_UPLOAD_URL', '/uploads/temp/'); // URL base para acceder a las imá
 header('Content-Type: application/json');
 
 // --- Validación Básica ---
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    echo json_encode(['success' => false, 'error' => 'Método no permitido.']);
-    exit;
-}
 
 if (!isset($_FILES['file']) || $_FILES['file']['error'] !== UPLOAD_ERR_OK) {
     $error_message = 'Error desconocido al subir.';
