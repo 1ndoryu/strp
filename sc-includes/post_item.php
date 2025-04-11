@@ -1,272 +1,491 @@
 <?php
+// --- Configuración y Entorno ---
 // Determina la URL correcta para el action (con el ?id=...)
-// Si $urlfriendly['url.post_item'] ya la tiene, úsala directamente.
-// Si no, constrúyela. Asumiendo que el id es 'post_item':
-$formActionUrl = "/index.php?id=post_item"; // O usa $urlfriendly['url.post_item'] si es correcto
+$formActionUrl = "/index.php?id=post_item"; // AJUSTA 'post_item' si tu archivo tiene otro nombre (ej: nuevo_anuncio)
 
-ini_set('display_errors', 1); // Mantenlos por si el problema es ANTES del POST
+// Activar TODOS los errores para depuración
+ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+// --- Inicialización (Código original) ---
 user::updateSesion();
-$limite = check_item_limit();
+$limite = check_item_limit(); // Se recalcula después si el usuario se crea/identifica
 $ANUNCIO_NUEVO_PREMIUM = false;
 $user_registered = false;
 $DATAJSON = array();
 $DATAJSON['max_photos'] = getConfParam('MAX_PHOTOS_AD');
 $DATAJSON['edit'] = 0;
+
+// Requisito de login (código original)
 if (getConfParam('POST_ITEM_REG') == 1) {
-    check_login();
+    check_login(); // Asegúrate que esta función no haga un exit/redirect inesperado si no está logueado
 }
-// ############################################################
-// ####### INICIO LÓGICA PROCESAMIENTO FORMULARIO ANTIGUO #####
-// # Esta lógica espera los $_POST con los nombres del formulario viejo
-// ############################################################
 
-// ----- INICIO Procesamiento del formulario (SIN reCAPTCHA) -----
-// Comprobamos si se ha enviado el formulario por POST y si existe un campo esencial como 'category' o 'token'
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['token']) || isset($_POST['category']))) {
+// --- Inicio Procesamiento POST ---
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    echo '<pre>¡AHORA SÍ ESTOY PROCESANDO EL POST EN EL SCRIPT CORRECTO!</pre>';
-    var_dump($_POST);
-    exit;
+    // ----- Checkpoint 1: POST Recibido (Ya confirmado, podemos comentarlo) -----
+    // echo '<pre>¡AHORA SÍ ESTOY PROCESANDO EL POST EN EL SCRIPT CORRECTO!</pre>';
+    // echo '<pre>Datos POST iniciales:</pre>';
+    // var_dump($_POST);
+    // // exit; // COMENTADO - Ya sabemos que llega aquí
 
-    $en_revision = false; // Inicializamos la variable
+    $en_revision = false;
 
-    // ----- Espera 'category', no 'categoria' -----
-    if (isset($_POST['category'])) { // Comprobamos primero si la categoría existe
-        if (verifyFormToken('postAdToken', $_POST['token']) || DEBUG) { // Luego el token CSRF
+    // ----- Checkpoint 2: Verificación de Token y Categoría -----
+    if (isset($_POST['category']) && !empty($_POST['category'])) { // Añadida comprobación !empty
+        echo "<pre>Checkpoint 2: Verificación de Token y Categoría.</pre>";
 
+        $tokenValido = false; // Inicializar
+        if (isset($_POST['token'])) {
+            // Asume que DEBUG está definido en algún lugar o quítalo si no lo usas
+            $tokenValido = verifyFormToken('postAdToken', $_POST['token']) || (defined('DEBUG') && DEBUG);
+            echo "<pre>Token Recibido: " . htmlspecialchars($_POST['token']) . "</pre>";
+            echo "<pre>¿Token Válido?: " . ($tokenValido ? 'SÍ' : 'NO') . "</pre>";
+        } else {
+            echo "<pre>Advertencia: No se recibió el campo 'token'.</pre>";
+            // Decide si continuar sin token si DEBUG está activo, o fallar.
+            // $tokenValido = (defined('DEBUG') && DEBUG); // Ejemplo: Solo permite sin token en DEBUG
+        }
+
+
+        if ($tokenValido) {
+            echo "<pre>Checkpoint 2.1: Token VÁLIDO. Continuando...</pre>";
+
+            // >>>>> PON EL EXIT AQUÍ (Intento 1) <<<<<
+            // exit;
+
+            // ----- Checkpoint 3: Construcción de $datos_ad -----
+            echo "<pre>Checkpoint 3: Construyendo array \$datos_ad...</pre>";
             $datos_ad = array();
-            // ----- Mapeo de Campos $_POST -----
-            $datos_ad['ID_cat'] = $_POST['category']; // Antes: $_POST['category']
-            $category_ad = selectSQL('sc_category', $w = array('ID_cat' => $datos_ad['ID_cat']));
-            $datos_ad['parent_cat'] = $category_ad[0]['parent_cat'];
-            $datos_ad['ID_region'] = $_POST['region']; // Antes: $_POST['region']
-            $datos_ad['location'] = $_POST['city']; // Antes: $_POST['city'] (era input text)
-            // $datos_ad['ad_type'] = $_POST['ad_type']; // El nuevo form no tiene 'ad_type'. ¿De dónde saldría? ¿Quizás del tipo de usuario o categoría? Necesita clarificación. Asumiré un valor por defecto o necesitará JS.
-            $datos_ad['ad_type'] = isset($_POST['ad_type']) ? $_POST['ad_type'] : 1; // Asumiendo valor por defecto 1 si no se envía. ¡REVISAR!
-            $datos_ad['title'] = $_POST['tit']; // Antes: $_POST['tit']
-            $datos_ad['title_seo'] = toAscii($_POST['tit']); // Antes: toAscii($_POST['tit'])
-            $datos_ad['texto'] = isset($_POST['text']) ? htmlspecialchars($_POST['text']) : ''; // Antes: $_POST['text']
-            // $datos_ad['price'] = $_POST['precio'] ? $_POST['precio'] : 0; // El nuevo form no tiene 'precio'. ¿Relacionado con plan/extras? Poner 0 por defecto.
-            $datos_ad['price'] = 0; // ¡REVISAR!
-            // Los siguientes campos no están en el nuevo form: mileage, fuel, date_car, area, room, broom, address (usamos location/city)
+            // --- Mapeo de Campos ---
+            $datos_ad['ID_cat'] = $_POST['category'];
+            // OBTENER parent_cat (requiere acceso a BD)
+            // Asumiendo que $Connection está disponible globalmente (desde settings.inc.php?)
+            // ¡IMPORTANTE! Asegúrate de que selectSQL maneje errores o usa mysqli directamente
+            global $Connection; // O el método que use tu CMS para acceder a la conexión
+            $category_ad = selectSQL('sc_category', array('ID_cat' => $datos_ad['ID_cat']));
+            if ($category_ad && isset($category_ad[0]['parent_cat'])) {
+                $datos_ad['parent_cat'] = $category_ad[0]['parent_cat'];
+            } else {
+                echo "<pre>ERROR CRÍTICO: No se pudo obtener parent_cat para ID_cat=" . htmlspecialchars($datos_ad['ID_cat']) . "</pre>";
+                $datos_ad['parent_cat'] = 0; // O manejar el error como prefieras
+                // exit; // Podrías detener aquí si parent_cat es esencial
+            }
+            $datos_ad['ID_region'] = isset($_POST['region']) ? $_POST['region'] : 0; // Default a 0 si no existe
+            $datos_ad['location'] = isset($_POST['city']) ? $_POST['city'] : '';
+            $datos_ad['ad_type'] = isset($_POST['ad_type']) ? $_POST['ad_type'] : 1; // Valor por defecto 1
+            $datos_ad['title'] = isset($_POST['tit']) ? $_POST['tit'] : '';
+            $datos_ad['title_seo'] = isset($_POST['tit']) ? toAscii($_POST['tit']) : '';
+            $datos_ad['texto'] = isset($_POST['text']) ? htmlspecialchars($_POST['text'], ENT_QUOTES, 'UTF-8') : ''; // Especificar encoding
+            $datos_ad['price'] = 0; // Asignado 0
             $datos_ad['mileage'] = null;
             $datos_ad['fuel'] = null;
             $datos_ad['date_car'] = null;
             $datos_ad['area'] = null;
             $datos_ad['room'] = null;
             $datos_ad['broom'] = null;
-            $datos_ad['address'] = $datos_ad['location']; // Usar city/location como address
-            $datos_ad['name'] = isset($_POST['name']) ? formatName($_POST['name']) : ''; // Antes: $_POST['name']
-            $datos_ad['phone'] = $_POST['phone']; // Antes: $_POST['phone']
-            $datos_ad['whatsapp'] = isset($_POST['whatsapp']) ? 1 : 0; // Antes: $_POST['whatsapp']
-            // $datos_ad['phone1'] = $_POST['phone1']; // No existe en el nuevo form
-            // $datos_ad['whatsapp1'] = isset($_POST['whatsapp1']) ? 1 : 0; // No existe en el nuevo form
+            $datos_ad['address'] = $datos_ad['location'];
+            $datos_ad['name'] = isset($_POST['name']) ? formatName($_POST['name']) : '';
+            $datos_ad['phone'] = isset($_POST['phone']) ? $_POST['phone'] : '';
+            $datos_ad['whatsapp'] = isset($_POST['whatsapp']) && $_POST['whatsapp'] == '1' ? 1 : 0; // Asegurar que sea 0 o 1
             $datos_ad['phone1'] = null;
             $datos_ad['whatsapp1'] = 0;
-            $datos_ad['seller_type'] = $_POST['seller_type']; // Antes: $_POST['seller_type'] - DEBE ser populado por JS desde tipo_usuario
-            $datos_ad['notifications'] = isset($_POST['notifications']) && $_POST['notifications'] == '1' ? 1 : 0; // Antes: $_POST['notifications'] ? $_POST['notifications'] : 0;
-            // $datos_ad['dis'] = $_POST['dis']; // Antes: $_POST['dis'] - DEBE ser populado por JS desde horario_dia
-            // $datos_ad['hor_start'] = $_POST['horario-inicio']; // Antes: $_POST['horario-inicio'] - DEBE ser populado por JS desde horario_dia
-            // $datos_ad['hor_end'] = $_POST['horario-final']; // Antes: $_POST['horario-final'] - DEBE ser populado por JS desde horario_dia
-            $datos_ad['dis'] = isset($_POST['dis']) ? $_POST['dis'] : null; // Asegurarse que JS los popule
-            $datos_ad['hor_start'] = isset($_POST['horario-inicio']) ? $_POST['horario-inicio'] : null; // Asegurarse que JS los popule
-            $datos_ad['hor_end'] = isset($_POST['horario-final']) ? $_POST['horario-final'] : null; // Asegurarse que JS los popule
-            // $datos_ad['lang1'] = $_POST['lang-1']; // Antes: $_POST['lang-1'] - DEBE ser populado por JS desde idioma_1
-            // $datos_ad['lang2'] = $_POST['lang-2']; // Antes: $_POST['lang-2'] - DEBE ser populado por JS desde idioma_2
-            $datos_ad['lang1'] = isset($_POST['lang-1']) ? $_POST['lang-1'] : null; // Asegurarse que JS los popule
-            $datos_ad['lang2'] = isset($_POST['lang-2']) ? $_POST['lang-2'] : null; // Asegurarse que JS los popule
-            $datos_ad['out'] = $_POST['out']; // Antes: $_POST['out']
-            $datos_ad['ID_order'] = $_POST['order']; // Antes: $_POST['order'] (era new_order en tu HTML, debe ser 'order')
-            // $datos_ad['payment'] = isset($_POST['pago']) ? json_encode($_POST['pago']) : "[]"; // No existe en el nuevo form. Usar '[]'.
-            $datos_ad['payment'] = "[]";
+            $datos_ad['seller_type'] = isset($_POST['seller_type']) ? $_POST['seller_type'] : 0; // Default a 0 si no existe
+            $datos_ad['notifications'] = isset($_POST['notifications']) && $_POST['notifications'] == '1' ? 1 : 0; // Asegurar que sea 0 o 1
+            $datos_ad['dis'] = isset($_POST['dis']) ? $_POST['dis'] : null;
+            $datos_ad['hor_start'] = isset($_POST['horario-inicio']) ? $_POST['horario-inicio'] : null;
+            $datos_ad['hor_end'] = isset($_POST['horario-final']) ? $_POST['horario-final'] : null;
+            $datos_ad['lang1'] = isset($_POST['lang-1']) && !empty($_POST['lang-1']) ? $_POST['lang-1'] : null; // Null si está vacío
+            $datos_ad['lang2'] = isset($_POST['lang-2']) && !empty($_POST['lang-2']) ? $_POST['lang-2'] : null; // Null si está vacío
+            $datos_ad['out'] = isset($_POST['out']) ? $_POST['out'] : 0; // Default a 0 si no existe
+            $datos_ad['ID_order'] = isset($_POST['order']) ? $_POST['order'] : 0; // Default a 0 si no existe
+            $datos_ad['payment'] = "[]"; // Asignado
 
-            // ----- Lógica de Usuario (parece similar) -----
+            echo "<pre>Checkpoint 3.1: Array \$datos_ad construido.</pre>";
+            echo '<pre>';
+            var_dump($datos_ad);
+            echo '</pre>';
+
+            // >>>>> PON EL EXIT AQUÍ (Intento 2) <<<<<
+            // exit;
+
+            // ----- Checkpoint 4: Lógica de Usuario -----
+            echo "<pre>Checkpoint 4: Iniciando lógica de usuario...</pre>";
+            $id_user = 0; // Inicializar
             if (!isset($_SESSION['data']['ID_user'])) {
-                $checkUser = selectSQL("sc_user", $a = array('mail' => $_POST['email']));
-                $ip = get_client_ip();
+                echo "<pre>Usuario NO logueado. Verificando/Creando...</pre>";
+                if (isset($_POST['email']) && !empty($_POST['email'])) {
+                    $checkUser = selectSQL("sc_user", array('mail' => $_POST['email']));
+                    $ip = get_client_ip();
 
-                if (count($checkUser) == 0) {
-                    if (!User::check_registered($ip, $_POST['phone'])) {
-                        // ----- Foto de perfil del usuario (banner_img) -----
-                        // El backend antiguo intentaba copiar la *primera* foto del anuncio como foto de perfil.
-                        // Necesitamos asegurarnos que $_POST['photo_name'][0] exista si hay fotos.
-                        // JS debe crear los inputs 'photo_name[]'.
-                        if (isset($_POST['photo_name'][0])) // ¡JS NECESARIO para crear photo_name[]!
-                            $banner_img = Images::copyImage($_POST['photo_name'][0], IMG_USER, IMG_ADS, true);
-                        else
+                    if ($checkUser !== false && count($checkUser) == 0) {
+                        echo "<pre>Usuario no encontrado por email. Verificando registro por IP/Teléfono...</pre>";
+                        // Asume que check_registered devuelve true si ya existe un registro reciente con esa IP/Tlf
+                        if (!User::check_registered($ip, $datos_ad['phone'])) {
+                            echo "<pre>Usuario nuevo detectado. Creando...</pre>";
+                            // --- Foto Perfil ---
                             $banner_img = "";
-
-                        $pass = randomString(6);
-                        // Usar el 'seller_type' que viene del formulario (mapeado por JS)
-                        $limit = user::getLimitsByRol($_POST['seller_type']);
-                        $datos_u = array(
-                            'name' => isset($_POST['name']) ? formatName($_POST['name']) : '', // Usa el nombre del anuncio
-                            'mail' => $_POST['email'],
-                            'phone' => $_POST['phone'],
-                            'banner_img' => $banner_img,
-                            'pass' => $pass,
-                            'date_reg' => time(),
-                            'active' => 1,
-                            'rol' => $_POST['seller_type'], // Usa el rol seleccionado/mapeado
-                            'date_credits' => "0",
-                            'credits' => "0",
-                            'IP_user' => $ip,
-                            'anun_limit' => $limit
-                            // Faltarían phone1, whatsapp, whatsapp1 si fueran necesarios en la tabla sc_user
-                        );
-                        $result = insertSQL("sc_user", $datos_u);
-                        if ($result) {
-                            $id_user = lastIdSQL();
-                            //mailWelcome(formatName($_POST['name']),$_POST['email'],$pass);
+                            if (isset($_POST['photo_name'][0])) {
+                                echo "<pre>Intentando copiar imagen de perfil: " . $_POST['photo_name'][0] . "</pre>";
+                                // Asegúrate que Images::copyImage y las constantes IMG_USER/IMG_ADS funcionen
+                                $banner_img = Images::copyImage($_POST['photo_name'][0], IMG_USER, IMG_ADS, true);
+                                echo "<pre>Resultado copyImage: " . ($banner_img ? $banner_img : 'Fallo') . "</pre>";
+                            }
+                            // --- Datos Usuario ---
+                            $pass = randomString(6);
+                            $limit_u = user::getLimitsByRol($datos_ad['seller_type']);
+                            $datos_u = array(
+                                'name' => $datos_ad['name'],
+                                'mail' => $_POST['email'],
+                                'phone' => $datos_ad['phone'],
+                                'banner_img' => $banner_img,
+                                'pass' => $pass, // Considera hashear la contraseña: password_hash($pass, PASSWORD_DEFAULT)
+                                'date_reg' => time(),
+                                'active' => 1,
+                                'rol' => $datos_ad['seller_type'],
+                                'date_credits' => "0",
+                                'credits' => "0",
+                                'IP_user' => $ip,
+                                'anun_limit' => $limit_u
+                            );
+                            echo "<pre>Datos para insertar usuario:</pre><pre>" . print_r($datos_u, true) . "</pre>";
+                            $result_u = insertSQL("sc_user", $datos_u); // Intenta insertar
+                            if ($result_u) {
+                                $id_user = lastIdSQL();
+                                echo "<pre>Usuario CREADO con éxito. ID: " . $id_user . "</pre>";
+                                // mailWelcome($datos_u['name'], $datos_u['mail'], $pass);
+                            } else {
+                                echo "<pre>ERROR: Falló la inserción del nuevo usuario (insertSQL devolvió false).</pre>";
+                                // Intenta obtener error MySQL si es posible
+                                if (isset($Connection) && mysqli_error($Connection)) {
+                                    echo "<pre>ERROR MYSQL (Usuario): " . htmlspecialchars(mysqli_error($Connection)) . "</pre>";
+                                }
+                                $id_user = 0; // Asegura que sea 0 si falla
+                                $_SESSION['form_error_message'] = "Error al crear la cuenta de usuario.";
+                                // Considera detener aquí si la creación de usuario es obligatoria
+                                // exit;
+                            }
+                        } else {
+                            echo "<pre>ERROR: Usuario ya registrado recientemente (IP/Teléfono). Asignando ID 0.</pre>";
+                            $user_registered = true; // Flag para posible mensaje
+                            $id_user = 0;
+                            $_SESSION['form_error_message'] = "Ya existe una cuenta reciente asociada a este teléfono o conexión.";
+                            // Considera detener aquí
+                            // exit;
                         }
+                    } elseif ($checkUser !== false) {
+                        echo "<pre>Usuario encontrado por email. Obteniendo ID.</pre>";
+                        $id_user = $checkUser[0]['ID_user'];
                     } else {
-                        $user_registered = true;
+                        echo "<pre>ERROR: Falló la consulta selectSQL para buscar usuario por email.</pre>";
                         $id_user = 0;
+                        $_SESSION['form_error_message'] = "Error al verificar la cuenta de usuario.";
+                        // exit;
                     }
                 } else {
-                    $id_user = $checkUser[0]['ID_user'];
+                    echo "<pre>ERROR: Email no proporcionado para usuario no logueado.</pre>";
+                    $id_user = 0;
+                    $_SESSION['form_error_message'] = "Se requiere un email para publicar.";
+                    // exit;
                 }
             } else {
                 $id_user = $_SESSION['data']['ID_user'];
+                echo "<pre>Usuario YA logueado. ID: " . $id_user . "</pre>";
             }
 
-            // ----- Lógica de Inserción del Anuncio (parece similar) -----
-            $limite = check_item_limit($id_user);
-            if ($limite == 0 || $_POST['order'] != 0) {
-                list($extras, $extra_limit) = User::updateExtras($id_user);
-                if ($extras) {
-                    $datos_ad['renovable'] = renovationType::Diario;
-                    $datos_ad['renovable_limit'] = $extra_limit;
-                }
+            echo "<pre>Checkpoint 4.1: Lógica de usuario completada.</pre>";
+            echo "<pre>ID Usuario final (\$id_user): " . $id_user . "</pre>";
+            // echo "<pre>Datos de Sesión Actuales:</pre>"; // Descomenta si necesitas ver la sesión completa
+            // echo '<pre>'; var_dump($_SESSION); echo '</pre>';
 
-                // ----- Rotar Imágenes -----
-                // El backend antiguo esperaba $_POST['optImgage'][$photo]['rotation']. Tu nuevo form no lo tiene.
-                // Se podría omitir la rotación o añadir inputs ocultos si es necesaria.
-                // foreach ($_POST['photo_name'] as $photo => $name) {
-                //     // Asegurarse que $_POST['optImgage'][$photo]['rotation'] existe o poner valor por defecto (0)
-                //     $rotation = isset($_POST['optImgage'][$photo]['rotation']) ? $_POST['optImgage'][$photo]['rotation'] : 0;
-                //     Images::rotateImage($name, $rotation);
+            // >>>>> PON EL EXIT AQUÍ (Intento 3) <<<<<
+            // exit;
+
+            // ----- Checkpoint 5: Verificación de Límite y Preparación Final -----
+            echo "<pre>Checkpoint 5: Verificando límite de anuncios...</pre>";
+            // Si el id_user es 0, check_item_limit podría fallar o dar resultado incorrecto.
+            if ($id_user > 0) {
+                $limite = check_item_limit($id_user); // Llama a la función con el ID correcto
+                echo "<pre>Resultado check_item_limit(\$limite) para ID $id_user: " . $limite . "</pre>";
+            } else {
+                echo "<pre>Advertencia: No se puede verificar límite porque ID Usuario es 0.</pre>";
+                // Decide cómo manejar esto. ¿Permitir publicar si falla la creación/identificación de usuario? Probablemente no.
+                // Si $id_user debe ser > 0, la comprobación más adelante lo detectará.
+                $limite = 99; // Poner un valor que impida pasar el if de abajo si no hay orden paga
+            }
+            echo "<pre>Valor \$_POST['order']: " . htmlspecialchars($_POST['order']) . "</pre>";
+
+
+            // El límite (0=ok, 1=premium_requerido?, 2=limite_alcanzado) y si es una orden paga
+            if (($limite == 0 || $limite == 1) || $_POST['order'] != 0) { // Modificado: Asume que 1 también puede publicar (quizás pagando)
+                echo "<pre>Checkpoint 5.1: Límite OK o es Orden Paga o requiere pago. Continuando...</pre>";
+
+                // --- Lógica de Extras y Renovación (Código Original) ---
+                // list($extras, $extra_limit) = User::updateExtras($id_user);
+                // if ($extras) {
+                //     $datos_ad['renovable'] = renovationType::Diario;
+                //     $datos_ad['renovable_limit'] = $extra_limit;
                 // }
+                // --- Rotación Imágenes (Código Original - Comentado) ---
+                // ...
 
-                $datos_ad['ID_user'] = $id_user;
+                // --- Añadir datos finales al array $datos_ad ---
+                $datos_ad['ID_user'] = $id_user; // Asegurar que el ID correcto esté aquí
                 $datos_ad['date_ad'] = time();
                 if (getConfParam('REVIEW_ITEM') == 1) {
                     $datos_ad['review'] = 1;
+                    echo "<pre>Anuncio marcado para revisión (review=1).</pre>";
+                } else {
+                    $datos_ad['review'] = 0; // O el valor por defecto de tu BD si no es 1
                 }
 
-                /// COMPROBACIÓN (Adaptada a los campos disponibles)
-                if ($datos_ad['ID_region'] != 0 /*&& $datos_ad['ad_type'] != 0*/ && $datos_ad['seller_type'] != 0 && $datos_ad['ID_cat'] != 0 && ($datos_ad['price'] == 0 || is_numeric($datos_ad['price'])) && $datos_ad['ID_user'] > 0) {
+                echo "<pre>Checkpoint 5.2: Datos del anuncio listos para la comprobación final.</pre>";
+                echo '<pre>';
+                var_dump($datos_ad); // Muestra los datos completos justo antes de la comprobación
+                echo '</pre>';
+
+                // >>>>> PON EL EXIT AQUÍ (Intento 4) <<<<<
+                // exit;
+
+                // ----- Checkpoint 6: Comprobación Final de Datos -----
+                echo "<pre>Checkpoint 6: Realizando comprobación final de datos...</pre>";
+                // Adaptada a los campos disponibles y posibles valores 0 válidos
+                $condicion_region = ($datos_ad['ID_region'] != 0);
+                $condicion_seller_type = ($datos_ad['seller_type'] != 0); // Asumiendo que 0 no es un tipo válido
+                $condicion_cat = ($datos_ad['ID_cat'] != 0);
+                $condicion_price = (isset($datos_ad['price']) && ($datos_ad['price'] == 0 || is_numeric($datos_ad['price']))); // Price 0 es válido
+                $condicion_user = ($datos_ad['ID_user'] > 0); // ID de usuario debe ser válido
+                // Añadir otras condiciones si son cruciales (ej: título, texto)
+                $condicion_titulo = (!empty($datos_ad['title']));
+                $condicion_texto = (!empty($datos_ad['texto']));
+
+                echo "<pre>Resultados: region=" . ($condicion_region ? 'OK' : 'Fallo') .
+                    ", seller_type=" . ($condicion_seller_type ? 'OK' : 'Fallo') .
+                    ", cat=" . ($condicion_cat ? 'OK' : 'Fallo') .
+                    ", price=" . ($condicion_price ? 'OK' : 'Fallo') .
+                    ", user=" . ($condicion_user ? 'OK' : 'Fallo') .
+                    ", titulo=" . ($condicion_titulo ? 'OK' : 'Fallo') .
+                    ", texto=" . ($condicion_texto ? 'OK' : 'Fallo') .
+                    "</pre>";
+
+                if ($condicion_region && $condicion_seller_type && $condicion_cat && $condicion_price && $condicion_user && $condicion_titulo && $condicion_texto) {
+                    echo "<pre>Checkpoint 6.1: ¡Comprobación SUPERADA! Preparando para insertar...</pre>";
+                    echo '<pre>Datos a insertar:';
+                    var_dump($datos_ad); // Muestra exactamente lo que se intentará insertar
+                    echo '</pre>';
+
+                    // >>>>> PON EL EXIT AQUÍ (Intento 5) <<<<<
+                    // exit;
+
+                    // ----- Checkpoint 7: Intento de Inserción -----
+                    echo "<pre>Checkpoint 7: Intentando insertar/actualizar en BD...</pre>";
+                    $insert = false; // Inicializar resultado
+                    $last_ad = 0;   // Inicializar ID
+                    $error_insert = false; // Flag de error explícito en la lógica
+
                     if ($_POST['order'] != 0) {
+                        echo "<pre>Procesando como Orden Paga (ID: " . htmlspecialchars($_POST['order']) . ")...</pre>";
                         $order = Orders::getOrderByID($_POST['order']);
-                        if ($order['ID_ad'] == 0) {
-                            $insert = insertSQL("sc_ad", $datos_ad);
+                        if ($order && $order['ID_ad'] == 0) {
+                            echo "<pre>Orden encontrada y sin anuncio asociado. Intentando insertSQL...</pre>";
+                            $insert = insertSQL("sc_ad", $datos_ad); // INTENTO DE INSERCIÓN
                             $last_ad = lastIdSQL();
-                            updateSQL("sc_orders", array("ID_ad" => $last_ad), array("ID_order" => $_POST['order']));
+                            echo "<pre>insertSQL ejecutado. Resultado \$insert: " . ($insert ? 'TRUE' : 'FALSE') . ", \$last_ad: " . $last_ad . "</pre>";
+                            if ($insert && $last_ad > 0) {
+                                echo "<pre>Inserción exitosa. Actualizando orden...</pre>";
+                                // ¡CUIDADO! updateSQL también podría fallar silenciosamente
+                                $update_order_result = updateSQL("sc_orders", array("ID_ad" => $last_ad), array("ID_order" => $_POST['order']));
+                                echo "<pre>updateSQL para orden ejecutado. Resultado: " . ($update_order_result ? 'TRUE' : 'FALSE') . "</pre>";
+                                if (!$update_order_result && isset($Connection) && mysqli_error($Connection)) {
+                                    echo "<pre>ERROR MYSQL (Update Order): " . htmlspecialchars(mysqli_error($Connection)) . "</pre>";
+                                }
+                                // Considerar $insert = false si el update de la orden falla? Depende de la lógica de negocio.
+                            }
                             Statistic::addAnuncioNuevoPremium();
                         } else {
-                            $error_insert = true;
-                            $insert = false;
-                            $last_ad = $order['ID_ad'];
+                            echo "<pre>ERROR: Orden no encontrada O ya tiene un anuncio asociado (ID_ad: " . ($order ? $order['ID_ad'] : 'N/A') . ").</pre>";
+                            $error_insert = true; // Error lógico, no de inserción directa
+                            $insert = false; // No se intentó/logró la inserción principal
+                            $last_ad = ($order ? $order['ID_ad'] : 0); // ID del anuncio existente si lo hay
+                            $_SESSION['form_error_message'] = "Error: La orden de pago no es válida o ya está usada.";
                         }
                     } else {
-                        $insert = insertSQL("sc_ad", $datos_ad);
-                        $last_ad = lastIdSQL();
-                        Statistic::addAnuncioNuevo();
-                    }
-
-                    // ----- Asociar Imágenes al Anuncio -----
-                    // JS NECESARIO: Debe crear los inputs <input type="hidden" name="photo_name[]" value="nombre_archivo.jpg">
-                    if (isset($_POST['photo_name']) && is_array($_POST['photo_name'])) {
-                        foreach ($_POST['photo_name'] as $photo => $name) {
-                            // El backend antiguo actualizaba sc_images. Asume que la subida AJAX ya insertó registros en sc_images con status pendiente.
-                            updateSQL("sc_images", $data = array('ID_ad' => $last_ad, 'position' => $photo, "status" => 1), $wa = array('name_image' => $name));
+                        // Anuncio normal
+                        echo "<pre>Intentando insertSQL para anuncio normal...</pre>";
+                        $insert = insertSQL("sc_ad", $datos_ad); // <<<--- ¡¡INTENTO DE INSERCIÓN!!
+                        $last_ad = lastIdSQL(); // Obtener ID si la inserción tuvo éxito
+                        echo "<pre>insertSQL ejecutado. Resultado \$insert: " . ($insert ? 'TRUE' : 'FALSE') . ", \$last_ad: " . $last_ad . "</pre>";
+                        if ($insert) {
+                            Statistic::addAnuncioNuevo();
                         }
                     }
 
-                    if ($insert) {
-                        checkRepeat($last_ad); // Función existente
-                        // Notificación por email (usa el campo 'notifications' del formulario)
-                        if (!isset($datos_ad['notifications']) || !$datos_ad['notifications']) {
-                            // Parece que esta función se llama si *NO* quieren notificaciones. ¿Seguro?
-                            // mailAdNotNotification($last_ad); // Comentado por si acaso
-                        }
+                    echo "<pre>Checkpoint 7.1: Resultado final de la operación de inserción/actualización.</pre>";
+                    echo "<pre>Valor final \$insert: " . ($insert ? 'TRUE (Éxito)' : 'FALSE (Fallo o no realizado)') . "</pre>";
+                    echo "<pre>Valor final \$last_ad: " . $last_ad . "</pre>";
 
-                        //mailNewAd($last_ad); // Función existente
-
-                        // Redirección
-                        if ($_POST['order'] != 0) {
-                            // header('Location: /publicado?payad=' . $_POST['order']); // Causa error "headers already sent" si hay HTML antes.
-                            echo '<script type="text/javascript">location.href = "/publicado?payad=' . $_POST['order'] . '";</script>';
+                    // Si la inserción falló (explícitamente $insert === false) Y NO fue un error lógico ($error_insert === false)
+                    if ($insert === false && $error_insert === false && isset($Connection)) {
+                        $db_error = mysqli_error($Connection); // Obtener error DESPUÉS de la operación fallida
+                        if (!empty($db_error)) {
+                            echo "<pre>ERROR MYSQL: " . htmlspecialchars($db_error) . "</pre>";
                         } else {
-                            echo '<script type="text/javascript">location.href = "/publicado";</script>';
+                            echo "<pre>Fallo en insertSQL/updateSQL, pero no hay error explícito de MySQL disponible (revisar funciones SQL o conexión: \$Connection).</pre>";
                         }
-                        exit(); // Importante salir después de la redirección JS/Header
+                        // Establecer mensaje de error genérico si falló la BD
+                        if (!isset($_SESSION['form_error_message'])) { // Evita sobreescribir mensajes más específicos
+                            $_SESSION['form_error_message'] = "Error al guardar los datos en la base de datos.";
+                        }
+                    } elseif ($error_insert === true && !isset($_SESSION['form_error_message'])) {
+                        // Si hubo error lógico (orden usada, etc.) y no se puso mensaje antes
+                        $_SESSION['form_error_message'] = "Error al procesar la solicitud (lógica interna).";
+                    }
 
+
+                    // >>>>> PON EL EXIT AQUÍ (Intento 6) <<<<<
+                    exit; // DETENER AQUÍ PARA VER EL RESULTADO DE LA BD
+
+                    // ----- Checkpoint 8: Procesamiento Post-Inserción -----
+                    echo "<pre>Checkpoint 8: Iniciando procesamiento post-inserción...</pre>";
+
+                    // ----- Asociar Imágenes -----
+                    if ($insert && $last_ad > 0 && isset($_POST['photo_name']) && is_array($_POST['photo_name'])) {
+                        echo "<pre>Asociando imágenes al anuncio ID: " . $last_ad . "</pre>";
+                        $fotos_asociadas = 0;
+                        foreach ($_POST['photo_name'] as $photo => $name) {
+                            echo "<pre>Intentando updateSQL para imagen: " . htmlspecialchars($name) . " con posición: " . $photo . "</pre>";
+                            // ¡CUIDADO! updateSQL también puede fallar
+                            $update_img_result = updateSQL("sc_images", array('ID_ad' => $last_ad, 'position' => $photo, "status" => 1), array('name_image' => $name));
+                            echo "<pre>Resultado updateSQL imagen: " . ($update_img_result ? 'TRUE' : 'FALSE') . "</pre>";
+                            if ($update_img_result) {
+                                $fotos_asociadas++;
+                            } elseif (isset($Connection) && mysqli_error($Connection)) {
+                                echo "<pre>ERROR MYSQL (Update Imagen): " . htmlspecialchars(mysqli_error($Connection)) . "</pre>";
+                            }
+                        }
+                        echo "<pre>Total fotos asociadas con éxito: " . $fotos_asociadas . " de " . count($_POST['photo_name']) . "</pre>";
+                        // ¿Qué hacer si falla la asociación de alguna foto? ¿Continuar?
+                    } elseif ($insert && $last_ad > 0) {
+                        echo "<pre>No se encontraron fotos para asociar (campo photo_name[] ausente o vacío).</pre>";
+                    }
+
+                    // ----- Lógica Adicional y Redirección -----
+                    if ($insert && $last_ad > 0) { // Solo continuar si la inserción principal fue exitosa
+                        echo "<pre>Inserción/Actualización principal exitosa (last_ad=$last_ad). Ejecutando lógica adicional...</pre>";
+                        checkRepeat($last_ad); // Función existente
+                        echo "<pre>checkRepeat($last_ad) ejecutado.</pre>";
+
+                        // Notificación por email
+                        if (!isset($datos_ad['notifications']) || !$datos_ad['notifications']) {
+                            echo "<pre>Usuario NO quiere notificaciones. Llamando (o no) a mailAdNotNotification...</pre>";
+                            // mailAdNotNotification($last_ad); // Comentado por si acaso
+                        } else {
+                            echo "<pre>Usuario SÍ quiere notificaciones.</pre>";
+                        }
+
+                        // mailNewAd($last_ad); // Función existente
+                        echo "<pre>mailNewAd($last_ad) ejecutado (o debería haberse ejecutado).</pre>";
+
+                        // ----- Redirección Final -----
+                        if ($_POST['order'] != 0) {
+                            $redirectUrl = "/publicado?payad=" . $_POST['order'];
+                            echo "<pre>REDIRECCIÓN (Orden Paga): " . htmlspecialchars($redirectUrl) . "</pre>";
+                            // exit; // Descomenta para ver esto antes de redirigir
+                            echo '<script type="text/javascript">location.href = "' . $redirectUrl . '";</script>';
+                        } else {
+                            $redirectUrl = "/publicado";
+                            echo "<pre>REDIRECCIÓN (Normal): " . htmlspecialchars($redirectUrl) . "</pre>";
+                            // exit; // Descomenta para ver esto antes de redirigir
+                            echo '<script type="text/javascript">location.href = "' . $redirectUrl . '";</script>';
+                        }
+                        // Salir SIEMPRE después de imprimir el script de redirección
+                        exit();
                     } else {
-                        $error_insert = true; // Hubo error en insertSQL o era un anuncio ya asociado a la orden
-                        $_SESSION['form_error_message'] = "Error al guardar el anuncio. Posiblemente asociado a una orden existente o error de base de datos.";
+                        // Flujo llega aquí si $insert fue false o $last_ad fue 0
+                        echo "<pre>ERROR: La inserción/actualización principal falló o no se realizó. No se ejecuta lógica adicional ni redirección.</pre>";
+                        // El mensaje de error debería haberse puesto en $_SESSION antes
+                        if (!isset($_SESSION['form_error_message'])) { // Mensaje de fallback
+                            $_SESSION['form_error_message'] = "Error inesperado durante el guardado del anuncio.";
+                        }
                         $_SESSION['form_data_error'] = $_POST; // Guardar datos para repoblar
+                        // No redirigir, dejar que el script continúe y muestre el formulario de nuevo con el error
                     }
                 } else {
-                    // Error en los datos básicos del anuncio
-                    $error_insert = true;
+                    // Falla la comprobación final (Checkpoint 6)
+                    echo "<pre>ERROR: La comprobación final de datos (Checkpoint 6) ha fallado. No se intenta insertar.</pre>";
+                    $error_insert = true; // Marcar error
                     // Guardar los datos $_POST en sesión para repoblar el formulario
                     $_SESSION['form_data_error'] = $_POST;
                     // Añadir un mensaje de error específico si es posible
-                    if ($datos_ad['ID_user'] <= 0) {
+                    if (!$condicion_user) {
                         $_SESSION['form_error_message'] = "Error al identificar o crear el usuario.";
-                    } elseif ($datos_ad['ID_region'] == 0) {
+                    } elseif (!$condicion_region) {
                         $_SESSION['form_error_message'] = "Debes seleccionar una provincia.";
-                    } elseif ($datos_ad['ID_cat'] == 0) {
+                    } elseif (!$condicion_cat) {
                         $_SESSION['form_error_message'] = "Debes seleccionar una categoría.";
+                    } elseif (!$condicion_seller_type) {
+                        $_SESSION['form_error_message'] = "Tipo de vendedor inválido.";
+                    } elseif (!$condicion_titulo) {
+                        $_SESSION['form_error_message'] = "El título es obligatorio.";
+                    } elseif (!$condicion_texto) {
+                        $_SESSION['form_error_message'] = "La descripción es obligatoria.";
                     } else {
                         $_SESSION['form_error_message'] = "Faltan datos obligatorios o son incorrectos. Revisa el formulario.";
                     }
+                    // No redirigir, dejar que el script continúe
                 }
             } else {
-                $error_insert = true; // Límite de anuncios alcanzado
+                // Límite alcanzado (Checkpoint 5)
+                echo "<pre>ERROR: Límite de anuncios gratuitos alcanzado (Checkpoint 5). No se intenta insertar.</pre>";
+                $error_insert = true; // Marcar error
                 $_SESSION['form_error_message'] = "Has alcanzado el límite de anuncios gratuitos.";
                 // Guardar datos para repoblar
                 $_SESSION['form_data_error'] = $_POST;
+                // No redirigir, dejar que el script continúe
             }
         } else {
-            $error_insert = true; // Error token CSRF
+            // Error token CSRF (Checkpoint 2)
+            echo "<pre>ERROR: Token CSRF inválido (Checkpoint 2). No se procesa el formulario.</pre>";
+            $error_insert = true; // Marcar error
             $_SESSION['form_error_message'] = "Error de seguridad al procesar el formulario (token inválido). Intenta de nuevo.";
             // Guardar datos para repoblar
             $_SESSION['form_data_error'] = $_POST;
+            // No redirigir, dejar que el script continúe
         }
     } else {
-        // Este bloque se ejecuta si se envió el POST pero sin el campo 'category'
-        $error_insert = true; // No se recibió 'category'
+        // No se recibió 'category' (Checkpoint 2)
+        echo "<pre>ERROR: No se recibió el campo 'category' (Checkpoint 2). No se procesa el formulario.</pre>";
+        $error_insert = true; // Marcar error
         $_SESSION['form_error_message'] = "No se recibió la categoría. Revisa el formulario.";
         // Guardar datos para repoblar
         $_SESSION['form_data_error'] = $_POST;
+        // No redirigir, dejar que el script continúe
     }
-} // ----- FIN Procesamiento del formulario -----
 
-// ############################################################
-// ###### FIN LÓGICA PROCESAMIENTO FORMULARIO ANTIGUO #########
-// ############################################################
+    // Si el script llega aquí, significa que hubo un error ANTES de la redirección exitosa.
+    // El formulario se mostrará de nuevo más abajo, recogiendo los mensajes de error de la sesión.
+    echo "<pre>Fin del bloque de procesamiento POST (con errores).</pre>";
+} // ----- FIN Procesamiento del formulario POST -----
 
-
-// Repoblar datos si hubo error
+// --- Repoblar Datos y Mensaje de Error (si los hubo) ---
 $form_data = [];
 if (isset($_SESSION['form_data_error'])) {
     $form_data = $_SESSION['form_data_error'];
+    // Limpia los datos de la sesión para no mostrarlos en recargas posteriores
     unset($_SESSION['form_data_error']);
 }
 $form_error_message = '';
 if (isset($_SESSION['form_error_message'])) {
     $form_error_message = $_SESSION['form_error_message'];
+    // Limpia el mensaje de la sesión
     unset($_SESSION['form_error_message']);
 }
 
 ?>
 
-<?php // <!-- ELIMINADO: Script de carga de reCAPTCHA API --> 
+<?php // --- HTML del Formulario y Resto de la Página --- 
 ?>
 
 <?php if (!user::checkLogin() && check_ip()): ?>
@@ -281,6 +500,7 @@ if (isset($_SESSION['form_error_message'])) {
         </div>
     </dialog>
 <?php endif ?>
+
 <ul class="post-help">
     <li class="post-help-item">
         <a target="_blank" href="/ayuda/">
@@ -301,53 +521,40 @@ if (isset($_SESSION['form_error_message'])) {
 <h2 class="title">Publica tu anuncio ¡Gratis!</h2>
 <div class="col_single post_item_col">
 
-    <?php // Mostrar mensaje de error general si existe
+    <?php // --- Mostrar Mensaje de Error General ---
     if (!empty($form_error_message)): ?>
         <div class="error_msg" style="display: block; border: 1px solid red; padding: 10px; margin-bottom: 15px; background-color: #ffebeb;">
             <strong>Error:</strong> <?php echo htmlspecialchars($form_error_message); ?>
         </div>
     <?php endif; ?>
 
-    <?php // <!-- ############################################################ -->
+    <?php // --- Inicio del Formulario HTML --- 
     ?>
-    <?php // <!-- ##### INICIO NUEVO FORMULARIO ADAPTADO ##### -->
-    ?>
-    <?php // <!-- ############################################################ -->
-    ?>
-
     <form id="form-nuevo-anuncio" class="formulario-multi-etapa" method="post" action="<?php echo htmlspecialchars($formActionUrl); ?>" enctype="multipart/form-data" autocomplete="off">
-
-        <?php // Generar Token CSRF - Asegúrate que 'nuevoAnuncioToken' sea el nombre esperado por verifyFormToken o cambia verifyFormToken a 'nuevoAnuncioToken'
-        // El código viejo usa 'postAdToken'. Usaremos ese por seguridad.
+        <?php
+        // Generar Token CSRF
         $token_q = generateFormToken('postAdToken');
         ?>
         <input type="hidden" name="token" id="token" value="<?= $token_q; ?>">
-        <?php // <!-- ELIMINADO: Input oculto para g-recaptcha-response --> 
-        ?>
-        <!-- MAPEO: El backend espera 'order'. El id puede ser 'new_order' para JS si quieres. -->
-        <input type="hidden" id="new_order" name="order" value="<?php echo isset($form_data['order']) ? htmlspecialchars($form_data['order']) : '0'; ?>" />
+        <input type="hidden" id="new_order" name="order" value="<?php echo htmlspecialchars($form_data['order'] ?? '0'); ?>" />
 
-        <!-- JS NECESARIO: Campo oculto para seller_type. JS debe actualizar su valor al cambiar tipo_usuario -->
-        <input type="hidden" name="seller_type" id="hidden_seller_type" value="<?php echo isset($form_data['seller_type']) ? htmlspecialchars($form_data['seller_type']) : ''; ?>">
-        <!-- JS NECESARIO: Campos ocultos para horario simplificado -->
-        <input type="hidden" name="dis" id="hidden_dis" value="<?php echo isset($form_data['dis']) ? htmlspecialchars($form_data['dis']) : ''; ?>">
-        <input type="hidden" name="horario-inicio" id="hidden_horario_inicio" value="<?php echo isset($form_data['horario-inicio']) ? htmlspecialchars($form_data['horario-inicio']) : ''; ?>">
-        <input type="hidden" name="horario-final" id="hidden_horario_final" value="<?php echo isset($form_data['horario-final']) ? htmlspecialchars($form_data['horario-final']) : ''; ?>">
-        <!-- JS NECESARIO: Campos ocultos para idiomas -->
-        <input type="hidden" name="lang-1" id="hidden_lang_1" value="<?php echo isset($form_data['lang-1']) ? htmlspecialchars($form_data['lang-1']) : ''; ?>">
-        <input type="hidden" name="lang-2" id="hidden_lang_2" value="<?php echo isset($form_data['lang-2']) ? htmlspecialchars($form_data['lang-2']) : ''; ?>">
-        <!-- JS NECESARIO: Contenedor para los inputs ocultos de las fotos generados por JS -->
+        <?php // Campos ocultos (asegúrate que JS los actualice) 
+        ?>
+        <input type="hidden" name="seller_type" id="hidden_seller_type" value="<?php echo htmlspecialchars($form_data['seller_type'] ?? ''); ?>">
+        <input type="hidden" name="dis" id="hidden_dis" value="<?php echo htmlspecialchars($form_data['dis'] ?? ''); ?>">
+        <input type="hidden" name="horario-inicio" id="hidden_horario_inicio" value="<?php echo htmlspecialchars($form_data['horario-inicio'] ?? ''); ?>">
+        <input type="hidden" name="horario-final" id="hidden_horario_final" value="<?php echo htmlspecialchars($form_data['horario-final'] ?? ''); ?>">
+        <input type="hidden" name="lang-1" id="hidden_lang_1" value="<?php echo htmlspecialchars($form_data['lang-1'] ?? ''); ?>">
+        <input type="hidden" name="lang-2" id="hidden_lang_2" value="<?php echo htmlspecialchars($form_data['lang-2'] ?? ''); ?>">
         <div id="hidden-photo-inputs">
-            <?php // Si hubo error y hay fotos, intentar repoblarlas (requiere JS complejo)
-            /* if (isset($form_data['photo_name']) && is_array($form_data['photo_name'])) {
-                 foreach($form_data['photo_name'] as $photo_name) {
-                     echo '<input type="hidden" name="photo_name[]" value="'.htmlspecialchars($photo_name).'">';
-                 }
-             } */
+            <?php // Repoblar fotos es complejo, mejor que JS lo maneje al cargar si hubo error 
             ?>
         </div>
 
-
+        <?php // --- Etapas del Formulario (Tipo Usuario, Plan, Perfil, Extras) --- 
+        ?>
+        <?php // (El HTML de las etapas va aquí, usando $form_data para repoblar valores) 
+        ?>
         <!-- ======================= ETAPA 0: TIPO DE USUARIO (Solo si no está logueado) ======================= -->
         <?php if (!checkSession()): ?>
             <div id="etapa-tipo-usuario" class="etapa activa">
@@ -393,9 +600,15 @@ if (isset($_SESSION['form_error_message'])) {
                 </div>
             </div>
         <?php else: ?>
-            <?php // Si está logueado, establecer el seller_type del usuario de sesión
-            echo '<script>document.getElementById("hidden_seller_type").value = "' . htmlspecialchars($_SESSION['data']['rol']) . '";</script>';
+            <?php // Script para setear hidden_seller_type si está logueado 
             ?>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    if (document.getElementById("hidden_seller_type")) {
+                        document.getElementById("hidden_seller_type").value = "<?php echo htmlspecialchars($_SESSION['data']['rol'] ?? ''); ?>";
+                    }
+                });
+            </script>
         <?php endif; ?>
 
         <!-- ======================= ETAPA 1: ELECCIÓN DE PLAN ======================= -->
@@ -543,7 +756,7 @@ if (isset($_SESSION['form_error_message'])) {
                         <?php
                         $servicios = ["Masaje relajante", "Masaje deportivo", "Masaje podal", "Masaje antiestrés", "Masaje linfático", "Masaje shiatsu", "Masaje descontracturante", "Masaje ayurvédico", "Masaje circulatorio", "Masaje tailandés"];
                         // Repoblar si hubo error
-                        $selected_services = $form_data['servicios'] ?? [];
+            $selected_services = $form_data['servicios'] ?? [];
                         foreach ($servicios as $servicio) {
                             $valor = strtolower(str_replace(' ', '_', $servicio));
                             $checked = in_array($valor, $selected_services) ? 'checked' : '';
@@ -692,7 +905,7 @@ if (isset($_SESSION['form_error_message'])) {
                     <div class="error-msg oculto" id="error-salidas">Debes indicar si realizas salidas.</div>
                 </div>
 
-                <?php if (!checkSession()): ?>
+            <?php if (!checkSession()): ?>
                     <div class="frm-grupo">
                         <label for="email" class="frm-etiqueta">Tu Email de Contacto *</label>
                         <!-- MAPEO: name="email" esperado por backend -->
@@ -700,21 +913,15 @@ if (isset($_SESSION['form_error_message'])) {
                         <div class="ayuda-texto">Si ya tienes cuenta, usa el mismo email. Si no, crearemos una cuenta para ti.</div>
                         <div class="error-msg oculto" id="error-email">Introduce un email válido.</div>
                     </div>
-                <?php else: ?>
+            <?php else: ?>
                     <!-- Si está logueado, el backend espera el email igualmente -->
                     <input type="hidden" name="email" value="<?php echo htmlspecialchars($_SESSION['data']['mail']); ?>">
                     <div class="frm-grupo">
                         <label class="frm-etiqueta">Email de Contacto:</label>
                         <span class="texto-fijo"><?php echo htmlspecialchars($_SESSION['data']['mail']); ?></span>
                     </div>
-                <?php endif; ?>
-
-            </fieldset>
-
-            <div class="navegacion-etapa">
-                <button type="button" class="frm-boton btn-anterior">Anterior</button>
-                <button type="button" class="frm-boton btn-siguiente">Siguiente (Extras Opcionales)</button>
-            </div>
+            <?php endif; ?>
+            <?php /* ... resto HTML etapa 2 ... */ ?>
         </div>
 
         <!-- ======================= ETAPA 3: EXTRAS OPCIONALES ======================= -->
@@ -783,21 +990,18 @@ if (isset($_SESSION['form_error_message'])) {
                 <button type="button" class="frm-boton btn-anterior">Anterior</button>
                 <!-- JS NECESARIO: El texto/acción de este botón podría cambiar según plan/extras -->
                 <!-- El type="submit" es correcto para enviar el formulario directamente (sin JS reCAPTCHA) -->
-                <button type="submit" id="btn-finalizar" class="frm-boton btn-publicar">Finalizar y Publicar</button>
-            </div>
+            <button type="submit" id="btn-finalizar" class="frm-boton btn-publicar">Finalizar y Publicar</button>
         </div>
 
     </form>
-
-    <?php // <!-- ############################################################ -->
-    ?>
-    <?php // <!-- ##### FIN NUEVO FORMULARIO ADAPTADO ##### -->
-    ?>
-    <?php // <!-- ############################################################ -->
+    <?php // --- Fin del Formulario HTML --- 
     ?>
 
-</div>
+</div> <?php // Fin .col_single 
+        ?>
 
+<?php // --- Resto de la página (bloques, diálogos, scripts JS) --- 
+?>
 <?php
 loadBlock('post-warning');
 if ($limite == 1)
@@ -809,7 +1013,6 @@ loadBlock('payment_dialog');
 // ----- Mensajes emergentes del sistema antiguo -----
 // (Mantenerlos por si la lógica $limite sigue aplicando)
 ?>
-
 <?php if (isset($_SESSION['data']['ID_user']) && $limite == 2): ?>
     <dialog class="dialog" open>
         <div class="dialog-modal">
@@ -835,25 +1038,9 @@ loadBlock('payment_dialog');
     </dialog>
 <?php endif ?>
 
-<!-- Mantener los scripts JS antiguos si son necesarios para funciones fuera del form (payment_dialog, etc.) -->
-<!-- ¡PERO CUIDADO! post.js interactuaba con el form antiguo (#new_item_post) -->
-<!-- Necesitarás un NUEVO archivo JS para manejar el form multi-etapa y las interacciones específicas del nuevo form -->
-<!-- <script src="<?= getConfParam('SITE_URL') ?>src/js/filter.js"></script> -->
+<?php // Scripts JS 
+?>
 <script src="<?= getConfParam('SITE_URL') ?>src/js/newPost.js"></script>
-
-<?php // <!-- ELIMINADO: Script de ejecución de reCAPTCHA --> 
+<?php // Script Select2/Sortable comentados 
 ?>
-
-<!-- Script Select2 del form antiguo. Puede que no sea necesario si no usas Select2 en el nuevo -->
-<!-- O si lo usas, necesitas inicializarlo en los selects del NUEVO formulario -->
-<!-- <script type="text/javascript">
-    $(document).ready(function() {
-        // Inicializar Select2 en los selects del nuevo formulario si los usas
-        // $('#form-nuevo-anuncio select').select2(...);
-
-        // La lógica de Sortable para fotos necesita adaptarse al nuevo contenedor #lista-fotos-subidas
-        // $('.sortable').sortable(...); -> Cambiar a $('#lista-fotos-subidas').sortable(...);
-    });
-</script> -->
-<?php loadBlock('datajson'); // Mantener si es necesario para otras partes de la página
-?>
+<?php loadBlock('datajson'); ?>
