@@ -14,8 +14,8 @@ $DATAJSON['max_photos'] = getConfParam('MAX_PHOTOS_AD');
 $DATAJSON['edit'] = 0;
 
 #AGREGADO POR WANDORIUS
-require_once 'delete_temp_image.php'; 
-# require_once 'upload_temp_image.php';
+#require_once 'delete_temp_image.php'; 
+require_once 'upload_temp_image.php';
 # WANDORIUS 
 # NO ENTIENDO QUE HACE ESTO 10/04/25
 
