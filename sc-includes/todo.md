@@ -95,32 +95,8 @@ newPost.js:601 region: 3
 newPost.js:601 city: Ciudad test
 newPost.js:601 tit: bolsa empleo
 newPost.js:601 text: Descripcion bolsa emple obolsa empleo
-newPost.js:601 servicios[]: masaje_relajante
-newPost.js:601 servicios[]: masaje_podal
-# Aqui solo selecione martes, miercoles y sabado, parece funcionar correctamente
-newPost.js:601 horario_dia[lunes][inicio]: 00:00
-newPost.js:601 horario_dia[lunes][fin]: 23:30
-newPost.js:601 horario_dia[martes][activo]: 1
-newPost.js:601 horario_dia[martes][inicio]: 00:00
-newPost.js:601 horario_dia[martes][fin]: 23:30
-newPost.js:601 horario_dia[miercoles][activo]: 1
-newPost.js:601 horario_dia[miercoles][inicio]: 04:30
-newPost.js:601 horario_dia[miercoles][fin]: 23:30
-newPost.js:601 horario_dia[jueves][inicio]: 00:00
-newPost.js:601 horario_dia[jueves][fin]: 23:30
-newPost.js:601 horario_dia[viernes][inicio]: 00:00
-newPost.js:601 horario_dia[viernes][fin]: 23:30
-newPost.js:601 horario_dia[sabado][activo]: 1
-newPost.js:601 horario_dia[sabado][inicio]: 06:30
-newPost.js:601 horario_dia[sabado][fin]: 23:30
-newPost.js:601 horario_dia[domingo][inicio]: 00:00
-newPost.js:601 horario_dia[domingo][fin]: 23:30
-newPost.js:601 phone: 0418545687
-# Volver a probar idioma
-newPost.js:601 idioma_1: 
-newPost.js:601 nivel_idioma_1: 
-newPost.js:601 idioma_2: 
-newPost.js:601 nivel_idioma_2: 
+
+
 newPost.js:601 out: 1
 newPost.js:601 email: andoryyu1@gmail.com
 newPost.js:601 terminos: 1
