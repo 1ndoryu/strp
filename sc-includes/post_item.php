@@ -123,14 +123,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $datos_ad['name'] = isset($_POST['name']) ? formatName($_POST['name']) : '';
             $datos_ad['phone'] = isset($_POST['phone']) ? $_POST['phone'] : '';
             $datos_ad['whatsapp'] = isset($_POST['whatsapp']) && $_POST['whatsapp'] == '1' ? 1 : 0; // Asegurar que sea 0 o 1
-            $datos_ad['phone1'] = ''; 
+            $datos_ad['phone1'] = '';
             $datos_ad['whatsapp1'] = 0;
             $datos_ad['seller_type'] = isset($_POST['seller_type']) ? $_POST['seller_type'] : 0; // Default a 0 si no existe
             $datos_ad['notifications'] = isset($_POST['notifications']) && $_POST['notifications'] == '1' ? 1 : 0; // Asegurar que sea 0 o 1
             $datos_ad['dis'] = isset($_POST['dis']) ? $_POST['dis'] : null;
             $datos_ad['hor_start'] = isset($_POST['horario-inicio']) && !empty($_POST['horario-inicio']) ? $_POST['horario-inicio'] : '';
-            $datos_ad['hor_end'] = isset($_POST['horario-final']) && !empty($_POST['horario-final']) ? $_POST['horario-final'] : ''; 
-            $datos_ad['lang1'] = isset($_POST['lang-1']) && !empty($_POST['lang-1']) ? (int)$_POST['lang-1'] : 0; 
+            $datos_ad['hor_end'] = isset($_POST['horario-final']) && !empty($_POST['horario-final']) ? $_POST['horario-final'] : '';
+            $datos_ad['lang1'] = isset($_POST['lang-1']) && !empty($_POST['lang-1']) ? (int)$_POST['lang-1'] : 0;
             $datos_ad['lang2'] = isset($_POST['lang-2']) && !empty($_POST['lang-2']) ? (int)$_POST['lang-2'] : 0;
             $datos_ad['out'] = isset($_POST['out']) ? $_POST['out'] : 0; // Default a 0 si no existe
             $datos_ad['ID_order'] = isset($_POST['order']) ? $_POST['order'] : 0; // Default a 0 si no existe
@@ -608,6 +608,11 @@ if (isset($_SESSION['form_error_message'])) {
         <?php
         // Generar Token CSRF
         $token_q = generateFormToken('postAdToken');
+
+        function svgs()
+        {
+            $GLOBALS['check'] = '<svg data-testid="geist-icon" height="12" stroke-linejoin="round" viewBox="0 0 16 16" width="12" style="color: green;"><path fill-rule="evenodd" clip-rule="evenodd" d="M15.5607 3.99999L15.0303 4.53032L6.23744 13.3232C5.55403 14.0066 4.44599 14.0066 3.76257 13.3232L4.2929 12.7929L3.76257 13.3232L0.969676 10.5303L0.439346 9.99999L1.50001 8.93933L2.03034 9.46966L4.82323 12.2626C4.92086 12.3602 5.07915 12.3602 5.17678 12.2626L13.9697 3.46966L14.5 2.93933L15.5607 3.99999Z" fill="currentColor"></path></svg>';
+        }
         ?>
         <input type="hidden" name="token" id="token" value="<?= $token_q; ?>">
         <input type="hidden" id="new_order" name="order" value="<?php echo htmlspecialchars($form_data['order'] ?? '0'); ?>" />
@@ -636,35 +641,141 @@ if (isset($_SESSION['form_error_message'])) {
                 <p>Selecciona cómo quieres usar la plataforma.</p>
 
                 <div class="lista-opciones grupo-radios">
-                    <!-- JS NECESARIO: Estos radios deben actualizar el input oculto 'seller_type'.
-                          Valores posibles esperados por backend: Particular=1, Centro=2, Publicista=3 (según UserRole::NAME) -->
                     <label class="opcion-radio">
                         <input type="radio" name="tipo_usuario" value="1" <?php echo (isset($form_data['seller_type']) && $form_data['seller_type'] == '1') ? 'checked' : ''; ?> required>
                         <div class="opcion-contenido">
                             <strong>Masajista Particular</strong>
+                            <div class="separador-opcion-perfil"></div>
                             <span>Crea tu perfil individual para ofrecer tus servicios.</span>
+                            <div class="beneficio-tipo-usuario">
+                                <?php echo $GLOBALS['check']; ?>
+                                <span class="beneficio-value">1 perfil individual</span>
+                            </div>
+                            <div class="beneficio-tipo-usuario">
+                                <?php echo $GLOBALS['check']; ?>
+                                <span class="beneficio-value">Alerta de mensajes</span>
+                            </div>
+                            <div class="beneficio-tipo-usuario">
+                                <?php echo $GLOBALS['check']; ?>
+                                <span class="beneficio-value">4 imagenes</span>
+                            </div>
+                            <div class="beneficio-tipo-usuario">
+                                <?php echo $GLOBALS['check']; ?>
+                                <span class="beneficio-value">Chat</span>
+                            </div>
+                            <div class="beneficio-tipo-usuario">
+                                <?php echo $GLOBALS['check']; ?>
+                                <span class="beneficio-value">Ocultar Anuncio</span>
+                            </div>
+                            <div class="beneficio-tipo-usuario">
+                                <?php echo $GLOBALS['check']; ?>
+                                <span class="beneficio-value">Mucho mas</span>
+                            </div>
                         </div>
+                        <div class="boton-selecionar-perfil">Selecionar</div>
                     </label>
                     <label class="opcion-radio">
                         <input type="radio" name="tipo_usuario" value="2" <?php echo (isset($form_data['seller_type']) && $form_data['seller_type'] == '2') ? 'checked' : ''; ?>>
                         <div class="opcion-contenido">
                             <strong>Centro de Masajes</strong>
+                            <div class="separador-opcion-perfil"></div>
                             <span>Gestiona varios perfiles de masajistas de tu centro.</span>
+                            <div class="beneficio-tipo-usuario">
+                                <?php echo $GLOBALS['check']; ?>
+                                <span class="beneficio-value">Perfiles individuales</span>
+                            </div>
+                            <div class="beneficio-tipo-usuario">
+                                <?php echo $GLOBALS['check']; ?>
+                                <span class="beneficio-value">Alerta de mensajes</span>
+                            </div>
+                            <div class="beneficio-tipo-usuario">
+                                <?php echo $GLOBALS['check']; ?>
+                                <span class="beneficio-value">4 imagenes</span>
+                            </div>
+                            <div class="beneficio-tipo-usuario">
+                                <?php echo $GLOBALS['check']; ?>
+                                <span class="beneficio-value">Chat</span>
+                            </div>
+                            <div class="beneficio-tipo-usuario">
+                                <?php echo $GLOBALS['check']; ?>
+                                <span class="beneficio-value">Ocultar Anuncio</span>
+                            </div>
+                            <div class="beneficio-tipo-usuario">
+                                <?php echo $GLOBALS['check']; ?>
+                                <span class="beneficio-value">Mucho mas</span>
+                            </div>
                         </div>
+                        <div class="boton-selecionar-perfil">Selecionar</div>
                     </label>
                     <label class="opcion-radio">
                         <input type="radio" name="tipo_usuario" value="3" <?php echo (isset($form_data['seller_type']) && $form_data['seller_type'] == '3') ? 'checked' : ''; ?>>
                         <div class="opcion-contenido">
                             <strong>Publicista</strong>
+                            <div class="separador-opcion-perfil"></div>
                             <span>Promociona productos o servicios relacionados.</span>
+                            <div class="opcion-contenido">
+                                <strong>Centro de Masajes</strong>
+                                <span>Gestiona varios perfiles de masajistas de tu centro.</span>
+                                <div class="beneficio-tipo-usuario">
+                                    <?php echo $GLOBALS['check']; ?>
+                                    <span class="beneficio-value">Perfiles individuales</span>
+                                </div>
+                                <div class="beneficio-tipo-usuario">
+                                    <?php echo $GLOBALS['check']; ?>
+                                    <span class="beneficio-value">Alerta de mensajes</span>
+                                </div>
+                                <div class="beneficio-tipo-usuario">
+                                    <?php echo $GLOBALS['check']; ?>
+                                    <span class="beneficio-value">4 imagenes</span>
+                                </div>
+                                <div class="beneficio-tipo-usuario">
+                                    <?php echo $GLOBALS['check']; ?>
+                                    <span class="beneficio-value">Chat</span>
+                                </div>
+                                <div class="beneficio-tipo-usuario">
+                                    <?php echo $GLOBALS['check']; ?>
+                                    <span class="beneficio-value">Ocultar Anuncio</span>
+                                </div>
+                                <div class="beneficio-tipo-usuario">
+                                    <?php echo $GLOBALS['check']; ?>
+                                    <span class="beneficio-value">Mucho mas</span>
+                                </div>
+                            </div>
                         </div>
+                        <div class="boton-selecionar-perfil">Selecionar</div>
                     </label>
                     <label class="opcion-radio">
                         <input type="radio" name="tipo_usuario" value="visitante" <?php echo (isset($form_data['seller_type']) && !in_array($form_data['seller_type'], ['1', '2', '3'])) ? 'checked' : ''; ?>>
                         <div class="opcion-contenido">
                             <strong>Visitante</strong>
+                            <div class="separador-opcion-perfil"></div>
                             <span>Guarda perfiles favoritos y contacta fácilmente. (No publica anuncios)</span>
+                            <div class="opcion-contenido">
+                                <strong>Centro de Masajes</strong>
+                                <span>Gestiona varios perfiles de masajistas de tu centro.</span>
+                                <div class="beneficio-tipo-usuario">
+                                    <?php echo $GLOBALS['check']; ?>
+                                    <span class="beneficio-value">Marcar perfiles favoritos</span>
+                                </div>
+                                <div class="beneficio-tipo-usuario">
+                                    <?php echo $GLOBALS['check']; ?>
+                                    <span class="beneficio-value">Ver foto de perfil</span>
+                                </div>
+                                <div class="beneficio-tipo-usuario">
+                                    <?php echo $GLOBALS['check']; ?>
+                                    <span class="beneficio-value">Alerta de mensajes</span>
+                                </div>
+                                <div class="beneficio-tipo-usuario">
+                                    <?php echo $GLOBALS['check']; ?>
+                                    <span class="beneficio-value">Puede contactar por chat</span>
+                                </div>
+                                <div class="beneficio-tipo-usuario">
+                                    <?php echo $GLOBALS['check']; ?>
+                                    <span class="beneficio-value">Mucho mas</span>
+                                </div>
+                            </div>
                         </div>
+                        <div class="boton-selecionar-perfil">Selecionar</div>
                     </label>
                 </div>
                 <div class="error-msg oculto" id="error-tipo-usuario">Debes seleccionar un tipo de usuario.</div>

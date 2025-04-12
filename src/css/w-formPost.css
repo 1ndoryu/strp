@@ -4,9 +4,9 @@
 :root {
     --color-primario: #007bff; /* Azul ejemplo */
     --color-secundario: #6c757d; /* Gris ejemplo */
-    --color-exito: #28a745;    /* Verde ejemplo */
-    --color-error: #dc3545;     /* Rojo ejemplo */
-    --color-info: #17a2b8;      /* Azul claro ejemplo */
+    --color-exito: #28a745; /* Verde ejemplo */
+    --color-error: #dc3545; /* Rojo ejemplo */
+    --color-info: #17a2b8; /* Azul claro ejemplo */
     --color-fondo: #f8f9fa;
     --color-borde: #dee2e6;
     --color-texto: #333;
@@ -31,9 +31,8 @@ body {
     padding: 0;
 }
 
-
 #boton-subir-foto {
-    position: relative; 
+    position: relative;
     cursor: pointer;
     overflow: hidden;
 }
@@ -164,7 +163,7 @@ a:hover {
 /*      CHECKBOXES Y RADIOS PERSONALIZADOS */
 /* ======================================== */
 .lista-opciones {
-    display: grid;
+    display: flex;
     gap: var(--espaciado-base);
 }
 /* Ajustar columnas para diferentes listas si es necesario */
@@ -172,7 +171,7 @@ a:hover {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* 3 columnas en desktop */
 }
 .grupo-checkboxes-extra {
-     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* 2 o 3 columnas */
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* 2 o 3 columnas */
 }
 
 .opcion-radio,
@@ -186,37 +185,38 @@ a:hover {
 }
 
 .opcion-radio:hover,
-.opcion-checkbox:hover {
+.opcion-checkbox:hover, .opcion-radio.marcado {
     border-color: var(--color-primario);
-    background-color: #f0f8ff; /* Un ligero fondo al pasar el ratón */
+    background-color: #f0f8ff;
 }
 
 /* Estilo cuando el input dentro está seleccionado */
 .opcion-radio input:checked + .opcion-contenido,
 .opcion-checkbox input:checked + .opcion-contenido {
-   /* Puedes añadir algún indicador visual si quieres */
+    /* Puedes añadir algún indicador visual si quieres */
 }
 .opcion-radio input:checked,
 .opcion-checkbox input:checked {
-   /* Estilo para el borde de la opción seleccionada */
+    /* Estilo para el borde de la opción seleccionada */
     /* Necesitas seleccionar el padre, lo hacemos con JS o ajustando estructura. */
     /* Alternativa: Estilar la etiqueta contenedora cuando el input está checked */
 }
 
-.opcion-radio input[type="radio"],
-.opcion-checkbox input[type="checkbox"] {
-     /* Ocultar el input por defecto si quieres un look totalmente custom */
-     /* appearance: none; margin-right: 10px; */
-     /* Por ahora, lo dejamos visible por simplicidad */
-     margin-right: var(--espaciado-pequeno);
-     vertical-align: middle;
+.opcion-radio input[type='radio'],
+.opcion-checkbox input[type='checkbox'] {
+    /* Ocultar el input por defecto si quieres un look totalmente custom */
+    /* appearance: none; margin-right: 10px; */
+    /* Por ahora, lo dejamos visible por simplicidad */
+    margin-right: var(--espaciado-pequeno);
+    vertical-align: middle;
+    display: none;
 }
-
 
 .opcion-contenido strong {
     display: block;
     margin-bottom: var(--espaciado-pequeno);
     color: var(--color-texto);
+    font-size: 16px;
 }
 
 .opcion-contenido span {
@@ -240,7 +240,7 @@ a:hover {
     margin-bottom: var(--espaciado-pequeno);
     cursor: pointer;
 }
-.frm-checkbox input[type="checkbox"] {
+.frm-checkbox input[type='checkbox'] {
     margin-right: var(--espaciado-pequeno);
 }
 
@@ -249,7 +249,6 @@ a:hover {
     flex-wrap: wrap;
     gap: var(--espaciado-pequeno) var(--espaciado-base);
 }
-
 
 /* ======================================== */
 /*         COMPONENTES ESPECÍFICOS         */
@@ -310,7 +309,8 @@ a:hover {
 .lista-fotos .foto-preview.principal {
     border: 3px solid var(--color-primario);
 }
-.lista-fotos .foto-preview .eliminar-foto { /* Botón para eliminar (opcional) */
+.lista-fotos .foto-preview .eliminar-foto {
+    /* Botón para eliminar (opcional) */
     position: absolute;
     top: 5px;
     right: 5px;
@@ -325,7 +325,6 @@ a:hover {
     text-align: center;
     cursor: pointer;
 }
-
 
 /* --- Horario Semanal --- */
 .horario-semanal {
@@ -491,7 +490,6 @@ a:hover {
     color: var(--color-texto-secundario);
 }
 
-
 /* ======================================== */
 /*             RESPONSIVIDAD               */
 /* ======================================== */
@@ -523,7 +521,6 @@ a:hover {
         min-width: 100px; /* Ajustar ancho mínimo */
     }
 
-
     .par-idioma {
         flex-direction: column;
     }
@@ -535,7 +532,6 @@ a:hover {
     .navegacion-etapa .frm-boton {
         width: 100%; /* Botones ocupan todo el ancho */
     }
-
 }
 
 @media (max-width: 480px) {
@@ -547,7 +543,115 @@ a:hover {
         width: 100%;
     }
     .lista-fotos {
-       grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-       gap: var(--espaciado-pequeno);
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+        gap: var(--espaciado-pequeno);
     }
+}
+
+.poppins-thin {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 100;
+    font-style: normal;
+}
+
+.poppins-extralight {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 200;
+    font-style: normal;
+}
+
+.poppins-light {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 300;
+    font-style: normal;
+}
+
+.poppins-regular {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.poppins-medium {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-style: normal;
+}
+
+.poppins-semibold {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-style: normal;
+}
+
+.poppins-bold {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-style: normal;
+}
+
+.poppins-extrabold {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 800;
+    font-style: normal;
+}
+
+.poppins-black {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 900;
+    font-style: normal;
+}
+
+.poppins-thin-italic {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 100;
+    font-style: italic;
+}
+
+.poppins-extralight-italic {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 200;
+    font-style: italic;
+}
+
+.poppins-light-italic {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 300;
+    font-style: italic;
+}
+
+.poppins-regular-italic {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    font-style: italic;
+}
+
+.poppins-medium-italic {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-style: italic;
+}
+
+.poppins-semibold-italic {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-style: italic;
+}
+
+.poppins-bold-italic {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-style: italic;
+}
+
+.poppins-extrabold-italic {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 800;
+    font-style: italic;
+}
+
+.poppins-black-italic {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 900;
+    font-style: italic;
 }

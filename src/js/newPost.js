@@ -70,6 +70,7 @@
         agregarListeners();
         actualizarContadores(); // Inicializa al cargar por si hay datos repoblados
         inicializarHorarioVisual();
+        actualizarMarcadoVisualRadios(tipoUsuarioRadios, tipoUsuarioLabels);
         console.log('Formulario multi-etapa inicializado.');
     }
 
@@ -89,6 +90,14 @@
 
         // Listener para el envío final (YA NO maneja reCAPTCHA directamente aquí)
         form.addEventListener('submit', manejarEnvioFinal);
+
+        // NUEVO: Listener para el cambio visual de los radios 'tipo_usuario'
+        tipoUsuarioRadios.forEach(radio => {
+            // Usamos una función flecha para pasar los argumentos correctos
+            radio.addEventListener('change', () => actualizarMarcadoVisualRadios(tipoUsuarioRadios, tipoUsuarioLabels));
+        });
+        
+
     }
 
     // --- Navegación ---
@@ -640,6 +649,32 @@
                 console.log(`Encontrado error en etapa ${i}, cambiando visualización.`);
                 cambiarEtapa(i); // Cambia a la primera etapa con error
                 break;
+            }
+        }
+    }
+
+    function actualizarMarcadoVisualRadios(radiosNodeList, labelsArray) {
+        // 1. Quitar 'marcado' de todos los labels del grupo
+        labelsArray.forEach(label => {
+            if (label) {
+                // Comprobar si el label existe
+                label.classList.remove('marcado');
+            }
+        });
+
+        // 2. Encontrar el radio chequeado
+        let radioSeleccionado = null;
+        radiosNodeList.forEach(radio => {
+            if (radio.checked) {
+                radioSeleccionado = radio;
+            }
+        });
+
+        // 3. Añadir 'marcado' al label del radio chequeado (si existe)
+        if (radioSeleccionado) {
+            const labelPadre = radioSeleccionado.closest('label.opcion-radio');
+            if (labelPadre) {
+                labelPadre.classList.add('marcado');
             }
         }
     }

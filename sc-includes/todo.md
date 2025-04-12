@@ -25,9 +25,9 @@ El formulario debe crear correctamente los anuncios.
 - [x] Tienes whatsapp [TRUE]
 
 # Falta ajustar 
-- [ ] Idiomas
-- [ ] Salidas a domiciolo
-- [ ] Los servicios ofrecidos se selecionan
+- [x] Idiomas
+- [x] Salidas a domiciolo
+- [x] Los servicios ofrecidos se selecionan
   - [x] Ver como se envian los datos de los servicios: servicios ofrecidos, salidas, 
 
 
