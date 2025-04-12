@@ -24,6 +24,8 @@ if (getConfParam('POST_ITEM_REG') == 1) {
 
 
 
+
+
 // --- Inicio Procesamiento POST ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 

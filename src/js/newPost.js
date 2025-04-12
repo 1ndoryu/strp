@@ -605,7 +605,7 @@
         console.log('Validación completa OK. Enviando formulario directamente vía form.submit()...');
 
         // 4. Enviar el formulario directamente
-        form.submit(); // ESTA LÍNEA CAUSA EL REINICIO DE PÁGINA
+        //form.submit(); // ESTA LÍNEA CAUSA EL REINICIO DE PÁGINA
     }
     function validarFormularioCompleto() {
         let todoValido = true;
