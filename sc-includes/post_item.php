@@ -167,7 +167,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         if (!User::check_registered($ip, $datos_ad['phone'])) { // Comprobar restricciones
                             $banner_img = "";
                             if (isset($_POST['photo_name'][0])) {
-                                $banner_img = Images::copyImage($_POST['photo_name'][0], 'user_path', 'ads_path', true); // Ajustar paths
+                                $banner_img = Images::copyImage($_POST['photo_name'][0], IMG_USER, IMG_ADS, true);
                             }
                             $pass = randomString(6);
                             $limit_u = User::getLimitsByRol($datos_ad['seller_type']);
