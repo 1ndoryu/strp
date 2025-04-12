@@ -613,6 +613,7 @@ if (isset($_SESSION['form_error_message'])) {
         {
             $GLOBALS['check'] = '<svg data-testid="geist-icon" height="12" stroke-linejoin="round" viewBox="0 0 16 16" width="12" style="color: green;"><path fill-rule="evenodd" clip-rule="evenodd" d="M15.5607 3.99999L15.0303 4.53032L6.23744 13.3232C5.55403 14.0066 4.44599 14.0066 3.76257 13.3232L4.2929 12.7929L3.76257 13.3232L0.969676 10.5303L0.439346 9.99999L1.50001 8.93933L2.03034 9.46966L4.82323 12.2626C4.92086 12.3602 5.07915 12.3602 5.17678 12.2626L13.9697 3.46966L14.5 2.93933L15.5607 3.99999Z" fill="currentColor"></path></svg>';
         }
+        svg();
         ?>
         <input type="hidden" name="token" id="token" value="<?= $token_q; ?>">
         <input type="hidden" id="new_order" name="order" value="<?php echo htmlspecialchars($form_data['order'] ?? '0'); ?>" />
@@ -714,8 +715,6 @@ if (isset($_SESSION['form_error_message'])) {
                             <div class="separador-opcion-perfil"></div>
                             <span>Promociona productos o servicios relacionados.</span>
                             <div class="opcion-contenido">
-                                <strong>Centro de Masajes</strong>
-                                <span>Gestiona varios perfiles de masajistas de tu centro.</span>
                                 <div class="beneficio-tipo-usuario">
                                     <?php echo $GLOBALS['check']; ?>
                                     <span class="beneficio-value">Perfiles individuales</span>
@@ -751,8 +750,6 @@ if (isset($_SESSION['form_error_message'])) {
                             <div class="separador-opcion-perfil"></div>
                             <span>Guarda perfiles favoritos y contacta fácilmente. (No publica anuncios)</span>
                             <div class="opcion-contenido">
-                                <strong>Centro de Masajes</strong>
-                                <span>Gestiona varios perfiles de masajistas de tu centro.</span>
                                 <div class="beneficio-tipo-usuario">
                                     <?php echo $GLOBALS['check']; ?>
                                     <span class="beneficio-value">Marcar perfiles favoritos</span>
