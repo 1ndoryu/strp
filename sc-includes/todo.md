@@ -15,16 +15,25 @@ El formulario debe crear correctamente los anuncios.
   - [x] Masajista erotica [TRUE]
   - [x] Masajista hetero/gay [TRUE]
   - [x] Bolsa de empleo [TRUE]
-- [ ] Provincia 
-- [ ] Estado
+- [x] Correo [TRUE]
+- [x] Nombre [TRUE]
+- [x] Provincia [TRUE]
+- [x] Estado [TRUE]
+- [x] Titulo anuncio [TRUE]
+- [x] Numero [TRUE]
+- [x] Descripcion [TRUE]
+- [x] Tienes whatsapp [TRUE]
+
+# Falta ajustar 
+- [ ] Idiomas
+- [ ] Salidas a domiciolo
 - [ ] Los servicios ofrecidos se selecionan
-  - [ ] Ver como se envian los datos de los servicios: servicios ofrecidos, salidas, 
-- [ ] Salidas a domicio se guarda ¿ ?
-- [ ] Aplicar diseño deseado por el cliente
+  - [x] Ver como se envian los datos de los servicios: servicios ofrecidos, salidas, 
+
 
 # TODO
 
-
+- [ ] Aplicar diseño deseado por el cliente
 
 
 # BUG
@@ -88,7 +97,7 @@ newPost.js:601 tit: bolsa empleo
 newPost.js:601 text: Descripcion bolsa emple obolsa empleo
 newPost.js:601 servicios[]: masaje_relajante
 newPost.js:601 servicios[]: masaje_podal
-# Aqui solo selecione martes, miercoles y sabado, no se si lo esta marcando correctamente
+# Aqui solo selecione martes, miercoles y sabado, parece funcionar correctamente
 newPost.js:601 horario_dia[lunes][inicio]: 00:00
 newPost.js:601 horario_dia[lunes][fin]: 23:30
 newPost.js:601 horario_dia[martes][activo]: 1
@@ -107,6 +116,7 @@ newPost.js:601 horario_dia[sabado][fin]: 23:30
 newPost.js:601 horario_dia[domingo][inicio]: 00:00
 newPost.js:601 horario_dia[domingo][fin]: 23:30
 newPost.js:601 phone: 0418545687
+# Volver a probar idioma
 newPost.js:601 idioma_1: 
 newPost.js:601 nivel_idioma_1: 
 newPost.js:601 idioma_2: 
