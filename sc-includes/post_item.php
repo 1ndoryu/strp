@@ -94,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $datos_ad['title'] = isset($_POST['tit']) ? $_POST['tit'] : '';
             $datos_ad['title_seo'] = isset($_POST['tit']) ? toAscii($_POST['tit']) : '';
             $datos_ad['texto'] = isset($_POST['text']) ? htmlspecialchars($_POST['text'], ENT_QUOTES, 'UTF-8') : '';
-            $datos_ad['price'] = 0; 
+            $datos_ad['price'] = 0;
             $datos_ad['address'] = $datos_ad['location']; // Ajustar si es necesario
             $datos_ad['name'] = isset($_POST['name']) ? formatName($_POST['name']) : '';
             $datos_ad['phone'] = isset($_POST['phone']) ? $_POST['phone'] : '';
@@ -124,7 +124,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $horario_completo = [];
             $dias_semana = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
             if (isset($_POST['horario_dia']) && is_array($_POST['horario_dia'])) {
-                 $formato_hora = '/^([01]\d|2[0-3]):([0-5]\d)$/';
+                $formato_hora = '/^([01]\d|2[0-3]):([0-5]\d)$/';
                 foreach ($dias_semana as $dia) {
                     $activo = isset($_POST['horario_dia'][$dia]['activo']) && $_POST['horario_dia'][$dia]['activo'] == '1';
                     $inicio = isset($_POST['horario_dia'][$dia]['inicio']) ? $_POST['horario_dia'][$dia]['inicio'] : '00:00';
@@ -172,28 +172,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $pass = randomString(6);
                             $limit_u = User::getLimitsByRol($datos_ad['seller_type']);
                             $datos_u = array(
-                                'name' => $datos_ad['name'], 'mail' => $_POST['email'], 'phone' => $datos_ad['phone'],
-                                'banner_img' => $banner_img, 'pass' => password_hash($pass, PASSWORD_DEFAULT), // Hashear contraseña
-                                'date_reg' => time(), 'active' => 1, 'rol' => $datos_ad['seller_type'],
-                                'date_credits' => "0", 'credits' => "0", 'IP_user' => $ip, 'anun_limit' => $limit_u
+                                'name' => $datos_ad['name'],
+                                'mail' => $_POST['email'],
+                                'phone' => $datos_ad['phone'],
+                                'banner_img' => $banner_img,
+                                'pass' => $pass,
+                                'date_reg' => time(),
+                                'active' => 1,
+                                'rol' => $datos_ad['seller_type'],
+                                'date_credits' => "0",
+                                'credits' => "0",
+                                'IP_user' => $ip,
+                                'anun_limit' => $limit_u
                             );
                             $result_u = insertSQL("sc_user", $datos_u);
                             if ($result_u) {
                                 $id_user = lastIdSQL();
                                 // Opcional: Enviar email de bienvenida con $pass
                             } else {
-                                $_SESSION['form_error_message'] = "Error al crear la cuenta de usuario."; $error_insert = true;
+                                $_SESSION['form_error_message'] = "Error al crear la cuenta de usuario.";
+                                $error_insert = true;
                             }
                         } else {
-                            $_SESSION['form_error_message'] = "Ya existe una cuenta reciente asociada a este teléfono o conexión."; $error_insert = true;
+                            $_SESSION['form_error_message'] = "Ya existe una cuenta reciente asociada a este teléfono o conexión.";
+                            $error_insert = true;
                         }
                     } elseif ($checkUser !== false && count($checkUser) > 0) { // Usuario ya existe
                         $id_user = $checkUser[0]['ID_user'];
                     } else { // Error consultando DB de usuarios
-                        $_SESSION['form_error_message'] = "Error al verificar la cuenta de usuario existente."; $error_insert = true;
+                        $_SESSION['form_error_message'] = "Error al verificar la cuenta de usuario existente.";
+                        $error_insert = true;
                     }
                 } else { // Email obligatorio si no hay sesión
-                     $_SESSION['form_error_message'] = "Se requiere un email para publicar."; $error_insert = true;
+                    $_SESSION['form_error_message'] = "Se requiere un email para publicar.";
+                    $error_insert = true;
                 }
             } else { // Usuario ya logueado
                 $id_user = $_SESSION['data']['ID_user'];
@@ -230,7 +242,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 if ($insert && $last_ad > 0) {
                                     updateSQL("sc_orders", array("ID_ad" => $last_ad), array("ID_order" => $datos_ad['ID_order']));
                                     Statistic::addAnuncioNuevoPremium();
-                                } else if (!$insert && isset($Connection)) { $db_error = mysqli_error($Connection); }
+                                } else if (!$insert && isset($Connection)) {
+                                    $db_error = mysqli_error($Connection);
+                                }
                             } else {
                                 $error_insert = true;
                                 $_SESSION['form_error_message'] = "Error: La orden de pago no es válida o ya está asignada.";
@@ -240,13 +254,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $last_ad = lastIdSQL();
                             if ($insert && $last_ad > 0) {
                                 Statistic::addAnuncioNuevo();
-                            } else if (!$insert && isset($Connection)) { $db_error = mysqli_error($Connection); }
+                            } else if (!$insert && isset($Connection)) {
+                                $db_error = mysqli_error($Connection);
+                            }
                         }
 
                         // Resultado de la inserción
                         if ($insert === false && !$error_insert) { // Fallo SQL directo
-                           $error_insert = true;
-                           $_SESSION['form_error_message'] = "Error al guardar los datos." . (!empty($db_error) ? " (DB: ".$db_error.")" : "");
+                            $error_insert = true;
+                            $_SESSION['form_error_message'] = "Error al guardar los datos." . (!empty($db_error) ? " (DB: " . $db_error . ")" : "");
                         }
 
                         // Post-inserción (imágenes, etc.)
@@ -270,22 +286,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             exit(); // Detener script
 
                         } else { // Fallo en inserción o lógica previa
-                           $error_insert = true; // Marcar error si no lo estaba ya
-                           if (!isset($_SESSION['form_error_message'])) {
+                            $error_insert = true; // Marcar error si no lo estaba ya
+                            if (!isset($_SESSION['form_error_message'])) {
                                 $_SESSION['form_error_message'] = "Error inesperado al guardar el anuncio.";
-                           }
-                           // No redirigir, mostrar formulario con error
+                            }
+                            // No redirigir, mostrar formulario con error
                         }
-
                     } else { // Fallaron validaciones básicas
                         $error_insert = true;
-                        if (!$condicion_region) { $_SESSION['form_error_message'] = "Debes seleccionar una provincia."; }
-                        elseif (!$condicion_cat) { $_SESSION['form_error_message'] = "Debes seleccionar una categoría."; }
-                        elseif (!$condicion_seller_type) { $_SESSION['form_error_message'] = "Tipo de vendedor inválido."; }
-                        elseif (!$condicion_titulo) { $_SESSION['form_error_message'] = "El título es obligatorio."; }
-                        elseif (!$condicion_texto) { $_SESSION['form_error_message'] = "La descripción es obligatoria."; }
-                        elseif (!$condicion_user) { $_SESSION['form_error_message'] = "Error procesando el usuario."; } // Este caso es menos probable aquí si ya pasó el bloque de usuario
-                        else { $_SESSION['form_error_message'] = "Faltan datos obligatorios o son incorrectos."; }
+                        if (!$condicion_region) {
+                            $_SESSION['form_error_message'] = "Debes seleccionar una provincia.";
+                        } elseif (!$condicion_cat) {
+                            $_SESSION['form_error_message'] = "Debes seleccionar una categoría.";
+                        } elseif (!$condicion_seller_type) {
+                            $_SESSION['form_error_message'] = "Tipo de vendedor inválido.";
+                        } elseif (!$condicion_titulo) {
+                            $_SESSION['form_error_message'] = "El título es obligatorio.";
+                        } elseif (!$condicion_texto) {
+                            $_SESSION['form_error_message'] = "La descripción es obligatoria.";
+                        } elseif (!$condicion_user) {
+                            $_SESSION['form_error_message'] = "Error procesando el usuario.";
+                        } // Este caso es menos probable aquí si ya pasó el bloque de usuario
+                        else {
+                            $_SESSION['form_error_message'] = "Faltan datos obligatorios o son incorrectos.";
+                        }
                     }
                 } else { // Límite de anuncios alcanzado
                     $error_insert = true;
