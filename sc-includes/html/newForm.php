@@ -315,7 +315,7 @@ function newForm()
             <div class="divisor-anuncio-principal">
                 <div class="imagen-anuncio">
                     <img src="<?php echo getConfParam('SITE_URL') ?>src/photos/20250412/form-imagen.jpg" alt="">
-                    
+
                 </div>
                 <div class="divisor-anuncio">
                     <h2 class="titulo-etapa">Publicar perfil</h2>
@@ -427,12 +427,14 @@ function newForm()
                         </div>
 
                     </fieldset>
+
+                    <div class="navegacion-etapa">
+                        <button type="button" class="frm-boton btn-anterior">Anterior</button>
+                        <button type="button" class="frm-boton btn-siguiente">Siguiente</button>
+                    </div>
                 </div>
 
-                <div class="navegacion-etapa">
-                    <button type="button" class="frm-boton btn-anterior">Anterior</button>
-                    <button type="button" class="frm-boton btn-siguiente">Siguiente</button>
-                </div>
+
             </div>
 
 
