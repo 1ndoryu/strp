@@ -312,120 +312,129 @@ function newForm()
 
         <!-- ======================= ETAPA 2: DATOS DEL PERFIL ======================= -->
         <div id="etapa-perfil" class="etapa oculto">
-            <h2 class="titulo-etapa">Publicar perfil</h2>
-
-            <fieldset class="frm-seccion">
-                <legend>Información Básica</legend>
-
-                <div class="frm-grupo">
-                    <label for="nombre" class="frm-etiqueta">Crea un nombre para tu perfil</label>
-                    <!-- MAPEO: name="name" esperado por backend -->
-                    <input type="text" name="name" id="nombre" class="frm-campo" required maxlength="50" value="<?php echo htmlspecialchars($form_data['name'] ?? ($_SESSION['data']['name'] ?? '')); ?>">
-                    <div class="error-msg oculto" id="error-nombre">El nombre es obligatorio.</div>
+            <div class="divisor-anuncio-principal">
+                <div class="imagen-anuncio">
+                    <img src="<?php echo getConfParam('SITE_URL') ?>src/js/form-imagen.jpg "; alt=""?>>
                 </div>
+                <div class="divisor-anuncio">
+                    <h2 class="titulo-etapa">Publicar perfil</h2>
 
-                <div class="frm-grupo">
-                    <label for="categoria" class="frm-etiqueta">¿Donde quieres que se muestre tu anuncio?</label>
-                    <!-- MAPEO: name="category" esperado por backend -->
-                    <!-- Asegúrate que los 'value' coincidan con los ID_cat del sistema antiguo -->
-                    <select name="category" id="categoria" class="frm-campo frm-select" required>
-                        <option value="">Categoría</option>
-                        <?php
-                        // Copiado del form antiguo para asegurar compatibilidad
-                        $parent = selectSQL("sc_category", $where = array('parent_cat' => -1), "ord ASC");
-                        $selected_cat = $form_data['category'] ?? null;
-                        foreach ($parent as $p) {
-                            $child = selectSQL("sc_category", $where = array('parent_cat' => $p['ID_cat']), "name ASC");
-                            if (count($child) > 0) { // Solo mostrar optgroup si hay hijos
-                                $otros_html_grp = '';
-                                foreach ($child as $c) {
-                                    $selected = ($selected_cat == $c['ID_cat']) ? 'selected' : '';
-                                    if ((strpos($c['name'], 'Otros') !== false) || (strpos($c['name'], 'Otras') !== false)) {
-                                        $otros_html_grp .= '<option value="' . $c['ID_cat'] . '" ' . $selected . '>  ' . htmlspecialchars($c['name']) . '</option>';
-                                    } else {
-                                        echo '<option value="' . $c['ID_cat'] . '" ' . $selected . '>  ' . htmlspecialchars($c['name']) . '</option>';
+                    <fieldset class="frm-seccion">
+                        <legend>Información Básica</legend>
+
+                        <div class="frm-grupo">
+                            <label for="nombre" class="frm-etiqueta">Crea un nombre para tu perfil</label>
+                            <!-- MAPEO: name="name" esperado por backend -->
+                            <input type="text" name="name" id="nombre" class="frm-campo" required maxlength="50" value="<?php echo htmlspecialchars($form_data['name'] ?? ($_SESSION['data']['name'] ?? '')); ?>">
+                            <div class="error-msg oculto" id="error-nombre">El nombre es obligatorio.</div>
+                        </div>
+
+                        <div class="frm-grupo">
+                            <label for="categoria" class="frm-etiqueta">¿Donde quieres que se muestre tu anuncio?</label>
+                            <!-- MAPEO: name="category" esperado por backend -->
+                            <!-- Asegúrate que los 'value' coincidan con los ID_cat del sistema antiguo -->
+                            <select name="category" id="categoria" class="frm-campo frm-select" required>
+                                <option value="">Categoría</option>
+                                <?php
+                                // Copiado del form antiguo para asegurar compatibilidad
+                                $parent = selectSQL("sc_category", $where = array('parent_cat' => -1), "ord ASC");
+                                $selected_cat = $form_data['category'] ?? null;
+                                foreach ($parent as $p) {
+                                    $child = selectSQL("sc_category", $where = array('parent_cat' => $p['ID_cat']), "name ASC");
+                                    if (count($child) > 0) { // Solo mostrar optgroup si hay hijos
+                                        $otros_html_grp = '';
+                                        foreach ($child as $c) {
+                                            $selected = ($selected_cat == $c['ID_cat']) ? 'selected' : '';
+                                            if ((strpos($c['name'], 'Otros') !== false) || (strpos($c['name'], 'Otras') !== false)) {
+                                                $otros_html_grp .= '<option value="' . $c['ID_cat'] . '" ' . $selected . '>  ' . htmlspecialchars($c['name']) . '</option>';
+                                            } else {
+                                                echo '<option value="' . $c['ID_cat'] . '" ' . $selected . '>  ' . htmlspecialchars($c['name']) . '</option>';
+                                            }
+                                        }
+                                        echo $otros_html_grp; // Imprimir 'Otros' al final del grupo
+                                        echo '</optgroup>';
                                     }
                                 }
-                                echo $otros_html_grp; // Imprimir 'Otros' al final del grupo
-                                echo '</optgroup>';
-                            }
-                        }
-                        ?>
-                    </select>
-                    <div class="error-msg oculto" id="error-categoria">Debes seleccionar una categoría.</div>
-                </div>
-
-                <div class="frm-grupo">
-                    <label for="provincia" class="frm-etiqueta">Seleciona una provincia *</label>
-                    <!-- MAPEO: name="region" esperado por backend -->
-                    <!-- Asegúrate que los 'value' coincidan con los ID_region -->
-                    <select name="region" id="provincia" class="frm-campo frm-select" required>
-                        <option value="">-- Selecciona una provincia --</option>
-                        <?php
-                        $provincias = selectSQL("sc_region", [], "name ASC");
-                        $selected_region = $form_data['region'] ?? null;
-                        foreach ($provincias as $prov) {
-                            $selected = ($selected_region == $prov['ID_region']) ? 'selected' : '';
-                            echo '<option value="' . $prov['ID_region'] . '" ' . $selected . '>' . htmlspecialchars($prov['name']) . '</option>';
-                        }
-                        ?>
-                    </select>
-                    <div class="error-msg oculto" id="error-provincia">Debes seleccionar una provincia.</div>
-                </div>
-
-                <div class="frm-grupo">
-                    <label for="ciudad" class="frm-etiqueta">Ciudad / Zona (Opcional)</label>
-                    <!-- MAPEO: name="city" esperado por backend -->
-                    <input type="text" name="city" id="ciudad" class="frm-campo" maxlength="100" placeholder="Ej: Centro, Nervión, etc." value="<?php echo htmlspecialchars($form_data['city'] ?? ''); ?>">
-                </div>
-
-                <fieldset class="frm-seccion">
-                    <legend>Detalles del Anuncio</legend>
-
-                    <div class="frm-grupo">
-                        <label for="titulo_anuncio" class="frm-etiqueta">Título del Anuncio *</label>
-                        <!-- MAPEO: name="tit" esperado por backend -->
-                        <input type="text" name="tit" id="titulo_anuncio" class="frm-campo" required minlength="10" maxlength="50" placeholder="Ej: Masajista Profesional en Madrid Centro" value="<?php echo htmlspecialchars($form_data['tit'] ?? ''); ?>">
-                        <div class="contador-caracteres">Caracteres: <span id="cont-titulo">0</span> (min 10 / máx 50)</div>
-                        <div class="error-msg oculto" id="error-titulo">El título es obligatorio (entre 10 y 50 caracteres).</div>
-                        <div class="error-msg oculto" id="error-titulo-palabras">El título contiene palabras no permitidas.</div>
-                    </div>
-
-                    <div class="frm-grupo">
-                        <label for="descripcion" class="frm-etiqueta">Descripción, acerca de mí *</label>
-                        <!-- MAPEO: name="text" esperado por backend -->
-                        <textarea name="text" id="descripcion" class="frm-campo frm-textarea" rows="6" required minlength="30" maxlength="500" placeholder="Describe tus servicios, experiencia, ambiente, etc."><?php echo htmlspecialchars($form_data['text'] ?? ''); ?></textarea>
-                        <div class="contador-caracteres">Caracteres: <span id="cont-desc">0</span> (min 30 / máx 500)</div>
-                        <div class="error-msg oculto" id="error-descripcion">La descripción es obligatoria (entre 30 y 500 caracteres).</div>
-                        <div class="error-msg oculto" id="error-desc-palabras">La descripción contiene palabras no permitidas.</div>
-                    </div>
-
-                    <div class="frm-grupo">
-                        <label class="frm-etiqueta">Servicios Ofrecidos *</label>
-                        <!-- ADVERTENCIA: El campo 'servicios[]' no existía. El backend podría ignorarlo o dar error. -->
-                        <!-- Considera quitar el atributo 'name' si causa problemas: name="servicios_DISABLED[]" -->
-                        <div class="grupo-checkboxes">
-                            <?php
-                            $servicios = ["Masaje relajante", "Masaje deportivo", "Masaje podal", "Masaje antiestrés", "Masaje linfático", "Masaje shiatsu", "Masaje descontracturante", "Masaje ayurvédico", "Masaje circulatorio", "Masaje tailandés"];
-                            // Repoblar si hubo error
-                            $selected_services = $form_data['servicios'] ?? [];
-                            foreach ($servicios as $servicio) {
-                                $valor = strtolower(str_replace(' ', '_', $servicio));
-                                $checked = in_array($valor, $selected_services) ? 'checked' : '';
-                                echo '<label class="frm-checkbox"><input type="checkbox" name="servicios[]" value="' . htmlspecialchars($valor) . '" ' . $checked . '> ' . htmlspecialchars($servicio) . '</label>';
-                            }
-                            ?>
+                                ?>
+                            </select>
+                            <div class="error-msg oculto" id="error-categoria">Debes seleccionar una categoría.</div>
                         </div>
-                        <div class="error-msg oculto" id="error-servicios">Debes seleccionar al menos un servicio.</div>
-                    </div>
 
-                </fieldset>
+                        <div class="frm-grupo">
+                            <label for="provincia" class="frm-etiqueta">Seleciona una provincia *</label>
+                            <!-- MAPEO: name="region" esperado por backend -->
+                            <!-- Asegúrate que los 'value' coincidan con los ID_region -->
+                            <select name="region" id="provincia" class="frm-campo frm-select" required>
+                                <option value="">-- Selecciona una provincia --</option>
+                                <?php
+                                $provincias = selectSQL("sc_region", [], "name ASC");
+                                $selected_region = $form_data['region'] ?? null;
+                                foreach ($provincias as $prov) {
+                                    $selected = ($selected_region == $prov['ID_region']) ? 'selected' : '';
+                                    echo '<option value="' . $prov['ID_region'] . '" ' . $selected . '>' . htmlspecialchars($prov['name']) . '</option>';
+                                }
+                                ?>
+                            </select>
+                            <div class="error-msg oculto" id="error-provincia">Debes seleccionar una provincia.</div>
+                        </div>
 
-            </fieldset>
-            <div class="navegacion-etapa">
-                <button type="button" class="frm-boton btn-anterior">Anterior</button>
-                <button type="button" class="frm-boton btn-siguiente">Siguiente</button>
+                        <div class="frm-grupo">
+                            <label for="ciudad" class="frm-etiqueta">Ciudad / Zona (Opcional)</label>
+                            <!-- MAPEO: name="city" esperado por backend -->
+                            <input type="text" name="city" id="ciudad" class="frm-campo" maxlength="100" placeholder="Ej: Centro, Nervión, etc." value="<?php echo htmlspecialchars($form_data['city'] ?? ''); ?>">
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="frm-seccion">
+                        <legend>Detalles del Anuncio</legend>
+
+                        <div class="frm-grupo">
+                            <label for="titulo_anuncio" class="frm-etiqueta">Título del Anuncio *</label>
+                            <!-- MAPEO: name="tit" esperado por backend -->
+                            <input type="text" name="tit" id="titulo_anuncio" class="frm-campo" required minlength="10" maxlength="50" placeholder="Ej: Masajista Profesional en Madrid Centro" value="<?php echo htmlspecialchars($form_data['tit'] ?? ''); ?>">
+                            <div class="contador-caracteres">Caracteres: <span id="cont-titulo">0</span> (min 10 / máx 50)</div>
+                            <div class="error-msg oculto" id="error-titulo">El título es obligatorio (entre 10 y 50 caracteres).</div>
+                            <div class="error-msg oculto" id="error-titulo-palabras">El título contiene palabras no permitidas.</div>
+                        </div>
+
+                        <div class="frm-grupo">
+                            <label for="descripcion" class="frm-etiqueta">Descripción, acerca de mí *</label>
+                            <!-- MAPEO: name="text" esperado por backend -->
+                            <textarea name="text" id="descripcion" class="frm-campo frm-textarea" rows="6" required minlength="30" maxlength="500" placeholder="Describe tus servicios, experiencia, ambiente, etc."><?php echo htmlspecialchars($form_data['text'] ?? ''); ?></textarea>
+                            <div class="contador-caracteres">Caracteres: <span id="cont-desc">0</span> (min 30 / máx 500)</div>
+                            <div class="error-msg oculto" id="error-descripcion">La descripción es obligatoria (entre 30 y 500 caracteres).</div>
+                            <div class="error-msg oculto" id="error-desc-palabras">La descripción contiene palabras no permitidas.</div>
+                        </div>
+
+                        <div class="frm-grupo">
+                            <label class="frm-etiqueta">Servicios Ofrecidos *</label>
+                            <!-- ADVERTENCIA: El campo 'servicios[]' no existía. El backend podría ignorarlo o dar error. -->
+                            <!-- Considera quitar el atributo 'name' si causa problemas: name="servicios_DISABLED[]" -->
+                            <div class="grupo-checkboxes">
+                                <?php
+                                $servicios = ["Masaje relajante", "Masaje deportivo", "Masaje podal", "Masaje antiestrés", "Masaje linfático", "Masaje shiatsu", "Masaje descontracturante", "Masaje ayurvédico", "Masaje circulatorio", "Masaje tailandés"];
+                                // Repoblar si hubo error
+                                $selected_services = $form_data['servicios'] ?? [];
+                                foreach ($servicios as $servicio) {
+                                    $valor = strtolower(str_replace(' ', '_', $servicio));
+                                    $checked = in_array($valor, $selected_services) ? 'checked' : '';
+                                    echo '<label class="frm-checkbox"><input type="checkbox" name="servicios[]" value="' . htmlspecialchars($valor) . '" ' . $checked . '> ' . htmlspecialchars($servicio) . '</label>';
+                                }
+                                ?>
+                            </div>
+                            <div class="error-msg oculto" id="error-servicios">Debes seleccionar al menos un servicio.</div>
+                        </div>
+
+                    </fieldset>
+                </div>
+
+                <div class="navegacion-etapa">
+                    <button type="button" class="frm-boton btn-anterior">Anterior</button>
+                    <button type="button" class="frm-boton btn-siguiente">Siguiente</button>
+                </div>
             </div>
+
+
         </div>
 
         <!-- ======================= ETAPA 3: ETAPA ANUNCIO ======================= -->
