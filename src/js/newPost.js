@@ -182,7 +182,10 @@
                     esValido = false;
                     inputsInvalidos.push(provinciaSelect);
                 }
+                break
 
+            case 'etapa-anuncio':
+                
                 const tituloVal = tituloInput?.value.trim() || '';
                 if (!validarCampo(tituloInput, '#error-titulo', tituloVal && tituloVal.length >= 10 && tituloVal.length <= 50, `El título es obligatorio (entre 10 y 50 caracteres). Actual: ${tituloVal.length}`)) {
                     esValido = false;
@@ -233,6 +236,7 @@
                     }
                 }
                 break;
+
 
             case 'etapa-extras':
                 if (!validarCampo(terminosCheckbox, '#error-terminos', terminosCheckbox?.checked, 'Debes aceptar los términos y condiciones.')) {
@@ -295,7 +299,7 @@
             case 'etapa-tipo-usuario':
                 actualizarSellerTypeOculto();
                 break;
-            case 'etapa-perfil':
+            case 'etapa-anuncio':
                 actualizarHorarioOculto();
                 actualizarIdiomasOculto();
                 // Whatsapp y Out se actualizan directamente por su 'name'

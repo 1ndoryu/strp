@@ -381,6 +381,14 @@ function newForm()
                 </div>
 
             </fieldset>
+            <div class="navegacion-etapa">
+                <button type="button" class="frm-boton btn-anterior">Anterior</button>
+                <button type="button" class="frm-boton btn-siguiente">Siguiente</button>
+            </div>
+        </div>
+
+        <!-- ======================= ETAPA 3: ETAPA ANUNCIO ======================= -->
+        <div id="etapa-anuncio" class="etapa oculto">
 
             <fieldset class="frm-seccion">
                 <legend>Detalles del Anuncio</legend>
@@ -580,11 +588,11 @@ function newForm()
 
             <div class="navegacion-etapa">
                 <button type="button" class="frm-boton btn-anterior">Anterior</button>
-                <button type="button" class="frm-boton btn-siguiente">Siguiente (Extras Opcionales)</button>
+                <button type="button" class="frm-boton btn-siguiente">Siguiente</button>
             </div>
         </div>
 
-        <!-- ======================= ETAPA 3: EXTRAS OPCIONALES ======================= -->
+        <!-- ======================= ETAPA 4: EXTRAS OPCIONALES ======================= -->
         <div id="etapa-extras" class="etapa oculto">
             <h2 class="titulo-etapa"><?php echo checkSession() ? 'Paso 3' : 'Paso 4'; ?>: Destaca tu Anuncio (Opcional)</h2>
             <p>Aumenta la visibilidad de tu anuncio con nuestros servicios extra.</p>

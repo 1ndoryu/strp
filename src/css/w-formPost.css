@@ -158,8 +158,8 @@ a:hover {
     color: var(--color-secundario);
     margin-top: 0;
     margin-bottom: var(--espaciado-base);
-    border-bottom: 1px solid var(--color-borde);
-    padding-bottom: var(--espaciado-pequeno);
+    place-self: center;
+    padding: 10px;
 }
 
 /* ======================================== */
