@@ -314,7 +314,8 @@ function newForm()
         <div id="etapa-perfil" class="etapa oculto">
             <div class="divisor-anuncio-principal">
                 <div class="imagen-anuncio">
-                    <img src="<?php echo getConfParam('SITE_URL') ?>src/js/form-imagen.jpg "; alt=""?>>
+                    <img src="<?php echo getConfParam('SITE_URL') ?>src/20250412/form-imagen.jpg" alt="">
+                    
                 </div>
                 <div class="divisor-anuncio">
                     <h2 class="titulo-etapa">Publicar perfil</h2>
