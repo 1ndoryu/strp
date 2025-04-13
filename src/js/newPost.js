@@ -1,6 +1,9 @@
-
 (function () {
     'use strict';
+
+    /*
+    existe  <label class="opcion-radio opcion-plan"> cuando se marca debería tambien agregarse la clase .marcado, pero no lo hace, eso solo sucede con <label class="opcion-radio"> (que es otro tipo de opcion), que hay que ajustar? 
+    */
 
     // --- Configuración y Cache de DOM ---
     const form = document.getElementById('form-nuevo-anuncio');
@@ -72,6 +75,7 @@
         actualizarContadores(); // Inicializa al cargar por si hay datos repoblados
         inicializarHorarioVisual();
         actualizarMarcadoVisualRadios(tipoUsuarioRadios);
+        actualizarMarcadoVisualRadios(planRadios);
         console.log('Formulario multi-etapa inicializado.');
     }
 
@@ -92,12 +96,16 @@
         // Listener para el envío final (YA NO maneja reCAPTCHA directamente aquí)
         form.addEventListener('submit', manejarEnvioFinal);
 
-        // NUEVO: Listener para el cambio visual de los radios 'tipo_usuario'
+
         tipoUsuarioRadios.forEach(radio => {
             radio.addEventListener('change', () => actualizarMarcadoVisualRadios(tipoUsuarioRadios));
         });
-        
 
+        planRadios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                actualizarMarcadoVisualRadios(planRadios);
+            });
+        });
     }
 
     // --- Navegación ---

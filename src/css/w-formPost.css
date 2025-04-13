@@ -52,6 +52,38 @@ a:hover {
 /* ======================================== */
 /*      CONTENEDOR Y FORMULARIO BASE       */
 /* ======================================== */
+
+.opcion-contenido {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.beneficio-tipo-usuario {
+    display: flex;
+    gap: 10px;
+}
+
+.separador-opcion-perfil {
+    border-bottom: 2px solid #ff339a;
+    margin-top: -5px;
+    margin-bottom: 5px;
+}
+
+.boton-selecionar-perfil {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-content: center;
+    background: #ff339a;
+    border-radius: 5px;
+    padding: 7px;
+    color: white;
+    margin-top: 10px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
 .contenedor-formulario {
     max-width: 800px; /* Ajusta según necesites */
     margin: var(--espaciado-mediano) auto;
@@ -176,16 +208,18 @@ a:hover {
 
 .opcion-radio,
 .opcion-checkbox {
-    display: block; /* Hace que la etiqueta ocupe todo el ancho del grid item */
+    display: block;
     border: 2px solid var(--color-borde);
     padding: var(--espaciado-base);
     border-radius: var(--radio-borde);
     cursor: pointer;
     transition: border-color 0.2s ease, background-color 0.2s ease;
+    width: 100%;
 }
 
 .opcion-radio:hover,
-.opcion-checkbox:hover, .opcion-radio.marcado {
+.opcion-checkbox:hover,
+.opcion-radio.marcado {
     border-color: var(--color-primario);
     background-color: #f0f8ff;
 }
