@@ -570,11 +570,7 @@ if (isset($_SESSION['form_error_message'])) {
         </div>
     <?php endif; ?>
 
-    <?php // --- Inicio del Formulario HTML --- 
-    ?>
     <?php echo newForm($form_data); ?>
-    <?php 
-    ?>
 
 </div> <?php // Fin .col_single 
         ?>
