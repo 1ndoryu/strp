@@ -1,6 +1,7 @@
 <?php
 
 require '/html/newForm.php';
+require '/html/iconos.php';
 
 // Activar TODOS los errores para depuración
 ini_set('display_errors', 1);
