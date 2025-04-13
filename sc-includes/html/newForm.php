@@ -211,7 +211,7 @@ function newForm()
                     <div class="opcion-contenido">
                         <span class="precio-plan">0 €</span>
                         <strong>Plan Gratis</strong>
-                        <div class="separador-opcion-perfil"></div>
+                        <div class="separador-opcion-perfil" style="border-bottom: 2px solid #fbc300;"></div>
                         <span class="pruebaSpan">Prueba gratuita de 30 días.</span>
                         <div class="opcion-contenido">
                             <div class="beneficio-tipo-usuario">
@@ -243,7 +243,7 @@ function newForm()
                     <div class="opcion-contenido">
                         <span class="precio-plan">12 €</span>
                         <strong>Plan Silver</strong>
-                        <div class="separador-opcion-perfil"></div>
+                        <div class="separador-opcion-perfil style="border-bottom: 2px solid #fbc300;""></div>
                         <span class="pruebaSpan">Visibilidad mejorada por 60 días.</span>
                         <div class="opcion-contenido">
                             <div class="beneficio-tipo-usuario">
@@ -275,7 +275,7 @@ function newForm()
                     <div class="opcion-contenido">
                         <span class="precio-plan">30 €</span>
                         <strong>Plan Gold</strong>
-                        <div class="separador-opcion-perfil"></div>
+                        <div class="separador-opcion-perfil" style="border-bottom: 2px solid #fbc300;"></div>
                         <span class="pruebaSpan">Máxima visibilidad por 90 días.</span>
                         <div class="opcion-contenido">
                             <div class="beneficio-tipo-usuario">
