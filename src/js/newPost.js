@@ -182,10 +182,7 @@
                     esValido = false;
                     inputsInvalidos.push(provinciaSelect);
                 }
-                break
 
-            case 'etapa-anuncio':
-                
                 const tituloVal = tituloInput?.value.trim() || '';
                 if (!validarCampo(tituloInput, '#error-titulo', tituloVal && tituloVal.length >= 10 && tituloVal.length <= 50, `El título es obligatorio (entre 10 y 50 caracteres). Actual: ${tituloVal.length}`)) {
                     esValido = false;
@@ -205,6 +202,10 @@
                     esValido = false;
                     inputsInvalidos.push(serviciosCheckboxes[0]?.closest('.grupo-checkboxes'));
                 }
+                break
+
+            case 'etapa-anuncio':
+                
 
                 const fotosSubidas = hiddenPhotoInputsContainer.querySelectorAll('input[name="photo_name[]"]').length;
                 if (!validarCampo(listaFotosContainer, '#error-fotos', fotosSubidas > 0, 'Debes subir al menos una foto.')) {

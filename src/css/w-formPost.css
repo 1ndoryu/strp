@@ -294,7 +294,7 @@ a:hover {
     font-weight: bold;
     color: var(--color-exito);
     margin-top: var(--espaciado-pequeno);
-    font-size: 34em !important;
+    font-size: 34px !important;
 }
 
 /* Checkboxes normales (no en lista de opciones) */
