@@ -243,7 +243,7 @@ function newForm()
                     <div class="opcion-contenido">
                         <span class="precio-plan">12 €</span>
                         <strong>Plan Silver</strong>
-                        <div class="separador-opcion-perfil style="border-bottom: 2px solid #fbc300;""></div>
+                        <div class="separador-opcion-perfil" style="border-bottom: 2px solid #fbc300;"></div>
                         <span class="pruebaSpan">Visibilidad mejorada por 60 días.</span>
                         <div class="opcion-contenido">
                             <div class="beneficio-tipo-usuario">
