@@ -2,6 +2,7 @@
 // --- Configuración y Entorno ---
 // Determina la URL correcta para el action (con el ?id=...)
 $formActionUrl = "/index.php?id=post_item"; // AJUSTA 'post_item' si tu archivo tiene otro nombre (ej: nuevo_anuncio)
+require 'test.php';
 
 // Activar TODOS los errores para depuración
 ini_set('display_errors', 1);
@@ -21,38 +22,6 @@ $DATAJSON['edit'] = 0;
 if (getConfParam('POST_ITEM_REG') == 1) {
     check_login(); // Asegúrate que esta función no haga un exit/redirect inesperado si no está logueado
 }
-
-/*
-# Servicios elegidos, el servidor no los maneja 
-newPost.js:601 servicios[]: masaje_relajante
-newPost.js:601 servicios[]: masaje_podal
-# Aqui solo selecione martes, miercoles y sabado, parece funcionar correctamente pero el servidor no lo maneja
-newPost.js:601 horario_dia[lunes][inicio]: 00:00
-newPost.js:601 horario_dia[lunes][fin]: 23:30
-newPost.js:601 horario_dia[martes][activo]: 1
-newPost.js:601 horario_dia[martes][inicio]: 00:00
-newPost.js:601 horario_dia[martes][fin]: 23:30
-newPost.js:601 horario_dia[miercoles][activo]: 1
-newPost.js:601 horario_dia[miercoles][inicio]: 04:30
-newPost.js:601 horario_dia[miercoles][fin]: 23:30
-newPost.js:601 horario_dia[jueves][inicio]: 00:00
-newPost.js:601 horario_dia[jueves][fin]: 23:30
-newPost.js:601 horario_dia[viernes][inicio]: 00:00
-newPost.js:601 horario_dia[viernes][fin]: 23:30
-newPost.js:601 horario_dia[sabado][activo]: 1
-newPost.js:601 horario_dia[sabado][inicio]: 06:30
-newPost.js:601 horario_dia[sabado][fin]: 23:30
-newPost.js:601 horario_dia[domingo][inicio]: 00:00
-newPost.js:601 horario_dia[domingo][fin]: 23:30
-newPost.js:601 phone: 0418545687
-# Idiomas, el servidor no lo maneja
-idioma_1: es
-newPost.js:601 nivel_idioma_1: basico
-newPost.js:601 idioma_2: en
-newPost.js:601 nivel_idioma_2: nativo
-
-*/
-
 
 
 // --- Inicio Procesamiento POST ---
