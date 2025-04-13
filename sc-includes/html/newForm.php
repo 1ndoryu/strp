@@ -201,34 +201,103 @@ function newForm()
         <div id="etapa-plan" class="etapa <?php echo checkSession() ? 'activa' : 'oculto'; ?>">
             <h2 class="titulo-etapa"><?php echo checkSession() ? 'Paso 1' : 'Paso 2'; ?>: Elige tu Plan</h2>
             <p>Selecciona el plan que mejor se adapte a tus necesidades.</p>
-            <!-- ADVERTENCIA: El campo 'plan' no existía. El backend podría ignorarlo. -->
+
             <div class="lista-opciones grupo-radios-plan">
                 <label class="opcion-radio opcion-plan">
+                    <div class="tiempo-plan">
+                        30 días
+                    </div>
                     <input type="radio" name="plan" value="gratis" <?php echo (isset($form_data['plan']) && $form_data['plan'] == 'gratis') ? 'checked' : (!isset($form_data['plan']) ? 'checked' : ''); ?> required>
                     <div class="opcion-contenido">
-                        <strong>Plan Gratis</strong>
-                        <span>Prueba gratuita de 30 días.</span>
-                        <span>Renovación manual de anuncios cada 24 horas.</span>
                         <span class="precio-plan">0 €</span>
+                        <strong>Plan Gratis</strong>
+                        <div class="separador-opcion-perfil"></div>
+                        <span class="pruebaSpan">Prueba gratuita de 30 días.</span>
+                        <div class="opcion-contenido">
+                            <div class="beneficio-tipo-usuario">
+                                <?php echo $GLOBALS['check']; ?>
+                                <span class="beneficio-value">Renovar anuncios 24h</span>
+                            </div>
+                            <div class="beneficio-tipo-usuario">
+                                <?php echo $GLOBALS['cross']; ?>
+                                <span class="beneficio-value">Chat</span>
+                            </div>
+                            <div class="beneficio-tipo-usuario">
+                                <?php echo $GLOBALS['cross']; ?>
+                                <span class="beneficio-value">Edición de anuncios</span>
+                            </div>
+                            <div class="beneficio-tipo-usuario">
+                                <?php echo $GLOBALS['cross']; ?>
+                                <span class="beneficio-value">Ocultar anuncio</span>
+                            </div>
+                        </div>
+
                     </div>
+                    <div class="boton-selecionar-plan">Selecionar</div>
                 </label>
                 <label class="opcion-radio opcion-plan">
+                    <div class="tiempo-plan">
+                        60 días
+                    </div>
                     <input type="radio" name="plan" value="silver" <?php echo (isset($form_data['plan']) && $form_data['plan'] == 'silver') ? 'checked' : ''; ?>>
                     <div class="opcion-contenido">
-                        <strong>Plan Silver</strong>
-                        <span>Visibilidad mejorada por 60 días.</span>
-                        <span>Renovación automática de anuncios cada 12 horas.</span>
                         <span class="precio-plan">12 €</span>
+                        <strong>Plan Silver</strong>
+                        <div class="separador-opcion-perfil"></div>
+                        <span class="pruebaSpan">Visibilidad mejorada por 60 días.</span>
+                        <div class="opcion-contenido">
+                            <div class="beneficio-tipo-usuario">
+                                <?php echo $GLOBALS['check']; ?>
+                                <span class="beneficio-value">Renovar anuncios 12h</span>
+                            </div>
+                            <div class="beneficio-tipo-usuario">
+                                <?php echo $GLOBALS['check']; ?>
+                                <span class="beneficio-value">Chat</span>
+                            </div>
+                            <div class="beneficio-tipo-usuario">
+                                <?php echo $GLOBALS['check']; ?>
+                                <span class="beneficio-value">2 Ediciónes de anuncios</span>
+                            </div>
+                            <div class="beneficio-tipo-usuario">
+                                <?php echo $GLOBALS['cross']; ?>
+                                <span class="beneficio-value">Ocultar anuncio</span>
+                            </div>
+                        </div>
+
                     </div>
+                    <div class="boton-selecionar-plan">Selecionar</div>
                 </label>
                 <label class="opcion-radio opcion-plan">
+                    <div class="tiempo-plan">
+                        90 días
+                    </div>
                     <input type="radio" name="plan" value="gold" <?php echo (isset($form_data['plan']) && $form_data['plan'] == 'gold') ? 'checked' : ''; ?>>
                     <div class="opcion-contenido">
-                        <strong>Plan Gold</strong>
-                        <span>Máxima visibilidad por 90 días.</span>
-                        <span>Renovación automática de anuncios cada 12 horas.</span>
                         <span class="precio-plan">30 €</span>
+                        <strong>Plan Gold</strong>
+                        <div class="separador-opcion-perfil"></div>
+                        <span class="pruebaSpan">Máxima visibilidad por 90 días.</span>
+                        <div class="opcion-contenido">
+                            <div class="beneficio-tipo-usuario">
+                                <?php echo $GLOBALS['check']; ?>
+                                <span class="beneficio-value">Renovar anuncios 12h</span>
+                            </div>
+                            <div class="beneficio-tipo-usuario">
+                                <?php echo $GLOBALS['check']; ?>
+                                <span class="beneficio-value">Chat</span>
+                            </div>
+                            <div class="beneficio-tipo-usuario">
+                                <?php echo $GLOBALS['check']; ?>
+                                <span class="beneficio-value">2 Ediciónes de anuncios</span>
+                            </div>
+                            <div class="beneficio-tipo-usuario">
+                                <?php echo $GLOBALS['check']; ?>
+                                <span class="beneficio-value">Ocultar anuncio</span>
+                            </div>
+                        </div>
+
                     </div>
+                    <div class="boton-selecionar-plan">Selecionar</div>
                 </label>
             </div>
             <div class="error-msg oculto" id="error-plan">Debes seleccionar un plan.</div>
