@@ -527,8 +527,6 @@ if (isset($_SESSION['form_error_message'])) {
 
 ?>
 
-<?php // --- HTML del Formulario y Resto de la Página --- 
-?>
 
 <?php if (!user::checkLogin() && check_ip()): ?>
     <dialog class="dialog" open>

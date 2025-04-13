@@ -1,3 +1,4 @@
+
 (function () {
     'use strict';
 
@@ -70,7 +71,7 @@
         agregarListeners();
         actualizarContadores(); // Inicializa al cargar por si hay datos repoblados
         inicializarHorarioVisual();
-        actualizarMarcadoVisualRadios(tipoUsuarioRadios, tipoUsuarioLabels);
+        actualizarMarcadoVisualRadios(tipoUsuarioRadios);
         console.log('Formulario multi-etapa inicializado.');
     }
 
@@ -93,8 +94,7 @@
 
         // NUEVO: Listener para el cambio visual de los radios 'tipo_usuario'
         tipoUsuarioRadios.forEach(radio => {
-            // Usamos una función flecha para pasar los argumentos correctos
-            radio.addEventListener('change', () => actualizarMarcadoVisualRadios(tipoUsuarioRadios, tipoUsuarioLabels));
+            radio.addEventListener('change', () => actualizarMarcadoVisualRadios(tipoUsuarioRadios));
         });
         
 
@@ -653,30 +653,22 @@
         }
     }
 
-    function actualizarMarcadoVisualRadios(radiosNodeList, labelsArray) {
-        // 1. Quitar 'marcado' de todos los labels del grupo
-        labelsArray.forEach(label => {
-            if (label) {
-                // Comprobar si el label existe
-                label.classList.remove('marcado');
-            }
-        });
-
-        // 2. Encontrar el radio chequeado
-        let radioSeleccionado = null;
+    function actualizarMarcadoVisualRadios(radiosNodeList) {
         radiosNodeList.forEach(radio => {
-            if (radio.checked) {
-                radioSeleccionado = radio;
+            // Encuentra el label padre para este radio específico
+            const labelPadre = radio.closest('label.opcion-radio');
+            if (labelPadre) {
+                // Añade o quita la clase 'marcado' basado en si el radio está chequeado
+                if (radio.checked) {
+                    labelPadre.classList.add('marcado');
+                } else {
+                    labelPadre.classList.remove('marcado');
+                }
+            } else {
+                // Opcional: Advertencia si no se encuentra el label esperado
+                console.warn('No se encontró label.opcion-radio para el radio:', radio);
             }
         });
-
-        // 3. Añadir 'marcado' al label del radio chequeado (si existe)
-        if (radioSeleccionado) {
-            const labelPadre = radioSeleccionado.closest('label.opcion-radio');
-            if (labelPadre) {
-                labelPadre.classList.add('marcado');
-            }
-        }
     }
 
     // --- Ejecutar Inicialización ---
