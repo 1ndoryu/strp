@@ -915,5 +915,6 @@ p.numero-etapa {
 
 .linea-etapa-progreso {
     border-bottom: 1px solid #3e3e3e;
-    width: 100px;
+    width: 200px;
+    opacity: 0.2;
 }
