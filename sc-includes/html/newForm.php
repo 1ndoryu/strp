@@ -205,16 +205,25 @@ function newForm()
 
                 <!-- Divs visuales (como los proporcionaste) -->
                 <div class="primer-div-plan">
-                    <div class="planes-primer-div">
+                    <div class="planes-primer-div" style="position: relative">
                         <p>0 €</p>
                         <p>Plan Gratuito</p>
+                        <div class="tiempo-plan">
+                            30 días
+                        </div>
                     </div>
-                    <div class="planes-primer-div">
-                        <p>12 €</p> 
+                    <div class="planes-primer-div" style="position: relative">
+                        <p>12 €</p>
+                        <div class="tiempo-plan">
+                            60 días
+                        </div>
                     </div>
-                    <div class="planes-primer-div">
-                        <p>30 €</p> 
+                    <div class="planes-primer-div"style="position: relative">
+                        <p>30 €</p>
                         <p>Plan Gold</p>
+                        <div class="tiempo-plan">
+                            90 días
+                        </div>
                     </div>
                 </div>
 
@@ -266,14 +275,14 @@ function newForm()
                             </tr>
                             <tr>
                                 <td>Edición de anuncio</td>
-                                <td><?php echo $GLOBALS['cross']; ?></td> 
+                                <td><?php echo $GLOBALS['cross']; ?></td>
                                 <td>2</td>
                                 <td>3</td>
                             </tr>
                             <tr>
                                 <td>Chat</td>
                                 <td><?php echo $GLOBALS['cross']; ?></td>
-                                <td><?php echo $GLOBALS['check']; ?></td> 
+                                <td><?php echo $GLOBALS['check']; ?></td>
                                 <td><?php echo $GLOBALS['check']; ?></td>
                             </tr>
                             <tr>
