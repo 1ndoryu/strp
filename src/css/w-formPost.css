@@ -9,7 +9,7 @@
     --color-info: #17a2b8; /* Azul claro ejemplo */
     --color-fondo: #f8f9fa;
     --color-borde: #dee2e6;
-    --color-texto: #333;
+    --color-texto: #1a1a1a;
     --color-texto-claro: #fff;
     --color-texto-secundario: #555;
     --radio-borde: 4px;
@@ -113,30 +113,6 @@ a:hover {
 }
 
 
-.tiempo-plan {
-    position: absolute;
-    background: #fbc300;
-    padding: 5px 10px;
-    border-radius: 40px;
-    color: white;
-    FONT-WEIGHT: 700;
-    top: -15px;
-    right: 15px;
-}
-
-.boton-selecionar-plan {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    align-content: center;
-    background: #fbc300;
-    border-radius: 5px;
-    padding: 7px;
-    color: white;
-    margin-top: 10px;
-    font-size: 14px;
-    font-weight: 600;
-}
 
 .contenedor-formulario {
     max-width: 800px; /* Ajusta según necesites */
@@ -752,4 +728,105 @@ a:hover {
     font-family: 'Poppins', sans-serif;
     font-weight: 900;
     font-style: italic;
+}
+
+.lista-opciones.grupo-radios-plan {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.planes-primer-div p {
+    margin: 0px;
+}
+
+.planes-primer-div {
+    padding: 15px 30px;
+    border: 1px solid #d3d3d3;
+    border-radius: 5px;
+    justify-items: anchor-center;
+    FONT-WEIGHT: 700;
+    font-size: 17px;
+}
+
+.planes-segundo-div {
+    display: flex;
+    flex-direction: row;
+    border: 1px solid #d3d3d3;
+    padding: 15px 25px;
+    border-radius: 5px;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+}
+
+
+.contenido-planes-segundo-div p {
+    margin: 0px;
+}
+
+.segundo-div-plan {
+    width: 100%;
+    max-width: 900px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+p.titulosegundodiv {
+    font-size: 16px;
+}
+
+
+.contenido-planes-segundo-div {
+    FONT-WEIGHT: 700;
+}
+
+.tiempo-plan {
+    position: absolute;
+    background: #fbc300;
+    padding: 5px 10px;
+    border-radius: 40px;
+    color: white;
+    FONT-WEIGHT: 700;
+    top: -15px;
+    right: 15px;
+}
+
+button.btn-seleccionar-plan {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-content: center;
+    background: #fbc300;
+    border-radius: 5px;
+    padding: 7px 14px;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    border: unset;
+}
+
+.tercer-div-plan {
+    margin-top: 20px;
+}
+
+p.titulotercerdiv {
+    background: #ececec;
+    width: 100%;
+    padding: 15px;
+    text-align-last: center;
+    FONT-WEIGHT: 700;
+    font-size: 15px;
+}
+
+table.comparar-caracteristicas-tabla {
+    padding: 40px;
+    padding-top: 0px;
+}
+
+h2.titulo-etapa-plan {
+    justify-self: center;
+    padding: 20px;
+    color: #1a1a1a;
 }

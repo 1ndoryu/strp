@@ -194,7 +194,7 @@ function newForm()
 
         <!-- ======================= ETAPA 1: ELECCIÓN DE PLAN ======================= -->
         <div id="etapa-plan" class="etapa <?php echo checkSession() ? 'activa' : 'oculto'; ?>">
-            <h2 class="titulo-etapa-plan">Elige tu Plan</h2>
+            <h2 class="titulo-etapa-plan">Elige un Plan</h2>
             <div class="lista-opciones grupo-radios-plan">
 
                 <!-- Inputs de Radio (pueden estar ocultos con CSS si se prefiere) -->
@@ -206,15 +206,14 @@ function newForm()
                 <!-- Divs visuales (como los proporcionaste) -->
                 <div class="primer-div-plan">
                     <div class="planes-primer-div">
-                        <p>0 €</p> <!-- Ajustado a Euros como el original -->
+                        <p>0 €</p>
                         <p>Plan Gratuito</p>
                     </div>
                     <div class="planes-primer-div">
-                        <p>12 €</p> <!-- Ajustado a Euros como el original -->
-                        <p>Plan Silver</p>
+                        <p>12 €</p> 
                     </div>
                     <div class="planes-primer-div">
-                        <p>30 €</p> <!-- Ajustado a Euros como el original -->
+                        <p>30 €</p> 
                         <p>Plan Gold</p>
                     </div>
                 </div>
