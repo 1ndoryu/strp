@@ -11,7 +11,7 @@
     --color-borde: #dee2e6;
     --color-texto: #1a1a1a;
     --color-texto-claro: #fff;
-    --color-texto-secundario: #555;
+    --color-texto-secundario: #1a1a1a;
     --radio-borde: 4px;
     --espaciado-base: 1rem; /* 16px por defecto */
     --espaciado-pequeno: calc(var(--espaciado-base) * 0.5);
@@ -154,13 +154,6 @@ a:hover {
     display: none !important;
 }
 
-.titulo-etapa {
-    color: var(--color-secundario);
-    margin-top: 0;
-    margin-bottom: var(--espaciado-base);
-    place-self: center;
-    padding: 10px;
-}
 
 /* ======================================== */
 /*      GRUPOS DE CAMPOS Y ETIQUETAS       */
@@ -855,3 +848,31 @@ td {
     justify-content: center;
 }
 
+.titulo-etapa-anuncio-div {
+    display: flex;
+    align-items: center;
+    align-content: center;
+    gap: 10px;
+    padding: 18px 0px;
+}
+
+p.numero-etapa {
+    margin: 0px;
+    background: #fbc300;
+    border-radius: 130px;
+    /* padding: 13px 13px; */
+    height: 30px;
+    width: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-content: center;
+    padding-top: 3px;
+    FONT-WEIGHT: 700;
+    color: white;
+}
+
+
+.titulo-etapa {
+    color: var(--color-secundario);
+}
