@@ -194,117 +194,107 @@ function newForm()
 
         <!-- ======================= ETAPA 1: ELECCIÓN DE PLAN ======================= -->
         <div id="etapa-plan" class="etapa <?php echo checkSession() ? 'activa' : 'oculto'; ?>">
-            <h2 class="titulo-etapa"><?php echo checkSession() ? 'Paso 1' : 'Paso 2'; ?>: Elige tu Plan</h2>
-            <p>Selecciona el plan que mejor se adapte a tus necesidades.</p>
-
+            <h2 class="titulo-etapa-plan">Elige tu Plan</h2>
             <div class="lista-opciones grupo-radios-plan">
-                <label class="opcion-radio opcion-plan">
-                    <div class="tiempo-plan">
-                        30 días
-                    </div>
-                    <input type="radio" name="plan" value="gratis" <?php echo (isset($form_data['plan']) && $form_data['plan'] == 'gratis') ? 'checked' : (!isset($form_data['plan']) ? 'checked' : ''); ?> required>
-                    <div class="opcion-contenido">
-                        <span class="precio-plan">0 €</span>
-                        <strong>Plan Gratis</strong>
-                        <div class="separador-opcion-perfil" style="border-bottom: 2px solid #fbc300;"></div>
-                        <span class="pruebaSpan">Prueba gratuita de 30 días.</span>
-                        <div class="opcion-contenido">
-                            <div class="beneficio-tipo-usuario">
-                                <?php echo $GLOBALS['check']; ?>
-                                <span class="beneficio-value">Renovar anuncios 24h</span>
-                            </div>
-                            <div class="beneficio-tipo-usuario">
-                                <?php echo $GLOBALS['cross']; ?>
-                                <span class="beneficio-value">Chat</span>
-                            </div>
-                            <div class="beneficio-tipo-usuario">
-                                <?php echo $GLOBALS['cross']; ?>
-                                <span class="beneficio-value">Edición de anuncios</span>
-                            </div>
-                            <div class="beneficio-tipo-usuario">
-                                <?php echo $GLOBALS['cross']; ?>
-                                <span class="beneficio-value">Ocultar anuncio</span>
-                            </div>
-                        </div>
 
-                    </div>
-                    <div class="boton-selecionar-plan">Selecionar</div>
-                </label>
-                <label class="opcion-radio opcion-plan">
-                    <div class="tiempo-plan">
-                        60 días
-                    </div>
-                    <input type="radio" name="plan" value="silver" <?php echo (isset($form_data['plan']) && $form_data['plan'] == 'silver') ? 'checked' : ''; ?>>
-                    <div class="opcion-contenido">
-                        <span class="precio-plan">12 €</span>
-                        <strong>Plan Silver</strong>
-                        <div class="separador-opcion-perfil" style="border-bottom: 2px solid #fbc300;"></div>
-                        <span class="pruebaSpan">Visibilidad mejorada por 60 días.</span>
-                        <div class="opcion-contenido">
-                            <div class="beneficio-tipo-usuario">
-                                <?php echo $GLOBALS['check']; ?>
-                                <span class="beneficio-value">Renovar anuncios 12h</span>
-                            </div>
-                            <div class="beneficio-tipo-usuario">
-                                <?php echo $GLOBALS['check']; ?>
-                                <span class="beneficio-value">Chat</span>
-                            </div>
-                            <div class="beneficio-tipo-usuario">
-                                <?php echo $GLOBALS['check']; ?>
-                                <span class="beneficio-value">2 Ediciónes de anuncios</span>
-                            </div>
-                            <div class="beneficio-tipo-usuario">
-                                <?php echo $GLOBALS['cross']; ?>
-                                <span class="beneficio-value">Ocultar anuncio</span>
-                            </div>
-                        </div>
+                <!-- Inputs de Radio (pueden estar ocultos con CSS si se prefiere) -->
+                <!-- Es crucial que tengan name="plan" y los valores correctos -->
+                <input type="radio" name="plan" id="plan-gratis" value="gratis" <?php echo (isset($form_data['plan']) && $form_data['plan'] == 'gratis') ? 'checked' : (!isset($form_data['plan']) ? 'checked' : ''); ?> required style="display: none;">
+                <input type="radio" name="plan" id="plan-silver" value="silver" <?php echo (isset($form_data['plan']) && $form_data['plan'] == 'silver') ? 'checked' : ''; ?> style="display: none;">
+                <input type="radio" name="plan" id="plan-gold" value="gold" <?php echo (isset($form_data['plan']) && $form_data['plan'] == 'gold') ? 'checked' : ''; ?> style="display: none;">
 
+                <!-- Divs visuales (como los proporcionaste) -->
+                <div class="primer-div-plan">
+                    <div class="planes-primer-div">
+                        <p>0 €</p> <!-- Ajustado a Euros como el original -->
+                        <p>Plan Gratuito</p>
                     </div>
-                    <div class="boton-selecionar-plan">Selecionar</div>
-                </label>
-                <label class="opcion-radio opcion-plan">
-                    <div class="tiempo-plan">
-                        90 días
+                    <div class="planes-primer-div">
+                        <p>12 €</p> <!-- Ajustado a Euros como el original -->
+                        <p>Plan Silver</p>
                     </div>
-                    <input type="radio" name="plan" value="gold" <?php echo (isset($form_data['plan']) && $form_data['plan'] == 'gold') ? 'checked' : ''; ?>>
-                    <div class="opcion-contenido">
-                        <span class="precio-plan">30 €</span>
-                        <strong>Plan Gold</strong>
-                        <div class="separador-opcion-perfil" style="border-bottom: 2px solid #fbc300;"></div>
-                        <span class="pruebaSpan">Máxima visibilidad por 90 días.</span>
-                        <div class="opcion-contenido">
-                            <div class="beneficio-tipo-usuario">
-                                <?php echo $GLOBALS['check']; ?>
-                                <span class="beneficio-value">Renovar anuncios 12h</span>
-                            </div>
-                            <div class="beneficio-tipo-usuario">
-                                <?php echo $GLOBALS['check']; ?>
-                                <span class="beneficio-value">Chat</span>
-                            </div>
-                            <div class="beneficio-tipo-usuario">
-                                <?php echo $GLOBALS['check']; ?>
-                                <span class="beneficio-value">2 Ediciónes de anuncios</span>
-                            </div>
-                            <div class="beneficio-tipo-usuario">
-                                <?php echo $GLOBALS['check']; ?>
-                                <span class="beneficio-value">Ocultar anuncio</span>
-                            </div>
-                        </div>
+                    <div class="planes-primer-div">
+                        <p>30 €</p> <!-- Ajustado a Euros como el original -->
+                        <p>Plan Gold</p>
+                    </div>
+                </div>
 
+                <div class="segundo-div-plan">
+                    <!-- Plan Gratis -->
+                    <div class="planes-segundo-div plan-selectable <?php echo (isset($form_data['plan']) && $form_data['plan'] == 'gratis') || !isset($form_data['plan']) ? 'marcado' : ''; ?>" data-plan-value="gratis">
+                        <div class="contenido-planes-segundo-div">
+                            <p class="titulosegundodiv">Plan gratuito</p>
+                            <p class="descripcionsegundodiv">Prueba gratis por 30 días</p>
+                        </div>
+                        <button type="button" class="btn-seleccionar-plan">Seleccionar</button>
                     </div>
-                    <div class="boton-selecionar-plan">Selecionar</div>
-                </label>
-            </div>
+                    <!-- Plan Silver -->
+                    <div class="planes-segundo-div plan-selectable <?php echo (isset($form_data['plan']) && $form_data['plan'] == 'silver') ? 'marcado' : ''; ?>" data-plan-value="silver">
+                        <div class="contenido-planes-segundo-div">
+                            <p class="titulosegundodiv">Plan Silver</p>
+                            <p class="descripcionsegundodiv">Visibilidad mejorada por 60 días.</p> <!-- Texto original -->
+                        </div>
+                        <button type="button" class="btn-seleccionar-plan">Seleccionar</button>
+                    </div>
+                    <!-- Plan Gold -->
+                    <div class="planes-segundo-div plan-selectable <?php echo (isset($form_data['plan']) && $form_data['plan'] == 'gold') ? 'marcado' : ''; ?>" data-plan-value="gold">
+                        <div class="contenido-planes-segundo-div">
+                            <p class="titulosegundodiv">Plan Gold</p>
+                            <p class="descripcionsegundodiv">Máxima visibilidad por 90 días.</p> <!-- Texto original -->
+                        </div>
+                        <button type="button" class="btn-seleccionar-plan">Seleccionar</button>
+                    </div>
+                </div>
+
+                <div class="tercer-div-plan">
+                    <p class="titulotercerdiv">Comparar características</p>
+                    <table class="comparar-caracteristicas-tabla">
+                        <!-- Tu tabla de comparación aquí... -->
+                        <thead> <!-- Es buena práctica usar thead -->
+                            <tr>
+                                <th></th>
+                                <th>Plan gratuito</th>
+                                <th>Plan Silver</th>
+                                <th>Plan Gold</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Renovar anuncio</td>
+                                <td>cada 24h</td>
+                                <td>cada 12h</td>
+                                <td>cada 12h</td>
+                            </tr>
+                            <tr>
+                                <td>Edición de anuncio</td>
+                                <td><?php echo $GLOBALS['cross']; ?></td> 
+                                <td>2</td>
+                                <td>3</td>
+                            </tr>
+                            <tr>
+                                <td>Chat</td>
+                                <td><?php echo $GLOBALS['cross']; ?></td>
+                                <td><?php echo $GLOBALS['check']; ?></td> 
+                                <td><?php echo $GLOBALS['check']; ?></td>
+                            </tr>
+                            <tr>
+                                <td>Ocultar anuncio</td>
+                                <td><?php echo $GLOBALS['cross']; ?></td>
+                                <td><?php echo $GLOBALS['cross']; ?></td>
+                                <td><?php echo $GLOBALS['check']; ?></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Fin Tabla Comparación -->
+
+            </div> <!-- Fin lista-opciones -->
+
+            <!-- Div de error para la validación JS (importante mantener el ID) -->
             <div class="error-msg oculto" id="error-plan">Debes seleccionar un plan.</div>
 
-            <div class="navegacion-etapa">
-                <?php if (!checkSession()): ?>
-                    <button type="button" class="frm-boton btn-anterior">Anterior</button>
-                <?php endif; ?>
-                <button type="button" class="frm-boton btn-siguiente">Siguiente</button>
-            </div>
-        </div>
 
+        </div> <!-- Fin etapa-plan -->
         <!-- ======================= ETAPA 2: DATOS DEL PERFIL ======================= -->
         <div id="etapa-perfil" class="etapa oculto">
             <div class="divisor-anuncio-principal">
