@@ -1,10 +1,6 @@
 (function () {
     'use strict';
 
-    /*
-    existe  <label class="opcion-radio opcion-plan"> cuando se marca debería tambien agregarse la clase .marcado, pero no lo hace, eso solo sucede con <label class="opcion-radio"> (que es otro tipo de opcion), que hay que ajustar? 
-    */
-
     // --- Configuración y Cache de DOM ---
     const form = document.getElementById('form-nuevo-anuncio');
     if (!form) {
@@ -98,7 +94,18 @@
 
 
         tipoUsuarioRadios.forEach(radio => {
-            radio.addEventListener('change', () => actualizarMarcadoVisualRadios(tipoUsuarioRadios));
+            radio.addEventListener('change', () => {
+                // 1. Actualiza el aspecto visual (como antes)
+                actualizarMarcadoVisualRadios(tipoUsuarioRadios);
+
+                // 2. Verifica si estamos en la etapa correcta y avanza
+                const etapaActual = etapas[etapaActualIndex];
+                if (etapaActual && etapaActual.id === 'etapa-tipo-usuario' && radio.checked) {
+                    console.log('Tipo de usuario seleccionado en la etapa correcta, intentando avanzar...');
+                    // Llama a la función refactorizada para validar y cambiar de etapa
+                    avanzarSiValido();
+                }
+            });
         });
 
         planRadios.forEach(radio => {
@@ -109,19 +116,29 @@
     }
 
     // --- Navegación ---
-    function irASiguienteEtapa(event) {
-        event.preventDefault();
+
+    
+    function avanzarSiValido() {
+        // Esta función contiene la lógica principal que estaba en irASiguienteEtapa
         if (validarEtapaActual()) {
             actualizarCamposOcultosEtapaActual(); // Actualiza antes de cambiar
             if (etapaActualIndex < etapas.length - 1) {
                 cambiarEtapa(etapaActualIndex + 1);
             } else {
+                // Esto no debería pasar desde la primera etapa, pero es bueno tenerlo
                 console.warn('Se intentó ir más allá de la última etapa.');
             }
         } else {
             console.warn(`Validación fallida en etapa ${etapaActualIndex}`);
-            window.scrollTo({top: form.offsetTop - 20, behavior: 'smooth'}); // Scroll suave al inicio del form
+            // Mantenemos el scroll por si acaso, aunque aquí la validación debería pasar siempre
+            window.scrollTo({top: form.offsetTop - 20, behavior: 'smooth'});
         }
+    }
+
+    function irASiguienteEtapa(event) {
+        // Solo previene el default y llama a la función refactorizada
+        event.preventDefault();
+        avanzarSiValido();
     }
 
     function irAEtapaAnterior(event) {
@@ -648,6 +665,7 @@
         }
         return todoValido;
     }
+
 
     function irAPrimeraEtapaConError() {
         for (let i = 0; i < etapas.length; i++) {

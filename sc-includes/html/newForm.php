@@ -179,9 +179,6 @@ function newForm()
                 </div>
                 <div class="error-msg oculto" id="error-tipo-usuario">Debes seleccionar un tipo de usuario.</div>
 
-                <div class="navegacion-etapa">
-                    <button type="button" class="frm-boton btn-siguiente">Siguiente</button>
-                </div>
             </div>
         <?php else: ?>
             <?php // Script para setear hidden_seller_type si está logueado 
