@@ -883,3 +883,36 @@ p.numero-etapa {
 .titulo-etapa {
     color: var(--color-secundario);
 }
+
+.progresos-etapa {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.numero-etapa-progreso p {
+    margin: 0px;
+    /* background: #fbc300; */
+    border-radius: 130px;
+    /* padding: 13px 13px; */
+    height: 30px;
+    width: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-content: center;
+    padding-top: 3px;
+    FONT-WEIGHT: 700;
+    /* color: white; */
+}
+
+.numero-etapa-progreso .etapa-actual-progreso p {
+    background: #fbc300;
+    color: white;
+}
+
+.linea-etapa-progreso {
+    border-bottom: 1px solid #3e3e3e;
+    width: 100px;
+}

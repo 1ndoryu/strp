@@ -428,7 +428,7 @@ function newForm()
                     </div>
 
                     <div class="progresos-etapa">
-                        <div class="numero-etapa-progreso">
+                        <div class="numero-etapa-progreso etapa-actual-progreso ">
                             <p>1</p>
                         </div>
                         <div class="linea-etapa-progreso"></div>
