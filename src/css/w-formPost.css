@@ -281,10 +281,7 @@ a:hover {
     aspect-ratio: 1 / 7;
 }
 
-.divisor-anuncio-principal {
-    display: flex;
-    gap: 20px;
-}
+
 
 .opcion-contenido strong {
     display: block;
@@ -822,6 +819,11 @@ p.titulotercerdiv {
     font-size: 15px;
 }
 
+.primer-div-plan {
+    display: flex;
+    gap: 15px;
+}
+
 
 table.comparar-caracteristicas-tabla {
     padding: 40px;
@@ -841,5 +843,17 @@ h2.titulo-etapa-plan {
 
 td {
     padding-bottom: 10px;
+}
+
+.divisor-anuncio {
+    max-width: 700px;
+}
+
+.divisor-anuncio-principal {
+    display: flex;
+    gap: 20px;
+    margin: auto;
+    flex-direction: row;
+    justify-content: center;
 }
 

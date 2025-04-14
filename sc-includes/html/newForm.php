@@ -315,7 +315,7 @@ function newForm()
                     <h2 class="titulo-etapa">Publicar perfil</h2>
 
                     <fieldset class="frm-seccion">
-                        <legend>Información Básica</legend>
+                        
 
                         <div class="frm-grupo">
                             <label for="nombre" class="frm-etiqueta">Crea un nombre para tu perfil</label>
@@ -381,7 +381,6 @@ function newForm()
                     </fieldset>
 
                     <fieldset class="frm-seccion">
-                        <legend>Detalles del Anuncio</legend>
 
                         <div class="frm-grupo">
                             <label for="titulo_anuncio" class="frm-etiqueta">Título del Anuncio *</label>
