@@ -31,6 +31,24 @@ body {
     padding: 0;
 }
 
+.lista-opciones {
+    display: grid; 
+    grid-template-columns: 1fr; 
+    gap: var(--espaciado-base);
+}
+
+@media (min-width: 576px) {
+    .lista-opciones {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 992px) {
+    .lista-opciones {
+        grid-template-columns: repeat(4, 1fr); 
+    }
+}
+
 .titulo-etapa-tipo-usuario {
     color: #ff339a;
     font-size: 21px;
