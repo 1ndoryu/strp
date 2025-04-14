@@ -741,7 +741,7 @@ a:hover {
 }
 
 .planes-primer-div {
-    padding: 15px 30px;
+    padding: 15px 35px;
     border: 1px solid #d3d3d3;
     border-radius: 5px;
     justify-items: anchor-center;
@@ -790,7 +790,8 @@ p.titulosegundodiv {
     color: white;
     FONT-WEIGHT: 700;
     top: -15px;
-    right: 15px;
+    right: 10px;
+    font-size: 13px;
 }
 
 button.btn-seleccionar-plan {
@@ -820,6 +821,7 @@ p.titulotercerdiv {
     font-size: 15px;
 }
 
+
 table.comparar-caracteristicas-tabla {
     padding: 40px;
     padding-top: 0px;
@@ -829,4 +831,13 @@ h2.titulo-etapa-plan {
     justify-self: center;
     padding: 20px;
     color: #1a1a1a;
+}
+
+.tercer-div-plan {
+    width: 100%;
+    max-width: 650px;
+}
+
+td {
+    padding-bottom: 10px;
 }

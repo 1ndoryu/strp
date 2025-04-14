@@ -214,6 +214,7 @@ function newForm()
                     </div>
                     <div class="planes-primer-div" style="position: relative">
                         <p>12 €</p>
+                        <p>Plan Silver</p>
                         <div class="tiempo-plan">
                             60 días
                         </div>
