@@ -248,10 +248,7 @@ a:hover {
 /* ======================================== */
 /*      CHECKBOXES Y RADIOS PERSONALIZADOS */
 /* ======================================== */
-.lista-opciones {
-    display: flex;
-    gap: var(--espaciado-base);
-}
+
 /* Ajustar columnas para diferentes listas si es necesario */
 .grupo-radios-plan {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* 3 columnas en desktop */
