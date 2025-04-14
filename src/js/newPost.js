@@ -166,7 +166,7 @@
                  const tituloVal = tituloInput?.value.trim() || '';
                  if (!validarCampo(tituloInput, '#error-titulo', tituloVal && tituloVal.length >= 10 && tituloVal.length <= 50, `El título es obligatorio (entre 10 y 50 caracteres). Actual: ${tituloVal.length}`)) { esValido = false; inputsInvalidos.push(tituloInput); }
                  const descVal = descripcionTextarea?.value.trim() || '';
-                 if (!validarCampo(descripcionTextarea, '#error-descripcion', descVal && descVal.length >= 100 && descVal.length <= 500, `La descripción es obligatoria (entre 30 y 500 caracteres). Actual: ${descVal.length}`)) { esValido = false; inputsInvalidos.push(descripcionTextarea); }
+                 if (!validarCampo(descripcionTextarea, '#error-descripcion', descVal && descVal.length >= 100 && descVal.length <= 500, `La descripción es obligatoria (entre 100 y 500 caracteres). Actual: ${descVal.length}`)) { esValido = false; inputsInvalidos.push(descripcionTextarea); }
                  const serviciosSeleccionados = form.querySelectorAll('input[name="servicios[]"]:checked').length;
                  if (!validarCampo(serviciosCheckboxes[0]?.closest('.grupo-checkboxes'), '#error-servicios', serviciosSeleccionados > 0, 'Debes seleccionar al menos un servicio.')) { esValido = false; inputsInvalidos.push(serviciosCheckboxes[0]?.closest('.grupo-checkboxes')); }
                  break;

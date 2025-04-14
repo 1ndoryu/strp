@@ -403,9 +403,8 @@ function newForm()
                         </div>
 
                         <div class="frm-grupo">
-                            <label class="frm-etiqueta">Servicios Ofrecidos *</label>
-                            <!-- ADVERTENCIA: El campo 'servicios[]' no existía. El backend podría ignorarlo o dar error. -->
-                            <!-- Considera quitar el atributo 'name' si causa problemas: name="servicios_DISABLED[]" -->
+                            <label class="frm-etiqueta">Servicios *</label>
+
                             <div class="grupo-checkboxes">
                                 <?php
                                 $servicios = ["Masaje relajante", "Masaje deportivo", "Masaje podal", "Masaje antiestrés", "Masaje linfático", "Masaje shiatsu", "Masaje descontracturante", "Masaje ayurvédico", "Masaje circulatorio", "Masaje tailandés"];
@@ -426,6 +425,20 @@ function newForm()
                     <div class="navegacion-etapa">
                         <button type="button" class="frm-boton btn-anterior">Anterior</button>
                         <button type="button" class="frm-boton btn-siguiente">Siguiente</button>
+                    </div>
+
+                    <div class="progresos-etapa">
+                        <div class="numero-etapa-progreso">
+                            <p>1</p>
+                        </div>
+                        <div class="linea-etapa-progreso"></div>
+                        <div class="numero-etapa-progreso">
+                            <p>2</p>
+                        </div>
+                        <div class="linea-etapa-progreso"></div>
+                        <div class="numero-etapa-progreso">
+                            <p>3</p>
+                        </div>
                     </div>
                 </div>
 
