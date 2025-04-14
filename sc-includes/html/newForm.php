@@ -42,9 +42,7 @@ function newForm()
         <!-- ======================= ETAPA 0: TIPO DE USUARIO (Solo si no está logueado) ======================= -->
         <?php if (!checkSession()): ?>
             <div id="etapa-tipo-usuario" class="etapa activa">
-                <h2 class="titulo-etapa">Paso 1: Elige tu tipo de perfil</h2>
-                <p>Selecciona cómo quieres usar la plataforma.</p>
-
+                <h2 class="titulo-etapa-tipo-usuario">CREAR UNA CUENTA COMO:</h2>
                 <div class="lista-opciones grupo-radios">
                     <label class="opcion-radio">
                         <input type="radio" name="tipo_usuario" value="1" <?php echo (isset($form_data['seller_type']) && $form_data['seller_type'] == '1') ? 'checked' : ''; ?> required>
@@ -77,7 +75,7 @@ function newForm()
                                 <span class="beneficio-value">Mucho mas</span>
                             </div>
                         </div>
-                        <div class="boton-selecionar-perfil">Selecionar</div>
+                        <div class="boton-selecionar-perfil" id="Masajista">Registrarse</div>
                     </label>
                     <label class="opcion-radio">
                         <input type="radio" name="tipo_usuario" value="2" <?php echo (isset($form_data['seller_type']) && $form_data['seller_type'] == '2') ? 'checked' : ''; ?>>
@@ -110,7 +108,7 @@ function newForm()
                                 <span class="beneficio-value">Mucho mas</span>
                             </div>
                         </div>
-                        <div class="boton-selecionar-perfil">Selecionar</div>
+                        <div class="boton-selecionar-perfil" id="Centro">Registrarse</div>
                     </label>
                     <label class="opcion-radio">
                         <input type="radio" name="tipo_usuario" value="3" <?php echo (isset($form_data['seller_type']) && $form_data['seller_type'] == '3') ? 'checked' : ''; ?>>
@@ -145,7 +143,7 @@ function newForm()
                                 </div>
                             </div>
                         </div>
-                        <div class="boton-selecionar-perfil">Selecionar</div>
+                        <div class="boton-selecionar-perfil" id="Publicista">Registrarse</div>
                     </label>
                     <label class="opcion-radio">
                         <input type="radio" name="tipo_usuario" value="visitante" <?php echo (isset($form_data['seller_type']) && !in_array($form_data['seller_type'], ['1', '2', '3'])) ? 'checked' : ''; ?>>
@@ -176,7 +174,7 @@ function newForm()
                                 </div>
                             </div>
                         </div>
-                        <div class="boton-selecionar-perfil">Selecionar</div>
+                        <div class="boton-selecionar-perfil" id="Visitante">Registrarse</div>
                     </label>
                 </div>
                 <div class="error-msg oculto" id="error-tipo-usuario">Debes seleccionar un tipo de usuario.</div>
