@@ -456,7 +456,6 @@ a:hover {
     justify-content: space-between; /* Separa botones anterior/siguiente */
     margin-top: var(--espaciado-mediano);
     padding-top: var(--espaciado-base);
-    border-top: 1px solid var(--color-borde);
 }
 
 .frm-boton {
@@ -477,13 +476,21 @@ a:hover {
     transform: scale(0.98);
 }
 
-.btn-siguiente,
-.btn-publicar {
-    background-color: var(--color-primario);
+.btn-siguiente, .btn-publicar {
+    /* background-color: var(--color-primario); */
+    color: black;
+    FONT-WEIGHT: 400;
+    font-size: 14px;
+    background: unset;
+    border: 1px solid #d3d3d3;
 }
 
 .btn-anterior {
-    background-color: var(--color-secundario);
+    color: black;
+    FONT-WEIGHT: 400;
+    font-size: 14px;
+    background: unset;
+    border: 1px solid #d3d3d3;
 }
 
 .btn-pago {

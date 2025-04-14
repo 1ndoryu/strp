@@ -322,16 +322,15 @@ function newForm()
                         <div class="frm-grupo">
                             <label for="nombre" class="frm-etiqueta">Crea un nombre para tu perfil</label>
                             <!-- MAPEO: name="name" esperado por backend -->
-                            <input type="text" name="name" id="nombre" class="frm-campo" required maxlength="50" value="<?php echo htmlspecialchars($form_data['name'] ?? ($_SESSION['data']['name'] ?? '')); ?>">
+                            <input type="text" placeholder="Ejemplo: Ana" ="name" id="nombre" class="frm-campo" required maxlength="50" value="<?php echo htmlspecialchars($form_data['name'] ?? ($_SESSION['data']['name'] ?? '')); ?>">
                             <div class="error-msg oculto" id="error-nombre">El nombre es obligatorio.</div>
                         </div>
 
                         <div class="frm-grupo">
                             <label for="categoria" class="frm-etiqueta">¿Donde quieres que se muestre tu anuncio?</label>
-                            <!-- MAPEO: name="category" esperado por backend -->
-                            <!-- Asegúrate que los 'value' coincidan con los ID_cat del sistema antiguo -->
+
                             <select name="category" id="categoria" class="frm-campo frm-select" required>
-                                <option value="">Categoría</option>
+                                <option value="">+ Categoría</option>
                                 <?php
                                 // Copiado del form antiguo para asegurar compatibilidad
                                 $parent = selectSQL("sc_category", $where = array('parent_cat' => -1), "ord ASC");
@@ -362,7 +361,7 @@ function newForm()
                             <!-- MAPEO: name="region" esperado por backend -->
                             <!-- Asegúrate que los 'value' coincidan con los ID_region -->
                             <select name="region" id="provincia" class="frm-campo frm-select" required>
-                                <option value="">-- Selecciona una provincia --</option>
+                                <option value="">+ Selecciona una provincia</option>
                                 <?php
                                 $provincias = selectSQL("sc_region", [], "name ASC");
                                 $selected_region = $form_data['region'] ?? null;
@@ -394,11 +393,12 @@ function newForm()
                         </div>
 
                         <div class="frm-grupo">
-                            <label for="descripcion" class="frm-etiqueta">Descripción, acerca de mí *</label>
+                            <label for="descripcion" class="frm-etiqueta">Descripción</label>
+                            <label for="descripcion" class="frm-etiqueta">Acerca de mí *</label>
                             <!-- MAPEO: name="text" esperado por backend -->
-                            <textarea name="text" id="descripcion" class="frm-campo frm-textarea" rows="6" required minlength="30" maxlength="500" placeholder="Describe tus servicios, experiencia, ambiente, etc."><?php echo htmlspecialchars($form_data['text'] ?? ''); ?></textarea>
-                            <div class="contador-caracteres">Caracteres: <span id="cont-desc">0</span> (min 30 / máx 500)</div>
-                            <div class="error-msg oculto" id="error-descripcion">La descripción es obligatoria (entre 30 y 500 caracteres).</div>
+                            <textarea name="text" id="descripcion" class="frm-campo frm-textarea" rows="6" required minlength="100" maxlength="500" placeholder="Describe tus servicios, experiencia, ambiente, etc."><?php echo htmlspecialchars($form_data['text'] ?? ''); ?></textarea>
+                            <div class="contador-caracteres">Caracteres: <span id="cont-desc">0</span> (min 100 / máx 500)</div>
+                            <div class="error-msg oculto" id="error-descripcion">La descripción es obligatoria (entre 100 y 500 caracteres).</div>
                             <div class="error-msg oculto" id="error-desc-palabras">La descripción contiene palabras no permitidas.</div>
                         </div>
 
