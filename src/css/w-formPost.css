@@ -908,7 +908,7 @@ p.numero-etapa {
     background: #eaeaea;
 }
 
-.numero-etapa-progreso.etapa-actual-progresop {
+.numero-etapa-progreso.etapa-actual-progreso p {
     background: #fbc300;
     color: white;
 }
