@@ -905,9 +905,10 @@ p.numero-etapa {
     padding-top: 3px;
     FONT-WEIGHT: 700;
     /* color: white; */
+    background: #eaeaea;
 }
 
-.numero-etapa-progreso .etapa-actual-progreso p {
+.numero-etapa-progreso.etapa-actual-progresop {
     background: #fbc300;
     color: white;
 }
