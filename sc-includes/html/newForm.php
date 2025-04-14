@@ -219,7 +219,7 @@ function newForm()
                             60 días
                         </div>
                     </div>
-                    <div class="planes-primer-div"style="position: relative">
+                    <div class="planes-primer-div" style="position: relative">
                         <p>30 €</p>
                         <p>Plan Gold</p>
                         <div class="tiempo-plan">
@@ -312,10 +312,12 @@ function newForm()
 
                 </div>
                 <div class="divisor-anuncio">
-                    <h2 class="titulo-etapa">Publicar perfil</h2>
-
+                    <div class="titulo-etapa-anuncio-div">
+                        <p class="numero-etapa">1</p>
+                        <h2 class="titulo-etapa">Publicar perfil</h2>
+                    </div>
                     <fieldset class="frm-seccion">
-                        
+
 
                         <div class="frm-grupo">
                             <label for="nombre" class="frm-etiqueta">Crea un nombre para tu perfil</label>
