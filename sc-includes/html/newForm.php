@@ -849,13 +849,12 @@ function newForm()
                     </div>
 
                     <!-- ========= INICIO: Sección de Fechas Añadida ========= -->
-                    <div class="info-fechas-anuncio" style="margin-top: 15px; margin-bottom: 15px; padding: 10px; border: 1px solid #eee; text-align: center;">
+                    <div class="info-fechas-anuncio" style="margin-top: 15px;margin-bottom: 15px;padding: 10px;padding-top: 25px;border: 1px solid #eee;text-align: center;">
                         <p><strong>Fecha de creación:</strong> <?php echo $fecha_creacion; ?></p>
                         <p><strong>Fecha de expiración:</strong> <?php echo $fecha_expiracion; ?></p>
                     </div>
                     <!-- ========= FIN: Sección de Fechas Añadida ========= -->
-
-
+ 
                     <div class="frm-grupo">
                         <label class="frm-checkbox">
                             <input name="terminos" type="checkbox" id="terminos" value="1" required <?php echo (isset($form_data['terminos']) && $form_data['terminos'] == '1') ? 'checked' : ''; ?> />

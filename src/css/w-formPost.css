@@ -317,6 +317,15 @@ input[type="radio"] {
     display: none;
 }
 
+.frm-grupo.opcion-gratis-extra {
+    margin-top: 12px;
+}
+
+.frm-checkbox a {
+    margin-left: 4px;
+    margin-right: 4px;
+}
+
 .precio-y-tiempo {
     margin-left: auto;
 }
