@@ -680,31 +680,62 @@ function newForm()
 
                 <div class="divisor-anuncio">
 
+                    <div class="titulo-etapa-anuncio-div">
+                        <p class="numero-etapa">3</p>
+                        <h2 class="titulo-etapa">Finalizar</h2>
+                    </div>
+
                     <div class="lista-opciones grupo-checkboxes-extra">
                         <?php $selected_extras = $form_data['extras'] ?? []; ?>
                         <label class="opcion-checkbox opcion-extra">
                             <input type="checkbox" name="extras[]" value="premium" <?php echo in_array('premium', $selected_extras) ? 'checked' : ''; ?>>
-                            <div class="opcion-contenido"><strong>Premium (35 €)</strong><span>Tu anuncio aparecerá aleatoriamente en las posiciones superiores.</span></div>
+                            <?php echo $GLOBALS['sonrisa_uno']; ?>
+                            <div class="opcion-contenido">
+                                <strong>Premium</strong>
+                                <span>Tu anuncio aparecerá aleatoriamente en las posiciones superiores.</span></div>
+                            <div class="precio-y-tiempo">
+                                <p>35 €</p>
+                            </div>
                         </label>
                         <label class="opcion-checkbox opcion-extra">
                             <input type="checkbox" name="extras[]" value="premium_mini" <?php echo in_array('premium_mini', $selected_extras) ? 'checked' : ''; ?>>
-                            <div class="opcion-contenido"><strong>Premium Mini (27 €)</strong><span>Tu anuncio aparecerá aleatoriamente bajo los Premium.</span></div>
+                            <?php echo $GLOBALS['sonrisa_dos']; ?>
+                            <div class="opcion-contenido"><strong>Premium Mini</strong><span>Tu anuncio aparecerá aleatoriamente bajo los Premium.</span></div>
+                            <div class="precio-y-tiempo">
+                                <p>30 €</p>
+                            </div>
                         </label>
                         <label class="opcion-checkbox opcion-extra">
                             <input type="checkbox" name="extras[]" value="destacado" <?php echo in_array('destacado', $selected_extras) ? 'checked' : ''; ?>>
-                            <div class="opcion-contenido"><strong>Destacado (20 €)</strong><span>Tu anuncio aparecerá aleatoriamente con un diseño destacado.</span></div>
+                            <?php echo $GLOBALS['sonrisa_dos']; ?>
+                            <div class="opcion-contenido"><strong>Destacado</strong><span>Tu anuncio aparecerá aleatoriamente con un diseño destacado.</span></div>
+                            <div class="precio-y-tiempo">
+                                <p>27 €</p>
+                            </div>
                         </label>
                         <label class="opcion-checkbox opcion-extra">
                             <input type="checkbox" name="extras[]" value="autosubida" <?php echo in_array('autosubida', $selected_extras) ? 'checked' : ''; ?>>
-                            <div class="opcion-contenido"><strong>Autosubida (25 €)</strong><span>Tu anuncio subirá posiciones automáticamente (debajo de Destacados).</span></div>
+                            <?php echo $GLOBALS['sonrisa_dos']; ?>
+                            <div class="opcion-contenido"><strong>Autosubida</strong><span>Tu anuncio subirá posiciones automáticamente (debajo de Destacados).</span></div>
+                            <div class="precio-y-tiempo">
+                                <p>25 €</p>
+                            </div>
                         </label>
                         <label class="opcion-checkbox opcion-extra">
                             <input type="checkbox" name="extras[]" value="banner_superior" <?php echo in_array('banner_superior', $selected_extras) ? 'checked' : ''; ?>>
-                            <div class="opcion-contenido"><strong>Banner Superior (50 €)</strong><span>Muestra tu banner aleatoriamente en la cabecera de la página.</span></div>
+                            <?php echo $GLOBALS['sonrisa_dos']; ?>
+                            <div class="opcion-contenido"><strong>Banner Superior</strong><span>Muestra tu banner aleatoriamente en la cabecera de la página.</span></div>
+                            <div class="precio-y-tiempo">
+                                <p>50 €</p>
+                            </div>
                         </label>
                         <label class="opcion-checkbox opcion-extra">
                             <input type="checkbox" name="extras[]" value="banner_lateral" <?php echo in_array('banner_lateral', $selected_extras) ? 'checked' : ''; ?>>
-                            <div class="opcion-contenido"><strong>Banner Lateral (50 €)</strong><span>Muestra tu banner aleatoriamente en la barra lateral.</span></div>
+                            <?php echo $GLOBALS['sonrisa_dos']; ?>
+                            <div class="opcion-contenido"><strong>Banner Lateral</strong><span>Muestra tu banner aleatoriamente en la barra lateral.</span></div>
+                            <div class="precio-y-tiempo">
+                                <p>50 €</p>
+                            </div>
                         </label>
                         <!-- TODO: Añadir lógica JS para mostrar campos de subida de banner si se seleccionan -->
                     </div>
@@ -721,7 +752,7 @@ function newForm()
                         <label class="frm-checkbox">
                             <?php
 
-                            $notifications_checked = true; 
+                            $notifications_checked = true;
                             if (isset($form_data['notifications'])) {
                                 $notifications_checked = ($form_data['notifications'] == '1');
                             }
@@ -736,7 +767,7 @@ function newForm()
                         <button type="button" class="frm-boton btn-anterior">Anterior</button>
                         <button type="submit" id="btn-finalizar" class="frm-boton btn-publicar">Finalizar y Publicar</button>
                     </div>
-                    
+
                     <div class="progresos-etapa">
                         <div class="numero-etapa-progreso ">
                             <p>1</p>
