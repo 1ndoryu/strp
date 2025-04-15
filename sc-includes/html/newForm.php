@@ -692,9 +692,13 @@ function newForm()
                             <?php echo $GLOBALS['sonrisa_uno']; ?>
                             <div class="opcion-contenido">
                                 <strong>Premium</strong>
-                                <span>Tu anuncio aparecerá aleatoriamente en las posiciones superiores.</span></div>
+                                <span>Tu anuncio aparecerá aleatoriamente en las posiciones superiores.</span>
+                            </div>
                             <div class="precio-y-tiempo">
                                 <p>35 €</p>
+                                <div class="icono-clock">
+                                    <?php echo $GLOBALS['clock']; ?>
+                                </div>
                             </div>
                         </label>
                         <label class="opcion-checkbox opcion-extra">
@@ -703,6 +707,9 @@ function newForm()
                             <div class="opcion-contenido"><strong>Premium Mini</strong><span>Tu anuncio aparecerá aleatoriamente bajo los Premium.</span></div>
                             <div class="precio-y-tiempo">
                                 <p>30 €</p>
+                                <div class="icono-clock">
+                                    <?php echo $GLOBALS['clock']; ?>
+                                </div>
                             </div>
                         </label>
                         <label class="opcion-checkbox opcion-extra">
@@ -711,7 +718,11 @@ function newForm()
                             <div class="opcion-contenido"><strong>Destacado</strong><span>Tu anuncio aparecerá aleatoriamente con un diseño destacado.</span></div>
                             <div class="precio-y-tiempo">
                                 <p>27 €</p>
+                                <div class="icono-clock">
+                                    <?php echo $GLOBALS['clock']; ?>
+                                </div>
                             </div>
+
                         </label>
                         <label class="opcion-checkbox opcion-extra">
                             <input type="checkbox" name="extras[]" value="autosubida" <?php echo in_array('autosubida', $selected_extras) ? 'checked' : ''; ?>>
@@ -719,6 +730,9 @@ function newForm()
                             <div class="opcion-contenido"><strong>Autosubida</strong><span>Tu anuncio subirá posiciones automáticamente (debajo de Destacados).</span></div>
                             <div class="precio-y-tiempo">
                                 <p>25 €</p>
+                                <div class="icono-clock">
+                                    <?php echo $GLOBALS['clock']; ?>
+                                </div>
                             </div>
                         </label>
                         <label class="opcion-checkbox opcion-extra">
@@ -727,6 +741,9 @@ function newForm()
                             <div class="opcion-contenido"><strong>Banner Superior</strong><span>Muestra tu banner aleatoriamente en la cabecera de la página.</span></div>
                             <div class="precio-y-tiempo">
                                 <p>50 €</p>
+                                <div class="icono-clock">
+                                    <?php echo $GLOBALS['clock']; ?>
+                                </div>
                             </div>
                         </label>
                         <label class="opcion-checkbox opcion-extra">
@@ -735,6 +752,9 @@ function newForm()
                             <div class="opcion-contenido"><strong>Banner Lateral</strong><span>Muestra tu banner aleatoriamente en la barra lateral.</span></div>
                             <div class="precio-y-tiempo">
                                 <p>50 €</p>
+                                <div class="icono-clock">
+                                    <?php echo $GLOBALS['clock']; ?>
+                                </div>
                             </div>
                         </label>
                         <!-- TODO: Añadir lógica JS para mostrar campos de subida de banner si se seleccionan -->
@@ -743,12 +763,12 @@ function newForm()
                     <div class="frm-grupo">
                         <label class="frm-checkbox">
                             <input name="terminos" type="checkbox" id="terminos" value="1" required <?php echo (isset($form_data['terminos']) && $form_data['terminos'] == '1') ? 'checked' : ''; ?> />
-                            He leído y acepto los <a href="/terminos-y-condiciones" target="_blank">Términos y Condiciones</a> y la <a href="/politica-privacidad" target="_blank">Política de Privacidad</a>. *
+                            He leído y acepto los <a href="/terminos-y-condiciones" target="_blank">Términos y Condiciones </a> y la <a href="/politica-privacidad" target="_blank"> Política de Privacidad</a>. *
                         </label>
                         <div class="error-msg oculto" id="error-terminos">Debes aceptar los términos y condiciones.</div>
                     </div>
 
-                    <div class="frm-grupo">
+                    <div class="frm-grupo" style="display: none;">
                         <label class="frm-checkbox">
                             <?php
 

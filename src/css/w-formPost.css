@@ -224,6 +224,11 @@ a:hover {
     grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); /* 2 o 3 columnas */
 }
 
+.opcion-checkbox.opcion-extra svg {
+    height: 36px;
+    width: 36px;
+}
+
 .opcion-radio,
 .opcion-checkbox {
     display: block;
@@ -276,15 +281,25 @@ a:hover {
 
 .opcion-contenido strong {
     display: block;
-    margin-bottom: var(--espaciado-pequeno);
     color: var(--color-texto);
     font-size: 16px;
 }
 
 .opcion-contenido span {
     display: block;
-    font-size: 0.9em;
+    font-size: 14px;
     color: var(--color-texto-secundario);
+    margin-top: -5px;
+}
+
+.precio-y-tiempo p {
+    margin: 0;
+    FONT-WEIGHT: 700;
+    font-size: 20px;
+}
+
+.precio-y-tiempo {
+    margin-left: auto;
 }
 
 .precio-plan {
