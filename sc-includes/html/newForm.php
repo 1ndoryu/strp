@@ -561,7 +561,7 @@ function newForm()
                         <!-- Mensaje de error si el backend falló por horario (mapeado) -->
                         <div class="error_msg" id="error_backend_horario" style="<?php echo (isset($form_data['dis'], $form_data['horario-inicio'], $form_data['horario-final']) && (!$form_data['dis'] || !$form_data['horario-inicio'] || !$form_data['horario-final']) && $error_insert) ? 'display:block;' : 'display:none;'; ?>">Error al procesar el horario. Asegúrate de marcar días y horas.</div>
                     </div>
-                    
+
                     <div class="frm-grupo">
                         <label for="telefono" class="frm-etiqueta">Teléfono de Contacto *</label>
                         <div class="grupo-telefono">
@@ -657,8 +657,8 @@ function newForm()
                         <div class="numero-etapa-progreso">
                             <p>1</p>
                         </div>
-                        <div class="linea-etapa-progreso etapa-actual-progreso"></div>
-                        <div class="numero-etapa-progreso">
+                        <div class="linea-etapa-progreso"></div>
+                        <div class="numero-etapa-progreso etapa-actual-progreso">
                             <p>2</p>
                         </div>
                         <div class="linea-etapa-progreso"></div>
@@ -672,71 +672,86 @@ function newForm()
 
         <!-- ======================= ETAPA 4: EXTRAS OPCIONALES ======================= -->
         <div id="etapa-extras" class="etapa oculto">
-            <h2 class="titulo-etapa"><?php echo checkSession() ? 'Paso 3' : 'Paso 4'; ?>: Destaca tu Anuncio (Opcional)</h2>
-            <p>Aumenta la visibilidad de tu anuncio con nuestros servicios extra.</p>
+            <div class="divisor-anuncio-principal">
 
-            <!-- ADVERTENCIA: El campo 'extras[]' no existía. El backend podría ignorarlo o dar error. -->
-            <!-- Considera quitar el atributo 'name' si causa problemas: name="extras_DISABLED[]" -->
-            <div class="lista-opciones grupo-checkboxes-extra">
-                <?php $selected_extras = $form_data['extras'] ?? []; ?>
-                <label class="opcion-checkbox opcion-extra">
-                    <input type="checkbox" name="extras[]" value="premium" <?php echo in_array('premium', $selected_extras) ? 'checked' : ''; ?>>
-                    <div class="opcion-contenido"><strong>Premium (35 €)</strong><span>Tu anuncio aparecerá aleatoriamente en las posiciones superiores.</span></div>
-                </label>
-                <label class="opcion-checkbox opcion-extra">
-                    <input type="checkbox" name="extras[]" value="premium_mini" <?php echo in_array('premium_mini', $selected_extras) ? 'checked' : ''; ?>>
-                    <div class="opcion-contenido"><strong>Premium Mini (27 €)</strong><span>Tu anuncio aparecerá aleatoriamente bajo los Premium.</span></div>
-                </label>
-                <label class="opcion-checkbox opcion-extra">
-                    <input type="checkbox" name="extras[]" value="destacado" <?php echo in_array('destacado', $selected_extras) ? 'checked' : ''; ?>>
-                    <div class="opcion-contenido"><strong>Destacado (20 €)</strong><span>Tu anuncio aparecerá aleatoriamente con un diseño destacado.</span></div>
-                </label>
-                <label class="opcion-checkbox opcion-extra">
-                    <input type="checkbox" name="extras[]" value="autosubida" <?php echo in_array('autosubida', $selected_extras) ? 'checked' : ''; ?>>
-                    <div class="opcion-contenido"><strong>Autosubida (25 €)</strong><span>Tu anuncio subirá posiciones automáticamente (debajo de Destacados).</span></div>
-                </label>
-                <label class="opcion-checkbox opcion-extra">
-                    <input type="checkbox" name="extras[]" value="banner_superior" <?php echo in_array('banner_superior', $selected_extras) ? 'checked' : ''; ?>>
-                    <div class="opcion-contenido"><strong>Banner Superior (50 €)</strong><span>Muestra tu banner aleatoriamente en la cabecera de la página.</span></div>
-                </label>
-                <label class="opcion-checkbox opcion-extra">
-                    <input type="checkbox" name="extras[]" value="banner_lateral" <?php echo in_array('banner_lateral', $selected_extras) ? 'checked' : ''; ?>>
-                    <div class="opcion-contenido"><strong>Banner Lateral (50 €)</strong><span>Muestra tu banner aleatoriamente en la barra lateral.</span></div>
-                </label>
-                <!-- TODO: Añadir lógica JS para mostrar campos de subida de banner si se seleccionan -->
-            </div>
-
-            <fieldset class="frm-seccion terminos-finales">
-                <div class="frm-grupo">
-                    <label class="frm-checkbox">
-                        <!-- MAPEO: name="terminos" esperado por backend -->
-                        <input name="terminos" type="checkbox" id="terminos" value="1" required <?php echo (isset($form_data['terminos']) && $form_data['terminos'] == '1') ? 'checked' : ''; ?> />
-                        He leído y acepto los <a href="/terminos-y-condiciones" target="_blank">Términos y Condiciones</a> y la <a href="/politica-privacidad" target="_blank">Política de Privacidad</a>. *
-                    </label>
-                    <div class="error-msg oculto" id="error-terminos">Debes aceptar los términos y condiciones.</div>
+                <div class="imagen-anuncio">
+                    <img src="<?php echo getConfParam('SITE_URL') ?>src/photos/20250412/form-imagen.jpg" alt="">
                 </div>
 
-                <div class="frm-grupo">
-                    <label class="frm-checkbox">
-                        <!-- MAPEO: name="notifications" esperado por backend -->
-                        <?php
-                        // Marcado por defecto si no hay datos previos, o según los datos previos si existen
-                        $notifications_checked = true; // Por defecto
-                        if (isset($form_data['notifications'])) {
-                            $notifications_checked = ($form_data['notifications'] == '1');
-                        }
-                        ?>
-                        <input name="notifications" type="checkbox" id="notifications" value="1" <?php echo $notifications_checked ? 'checked' : ''; ?> />
-                        Quiero recibir notificaciones por email cuando alguien contacte a través de mi anuncio.
-                    </label>
-                </div>
-            </fieldset>
+                <div class="divisor-anuncio">
 
-            <div class="navegacion-etapa">
-                <button type="button" class="frm-boton btn-anterior">Anterior</button>
-                <!-- JS NECESARIO: El texto/acción de este botón podría cambiar según plan/extras -->
-                <!-- El type="submit" es correcto para enviar el formulario directamente (sin JS reCAPTCHA) -->
-                <button type="submit" id="btn-finalizar" class="frm-boton btn-publicar">Finalizar y Publicar</button>
+                    <div class="lista-opciones grupo-checkboxes-extra">
+                        <?php $selected_extras = $form_data['extras'] ?? []; ?>
+                        <label class="opcion-checkbox opcion-extra">
+                            <input type="checkbox" name="extras[]" value="premium" <?php echo in_array('premium', $selected_extras) ? 'checked' : ''; ?>>
+                            <div class="opcion-contenido"><strong>Premium (35 €)</strong><span>Tu anuncio aparecerá aleatoriamente en las posiciones superiores.</span></div>
+                        </label>
+                        <label class="opcion-checkbox opcion-extra">
+                            <input type="checkbox" name="extras[]" value="premium_mini" <?php echo in_array('premium_mini', $selected_extras) ? 'checked' : ''; ?>>
+                            <div class="opcion-contenido"><strong>Premium Mini (27 €)</strong><span>Tu anuncio aparecerá aleatoriamente bajo los Premium.</span></div>
+                        </label>
+                        <label class="opcion-checkbox opcion-extra">
+                            <input type="checkbox" name="extras[]" value="destacado" <?php echo in_array('destacado', $selected_extras) ? 'checked' : ''; ?>>
+                            <div class="opcion-contenido"><strong>Destacado (20 €)</strong><span>Tu anuncio aparecerá aleatoriamente con un diseño destacado.</span></div>
+                        </label>
+                        <label class="opcion-checkbox opcion-extra">
+                            <input type="checkbox" name="extras[]" value="autosubida" <?php echo in_array('autosubida', $selected_extras) ? 'checked' : ''; ?>>
+                            <div class="opcion-contenido"><strong>Autosubida (25 €)</strong><span>Tu anuncio subirá posiciones automáticamente (debajo de Destacados).</span></div>
+                        </label>
+                        <label class="opcion-checkbox opcion-extra">
+                            <input type="checkbox" name="extras[]" value="banner_superior" <?php echo in_array('banner_superior', $selected_extras) ? 'checked' : ''; ?>>
+                            <div class="opcion-contenido"><strong>Banner Superior (50 €)</strong><span>Muestra tu banner aleatoriamente en la cabecera de la página.</span></div>
+                        </label>
+                        <label class="opcion-checkbox opcion-extra">
+                            <input type="checkbox" name="extras[]" value="banner_lateral" <?php echo in_array('banner_lateral', $selected_extras) ? 'checked' : ''; ?>>
+                            <div class="opcion-contenido"><strong>Banner Lateral (50 €)</strong><span>Muestra tu banner aleatoriamente en la barra lateral.</span></div>
+                        </label>
+                        <!-- TODO: Añadir lógica JS para mostrar campos de subida de banner si se seleccionan -->
+                    </div>
+
+                    <div class="frm-grupo">
+                        <label class="frm-checkbox">
+                            <input name="terminos" type="checkbox" id="terminos" value="1" required <?php echo (isset($form_data['terminos']) && $form_data['terminos'] == '1') ? 'checked' : ''; ?> />
+                            He leído y acepto los <a href="/terminos-y-condiciones" target="_blank">Términos y Condiciones</a> y la <a href="/politica-privacidad" target="_blank">Política de Privacidad</a>. *
+                        </label>
+                        <div class="error-msg oculto" id="error-terminos">Debes aceptar los términos y condiciones.</div>
+                    </div>
+
+                    <div class="frm-grupo">
+                        <label class="frm-checkbox">
+                            <?php
+
+                            $notifications_checked = true; 
+                            if (isset($form_data['notifications'])) {
+                                $notifications_checked = ($form_data['notifications'] == '1');
+                            }
+                            ?>
+                            <input name="notifications" type="checkbox" id="notifications" value="1" <?php echo $notifications_checked ? 'checked' : ''; ?> />
+                            Quiero recibir notificaciones por email cuando alguien contacte a través de mi anuncio.
+                        </label>
+                    </div>
+
+
+                    <div class="navegacion-etapa">
+                        <button type="button" class="frm-boton btn-anterior">Anterior</button>
+                        <button type="submit" id="btn-finalizar" class="frm-boton btn-publicar">Finalizar y Publicar</button>
+                    </div>
+                    
+                    <div class="progresos-etapa">
+                        <div class="numero-etapa-progreso ">
+                            <p>1</p>
+                        </div>
+                        <div class="linea-etapa-progreso"></div>
+                        <div class="numero-etapa-progreso">
+                            <p>2</p>
+                        </div>
+                        <div class="linea-etapa-progreso"></div>
+                        <div class="numero-etapa-progreso etapa-actual-progreso">
+                            <p>3</p>
+                        </div>
+                    </div>
+
+                </div>
             </div>
 
     </form>

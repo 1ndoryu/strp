@@ -388,6 +388,25 @@ a:hover {
     padding: 5px 10px;
 }
 
+button.btn-dia-estado.disponible {
+    border: unset;
+    background: #ff99cb;
+    padding: 10px;
+    FONT-WEIGHT: 600;
+}
+
+button.btn-dia-estado.no-disponible {
+    border: unset;
+    /* background: #ff99cb; */
+    padding: 10px;
+    FONT-WEIGHT: 600;
+}
+
+span.nombre-dia {
+    width: 85px;
+}
+
+
 /* Estilo para las previsualizaciones (necesitarás añadir elementos img/div aquí con JS) */
 .lista-fotos .foto-preview {
     position: relative;
@@ -459,15 +478,25 @@ a:hover {
     display: flex;
     align-items: center;
     gap: var(--espaciado-base);
-    flex-wrap: wrap; /* Para pantallas pequeñas */
 }
+
 .grupo-telefono .frm-campo {
     flex-grow: 1;
-    min-width: 180px; /* Evita que sea demasiado pequeño */
+    max-width: 300px;
+    width: 100%;
 }
+
 .grupo-telefono .check-whatsapp {
     margin: 0; /* Resetear margen de frm-checkbox */
     white-space: nowrap; /* Evita que se parta el texto */
+}
+
+button#btn-mostrar-horario {
+    color: black;
+    FONT-WEIGHT: 400;
+    font-size: 14px;
+    background: unset;
+    border: 1px solid #d3d3d3;
 }
 
 /* --- Grupo Idiomas --- */
