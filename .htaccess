@@ -111,6 +111,7 @@
 			RewriteRule ^importar/?$ importador/index.php [QSA,L]
             RewriteRule ^comprar-creditos/?$ index.php?id=account&p=5 [QSA,L]
             RewriteRule ^publicar-anuncio-gratis/?$ index.php?id=post_item [QSA,L]
+            RewriteRule ^registro/?$ index.php?id=register [QSA,L]
             RewriteRule ^contactar/?$ index.php?id=contact [QSA,L]
             RewriteRule ^mis-anuncios/modificar/([0-9]+)/?$ index.php?id=edit&i=$1 [L]
             RewriteRule ^mis-anuncios/renovar/([0-9]+)/?$ index.php?id=account&re=$1 [L]
