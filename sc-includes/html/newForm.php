@@ -517,150 +517,151 @@ function newForm()
                         <div class="error_msg" id="error_photo_generic" style="<?php echo (isset($form_data['photo_name']) && count($form_data['photo_name']) == 0 && $error_insert) ? 'display:block;' : 'display:none;'; ?>">Sube al menos una foto para tu anuncio.</div>
                     </div>
                 </div>
-            </div>
 
 
-            <div class="frm-grupo">
-                <label class="frm-etiqueta">Horario Detallado *</label>
-                <div class="ayuda-texto">Marca los días que estás disponible y selecciona tu horario.</div>
-                <!-- JS NECESARIO: Este bloque debe usarse para calcular y rellenar los campos ocultos: hidden_dis, hidden_horario_inicio, hidden_horario_final -->
-                <div class="horario-semanal">
-                    <?php
-                    // Repoblar horario es complejo con la estructura nueva y el error_data viejo. Requiere JS.
-                    $dias = ['lunes' => 'Lunes', 'martes' => 'Martes', 'miercoles' => 'Miércoles', 'jueves' => 'Jueves', 'viernes' => 'Viernes', 'sabado' => 'Sábado', 'domingo' => 'Domingo'];
-                    foreach ($dias as $key => $nombre) {
-                    ?>
-                        <div class="dia-horario" id="horario-<?= $key ?>">
-                            <label class="frm-checkbox check-dia">
-                                <input type="checkbox" name="horario_dia[<?= $key ?>][activo]" value="1"> <?= $nombre ?>
-                            </label>
-                            <div class="horas-dia oculto">
-                                <label>De:</label>
-                                <select name="horario_dia[<?= $key ?>][inicio]" class="frm-campo frm-select corto">
-                                    <?php for ($h = 0; $h < 24; $h++) {
-                                        $hora = sprintf('%02d', $h);
-                                        echo "<option value='{$hora}:00'>{$hora}:00</option><option value='{$hora}:30'>{$hora}:30</option>";
-                                    } ?>
-                                </select>
-                                <label>A:</label>
-                                <select name="horario_dia[<?= $key ?>][fin]" class="frm-campo frm-select corto">
-                                    <?php for ($h = 0; $h < 24; $h++) {
-                                        $hora = sprintf('%02d', $h);
-                                        $selected = ($hora == 23) ? 'selected' : ''; // Default end time selection might need JS adjustment
-                                        echo "<option value='{$hora}:00'>{$hora}:00</option><option value='{$hora}:30' " . (($hora == 23) ? 'selected' : '') . ">{$hora}:30</option>"; // Simplified default end selection
-                                    } ?>
-                                </select>
+
+                <div class="frm-grupo">
+                    <label class="frm-etiqueta">Horario Detallado *</label>
+                    <div class="ayuda-texto">Marca los días que estás disponible y selecciona tu horario.</div>
+                    <!-- JS NECESARIO: Este bloque debe usarse para calcular y rellenar los campos ocultos: hidden_dis, hidden_horario_inicio, hidden_horario_final -->
+                    <div class="horario-semanal">
+                        <?php
+                        // Repoblar horario es complejo con la estructura nueva y el error_data viejo. Requiere JS.
+                        $dias = ['lunes' => 'Lunes', 'martes' => 'Martes', 'miercoles' => 'Miércoles', 'jueves' => 'Jueves', 'viernes' => 'Viernes', 'sabado' => 'Sábado', 'domingo' => 'Domingo'];
+                        foreach ($dias as $key => $nombre) {
+                        ?>
+                            <div class="dia-horario" id="horario-<?= $key ?>">
+                                <label class="frm-checkbox check-dia">
+                                    <input type="checkbox" name="horario_dia[<?= $key ?>][activo]" value="1"> <?= $nombre ?>
+                                </label>
+                                <div class="horas-dia oculto">
+                                    <label>De:</label>
+                                    <select name="horario_dia[<?= $key ?>][inicio]" class="frm-campo frm-select corto">
+                                        <?php for ($h = 0; $h < 24; $h++) {
+                                            $hora = sprintf('%02d', $h);
+                                            echo "<option value='{$hora}:00'>{$hora}:00</option><option value='{$hora}:30'>{$hora}:30</option>";
+                                        } ?>
+                                    </select>
+                                    <label>A:</label>
+                                    <select name="horario_dia[<?= $key ?>][fin]" class="frm-campo frm-select corto">
+                                        <?php for ($h = 0; $h < 24; $h++) {
+                                            $hora = sprintf('%02d', $h);
+                                            $selected = ($hora == 23) ? 'selected' : ''; // Default end time selection might need JS adjustment
+                                            echo "<option value='{$hora}:00'>{$hora}:00</option><option value='{$hora}:30' " . (($hora == 23) ? 'selected' : '') . ">{$hora}:30</option>"; // Simplified default end selection
+                                        } ?>
+                                    </select>
+                                </div>
                             </div>
+                        <?php } ?>
+                    </div>
+                    <div class="error-msg oculto" id="error-horario">Debes marcar al menos un día y configurar su horario.</div>
+                    <!-- Mensaje de error si el backend falló por horario (mapeado) -->
+                    <div class="error_msg" id="error_backend_horario" style="<?php echo (isset($form_data['dis'], $form_data['horario-inicio'], $form_data['horario-final']) && (!$form_data['dis'] || !$form_data['horario-inicio'] || !$form_data['horario-final']) && $error_insert) ? 'display:block;' : 'display:none;'; ?>">Error al procesar el horario. Asegúrate de marcar días y horas.</div>
+                </div>
+
+                <div class="frm-grupo">
+                    <label for="telefono" class="frm-etiqueta">Teléfono de Contacto *</label>
+                    <div class="grupo-telefono">
+                        <!-- MAPEO: name="phone" esperado por backend -->
+                        <input type="tel" name="phone" id="telefono" class="frm-campo" required pattern="[0-9]{9,15}" placeholder="Ej: 612345678" value="<?php echo htmlspecialchars($form_data['phone'] ?? ($_SESSION['data']['phone'] ?? '')); ?>">
+                        <label class="frm-checkbox check-whatsapp">
+                            <!-- MAPEO: name="whatsapp" esperado por backend, value debe ser 1 -->
+                            <input type="checkbox" name="whatsapp" value="1" <?php echo (isset($form_data['whatsapp']) && $form_data['whatsapp'] == 1) || (!isset($form_data['whatsapp']) && isset($_SESSION['data']['whatsapp']) && $_SESSION['data']['whatsapp'] == 1) ? 'checked' : ''; ?>> ¿Tienes WhatsApp?
+                        </label>
+                    </div>
+                    <div class="error-msg oculto" id="error-telefono">Introduce un teléfono válido (solo números, 9-15 dígitos).</div>
+                </div>
+
+                <div class="frm-grupo">
+                    <label class="frm-etiqueta">Idiomas que Hablas (Opcional)</label>
+                    <!-- JS NECESARIO: Los selects idioma_1 e idioma_2 deben usarse para rellenar los campos ocultos hidden_lang_1 y hidden_lang_2 -->
+                    <div class="grupo-idiomas">
+                        <?php
+                        $selected_lang1 = $form_data['lang-1'] ?? null;
+                        $selected_lang2 = $form_data['lang-2'] ?? null;
+                        ?>
+                        <div class="par-idioma">
+                            <select name="idioma_1" id="idioma_1" class="frm-campo frm-select">
+                                <option value="">-- Idioma 1 --</option>
+                                <?php // TODO: Cargar lista de idiomas COMPLETA como en el form antiguo
+                                $idiomas_lista = ['es' => 'Español', 'en' => 'Inglés', 'fr' => 'Francés', 'de' => 'Alemán', 'pt' => 'Portugués', 'it' => 'Italiano']; // Ejemplo
+                                foreach ($idiomas_lista as $code => $name) {
+                                    // Usar el valor del campo oculto mapeado para seleccionar
+                                    echo '<option value="' . htmlspecialchars($code) . '" ' . ($selected_lang1 == $code ? 'selected' : '') . '>' . htmlspecialchars($name) . '</option>';
+                                }
+                                ?>
+                            </select>
+                            <select name="nivel_idioma_1" class="frm-campo frm-select">
+                                <option value="">-- Nivel --</option>
+                                <option value="basico">Básico</option>
+                                <option value="intermedio">Intermedio</option>
+                                <option value="avanzado">Avanzado</option>
+                                <option value="nativo">Nativo</option>
+                            </select>
                         </div>
-                    <?php } ?>
-                </div>
-                <div class="error-msg oculto" id="error-horario">Debes marcar al menos un día y configurar su horario.</div>
-                <!-- Mensaje de error si el backend falló por horario (mapeado) -->
-                <div class="error_msg" id="error_backend_horario" style="<?php echo (isset($form_data['dis'], $form_data['horario-inicio'], $form_data['horario-final']) && (!$form_data['dis'] || !$form_data['horario-inicio'] || !$form_data['horario-final']) && $error_insert) ? 'display:block;' : 'display:none;'; ?>">Error al procesar el horario. Asegúrate de marcar días y horas.</div>
-            </div>
-
-            <div class="frm-grupo">
-                <label for="telefono" class="frm-etiqueta">Teléfono de Contacto *</label>
-                <div class="grupo-telefono">
-                    <!-- MAPEO: name="phone" esperado por backend -->
-                    <input type="tel" name="phone" id="telefono" class="frm-campo" required pattern="[0-9]{9,15}" placeholder="Ej: 612345678" value="<?php echo htmlspecialchars($form_data['phone'] ?? ($_SESSION['data']['phone'] ?? '')); ?>">
-                    <label class="frm-checkbox check-whatsapp">
-                        <!-- MAPEO: name="whatsapp" esperado por backend, value debe ser 1 -->
-                        <input type="checkbox" name="whatsapp" value="1" <?php echo (isset($form_data['whatsapp']) && $form_data['whatsapp'] == 1) || (!isset($form_data['whatsapp']) && isset($_SESSION['data']['whatsapp']) && $_SESSION['data']['whatsapp'] == 1) ? 'checked' : ''; ?>> ¿Tienes WhatsApp?
-                    </label>
-                </div>
-                <div class="error-msg oculto" id="error-telefono">Introduce un teléfono válido (solo números, 9-15 dígitos).</div>
-            </div>
-
-            <div class="frm-grupo">
-                <label class="frm-etiqueta">Idiomas que Hablas (Opcional)</label>
-                <!-- JS NECESARIO: Los selects idioma_1 e idioma_2 deben usarse para rellenar los campos ocultos hidden_lang_1 y hidden_lang_2 -->
-                <div class="grupo-idiomas">
-                    <?php
-                    $selected_lang1 = $form_data['lang-1'] ?? null;
-                    $selected_lang2 = $form_data['lang-2'] ?? null;
-                    ?>
-                    <div class="par-idioma">
-                        <select name="idioma_1" id="idioma_1" class="frm-campo frm-select">
-                            <option value="">-- Idioma 1 --</option>
-                            <?php // TODO: Cargar lista de idiomas COMPLETA como en el form antiguo
-                            $idiomas_lista = ['es' => 'Español', 'en' => 'Inglés', 'fr' => 'Francés', 'de' => 'Alemán', 'pt' => 'Portugués', 'it' => 'Italiano']; // Ejemplo
-                            foreach ($idiomas_lista as $code => $name) {
-                                // Usar el valor del campo oculto mapeado para seleccionar
-                                echo '<option value="' . htmlspecialchars($code) . '" ' . ($selected_lang1 == $code ? 'selected' : '') . '>' . htmlspecialchars($name) . '</option>';
-                            }
-                            ?>
-                        </select>
-                        <select name="nivel_idioma_1" class="frm-campo frm-select">
-                            <option value="">-- Nivel --</option>
-                            <option value="basico">Básico</option>
-                            <option value="intermedio">Intermedio</option>
-                            <option value="avanzado">Avanzado</option>
-                            <option value="nativo">Nativo</option>
-                        </select>
-                    </div>
-                    <div class="par-idioma">
-                        <select name="idioma_2" id="idioma_2" class="frm-campo frm-select">
-                            <option value="">-- Idioma 2 --</option>
-                            <?php foreach ($idiomas_lista as $code => $name) {
-                                echo '<option value="' . htmlspecialchars($code) . '" ' . ($selected_lang2 == $code ? 'selected' : '') . '>' . htmlspecialchars($name) . '</option>';
-                            } ?>
-                        </select>
-                        <select name="nivel_idioma_2" class="frm-campo frm-select">
-                            <option value="">-- Nivel --</option>
-                            <option value="basico">Básico</option>
-                            <option value="intermedio">Intermedio</option>
-                            <option value="avanzado">Avanzado</option>
-                            <option value="nativo">Nativo</option>
-                        </select>
+                        <div class="par-idioma">
+                            <select name="idioma_2" id="idioma_2" class="frm-campo frm-select">
+                                <option value="">-- Idioma 2 --</option>
+                                <?php foreach ($idiomas_lista as $code => $name) {
+                                    echo '<option value="' . htmlspecialchars($code) . '" ' . ($selected_lang2 == $code ? 'selected' : '') . '>' . htmlspecialchars($name) . '</option>';
+                                } ?>
+                            </select>
+                            <select name="nivel_idioma_2" class="frm-campo frm-select">
+                                <option value="">-- Nivel --</option>
+                                <option value="basico">Básico</option>
+                                <option value="intermedio">Intermedio</option>
+                                <option value="avanzado">Avanzado</option>
+                                <option value="nativo">Nativo</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="frm-grupo">
-                <label for="realiza_salidas" class="frm-etiqueta">¿Realizas salidas a domicilio/hotel? *</label>
-                <!-- MAPEO: name="out" esperado por backend -->
-                <select name="out" id="realiza_salidas" class="frm-campo frm-select" required>
-                    <?php $selected_out = $form_data['out'] ?? '0'; ?>
-                    <option value="0" <?php echo ($selected_out == '0') ? 'selected' : ''; ?>>No</option>
-                    <option value="1" <?php echo ($selected_out == '1') ? 'selected' : ''; ?>>Sí</option>
-                </select>
-                <div class="error-msg oculto" id="error-salidas">Debes indicar si realizas salidas.</div>
-            </div>
-
-            <?php if (!checkSession()): ?>
                 <div class="frm-grupo">
-                    <label for="email" class="frm-etiqueta">Tu Email de Contacto *</label>
-                    <!-- MAPEO: name="email" esperado por backend -->
-                    <input type="email" name="email" id="email" class="frm-campo" required placeholder="Necesario para gestionar tu anuncio" value="<?php echo htmlspecialchars($form_data['email'] ?? ''); ?>">
-                    <div class="ayuda-texto">Si ya tienes cuenta, usa el mismo email. Si no, crearemos una cuenta para ti.</div>
-                    <div class="error-msg oculto" id="error-email">Introduce un email válido.</div>
+                    <label for="realiza_salidas" class="frm-etiqueta">¿Realizas salidas a domicilio/hotel? *</label>
+                    <!-- MAPEO: name="out" esperado por backend -->
+                    <select name="out" id="realiza_salidas" class="frm-campo frm-select" required>
+                        <?php $selected_out = $form_data['out'] ?? '0'; ?>
+                        <option value="0" <?php echo ($selected_out == '0') ? 'selected' : ''; ?>>No</option>
+                        <option value="1" <?php echo ($selected_out == '1') ? 'selected' : ''; ?>>Sí</option>
+                    </select>
+                    <div class="error-msg oculto" id="error-salidas">Debes indicar si realizas salidas.</div>
                 </div>
-            <?php else: ?>
-                <!-- Si está logueado, el backend espera el email igualmente -->
-                <input type="hidden" name="email" value="<?php echo htmlspecialchars($_SESSION['data']['mail']); ?>">
-                <div class="frm-grupo">
-                    <label class="frm-etiqueta">Email de Contacto:</label>
-                    <span class="texto-fijo"><?php echo htmlspecialchars($_SESSION['data']['mail']); ?></span>
-                </div>
-            <?php endif; ?>
 
-            <div class="navegacion-etapa">
-                <button type="button" class="frm-boton btn-anterior">Anterior</button>
-                <button type="button" class="frm-boton btn-siguiente">Siguiente</button>
-            </div>
+                <?php if (!checkSession()): ?>
+                    <div class="frm-grupo">
+                        <label for="email" class="frm-etiqueta">Tu Email de Contacto *</label>
+                        <!-- MAPEO: name="email" esperado por backend -->
+                        <input type="email" name="email" id="email" class="frm-campo" required placeholder="Necesario para gestionar tu anuncio" value="<?php echo htmlspecialchars($form_data['email'] ?? ''); ?>">
+                        <div class="ayuda-texto">Si ya tienes cuenta, usa el mismo email. Si no, crearemos una cuenta para ti.</div>
+                        <div class="error-msg oculto" id="error-email">Introduce un email válido.</div>
+                    </div>
+                <?php else: ?>
+                    <!-- Si está logueado, el backend espera el email igualmente -->
+                    <input type="hidden" name="email" value="<?php echo htmlspecialchars($_SESSION['data']['mail']); ?>">
+                    <div class="frm-grupo">
+                        <label class="frm-etiqueta">Email de Contacto:</label>
+                        <span class="texto-fijo"><?php echo htmlspecialchars($_SESSION['data']['mail']); ?></span>
+                    </div>
+                <?php endif; ?>
 
-            <div class="progresos-etapa">
-                <div class="numero-etapa-progreso">
-                    <p>1</p>
+                <div class="navegacion-etapa">
+                    <button type="button" class="frm-boton btn-anterior">Anterior</button>
+                    <button type="button" class="frm-boton btn-siguiente">Siguiente</button>
                 </div>
-                <div class="linea-etapa-progreso etapa-actual-progreso"></div>
-                <div class="numero-etapa-progreso">
-                    <p>2</p>
-                </div>
-                <div class="linea-etapa-progreso"></div>
-                <div class="numero-etapa-progreso">
-                    <p>3</p>
+
+                <div class="progresos-etapa">
+                    <div class="numero-etapa-progreso">
+                        <p>1</p>
+                    </div>
+                    <div class="linea-etapa-progreso etapa-actual-progreso"></div>
+                    <div class="numero-etapa-progreso">
+                        <p>2</p>
+                    </div>
+                    <div class="linea-etapa-progreso"></div>
+                    <div class="numero-etapa-progreso">
+                        <p>3</p>
+                    </div>
                 </div>
             </div>
         </div>
