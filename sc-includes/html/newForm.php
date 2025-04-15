@@ -704,9 +704,7 @@ function newForm()
                         display: none;
                         position: absolute;
                         bottom: 110%;
-                        margin-top: -30px;
                         left: 50%;
-                        transform: translateX(-50%);
                         background-color: #f4f4f4;
                         color: #1b1b1b;
                         padding: 5px 10px;
