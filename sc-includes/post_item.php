@@ -559,7 +559,7 @@ if (isset($_SESSION['form_error_message'])) {
     </li>
 </ul>
 <h2 class="title">Publica tu anuncio ¡Gratis!</h2>
-<div class="col_single post_item_col">
+<div class="col_single post_item_col" style="border: unset">
 
     <?php // --- Mostrar Mensaje de Error General ---
     if (!empty($form_error_message)): ?>

@@ -1649,6 +1649,7 @@ header .logo {
 #content,.main-content {
     width: 100%;
     max-width: 1600px;
+    background: #ffffff;
 }
 
 .footer-content {
