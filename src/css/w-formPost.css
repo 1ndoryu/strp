@@ -349,10 +349,33 @@ a:hover {
 }
 .lista-fotos {
     margin-top: var(--espaciado-base);
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
     gap: var(--espaciado-base);
+    display: flex;
+    flex-direction: row;
 }
+
+.foto-subida-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.foto-subida-item img {
+    max-width: 140px;
+    max-height: 140px;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+}
+
+.foto-subida-item .removeImg {
+    display: none;
+}
+
+.foto-subida-item a.edit-photo-icon {
+    display: none;
+}
+
 /* Estilo para las previsualizaciones (necesitarás añadir elementos img/div aquí con JS) */
 .lista-fotos .foto-preview {
     position: relative;
