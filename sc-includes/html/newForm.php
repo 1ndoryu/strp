@@ -303,14 +303,15 @@ function newForm()
             <div class="error-msg oculto" id="error-plan">Debes seleccionar un plan.</div>
 
 
-        </div> <!-- Fin etapa-plan -->
+        </div>
         <!-- ======================= ETAPA 2: DATOS DEL PERFIL ======================= -->
         <div id="etapa-perfil" class="etapa oculto">
             <div class="divisor-anuncio-principal">
+
                 <div class="imagen-anuncio">
                     <img src="<?php echo getConfParam('SITE_URL') ?>src/photos/20250412/form-imagen.jpg" alt="">
-
                 </div>
+
                 <div class="divisor-anuncio">
                     <div class="titulo-etapa-anuncio-div">
                         <p class="numero-etapa">1</p>
@@ -349,14 +350,11 @@ function newForm()
                                 </div>
                             </div>
 
-                            <!-- El select original AHORA ESTARÁ OCULTO, pero funcional -->
-                            <!-- MAPEO: name="category" esperado por backend -->
+
                             <select name="category" id="categoria" class="frm-select visually-hidden" required>
                                 <option value="">+ Categoría</option>
                                 <?php
-                                // Copiado del form antiguo para asegurar compatibilidad
-                                // NOTA: Aunque el código itera padres/hijos, el HTML final son solo <option>.
-                                // El selector personalizado mostrará estas opciones en el orden en que se generan.
+
                                 $parent = selectSQL("sc_category", $where = array('parent_cat' => -1), "ord ASC");
                                 $selected_cat = $form_data['category'] ?? null;
                                 foreach ($parent as $p) {
@@ -366,7 +364,8 @@ function newForm()
                                         $otros_html_grp = ''; // Para acumular opciones 'Otros'
                                         foreach ($child as $c) {
                                             $selected = ($selected_cat == $c['ID_cat']) ? 'selected' : '';
-                                            $option_tag = '<option value="' . $c['ID_cat'] . '" ' . $selected . '>  ' . htmlspecialchars($c['name']) . '</option>'; // El espacio inicial se mantiene
+                                            // CORRECCIÓN: Se eliminó el espacio inicial antes del nombre de la categoría
+                                            $option_tag = '<option value="' . $c['ID_cat'] . '" ' . $selected . '>' . htmlspecialchars($c['name']) . '</option>';
 
                                             if ((strpos($c['name'], 'Otros') !== false) || (strpos($c['name'], 'Otras') !== false)) {
                                                 $otros_html_grp .= $option_tag; // Acumular 'Otros'
@@ -384,6 +383,7 @@ function newForm()
                             </select>
                             <div class="error-msg oculto" id="error-categoria">Debes seleccionar una categoría.</div>
                         </div>
+
                         <div class="frm-grupo">
                             <label for="provincia" class="frm-etiqueta">Seleciona una provincia *</label>
 
@@ -484,43 +484,41 @@ function newForm()
                         </div>
                     </div>
                 </div>
-
-
             </div>
-
-
         </div>
 
         <!-- ======================= ETAPA 3: ETAPA ANUNCIO ======================= -->
         <div id="etapa-anuncio" class="etapa oculto">
-            <h2 class="titulo-etapa">Publicar anuncio</h2>
-
-
-
-            <fieldset class="frm-seccion">
-                <legend>Fotografías</legend>
-                <!-- JS NECESARIO: Se necesita JS para manejar la subida (AJAX), previsualización, ordenación y generación de inputs ocultos name="photo_name[]" -->
-                <div class="frm-grupo">
-                    <label class="frm-etiqueta">Sube tus fotos (hasta <?= htmlspecialchars($DATAJSON['max_photos'] ?? 3) ?>)</label>
-                    <div class="ayuda-texto">Puedes arrastrar y soltar las imágenes. Tamaño máx. 2MB (JPG, PNG). La primera foto será la principal.</div>
-                    <div class="subida-fotos-contenedor">
-                        <div id="boton-subir-foto" class="boton-subir">
-                            <span>Haz click o arrastra para subir</span>
-                            <!-- Este input es para SELECCIONAR. La subida real y la creación de 'photo_name[]' necesita JS -->
-                            <input type="file" id="campo-subir-foto" multiple accept="image/jpeg, image/png" style="/* display: none; */ position:absolute; opacity: 0; top:0; left:0; bottom:0; right:0; cursor:pointer;">
-                        </div>
-                        <div id="lista-fotos-subidas" class="lista-fotos sortable">
-                            <!-- Las previsualizaciones de las fotos se añadirán aquí vía JS -->
-                            <!-- JS también debe añadir aquí los inputs ocultos photo_name[] O en el div #hidden-photo-inputs -->
-                        </div>
-                        <!-- El backend viejo no usa 'foto_principal_input'. Probablemente usa el orden del array 'photo_name[]'. -->
-                        <!-- <input type="hidden" name="foto_principal" id="foto_principal_input" value="0"> -->
-                    </div>
-                    <div class="error-msg oculto" id="error-fotos">Debes subir al menos una foto. La primera que subas será la principal.</div>
-                    <div class="error_msg" id="error_photo_generic" style="<?php echo (isset($form_data['photo_name']) && count($form_data['photo_name']) == 0 && $error_insert) ? 'display:block;' : 'display:none;'; ?>">Sube al menos una foto para tu anuncio.</div>
+            <div class="divisor-anuncio-principal">
+                <div class="imagen-anuncio">
+                    <img src="<?php echo getConfParam('SITE_URL') ?>src/photos/20250412/form-imagen.jpg" alt="">
                 </div>
-            </fieldset>
+                <div class="divisor-anuncio">
+                    
+                    <div class="titulo-etapa-anuncio-div">
+                        <p class="numero-etapa">2</p>
+                        <h2 class="titulo-etapa">Detalles</h2>
+                    </div>
 
+                    <div class="frm-grupo">
+                        <label class="frm-etiqueta">Sube tus fotos (hasta <?= htmlspecialchars($DATAJSON['max_photos'] ?? 3) ?>)</label>
+                        <div class="ayuda-texto">Puedes arrastrar y soltar las imágenes. Tamaño máx. 2MB (JPG, PNG). La primera foto será la principal.</div>
+                        <div class="subida-fotos-contenedor">
+                            <div id="boton-subir-foto" class="boton-subir">
+                                <span>Haz click o arrastra para subir</span>
+                                <input type="file" id="campo-subir-foto" multiple accept="image/jpeg, image/png" style="/* display: none; */ position:absolute; opacity: 0; top:0; left:0; bottom:0; right:0; cursor:pointer;">
+                            </div>
+                            <div id="lista-fotos-subidas" class="lista-fotos sortable">
+
+                            </div>
+
+                        </div>
+                        <div class="error-msg oculto" id="error-fotos">Debes subir al menos una foto. La primera que subas será la principal.</div>
+                        <div class="error_msg" id="error_photo_generic" style="<?php echo (isset($form_data['photo_name']) && count($form_data['photo_name']) == 0 && $error_insert) ? 'display:block;' : 'display:none;'; ?>">Sube al menos una foto para tu anuncio.</div>
+                    </div>
+                </div>
+            </div>
+            </fieldset>
 
             <fieldset class="frm-seccion">
                 <legend>Disponibilidad y Contacto</legend>
@@ -729,5 +727,8 @@ function newForm()
     </form>
 
 <?php
+
     ob_end_flush();
 }
+
+?>
