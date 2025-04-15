@@ -322,7 +322,7 @@ function newForm()
                         <div class="frm-grupo">
                             <label for="nombre" class="frm-etiqueta">Crea un nombre para tu perfil</label>
                             <!-- MAPEO: name="name" esperado por backend -->
-                            <input type="text" placeholder="Ejemplo: Ana" ="name" id="nombre" class="frm-campo" required maxlength="50" value="<?php echo htmlspecialchars($form_data['name'] ?? ($_SESSION['data']['name'] ?? '')); ?>">
+                            <input type="text" placeholder="Ejemplo: Ana"="name" id="nombre" class="frm-campo" required maxlength="50" value="<?php echo htmlspecialchars($form_data['name'] ?? ($_SESSION['data']['name'] ?? '')); ?>">
                             <div class="error-msg oculto" id="error-nombre">El nombre es obligatorio.</div>
                         </div>
 
@@ -358,9 +358,30 @@ function newForm()
 
                         <div class="frm-grupo">
                             <label for="provincia" class="frm-etiqueta">Seleciona una provincia *</label>
+
+                            <!-- Contenedor del selector personalizado -->
+                            <div class="custom-select-wrapper" id="custom-provincia-wrapper">
+                                <!-- Botón que simula el select (trigger) -->
+                                <button type="button" class="frm-campo custom-select-trigger" aria-haspopup="listbox" aria-expanded="false" data-select-id="provincia">
+                                    <span class="custom-select-value">+ Selecciona una provincia</span>
+                                    <span class="custom-select-arrow">▾</span> <!-- Flechita (opcional) -->
+                                </button>
+
+                                <!-- Dropdown/Modal personalizado (inicialmente oculto) -->
+                                <div class="custom-select-dropdown" role="listbox" hidden>
+                                    <div class="custom-select-header">
+                                        <input type="search" class="custom-select-search" placeholder="Buscar provincia..." aria-label="Buscar provincia">
+                                        <button type="button" class="custom-select-close" aria-label="Cerrar selector">×</button>
+                                    </div>
+                                    <ul class="custom-select-options">
+                                        <!-- Las opciones se generarán aquí con JS -->
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- El select original AHORA ESTARÁ OCULTO, pero funcional -->
                             <!-- MAPEO: name="region" esperado por backend -->
-                            <!-- Asegúrate que los 'value' coincidan con los ID_region -->
-                            <select name="region" id="provincia" class="frm-campo frm-select" required>
+                            <select name="region" id="provincia" class="frm-select visually-hidden" required>
                                 <option value="">+ Selecciona una provincia</option>
                                 <?php
                                 $provincias = selectSQL("sc_region", [], "name ASC");
@@ -372,12 +393,6 @@ function newForm()
                                 ?>
                             </select>
                             <div class="error-msg oculto" id="error-provincia">Debes seleccionar una provincia.</div>
-                        </div>
-
-                        <div class="frm-grupo">
-                            <label for="ciudad" class="frm-etiqueta">Ciudad / Zona (Opcional)</label>
-                            <!-- MAPEO: name="city" esperado por backend -->
-                            <input type="text" name="city" id="ciudad" class="frm-campo" maxlength="100" placeholder="Ej: Centro, Nervión, etc." value="<?php echo htmlspecialchars($form_data['city'] ?? ''); ?>">
                         </div>
                     </fieldset>
 
