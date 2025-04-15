@@ -687,6 +687,7 @@ function newForm()
 
                     <div class="lista-opciones grupo-checkboxes-extra">
                         <?php $selected_extras = $form_data['extras'] ?? []; ?>
+
                         <label class="opcion-checkbox opcion-extra">
                             <input type="checkbox" name="extras[]" value="premium" <?php echo in_array('premium', $selected_extras) ? 'checked' : ''; ?>>
                             <?php echo $GLOBALS['sonrisa_uno']; ?>
@@ -696,68 +697,72 @@ function newForm()
                             </div>
                             <div class="precio-y-tiempo">
                                 <p>35 €</p>
-                                <div class="icono-clock">
+                                <div class="icono-clock" dias="30 dias">
                                     <?php echo $GLOBALS['clock']; ?>
                                 </div>
                             </div>
                         </label>
+
                         <label class="opcion-checkbox opcion-extra">
                             <input type="checkbox" name="extras[]" value="premium_mini" <?php echo in_array('premium_mini', $selected_extras) ? 'checked' : ''; ?>>
                             <?php echo $GLOBALS['sonrisa_dos']; ?>
                             <div class="opcion-contenido"><strong>Premium Mini</strong><span>Tu anuncio aparecerá aleatoriamente bajo los Premium.</span></div>
                             <div class="precio-y-tiempo">
                                 <p>30 €</p>
-                                <div class="icono-clock">
+                                <div class="icono-clock" dias="30 dias">
                                     <?php echo $GLOBALS['clock']; ?>
                                 </div>
                             </div>
                         </label>
+
                         <label class="opcion-checkbox opcion-extra">
                             <input type="checkbox" name="extras[]" value="destacado" <?php echo in_array('destacado', $selected_extras) ? 'checked' : ''; ?>>
                             <?php echo $GLOBALS['sonrisa_dos']; ?>
                             <div class="opcion-contenido"><strong>Destacado</strong><span>Tu anuncio aparecerá aleatoriamente con un diseño destacado.</span></div>
                             <div class="precio-y-tiempo">
                                 <p>27 €</p>
-                                <div class="icono-clock">
+                                <div class="icono-clock" dias="30 dias">
                                     <?php echo $GLOBALS['clock']; ?>
                                 </div>
                             </div>
 
                         </label>
+
                         <label class="opcion-checkbox opcion-extra">
                             <input type="checkbox" name="extras[]" value="autosubida" <?php echo in_array('autosubida', $selected_extras) ? 'checked' : ''; ?>>
                             <?php echo $GLOBALS['sonrisa_dos']; ?>
                             <div class="opcion-contenido"><strong>Autosubida</strong><span>Tu anuncio subirá posiciones automáticamente (debajo de Destacados).</span></div>
                             <div class="precio-y-tiempo">
                                 <p>25 €</p>
-                                <div class="icono-clock">
+                                <div class="icono-clock" dias="30 dias">
                                     <?php echo $GLOBALS['clock']; ?>
                                 </div>
                             </div>
                         </label>
+
                         <label class="opcion-checkbox opcion-extra">
                             <input type="checkbox" name="extras[]" value="banner_superior" <?php echo in_array('banner_superior', $selected_extras) ? 'checked' : ''; ?>>
                             <?php echo $GLOBALS['sonrisa_dos']; ?>
                             <div class="opcion-contenido"><strong>Banner Superior</strong><span>Muestra tu banner aleatoriamente en la cabecera de la página.</span></div>
                             <div class="precio-y-tiempo">
                                 <p>50 €</p>
-                                <div class="icono-clock">
+                                <div class="icono-clock" dias="30 dias">
                                     <?php echo $GLOBALS['clock']; ?>
                                 </div>
                             </div>
                         </label>
+
                         <label class="opcion-checkbox opcion-extra">
                             <input type="checkbox" name="extras[]" value="banner_lateral" <?php echo in_array('banner_lateral', $selected_extras) ? 'checked' : ''; ?>>
                             <?php echo $GLOBALS['sonrisa_dos']; ?>
                             <div class="opcion-contenido"><strong>Banner Lateral</strong><span>Muestra tu banner aleatoriamente en la barra lateral.</span></div>
                             <div class="precio-y-tiempo">
                                 <p>50 €</p>
-                                <div class="icono-clock">
+                                <div class="icono-clock" dias="30 dias">
                                     <?php echo $GLOBALS['clock']; ?>
                                 </div>
                             </div>
                         </label>
-                        <!-- TODO: Añadir lógica JS para mostrar campos de subida de banner si se seleccionan -->
                     </div>
 
                     <div class="frm-grupo">
