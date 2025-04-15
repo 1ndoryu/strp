@@ -376,6 +376,18 @@ a:hover {
     display: none;
 }
 
+.preview-actions {
+    display: flex;
+    justify-content: space-evenly;
+    width: 100%;
+}
+
+.preview-actions button {
+    all: unset;
+    cursor: pointer;
+    padding: 5px 10px;
+}
+
 /* Estilo para las previsualizaciones (necesitarás añadir elementos img/div aquí con JS) */
 .lista-fotos .foto-preview {
     position: relative;

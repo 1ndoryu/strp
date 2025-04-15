@@ -913,6 +913,10 @@ hr,table {
     outline: 0
 }
 
+.oculto {
+    display: none !important; /* !important si hay conflictos */
+}
+
 body {
     margin: 0 auto;
     background: #2C2C2C;

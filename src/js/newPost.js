@@ -22,7 +22,14 @@
     const serviciosCheckboxes = form.querySelectorAll('input[name="servicios[]"]');
     const fotosInput = form.querySelector('#campo-subir-foto');
     const listaFotosContainer = form.querySelector('#lista-fotos-subidas');
-    const horarioCheckboxes = form.querySelectorAll('.check-dia input[type="checkbox"]');
+    // --- NUEVOS Selectores para el Horario ---
+    const btnMostrarHorario = document.getElementById('btn-mostrar-horario');
+    const contenedorHorario = document.getElementById('contenedor-horario');
+    const ayudaTextoHorario = document.getElementById('ayuda-horario');
+    const diaEstadoBotones = form.querySelectorAll('.btn-dia-estado'); // Selector para los NUEVOS botones
+
+    // --- SELECTOR ANTIGUO (ya no se usa directamente para listeners o toggle) ---
+    // const horarioCheckboxes = form.querySelectorAll('.check-dia input[type="checkbox"]'); // Comentado o eliminado
     const telefonoInput = form.querySelector('#telefono');
     const whatsappCheckbox = form.querySelector('input[name="whatsapp"]');
     const idioma1Select = form.querySelector('#idioma_1');
@@ -55,9 +62,20 @@
         });
         agregarListeners();
         actualizarContadores();
-        inicializarHorarioVisual();
+
         actualizarMarcadoVisualRadios(tipoUsuarioRadios);
         actualizarMarcadoVisualPlan();
+
+        if (contenedorHorario && !contenedorHorario.classList.contains('oculto')) {
+            // Esto es un fallback, el CSS debería manejarlo
+            // contenedorHorario.classList.add('oculto');
+            // ayudaTextoHorario?.classList.add('oculto');
+       }
+       if (btnMostrarHorario && contenedorHorario && contenedorHorario.classList.contains('oculto')) {
+            btnMostrarHorario.classList.remove('oculto'); // Asegurarse que el botón se vea
+       } else if (btnMostrarHorario && contenedorHorario && !contenedorHorario.classList.contains('oculto')) {
+            btnMostrarHorario.classList.add('oculto'); // Si por alguna razón el horario ya está visible, ocultar botón
+       }
     }
 
     function agregarListeners() {
@@ -68,8 +86,20 @@
         if (descripcionTextarea && contDesc) descripcionTextarea.addEventListener('input', actualizarContadores);
         if (fotosInput) fotosInput.addEventListener('change', manejarSeleccionFotos);
 
-        horarioCheckboxes.forEach(check => {
-            check.addEventListener('change', toggleHorasDia);
+        // --- Listener para el botón "Administrar horario" ---
+        if (btnMostrarHorario && contenedorHorario) {
+            btnMostrarHorario.addEventListener('click', () => {
+                contenedorHorario.classList.remove('oculto');
+                ayudaTextoHorario?.classList.remove('oculto'); // Muestra el texto de ayuda también
+                btnMostrarHorario.classList.add('oculto'); // Oculta el botón una vez pulsado
+                // Opcional: Mover el foco al primer elemento interactivo del horario
+                contenedorHorario.querySelector('button, select')?.focus();
+            });
+        }
+
+        // --- Listeners para los botones de estado del día ---
+        diaEstadoBotones.forEach(boton => {
+            boton.addEventListener('click', toggleDiaEstado);
         });
 
         form.addEventListener('submit', manejarEnvioFinal);
@@ -195,10 +225,15 @@
                     esValido = false;
                     inputsInvalidos.push(fotosInput);
                 }
-                if (!validarHorarioSeleccionado()) {
-                    esValido = false;
-                    inputsInvalidos.push(form.querySelector('.horario-semanal'));
-                }
+                // Solo validar si el contenedor de horario está visible
+                if (contenedorHorario && !contenedorHorario.classList.contains('oculto')) {
+                    if (!validarHorarioSeleccionado()) {
+                        esValido = false;
+                        // Empujar el contenedor o el primer botón como referencia para scroll/focus
+                        inputsInvalidos.push(form.querySelector('.horario-semanal .btn-dia-estado') || contenedorHorario);
+                    }
+                } // Si está oculto, no validamos (implica que no se ha administrado)
+
                 const telefonoVal = telefonoInput?.value.replace(/\D/g, '') || '';
                 if (!validarCampo(telefonoInput, '#error-telefono', /^[0-9]{9,15}$/.test(telefonoVal), 'Introduce un teléfono válido (9-15 dígitos).')) {
                     esValido = false;
@@ -260,12 +295,17 @@
     }
 
     function validarHorarioSeleccionado() {
-        const diasActivos = form.querySelectorAll('.check-dia input[type="checkbox"]:checked');
-        const contenedorHorario = form.querySelector('.horario-semanal');
-        if (diasActivos.length === 0) {
-            return validarCampo(contenedorHorario, '#error-horario', false, 'Debes marcar al menos un día de disponibilidad.');
+        const diasDisponibles = form.querySelectorAll('.btn-dia-estado.disponible');
+        const contenedorHorarioElem = form.querySelector('.horario-semanal'); // Referencia al div
+        const errorHorarioElem = form.querySelector('#error-horario'); // Referencia al div de error
+
+        if (diasDisponibles.length === 0) {
+            // Usa validarCampo para mostrar el error estandarizado
+            return validarCampo(contenedorHorarioElem, '#error-horario', false, 'Debes marcar al menos un día como disponible.');
+        } else {
+            // Limpia el error si hay días disponibles
+             return validarCampo(contenedorHorarioElem, '#error-horario', true, '');
         }
-        return validarCampo(contenedorHorario, '#error-horario', true, '');
     }
 
     function limpiarErroresEtapa(etapa) {
@@ -296,26 +336,41 @@
 
     function actualizarHorarioOculto() {
         let diasSeleccionados = [];
-        let horarios = {inicio: '23:59', fin: '00:00'};
-        let primerDia = -1,
-            ultimoDia = -1;
+        let horarios = { inicio: '23:59', fin: '00:00' };
+        let primerDia = -1, ultimoDia = -1;
+        const diasMapping = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo']; // Para obtener el índice
 
-        horarioCheckboxes.forEach((check, index) => {
-            if (check.checked) {
-                const diaKey = check.name.match(/\[(.*?)\]/)[1];
-                diasSeleccionados.push(diaKey);
-                if (primerDia === -1) primerDia = index;
-                ultimoDia = index;
+        // Iterar sobre los botones de estado para encontrar los disponibles
+        const botonesDia = form.querySelectorAll('.btn-dia-estado');
 
-                const contenedorDia = check.closest('.dia-horario');
-                const inicioSelect = contenedorDia.querySelector('select[name$="[inicio]"]');
-                const finSelect = contenedorDia.querySelector('select[name$="[fin]"]');
+        botonesDia.forEach(boton => {
+            if (boton.classList.contains('disponible')) {
+                const diaKey = boton.dataset.dia; // Obtener el día desde data-dia
+                const diaIndex = diasMapping.indexOf(diaKey); // Encontrar el índice 0-6
+                const contenedorDia = boton.closest('.dia-horario');
 
-                if (inicioSelect.value < horarios.inicio) horarios.inicio = inicioSelect.value;
-                if (finSelect.value > horarios.fin) horarios.fin = finSelect.value;
+                if (diaKey && contenedorDia && diaIndex !== -1) {
+                     diasSeleccionados.push(diaKey);
+                     if (primerDia === -1) primerDia = diaIndex;
+                     ultimoDia = diaIndex;
+
+                     const inicioSelect = contenedorDia.querySelector('select[name$="[inicio]"]');
+                     const finSelect = contenedorDia.querySelector('select[name$="[fin]"]');
+
+                     if (inicioSelect && inicioSelect.value < horarios.inicio) {
+                         horarios.inicio = inicioSelect.value;
+                     }
+                     if (finSelect && finSelect.value > horarios.fin) {
+                         horarios.fin = finSelect.value;
+                     }
+                } else {
+                     console.warn("Error al procesar día disponible:", boton);
+                }
             }
         });
 
+
+        // El resto de la lógica para calcular 'dis' y actualizar hidden inputs es la misma
         if (diasSeleccionados.length === 0) {
             hiddenDis.value = '0';
             hiddenHorarioInicio.value = '00:00';
@@ -323,12 +378,13 @@
             return;
         }
 
-        let valorDis = '0';
+        let valorDis = '0'; // Por defecto o personalizado
+        // Lógica para determinar 'dis' (1=Todos, 2=L-V, 3=L-S, 4=S-D) - Mantenida
         if (diasSeleccionados.length === 7) valorDis = '1';
-        else if (diasSeleccionados.length === 5 && primerDia === 0 && ultimoDia === 4) valorDis = '2';
-        else if (diasSeleccionados.length === 6 && primerDia === 0 && ultimoDia === 5) valorDis = '3';
-        else if (diasSeleccionados.length === 2 && primerDia === 5 && ultimoDia === 6) valorDis = '4';
-        else valorDis = '1';
+        else if (diasSeleccionados.length === 5 && primerDia === 0 && ultimoDia === 4) valorDis = '2'; // Lunes a Viernes
+        else if (diasSeleccionados.length === 6 && primerDia === 0 && ultimoDia === 5) valorDis = '3'; // Lunes a Sábado
+        else if (diasSeleccionados.length === 2 && primerDia === 5 && ultimoDia === 6) valorDis = '4'; // Sábado y Domingo
+        else valorDis = '1'; // Si no coincide, quizás '1' (Todos los marcados) o un código específico? Ajustar según necesidad del backend. Asumiendo '1' por ahora.
 
         hiddenDis.value = valorDis;
         hiddenHorarioInicio.value = horarios.inicio;
@@ -353,18 +409,37 @@
         }
     }
 
-    function inicializarHorarioVisual() {
-        horarioCheckboxes.forEach(check => {
-            toggleHorasDia({target: check});
-        });
-    }
+    function toggleDiaEstado(event) {
+        const boton = event.currentTarget;
+        const diaHorarioDiv = boton.closest('.dia-horario');
+        const horasDiv = diaHorarioDiv.querySelector('.horas-dia');
+        const selectsHora = horasDiv.querySelectorAll('select');
+        const esDisponibleAhora = boton.classList.contains('disponible');
 
-    function toggleHorasDia(event) {
-        const checkbox = event.target;
-        const horasDiv = checkbox.closest('.dia-horario').querySelector('.horas-dia');
-        if (horasDiv) {
-            horasDiv.classList.toggle('oculto', !checkbox.checked);
+        if (esDisponibleAhora) {
+            // Cambiar a No Disponible
+            boton.textContent = 'No disponible';
+            boton.classList.remove('disponible');
+            boton.classList.add('no-disponible');
+            horasDiv.classList.add('oculto');
+            // Deshabilitar selects para que no se envíen
+            selectsHora.forEach(select => select.disabled = true);
+            diaHorarioDiv.classList.remove('dia-activo'); // Clase visual opcional
+
+        } else {
+            // Cambiar a Disponible
+            boton.textContent = 'Disponible';
+            boton.classList.remove('no-disponible');
+            boton.classList.add('disponible');
+            horasDiv.classList.remove('oculto');
+             // Habilitar selects
+            selectsHora.forEach(select => select.disabled = false);
+            diaHorarioDiv.classList.add('dia-activo'); // Clase visual opcional
         }
+         // Re-validar después de cada cambio para quitar el mensaje de error si se añade el primer día
+         if (etapas[etapaActualIndex]?.id === 'etapa-anuncio') {
+             validarHorarioSeleccionado();
+         }
     }
 
     function manejarSeleccionFotos(event) {

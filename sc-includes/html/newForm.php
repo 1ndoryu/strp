@@ -516,46 +516,52 @@ function newForm()
                         <div class="error-msg oculto" id="error-fotos">Debes subir al menos una foto. La primera que subas será la principal.</div>
                         <div class="error_msg" id="error_photo_generic" style="<?php echo (isset($form_data['photo_name']) && count($form_data['photo_name']) == 0 && $error_insert) ? 'display:block;' : 'display:none;'; ?>">Sube al menos una foto para tu anuncio.</div>
                     </div>
-                    
+
                     <div class="frm-grupo">
-                        <label class="frm-etiqueta">Horario Detallado *</label>
-                        <div class="ayuda-texto">Marca los días que estás disponible y selecciona tu horario.</div>
-                        <!-- JS NECESARIO: Este bloque debe usarse para calcular y rellenar los campos ocultos: hidden_dis, hidden_horario_inicio, hidden_horario_final -->
-                        <div class="horario-semanal">
+                        <label class="frm-etiqueta">Administrar horario*</label>
+
+                        <?php /* Botón para mostrar/ocultar el horario */ ?>
+                        <button type="button" id="btn-mostrar-horario" class="frm-boton">Administrar horario</button>
+
+                        <div class="ayuda-texto oculto" id="ayuda-horario">Marca los días que estás disponible y selecciona tu horario.</div>
+
+                        <div class="horario-semanal oculto" id="contenedor-horario"> <?php /* Añadido ID y clase oculto */ ?>
                             <?php
-                            // Repoblar horario es complejo con la estructura nueva y el error_data viejo. Requiere JS.
                             $dias = ['lunes' => 'Lunes', 'martes' => 'Martes', 'miercoles' => 'Miércoles', 'jueves' => 'Jueves', 'viernes' => 'Viernes', 'sabado' => 'Sábado', 'domingo' => 'Domingo'];
                             foreach ($dias as $key => $nombre) {
                             ?>
-                                <div class="dia-horario" id="horario-<?= $key ?>">
-                                    <label class="frm-checkbox check-dia">
-                                        <input type="checkbox" name="horario_dia[<?= $key ?>][activo]" value="1"> <?= $nombre ?>
-                                    </label>
-                                    <div class="horas-dia oculto">
+                                <div class="dia-horario" id="horario-<?= $key ?>" data-dia="<?= $key ?>"> <?php /* Añadido data-dia */ ?>
+                                    <span class="nombre-dia"><?= $nombre ?>:</span> <?php /* Nombre del día */ ?>
+
+                                    <?php /* Botón de estado (Disponible/No disponible) */ ?>
+                                    <button type="button" class="btn-dia-estado no-disponible" data-dia="<?= $key ?>">No disponible</button>
+
+                                    <div class="horas-dia oculto"> <?php /* Sigue oculto por defecto */ ?>
                                         <label>De:</label>
-                                        <select name="horario_dia[<?= $key ?>][inicio]" class="frm-campo frm-select corto">
+                                        <select name="horario_dia[<?= $key ?>][inicio]" class="frm-campo frm-select corto" disabled> <?php /* Añadido disabled inicial */ ?>
                                             <?php for ($h = 0; $h < 24; $h++) {
                                                 $hora = sprintf('%02d', $h);
                                                 echo "<option value='{$hora}:00'>{$hora}:00</option><option value='{$hora}:30'>{$hora}:30</option>";
                                             } ?>
                                         </select>
                                         <label>A:</label>
-                                        <select name="horario_dia[<?= $key ?>][fin]" class="frm-campo frm-select corto">
+                                        <select name="horario_dia[<?= $key ?>][fin]" class="frm-campo frm-select corto" disabled> <?php /* Añadido disabled inicial */ ?>
                                             <?php for ($h = 0; $h < 24; $h++) {
                                                 $hora = sprintf('%02d', $h);
-                                                $selected = ($hora == 23) ? 'selected' : ''; // Default end time selection might need JS adjustment
-                                                echo "<option value='{$hora}:00'>{$hora}:00</option><option value='{$hora}:30' " . (($hora == 23) ? 'selected' : '') . ">{$hora}:30</option>"; // Simplified default end selection
+                                                // Ajuste para que la hora final por defecto sea razonable (p.ej., 18:00)
+                                                $selected_fin = ($hora == 18) ? 'selected' : '';
+                                                echo "<option value='{$hora}:00' " . (($h == 18 && !$selected_fin) ? 'selected' : '') . ">{$hora}:00</option><option value='{$hora}:30' " . (($h == 18) ? 'selected' : '') . ">{$hora}:30</option>";
                                             } ?>
                                         </select>
                                     </div>
                                 </div>
                             <?php } ?>
                         </div>
-                        <div class="error-msg oculto" id="error-horario">Debes marcar al menos un día y configurar su horario.</div>
+                        <div class="error-msg oculto" id="error-horario">Debes marcar al menos un día como disponible y configurar su horario.</div>
                         <!-- Mensaje de error si el backend falló por horario (mapeado) -->
                         <div class="error_msg" id="error_backend_horario" style="<?php echo (isset($form_data['dis'], $form_data['horario-inicio'], $form_data['horario-final']) && (!$form_data['dis'] || !$form_data['horario-inicio'] || !$form_data['horario-final']) && $error_insert) ? 'display:block;' : 'display:none;'; ?>">Error al procesar el horario. Asegúrate de marcar días y horas.</div>
                     </div>
-
+                    
                     <div class="frm-grupo">
                         <label for="telefono" class="frm-etiqueta">Teléfono de Contacto *</label>
                         <div class="grupo-telefono">
