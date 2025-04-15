@@ -702,30 +702,22 @@ function newForm()
 
                     .clock-tooltip {
                         display: none;
-                        /* Oculto por defecto */
                         position: absolute;
                         bottom: 110%;
-                        /* Posición encima del icono */
+                        margin-top: -30px;
                         left: 50%;
                         transform: translateX(-50%);
-                        /* Centrar horizontalmente */
-                        background-color: #333;
-                        /* Fondo oscuro */
-                        color: #fff;
-                        /* Texto blanco */
+                        background-color: #f4f4f4;
+                        color: #1b1b1b;
                         padding: 5px 10px;
+                        height: 30px;
                         border-radius: 4px;
                         font-size: 12px;
                         white-space: nowrap;
-                        /* Evita que el texto se parta en varias líneas */
                         z-index: 10;
-                        /* Asegura que esté por encima de otros elementos */
                         opacity: 0;
-                        /* Para transición suave (opcional) */
                         transition: opacity 0.3s ease;
-                        /* Transición suave (opcional) */
                         pointer-events: none;
-                        /* Evita que el tooltip interfiera con el ratón */
                     }
 
                     /* Opcional: Pequeño triángulo/flecha para el tooltip */
@@ -839,15 +831,10 @@ function newForm()
                         </label>
                     </div>
 
-                    <div class="frm-grupo">
+                    <div class="frm-grupo opcion-gratis-extra">
                         <label class="opcion-checkbox opcion-extra">
-                            <!-- Corregido: El input de 'banner_lateral' estaba repetido aquí. Asumo que este es el input 'gratis' -->
-                            <!-- Si ya existe un input para 'gratis' en otra parte, elimina este input o ajusta el 'name' y 'value' -->
-                            <input type="radio" name="plan_seleccionado" value="gratis" checked> <!-- Usar radio si solo se puede elegir uno (gratis u otros) -->
-                            <!-- O si 'gratis' es un extra más que se puede sumar: -->
-                            <!-- <input type="checkbox" name="extras[]" value="gratis" 
-                            <?php // echo in_array('gratis', $selected_extras) ? 'checked' : ''; 
-                            ?>> -->
+
+                            <input type="radio" name="plan_seleccionado" value="gratis" checked> 
 
                             <?php echo $GLOBALS['sonrisa_dos']; ?>
                             <div class="opcion-contenido"><strong>Gratis</strong><span>Realiza tu publicación sin costo alguno.</span></div>
@@ -863,10 +850,8 @@ function newForm()
 
                     <!-- ========= INICIO: Sección de Fechas Añadida ========= -->
                     <div class="info-fechas-anuncio" style="margin-top: 15px; margin-bottom: 15px; padding: 10px; border: 1px solid #eee; text-align: center;">
-                        <p><strong>Duración del Plan Gratuito:</strong> 30 días</p>
-                        <p><strong>Fecha de creación estimada:</strong> <?php echo $fecha_creacion; ?></p>
-                        <p><strong>Fecha de expiración estimada:</strong> <?php echo $fecha_expiracion; ?></p>
-                        <small>(Las fechas definitivas se establecerán al publicar el anuncio)</small>
+                        <p><strong>Fecha de creación:</strong> <?php echo $fecha_creacion; ?></p>
+                        <p><strong>Fecha de expiración:</strong> <?php echo $fecha_expiracion; ?></p>
                     </div>
                     <!-- ========= FIN: Sección de Fechas Añadida ========= -->
 

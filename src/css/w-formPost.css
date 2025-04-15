@@ -248,6 +248,18 @@ a:hover {
     background-color: #f0f8ff;
 }
 
+label.opcion-checkbox.opcion-extra {
+    display: flex !important;
+    gap: 20px;
+    align-items: center;
+}
+
+.precio-y-tiempo {
+    margin-left: auto;
+    display: flex;
+    gap: 15px;
+}
+
 /* Estilo cuando el input dentro está seleccionado */
 .opcion-radio input:checked + .opcion-contenido,
 .opcion-checkbox input:checked + .opcion-contenido {
@@ -295,7 +307,14 @@ a:hover {
 .precio-y-tiempo p {
     margin: 0;
     FONT-WEIGHT: 700;
-    font-size: 20px;
+    font-size: 18px;
+    /* width: 50px; */
+    white-space: nowrap;
+    line-height: 34px;
+}
+
+input[type="radio"] {
+    display: none;
 }
 
 .precio-y-tiempo {
