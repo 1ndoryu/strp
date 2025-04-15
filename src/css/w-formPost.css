@@ -32,8 +32,8 @@ body {
 }
 
 .lista-opciones {
-    display: grid; 
-    grid-template-columns: 1fr; 
+    display: grid;
+    grid-template-columns: 1fr;
     gap: var(--espaciado-base);
 }
 
@@ -45,7 +45,7 @@ body {
 
 @media (min-width: 992px) {
     .lista-opciones {
-        grid-template-columns: repeat(4, 1fr); 
+        grid-template-columns: repeat(4, 1fr);
     }
 }
 
@@ -112,8 +112,6 @@ a:hover {
     font-weight: 600;
 }
 
-
-
 .contenedor-formulario {
     max-width: 800px; /* Ajusta según necesites */
     margin: var(--espaciado-mediano) auto;
@@ -152,7 +150,6 @@ a:hover {
 .oculto {
     display: none !important;
 }
-
 
 /* ======================================== */
 /*      GRUPOS DE CAMPOS Y ETIQUETAS       */
@@ -288,8 +285,6 @@ label.opcion-checkbox.opcion-extra {
     aspect-ratio: 1 / 7;
 }
 
-
-
 .opcion-contenido strong {
     display: block;
     color: var(--color-texto);
@@ -305,14 +300,14 @@ label.opcion-checkbox.opcion-extra {
 
 .precio-y-tiempo p {
     margin: 0;
-    FONT-WEIGHT: 700;
+    font-weight: 700;
     font-size: 18px;
     /* width: 50px; */
     white-space: nowrap;
     line-height: 34px;
 }
 
-input[type="radio"] {
+input[type='radio'] {
     display: none;
 }
 
@@ -434,20 +429,19 @@ button.btn-dia-estado.disponible {
     border: unset;
     background: #ff99cb;
     padding: 10px;
-    FONT-WEIGHT: 600;
+    font-weight: 600;
 }
 
 button.btn-dia-estado.no-disponible {
     border: unset;
     /* background: #ff99cb; */
     padding: 10px;
-    FONT-WEIGHT: 600;
+    font-weight: 600;
 }
 
 span.nombre-dia {
     width: 85px;
 }
-
 
 /* Estilo para las previsualizaciones (necesitarás añadir elementos img/div aquí con JS) */
 .lista-fotos .foto-preview {
@@ -535,7 +529,7 @@ span.nombre-dia {
 
 button#btn-mostrar-horario {
     color: black;
-    FONT-WEIGHT: 400;
+    font-weight: 400;
     font-size: 14px;
     background: unset;
     border: 1px solid #d3d3d3;
@@ -582,10 +576,11 @@ button#btn-mostrar-horario {
     transform: scale(0.98);
 }
 
-.btn-siguiente, .btn-publicar {
+.btn-siguiente,
+.btn-publicar {
     /* background-color: var(--color-primario); */
     color: black;
-    FONT-WEIGHT: 400;
+    font-weight: 400;
     font-size: 14px;
     background: unset;
     border: 1px solid #d3d3d3;
@@ -593,7 +588,7 @@ button#btn-mostrar-horario {
 
 .btn-anterior {
     color: black;
-    FONT-WEIGHT: 400;
+    font-weight: 400;
     font-size: 14px;
     background: unset;
     border: 1px solid #d3d3d3;
@@ -846,7 +841,7 @@ button#btn-mostrar-horario {
     border: 1px solid #d3d3d3;
     border-radius: 5px;
     justify-items: anchor-center;
-    FONT-WEIGHT: 700;
+    font-weight: 700;
     font-size: 17px;
 }
 
@@ -861,7 +856,6 @@ button#btn-mostrar-horario {
     width: 100%;
     justify-content: space-between;
 }
-
 
 .contenido-planes-segundo-div p {
     margin: 0px;
@@ -879,9 +873,8 @@ p.titulosegundodiv {
     font-size: 16px;
 }
 
-
 .contenido-planes-segundo-div {
-    FONT-WEIGHT: 700;
+    font-weight: 700;
 }
 
 .tiempo-plan {
@@ -890,7 +883,7 @@ p.titulosegundodiv {
     padding: 5px 10px;
     border-radius: 40px;
     color: white;
-    FONT-WEIGHT: 700;
+    font-weight: 700;
     top: -15px;
     right: 10px;
     font-size: 13px;
@@ -919,7 +912,7 @@ p.titulotercerdiv {
     width: 100%;
     padding: 15px;
     text-align-last: center;
-    FONT-WEIGHT: 700;
+    font-weight: 700;
     font-size: 15px;
 }
 
@@ -927,7 +920,6 @@ p.titulotercerdiv {
     display: flex;
     gap: 15px;
 }
-
 
 table.comparar-caracteristicas-tabla {
     padding: 40px;
@@ -982,10 +974,9 @@ p.numero-etapa {
     justify-content: center;
     align-content: center;
     padding-top: 3px;
-    FONT-WEIGHT: 700;
+    font-weight: 700;
     color: white;
 }
-
 
 .titulo-etapa {
     color: var(--color-secundario);
@@ -1010,7 +1001,7 @@ p.numero-etapa {
     justify-content: center;
     align-content: center;
     padding-top: 3px;
-    FONT-WEIGHT: 700;
+    font-weight: 700;
     /* color: white; */
     background: #eaeaea;
 }
@@ -1169,9 +1160,9 @@ p.numero-etapa {
     margin: -1px; /* Evita posible espacio extra */
 }
 
-
 /* --- Estilos Específicos para Móvil (Pantalla Completa) --- */
-@media (max-width: 768px) { /* Ajusta este breakpoint si es necesario */
+@media (max-width: 768px) {
+    /* Ajusta este breakpoint si es necesario */
     .custom-select-wrapper.open .custom-select-dropdown {
         position: fixed; /* Fija a la ventana */
         top: 0;
@@ -1201,7 +1192,7 @@ p.numero-etapa {
         padding: 10px 0; /* Espacio arriba/abajo en la lista */
     }
 
-     .custom-select-options li {
+    .custom-select-options li {
         padding: 15px 20px; /* Más espacio táctil */
         font-size: 1.1em;
     }
@@ -1217,4 +1208,42 @@ p.numero-etapa {
             opacity: 1;
         }
     }
+}
+
+.icono-clock {
+    position: relative;
+    /* Necesario para posicionar el tooltip relativo al icono */
+    cursor: pointer;
+    /* Indica que se puede interactuar */
+}
+
+.clock-tooltip {
+    display: none;
+    position: absolute;
+    bottom: 110%;
+    left: 50%;
+    background-color: #f4f4f4;
+    color: #1b1b1b;
+    padding: 5px 10px;
+    height: 30px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+/* Opcional: Pequeño triángulo/flecha para el tooltip */
+.clock-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    /* En la parte inferior del tooltip */
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #333 transparent transparent transparent;
 }

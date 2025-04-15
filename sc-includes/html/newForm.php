@@ -22,7 +22,7 @@ function newForm()
         <input type="hidden" name="token" id="token" value="<?= $token_q; ?>">
         <input type="hidden" id="new_order" name="order" value="<?php echo htmlspecialchars($form_data['order'] ?? '0'); ?>" />
 
-        <?php // Campos ocultos (asegúrate que JS los actualice) 
+        <?php // Campos ocultos (asegúrate de que JS los actualice)
         ?>
         <input type="hidden" name="seller_type" id="hidden_seller_type" value="<?php echo htmlspecialchars($form_data['seller_type'] ?? ''); ?>">
         <input type="hidden" name="dis" id="hidden_dis" value="<?php echo htmlspecialchars($form_data['dis'] ?? ''); ?>">
@@ -31,13 +31,13 @@ function newForm()
         <input type="hidden" name="lang-1" id="hidden_lang_1" value="<?php echo htmlspecialchars($form_data['lang-1'] ?? ''); ?>">
         <input type="hidden" name="lang-2" id="hidden_lang_2" value="<?php echo htmlspecialchars($form_data['lang-2'] ?? ''); ?>">
         <div id="hidden-photo-inputs">
-            <?php // Repoblar fotos es complejo, mejor que JS lo maneje al cargar si hubo error 
+            <?php // Repoblar fotos es complejo, es mejor que JS lo maneje al cargar si hubo error
             ?>
         </div>
 
-        <?php // --- Etapas del Formulario (Tipo Usuario, Plan, Perfil, Extras) --- 
+        <?php // --- Etapas del Formulario (Tipo Usuario, Plan, Perfil, Extras) ---
         ?>
-        <?php // (El HTML de las etapas va aquí, usando $form_data para repoblar valores) 
+        <?php // (El HTML de las etapas va aquí, usando $form_data para repoblar valores)
         ?>
         <!-- ======================= ETAPA 0: TIPO DE USUARIO (Solo si no está logueado) ======================= -->
         <?php if (!checkSession()): ?>
@@ -60,7 +60,7 @@ function newForm()
                             </div>
                             <div class="beneficio-tipo-usuario">
                                 <?php echo $GLOBALS['check']; ?>
-                                <span class="beneficio-value">4 imagenes</span>
+                                <span class="beneficio-value">4 imágenes</span>
                             </div>
                             <div class="beneficio-tipo-usuario">
                                 <?php echo $GLOBALS['check']; ?>
@@ -72,7 +72,7 @@ function newForm()
                             </div>
                             <div class="beneficio-tipo-usuario">
                                 <?php echo $GLOBALS['check']; ?>
-                                <span class="beneficio-value">Mucho mas</span>
+                                <span class="beneficio-value">Mucho más</span>
                             </div>
                         </div>
                         <div class="boton-selecionar-perfil" id="Masajista">Registrarse</div>
@@ -93,7 +93,7 @@ function newForm()
                             </div>
                             <div class="beneficio-tipo-usuario">
                                 <?php echo $GLOBALS['check']; ?>
-                                <span class="beneficio-value">4 imagenes</span>
+                                <span class="beneficio-value">4 imágenes</span>
                             </div>
                             <div class="beneficio-tipo-usuario">
                                 <?php echo $GLOBALS['check']; ?>
@@ -105,7 +105,7 @@ function newForm()
                             </div>
                             <div class="beneficio-tipo-usuario">
                                 <?php echo $GLOBALS['check']; ?>
-                                <span class="beneficio-value">Mucho mas</span>
+                                <span class="beneficio-value">Mucho más</span>
                             </div>
                         </div>
                         <div class="boton-selecionar-perfil" id="Centro">Registrarse</div>
@@ -127,7 +127,7 @@ function newForm()
                                 </div>
                                 <div class="beneficio-tipo-usuario">
                                     <?php echo $GLOBALS['check']; ?>
-                                    <span class="beneficio-value">4 imagenes</span>
+                                    <span class="beneficio-value">4 imágenes</span>
                                 </div>
                                 <div class="beneficio-tipo-usuario">
                                     <?php echo $GLOBALS['check']; ?>
@@ -139,7 +139,7 @@ function newForm()
                                 </div>
                                 <div class="beneficio-tipo-usuario">
                                     <?php echo $GLOBALS['check']; ?>
-                                    <span class="beneficio-value">Mucho mas</span>
+                                    <span class="beneficio-value">Mucho más</span>
                                 </div>
                             </div>
                         </div>
@@ -170,7 +170,7 @@ function newForm()
                                 </div>
                                 <div class="beneficio-tipo-usuario">
                                     <?php echo $GLOBALS['check']; ?>
-                                    <span class="beneficio-value">Mucho mas</span>
+                                    <span class="beneficio-value">Mucho más</span>
                                 </div>
                             </div>
                         </div>
@@ -181,7 +181,7 @@ function newForm()
 
             </div>
         <?php else: ?>
-            <?php // Script para setear hidden_seller_type si está logueado 
+            <?php // Script para establecer hidden_seller_type si está logueado
             ?>
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
@@ -241,7 +241,7 @@ function newForm()
                     <div class="planes-segundo-div plan-selectable <?php echo (isset($form_data['plan']) && $form_data['plan'] == 'silver') ? 'marcado' : ''; ?>" data-plan-value="silver">
                         <div class="contenido-planes-segundo-div">
                             <p class="titulosegundodiv">Plan Silver</p>
-                            <p class="descripcionsegundodiv">Visibilidad mejorada por 60 días.</p> <!-- Texto original -->
+                            <p class="descripcionsegundodiv">Visibilidad mejorada por 60 días.</p>
                         </div>
                         <button type="button" class="btn-seleccionar-plan">Seleccionar</button>
                     </div>
@@ -249,7 +249,7 @@ function newForm()
                     <div class="planes-segundo-div plan-selectable <?php echo (isset($form_data['plan']) && $form_data['plan'] == 'gold') ? 'marcado' : ''; ?>" data-plan-value="gold">
                         <div class="contenido-planes-segundo-div">
                             <p class="titulosegundodiv">Plan Gold</p>
-                            <p class="descripcionsegundodiv">Máxima visibilidad por 90 días.</p> <!-- Texto original -->
+                            <p class="descripcionsegundodiv">Máxima visibilidad por 90 días.</p>
                         </div>
                         <button type="button" class="btn-seleccionar-plan">Seleccionar</button>
                     </div>
@@ -323,12 +323,12 @@ function newForm()
                         <div class="frm-grupo">
                             <label for="nombre" class="frm-etiqueta">Crea un nombre para tu perfil</label>
                             <!-- MAPEO: name="name" esperado por backend -->
-                            <input type="text" placeholder="Ejemplo: Ana"="name" id="nombre" class="frm-campo" required maxlength="50" value="<?php echo htmlspecialchars($form_data['name'] ?? ($_SESSION['data']['name'] ?? '')); ?>">
+                            <input type="text" placeholder="Ejemplo: Ana" name="name" id="nombre" class="frm-campo" required maxlength="50" value="<?php echo htmlspecialchars($form_data['name'] ?? ($_SESSION['data']['name'] ?? '')); ?>">
                             <div class="error-msg oculto" id="error-nombre">El nombre es obligatorio.</div>
                         </div>
 
                         <div class="frm-grupo">
-                            <label for="categoria" class="frm-etiqueta">¿Donde quieres que se muestre tu anuncio? *</label>
+                            <label for="categoria" class="frm-etiqueta">¿Dónde quieres que se muestre tu anuncio? *</label>
 
                             <!-- Contenedor del selector personalizado para Categoría -->
                             <div class="custom-select-wrapper" id="custom-categoria-wrapper">
@@ -364,7 +364,6 @@ function newForm()
                                         $otros_html_grp = ''; // Para acumular opciones 'Otros'
                                         foreach ($child as $c) {
                                             $selected = ($selected_cat == $c['ID_cat']) ? 'selected' : '';
-                                            // CORRECCIÓN: Se eliminó el espacio inicial antes del nombre de la categoría
                                             $option_tag = '<option value="' . $c['ID_cat'] . '" ' . $selected . '>' . htmlspecialchars($c['name']) . '</option>';
 
                                             if ((strpos($c['name'], 'Otros') !== false) || (strpos($c['name'], 'Otras') !== false)) {
@@ -385,7 +384,7 @@ function newForm()
                         </div>
 
                         <div class="frm-grupo">
-                            <label for="provincia" class="frm-etiqueta">Seleciona una provincia *</label>
+                            <label for="provincia" class="frm-etiqueta">Selecciona una provincia *</label>
 
                             <!-- Contenedor del selector personalizado -->
                             <div class="custom-select-wrapper" id="custom-provincia-wrapper">
@@ -429,8 +428,8 @@ function newForm()
                         <div class="frm-grupo">
                             <label for="titulo_anuncio" class="frm-etiqueta">Título del Anuncio *</label>
                             <!-- MAPEO: name="tit" esperado por backend -->
-                            <input type="text" name="tit" id="titulo_anuncio" class="frm-campo" required minlength="10" maxlength="50" placeholder="Ej: Masajista Profesional en Madrid Centro" value="<?php echo htmlspecialchars($form_data['tit'] ?? ''); ?>">
-                            <div class="contador-caracteres">Caracteres: <span id="cont-titulo">0</span> (min 10 / máx 50)</div>
+                            <input type="text" name="tit" id="titulo_anuncio" class="frm-campo" required minlength="10" maxlength="50" placeholder="Ej.: Masajista Profesional en Madrid Centro" value="<?php echo htmlspecialchars($form_data['tit'] ?? ''); ?>">
+                            <div class="contador-caracteres">Caracteres: <span id="cont-titulo">0</span> (mín. 10 / máx. 50)</div>
                             <div class="error-msg oculto" id="error-titulo">El título es obligatorio (entre 10 y 50 caracteres).</div>
                             <div class="error-msg oculto" id="error-titulo-palabras">El título contiene palabras no permitidas.</div>
                         </div>
@@ -440,7 +439,7 @@ function newForm()
                             <label for="descripcion" class="frm-etiqueta">Acerca de mí *</label>
                             <!-- MAPEO: name="text" esperado por backend -->
                             <textarea name="text" id="descripcion" class="frm-campo frm-textarea" rows="6" required minlength="100" maxlength="500" placeholder="Describe tus servicios, experiencia, ambiente, etc."><?php echo htmlspecialchars($form_data['text'] ?? ''); ?></textarea>
-                            <div class="contador-caracteres">Caracteres: <span id="cont-desc">0</span> (min 100 / máx 500)</div>
+                            <div class="contador-caracteres">Caracteres: <span id="cont-desc">0</span> (mín. 100 / máx. 500)</div>
                             <div class="error-msg oculto" id="error-descripcion">La descripción es obligatoria (entre 100 y 500 caracteres).</div>
                             <div class="error-msg oculto" id="error-desc-palabras">La descripción contiene palabras no permitidas.</div>
                         </div>
@@ -502,10 +501,10 @@ function newForm()
 
                     <div class="frm-grupo">
                         <label class="frm-etiqueta">Sube tus fotos (hasta <?= htmlspecialchars($DATAJSON['max_photos'] ?? 3) ?>)</label>
-                        <div class="ayuda-texto">Puedes arrastrar y soltar las imágenes. Tamaño máx. 2MB (JPG, PNG). La primera foto será la principal.</div>
+                        <div class="ayuda-texto">Puedes arrastrar y soltar las imágenes. Tamaño máx. 2 MB (JPG, PNG). La primera foto será la principal.</div>
                         <div class="subida-fotos-contenedor">
                             <div id="boton-subir-foto" class="boton-subir">
-                                <span>Haz click o arrastra para subir</span>
+                                <span>Haz clic o arrastra para subir</span>
                                 <input type="file" id="campo-subir-foto" multiple accept="image/jpeg, image/png" style="/* display: none; */ position:absolute; opacity: 0; top:0; left:0; bottom:0; right:0; cursor:pointer;">
                             </div>
                             <div id="lista-fotos-subidas" class="lista-fotos sortable">
@@ -566,7 +565,7 @@ function newForm()
                         <label for="telefono" class="frm-etiqueta">Teléfono de Contacto *</label>
                         <div class="grupo-telefono">
                             <!-- MAPEO: name="phone" esperado por backend -->
-                            <input type="tel" name="phone" id="telefono" class="frm-campo" required pattern="[0-9]{9,15}" placeholder="Ej: 612345678" value="<?php echo htmlspecialchars($form_data['phone'] ?? ($_SESSION['data']['phone'] ?? '')); ?>">
+                            <input type="tel" name="phone" id="telefono" class="frm-campo" required pattern="[0-9]{9,15}" placeholder="Ej.: 612345678" value="<?php echo htmlspecialchars($form_data['phone'] ?? ($_SESSION['data']['phone'] ?? '')); ?>">
                             <label class="frm-checkbox check-whatsapp">
                                 <!-- MAPEO: name="whatsapp" esperado por backend, value debe ser 1 -->
                                 <input type="checkbox" name="whatsapp" value="1" <?php echo (isset($form_data['whatsapp']) && $form_data['whatsapp'] == 1) || (!isset($form_data['whatsapp']) && isset($_SESSION['data']['whatsapp']) && $_SESSION['data']['whatsapp'] == 1) ? 'checked' : ''; ?>> ¿Tienes WhatsApp?
@@ -577,7 +576,7 @@ function newForm()
 
                     <div class="frm-grupo">
                         <label class="frm-etiqueta">Idiomas que Hablas (Opcional)</label>
-                        <!-- JS NECESARIO: Los selects idioma_1 e idioma_2 deben usarse para rellenar los campos ocultos hidden_lang_1 y hidden_lang_2 -->
+                        <!-- JS necesario: Los selects idioma_1 e idioma_2 deben usarse para rellenar los campos ocultos hidden_lang_1 y hidden_lang_2 -->
                         <div class="grupo-idiomas">
                             <?php
                             $selected_lang1 = $form_data['lang-1'] ?? null;
@@ -633,7 +632,7 @@ function newForm()
 
                     <?php if (!checkSession()): ?>
                         <div class="frm-grupo">
-                            <label for="email" class="frm-etiqueta">Tu Email de Contacto *</label>
+                            <label for="email" class="frm-etiqueta">Tu email de contacto *</label>
                             <!-- MAPEO: name="email" esperado por backend -->
                             <input type="email" name="email" id="email" class="frm-campo" required placeholder="Necesario para gestionar tu anuncio" value="<?php echo htmlspecialchars($form_data['email'] ?? ''); ?>">
                             <div class="ayuda-texto">Si ya tienes cuenta, usa el mismo email. Si no, crearemos una cuenta para ti.</div>
@@ -643,7 +642,7 @@ function newForm()
                         <!-- Si está logueado, el backend espera el email igualmente -->
                         <input type="hidden" name="email" value="<?php echo htmlspecialchars($_SESSION['data']['mail']); ?>">
                         <div class="frm-grupo">
-                            <label class="frm-etiqueta">Email de Contacto:</label>
+                            <label class="frm-etiqueta">Email de contacto:</label>
                             <span class="texto-fijo"><?php echo htmlspecialchars($_SESSION['data']['mail']); ?></span>
                         </div>
                     <?php endif; ?>
@@ -691,51 +690,6 @@ function newForm()
                 ?>
 
                 <!-- ========= INICIO: Estilos CSS para el Tooltip ========= -->
-                <!-- Nota: Idealmente, mover esto a tu archivo CSS principal -->
-                <style>
-                    .icono-clock {
-                        position: relative;
-                        /* Necesario para posicionar el tooltip relativo al icono */
-                        cursor: pointer;
-                        /* Indica que se puede interactuar */
-                    }
-
-                    .clock-tooltip {
-                        display: none;
-                        position: absolute;
-                        bottom: 110%;
-                        left: 50%;
-                        background-color: #f4f4f4;
-                        color: #1b1b1b;
-                        padding: 5px 10px;
-                        height: 30px;
-                        border-radius: 4px;
-                        font-size: 12px;
-                        white-space: nowrap;
-                        z-index: 10;
-                        opacity: 0;
-                        transition: opacity 0.3s ease;
-                        pointer-events: none;
-                    }
-
-                    /* Opcional: Pequeño triángulo/flecha para el tooltip */
-                    .clock-tooltip::after {
-                        content: "";
-                        position: absolute;
-                        top: 100%;
-                        /* En la parte inferior del tooltip */
-                        left: 50%;
-                        margin-left: -5px;
-                        border-width: 5px;
-                        border-style: solid;
-                        border-color: #333 transparent transparent transparent;
-                    }
-
-                    /* Mostrar tooltip al hacer hover en el icono-clock (usando JS) */
-                    /* No se necesita regla CSS directa para hover si se maneja con JS */
-                </style>
-                <!-- ========= FIN: Estilos CSS para el Tooltip ========= -->
-
 
                 <div class="divisor-anuncio">
 
