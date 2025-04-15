@@ -678,6 +678,75 @@ function newForm()
                     <img src="<?php echo getConfParam('SITE_URL') ?>src/photos/20250412/form-imagen.jpg" alt="">
                 </div>
 
+                <?php
+                // --- INICIO: Añadido para cálculo de fechas ---
+                $hoy = new DateTime(); // Fecha actual
+                $fecha_creacion = $hoy->format('d/m/Y');
+                // Clonamos el objeto para no modificar el original
+                $fecha_expiracion_obj = clone $hoy;
+                // Añadimos 30 días (asumiendo la opción gratuita por defecto)
+                $fecha_expiracion_obj->modify('+30 days');
+                $fecha_expiracion = $fecha_expiracion_obj->format('d/m/Y');
+                // --- FIN: Añadido para cálculo de fechas ---
+                ?>
+
+                <!-- ========= INICIO: Estilos CSS para el Tooltip ========= -->
+                <!-- Nota: Idealmente, mover esto a tu archivo CSS principal -->
+                <style>
+                    .icono-clock {
+                        position: relative;
+                        /* Necesario para posicionar el tooltip relativo al icono */
+                        cursor: pointer;
+                        /* Indica que se puede interactuar */
+                    }
+
+                    .clock-tooltip {
+                        display: none;
+                        /* Oculto por defecto */
+                        position: absolute;
+                        bottom: 110%;
+                        /* Posición encima del icono */
+                        left: 50%;
+                        transform: translateX(-50%);
+                        /* Centrar horizontalmente */
+                        background-color: #333;
+                        /* Fondo oscuro */
+                        color: #fff;
+                        /* Texto blanco */
+                        padding: 5px 10px;
+                        border-radius: 4px;
+                        font-size: 12px;
+                        white-space: nowrap;
+                        /* Evita que el texto se parta en varias líneas */
+                        z-index: 10;
+                        /* Asegura que esté por encima de otros elementos */
+                        opacity: 0;
+                        /* Para transición suave (opcional) */
+                        transition: opacity 0.3s ease;
+                        /* Transición suave (opcional) */
+                        pointer-events: none;
+                        /* Evita que el tooltip interfiera con el ratón */
+                    }
+
+                    /* Opcional: Pequeño triángulo/flecha para el tooltip */
+                    .clock-tooltip::after {
+                        content: "";
+                        position: absolute;
+                        top: 100%;
+                        /* En la parte inferior del tooltip */
+                        left: 50%;
+                        margin-left: -5px;
+                        border-width: 5px;
+                        border-style: solid;
+                        border-color: #333 transparent transparent transparent;
+                    }
+
+                    /* Mostrar tooltip al hacer hover en el icono-clock (usando JS) */
+                    /* No se necesita regla CSS directa para hover si se maneja con JS */
+                </style>
+                <!-- ========= FIN: Estilos CSS para el Tooltip ========= -->
+
+
                 <div class="divisor-anuncio">
 
                     <div class="titulo-etapa-anuncio-div">
@@ -697,7 +766,8 @@ function newForm()
                             </div>
                             <div class="precio-y-tiempo">
                                 <p>35 €</p>
-                                <div class="icono-clock" dias="30 dias">
+                                <!-- Cambiado 'dias' por 'data-dias' y solo el número -->
+                                <div class="icono-clock" data-dias="30">
                                     <?php echo $GLOBALS['clock']; ?>
                                 </div>
                             </div>
@@ -705,11 +775,12 @@ function newForm()
 
                         <label class="opcion-checkbox opcion-extra">
                             <input type="checkbox" name="extras[]" value="premium_mini" <?php echo in_array('premium_mini', $selected_extras) ? 'checked' : ''; ?>>
-                            <?php echo $GLOBALS['sonrisa_dos']; ?>
+                            <?php echo $GLOBALS['sonrisa_uno']; ?>
                             <div class="opcion-contenido"><strong>Premium Mini</strong><span>Tu anuncio aparecerá aleatoriamente bajo los Premium.</span></div>
                             <div class="precio-y-tiempo">
                                 <p>30 €</p>
-                                <div class="icono-clock" dias="30 dias">
+                                <!-- Cambiado 'dias' por 'data-dias' y solo el número -->
+                                <div class="icono-clock" data-dias="30">
                                     <?php echo $GLOBALS['clock']; ?>
                                 </div>
                             </div>
@@ -717,24 +788,25 @@ function newForm()
 
                         <label class="opcion-checkbox opcion-extra">
                             <input type="checkbox" name="extras[]" value="destacado" <?php echo in_array('destacado', $selected_extras) ? 'checked' : ''; ?>>
-                            <?php echo $GLOBALS['sonrisa_dos']; ?>
+                            <?php echo $GLOBALS['sonrisa_uno']; ?>
                             <div class="opcion-contenido"><strong>Destacado</strong><span>Tu anuncio aparecerá aleatoriamente con un diseño destacado.</span></div>
                             <div class="precio-y-tiempo">
                                 <p>27 €</p>
-                                <div class="icono-clock" dias="30 dias">
+                                <!-- Cambiado 'dias' por 'data-dias' y solo el número -->
+                                <div class="icono-clock" data-dias="15">
                                     <?php echo $GLOBALS['clock']; ?>
                                 </div>
                             </div>
-
                         </label>
 
                         <label class="opcion-checkbox opcion-extra">
                             <input type="checkbox" name="extras[]" value="autosubida" <?php echo in_array('autosubida', $selected_extras) ? 'checked' : ''; ?>>
-                            <?php echo $GLOBALS['sonrisa_dos']; ?>
+                            <?php echo $GLOBALS['sonrisa_uno']; ?>
                             <div class="opcion-contenido"><strong>Autosubida</strong><span>Tu anuncio subirá posiciones automáticamente (debajo de Destacados).</span></div>
                             <div class="precio-y-tiempo">
                                 <p>25 €</p>
-                                <div class="icono-clock" dias="30 dias">
+                                <!-- Cambiado 'dias' por 'data-dias' y solo el número -->
+                                <div class="icono-clock" data-dias="30">
                                     <?php echo $GLOBALS['clock']; ?>
                                 </div>
                             </div>
@@ -742,11 +814,12 @@ function newForm()
 
                         <label class="opcion-checkbox opcion-extra">
                             <input type="checkbox" name="extras[]" value="banner_superior" <?php echo in_array('banner_superior', $selected_extras) ? 'checked' : ''; ?>>
-                            <?php echo $GLOBALS['sonrisa_dos']; ?>
+                            <?php echo $GLOBALS['sonrisa_uno']; ?>
                             <div class="opcion-contenido"><strong>Banner Superior</strong><span>Muestra tu banner aleatoriamente en la cabecera de la página.</span></div>
                             <div class="precio-y-tiempo">
                                 <p>50 €</p>
-                                <div class="icono-clock" dias="30 dias">
+                                <!-- Cambiado 'dias' por 'data-dias' y solo el número -->
+                                <div class="icono-clock" data-dias="30">
                                     <?php echo $GLOBALS['clock']; ?>
                                 </div>
                             </div>
@@ -754,16 +827,49 @@ function newForm()
 
                         <label class="opcion-checkbox opcion-extra">
                             <input type="checkbox" name="extras[]" value="banner_lateral" <?php echo in_array('banner_lateral', $selected_extras) ? 'checked' : ''; ?>>
-                            <?php echo $GLOBALS['sonrisa_dos']; ?>
+                            <?php echo $GLOBALS['sonrisa_uno']; ?>
                             <div class="opcion-contenido"><strong>Banner Lateral</strong><span>Muestra tu banner aleatoriamente en la barra lateral.</span></div>
                             <div class="precio-y-tiempo">
                                 <p>50 €</p>
-                                <div class="icono-clock" dias="30 dias">
+                                <!-- Cambiado 'dias' por 'data-dias' y solo el número -->
+                                <div class="icono-clock" data-dias="30">
                                     <?php echo $GLOBALS['clock']; ?>
                                 </div>
                             </div>
                         </label>
                     </div>
+
+                    <div class="frm-grupo">
+                        <label class="opcion-checkbox opcion-extra">
+                            <!-- Corregido: El input de 'banner_lateral' estaba repetido aquí. Asumo que este es el input 'gratis' -->
+                            <!-- Si ya existe un input para 'gratis' en otra parte, elimina este input o ajusta el 'name' y 'value' -->
+                            <input type="radio" name="plan_seleccionado" value="gratis" checked> <!-- Usar radio si solo se puede elegir uno (gratis u otros) -->
+                            <!-- O si 'gratis' es un extra más que se puede sumar: -->
+                            <!-- <input type="checkbox" name="extras[]" value="gratis" 
+                            <?php // echo in_array('gratis', $selected_extras) ? 'checked' : ''; 
+                            ?>> -->
+
+                            <?php echo $GLOBALS['sonrisa_dos']; ?>
+                            <div class="opcion-contenido"><strong>Gratis</strong><span>Realiza tu publicación sin costo alguno.</span></div>
+                            <div class="precio-y-tiempo">
+                                <p class="gratuito">Gratuito</p>
+                                <!-- Cambiado 'dias' por 'data-dias' y solo el número -->
+                                <div class="icono-clock" data-dias="30">
+                                    <?php echo $GLOBALS['clock']; ?>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- ========= INICIO: Sección de Fechas Añadida ========= -->
+                    <div class="info-fechas-anuncio" style="margin-top: 15px; margin-bottom: 15px; padding: 10px; border: 1px solid #eee; text-align: center;">
+                        <p><strong>Duración del Plan Gratuito:</strong> 30 días</p>
+                        <p><strong>Fecha de creación estimada:</strong> <?php echo $fecha_creacion; ?></p>
+                        <p><strong>Fecha de expiración estimada:</strong> <?php echo $fecha_expiracion; ?></p>
+                        <small>(Las fechas definitivas se establecerán al publicar el anuncio)</small>
+                    </div>
+                    <!-- ========= FIN: Sección de Fechas Añadida ========= -->
+
 
                     <div class="frm-grupo">
                         <label class="frm-checkbox">
@@ -776,7 +882,6 @@ function newForm()
                     <div class="frm-grupo" style="display: none;">
                         <label class="frm-checkbox">
                             <?php
-
                             $notifications_checked = true;
                             if (isset($form_data['notifications'])) {
                                 $notifications_checked = ($form_data['notifications'] == '1');
@@ -807,7 +912,72 @@ function newForm()
                         </div>
                     </div>
 
-                </div>
+                </div> <!-- Fin de .divisor-anuncio -->
+
+                <!-- ========= INICIO: Tooltip HTML (solo uno, se reutiliza) ========= -->
+                <div id="clock-tooltip" class="clock-tooltip"></div>
+                <!-- ========= FIN: Tooltip HTML ========= -->
+
+
+                <!-- ========= INICIO: JavaScript para el Tooltip ========= -->
+                <!-- Nota: Idealmente, mover esto a tu archivo JS principal y ejecutarlo cuando el DOM esté listo -->
+                <script>
+                    // Espera a que el contenido del DOM esté completamente cargado
+                    document.addEventListener('DOMContentLoaded', function() {
+
+                        const tooltipElement = document.getElementById('clock-tooltip');
+                        const clockIcons = document.querySelectorAll('.icono-clock');
+
+                        if (!tooltipElement) {
+                            console.error('Elemento tooltip no encontrado.');
+                            return;
+                        }
+
+                        clockIcons.forEach(icon => {
+                            icon.addEventListener('mouseenter', (event) => {
+                                const dias = event.target.getAttribute('data-dias');
+                                if (dias) {
+                                    // Construir el texto del tooltip
+                                    tooltipElement.textContent = `El servicio estará activo durante ${dias} días`;
+
+                                    // Posicionar el tooltip (esto puede necesitar ajustes finos)
+                                    const iconRect = event.target.getBoundingClientRect();
+                                    const tooltipRect = tooltipElement.getBoundingClientRect();
+
+                                    // Calcula la posición: encima y centrado respecto al icono
+                                    // Se usa scrollX/scrollY para considerar el desplazamiento de la página
+                                    let top = window.scrollY + iconRect.top - tooltipRect.height - 10; // 10px de espacio
+                                    let left = window.scrollX + iconRect.left + (iconRect.width / 2) - (tooltipRect.width / 2);
+
+                                    // Ajustes para que no se salga de la pantalla (básico)
+                                    if (left < 0) left = 5;
+                                    if (top < window.scrollY) top = window.scrollY + iconRect.bottom + 5; // Poner debajo si no cabe arriba
+
+                                    // Aplicar estilos para mostrar y posicionar
+                                    tooltipElement.style.top = `${top}px`;
+                                    tooltipElement.style.left = `${left}px`;
+                                    tooltipElement.style.display = 'block';
+                                    tooltipElement.style.opacity = '1'; // Para la transición suave
+
+                                } else {
+                                    console.warn('El icono no tiene el atributo data-dias:', event.target);
+                                }
+                            });
+
+                            icon.addEventListener('mouseleave', () => {
+                                // Ocultar el tooltip
+                                tooltipElement.style.display = 'none';
+                                tooltipElement.style.opacity = '0'; // Para la transición suave
+                            });
+                        });
+
+                        // Añadir el tooltip al body para evitar problemas de z-index/overflow con contenedores padres
+                        // Esto es generalmente más robusto para tooltips
+                        document.body.appendChild(tooltipElement);
+
+                    });
+                </script>
+                <!-- ========= FIN: JavaScript para el Tooltip ========= -->
             </div>
 
     </form>
