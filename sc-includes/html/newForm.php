@@ -327,35 +327,63 @@ function newForm()
                         </div>
 
                         <div class="frm-grupo">
-                            <label for="categoria" class="frm-etiqueta">¿Donde quieres que se muestre tu anuncio?</label>
+                            <label for="categoria" class="frm-etiqueta">¿Donde quieres que se muestre tu anuncio? *</label>
 
-                            <select name="category" id="categoria" class="frm-campo frm-select" required>
+                            <!-- Contenedor del selector personalizado para Categoría -->
+                            <div class="custom-select-wrapper" id="custom-categoria-wrapper">
+                                <!-- Botón que simula el select (trigger) -->
+                                <button type="button" class="frm-campo custom-select-trigger" aria-haspopup="listbox" aria-expanded="false" data-select-id="categoria">
+                                    <span class="custom-select-value">+ Categoría</span> <!-- Texto inicial del placeholder -->
+                                    <span class="custom-select-arrow">▾</span>
+                                </button>
+
+                                <!-- Dropdown/Modal personalizado (inicialmente oculto) -->
+                                <div class="custom-select-dropdown" role="listbox" hidden>
+                                    <div class="custom-select-header">
+                                        <input type="search" class="custom-select-search" placeholder="Buscar categoría..." aria-label="Buscar categoría">
+                                        <button type="button" class="custom-select-close" aria-label="Cerrar selector">×</button>
+                                    </div>
+                                    <ul class="custom-select-options">
+                                        <!-- Las opciones se generarán aquí con JS -->
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- El select original AHORA ESTARÁ OCULTO, pero funcional -->
+                            <!-- MAPEO: name="category" esperado por backend -->
+                            <select name="category" id="categoria" class="frm-select visually-hidden" required>
                                 <option value="">+ Categoría</option>
                                 <?php
                                 // Copiado del form antiguo para asegurar compatibilidad
+                                // NOTA: Aunque el código itera padres/hijos, el HTML final son solo <option>.
+                                // El selector personalizado mostrará estas opciones en el orden en que se generan.
                                 $parent = selectSQL("sc_category", $where = array('parent_cat' => -1), "ord ASC");
                                 $selected_cat = $form_data['category'] ?? null;
                                 foreach ($parent as $p) {
                                     $child = selectSQL("sc_category", $where = array('parent_cat' => $p['ID_cat']), "name ASC");
-                                    if (count($child) > 0) { // Solo mostrar optgroup si hay hijos
-                                        $otros_html_grp = '';
+                                    if (count($child) > 0) { // Solo procesar si hay hijos
+                                        $options_html = ''; // Para acumular opciones normales
+                                        $otros_html_grp = ''; // Para acumular opciones 'Otros'
                                         foreach ($child as $c) {
                                             $selected = ($selected_cat == $c['ID_cat']) ? 'selected' : '';
+                                            $option_tag = '<option value="' . $c['ID_cat'] . '" ' . $selected . '>  ' . htmlspecialchars($c['name']) . '</option>'; // El espacio inicial se mantiene
+
                                             if ((strpos($c['name'], 'Otros') !== false) || (strpos($c['name'], 'Otras') !== false)) {
-                                                $otros_html_grp .= '<option value="' . $c['ID_cat'] . '" ' . $selected . '>  ' . htmlspecialchars($c['name']) . '</option>';
+                                                $otros_html_grp .= $option_tag; // Acumular 'Otros'
                                             } else {
-                                                echo '<option value="' . $c['ID_cat'] . '" ' . $selected . '>  ' . htmlspecialchars($c['name']) . '</option>';
+                                                $options_html .= $option_tag; // Acumular normales
                                             }
                                         }
-                                        echo $otros_html_grp; // Imprimir 'Otros' al final del grupo
-                                        echo '</optgroup>';
+                                        // Imprimir normales primero, luego 'Otros'
+                                        echo $options_html;
+                                        echo $otros_html_grp;
+                                        // No se imprime </optgroup> porque no se abrió uno
                                     }
                                 }
                                 ?>
                             </select>
                             <div class="error-msg oculto" id="error-categoria">Debes seleccionar una categoría.</div>
                         </div>
-
                         <div class="frm-grupo">
                             <label for="provincia" class="frm-etiqueta">Seleciona una provincia *</label>
 

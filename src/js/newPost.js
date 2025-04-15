@@ -801,12 +801,11 @@
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
             setupCustomSelect('custom-provincia-wrapper');
-            // Si tienes MÁS selects para personalizar, llama a setupCustomSelect con sus IDs aquí
-            // setupCustomSelect('custom-otro-select-wrapper');
+            setupCustomSelect('custom-categoria-wrapper');
         });
     } else {
         setupCustomSelect('custom-provincia-wrapper');
-        // setupCustomSelect('custom-otro-select-wrapper');
+        setupCustomSelect('custom-categoria-wrapper');
     }
 
 })();
