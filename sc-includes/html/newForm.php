@@ -906,154 +906,154 @@ function newForm()
                 <!-- ========= INICIO: JavaScript para el Tooltip ========= -->
                 <!-- Nota: Idealmente, mover esto a tu archivo JS principal y ejecutarlo cuando el DOM esté listo -->
 
-                    <script>
-                        document.addEventListener('DOMContentLoaded', function() {
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
 
-                            const tooltipElement = document.getElementById('clock-tooltip');
-                            const clockIcons = document.querySelectorAll('.icono-clock');
+                        const tooltipElement = document.getElementById('clock-tooltip');
+                        const clockIcons = document.querySelectorAll('.icono-clock');
 
-                            // --- Pregunta/Contexto Necesario ---
-                            // 1. ¿El tooltipElement ('#clock-tooltip') ya tiene aplicado CSS como 'position: absolute;'?
-                            //    Es crucial para que top/left funcionen correctamente. Asumiremos que sí.
-                            // 2. ¿Hay alguna transición CSS aplicada al tooltip para la opacidad o posición?
-                            //    El código actual cambia la opacidad, lo que sugiere que podría haberla.
-                            // --- Fin Pregunta/Contexto ---
+                        // --- Pregunta/Contexto Necesario ---
+                        // 1. ¿El tooltipElement ('#clock-tooltip') ya tiene aplicado CSS como 'position: absolute;'?
+                        //    Es crucial para que top/left funcionen correctamente. Asumiremos que sí.
+                        // 2. ¿Hay alguna transición CSS aplicada al tooltip para la opacidad o posición?
+                        //    El código actual cambia la opacidad, lo que sugiere que podría haberla.
+                        // --- Fin Pregunta/Contexto ---
 
-                            if (!tooltipElement) {
-                                console.error('Elemento tooltip (#clock-tooltip) no encontrado. Asegúrate de que existe en el HTML.');
-                                return;
-                            }
+                        if (!tooltipElement) {
+                            console.error('Elemento tooltip (#clock-tooltip) no encontrado. Asegúrate de que existe en el HTML.');
+                            return;
+                        }
 
-                            // Asegurarse de que el tooltip esté en el body para evitar problemas de
-                            // posicionamiento relativo a contenedores padres con overflow: hidden o position: relative.
-                            // Es más seguro hacerlo una vez al inicio.
-                            // OJO: Si el tooltip originalmente estaba dentro de otro elemento y dependía de estilos
-                            //      relativos a ese contenedor, moverlo al body podría requerir ajustes de CSS.
-                            //      Si esto causa problemas, podríamos intentar posicionarlo sin moverlo,
-                            //      pero es más propenso a errores de clipping (que el tooltip se corte).
-                            if (tooltipElement.parentNode !== document.body) {
-                                document.body.appendChild(tooltipElement);
-                                console.warn('Tooltip movido al final del <body> para un posicionamiento más fiable.');
-                                // Asegurarse de que tenga position: absolute o fixed tras moverlo.
-                                // Si no estás seguro, añade esta línea (o mejor, hazlo en el CSS):
-                                // tooltipElement.style.position = 'absolute';
-                            }
-
-
-                            clockIcons.forEach(icon => {
-                                icon.addEventListener('mouseenter', (event) => {
-                                    const dias = event.target.getAttribute('data-dias');
-                                    if (!dias) {
-                                        console.warn('El icono no tiene el atributo data-dias:', event.target);
-                                        // Opcional: ocultar el tooltip si ya estaba visible por otro icono
-                                        tooltipElement.style.display = 'none';
-                                        tooltipElement.style.opacity = '0';
-                                        return; // Salir si no hay datos
-                                    }
-
-                                    // 1. Actualizar contenido
-                                    tooltipElement.textContent = `El servicio estará activo durante ${dias} días`;
-
-                                    // 2. Hacer visible (pero aún no posicionado correctamente) para medir dimensiones
-                                    //    Si hay transiciones CSS, esto podría causar un pequeño "salto" visual
-                                    //    al aparecer en 0,0 antes de moverse. Una alternativa es usar
-                                    //    visibility: hidden; display: block; para medir, pero es más complejo.
-                                    //    Probemos así primero.
-                                    tooltipElement.style.display = 'block';
-                                    tooltipElement.style.opacity = '0'; // Empezar invisible para la transición
-
-                                    // 3. Obtener dimensiones DESPUÉS de poner contenido y display:block
-                                    const iconRect = event.target.getBoundingClientRect();
-                                    const tooltipRect = tooltipElement.getBoundingClientRect(); // Ahora debería tener dimensiones correctas
-
-                                    // --- Constantes de posicionamiento ---
-                                    const spacing = 10; // Espacio entre el icono y el tooltip
-                                    const edgeSpacing = 5; // Espacio mínimo desde el borde de la pantalla
-
-                                    // --- Obtener límites de la ventana (viewport) ---
-                                    const viewportWidth = window.innerWidth;
-                                    const viewportHeight = window.innerHeight;
-                                    const scrollX = window.scrollX;
-                                    const scrollY = window.scrollY;
-
-                                    // 4. Calcular posición ideal (encima y centrado)
-                                    let idealTop = scrollY + iconRect.top - tooltipRect.height - spacing;
-                                    let idealLeft = scrollX + iconRect.left + (iconRect.width / 2) - (tooltipRect.width / 2);
-
-                                    // 5. Ajustar posición horizontal (Izquierda / Derecha)
-                                    let finalLeft = idealLeft;
-                                    // Comprobar borde izquierdo
-                                    if (finalLeft < scrollX + edgeSpacing) {
-                                        finalLeft = scrollX + edgeSpacing;
-                                    }
-                                    // Comprobar borde derecho
-                                    else if (finalLeft + tooltipRect.width > scrollX + viewportWidth - edgeSpacing) {
-                                        finalLeft = scrollX + viewportWidth - tooltipRect.width - edgeSpacing;
-                                    }
-
-                                    // 6. Ajustar posición vertical (Arriba / Abajo)
-                                    let finalTop = idealTop;
-                                    // Comprobar si se sale por arriba O si no hay espacio suficiente encima del icono
-                                    const tooltipFitsAbove = (iconRect.top >= tooltipRect.height + spacing);
-                                    if (finalTop < scrollY + edgeSpacing || !tooltipFitsAbove) {
-                                        // Intentar ponerlo debajo
-                                        let topBelow = scrollY + iconRect.bottom + spacing;
-                                        // Comprobar si al ponerlo debajo, se sale por abajo
-                                        if (topBelow + tooltipRect.height > scrollY + viewportHeight - edgeSpacing) {
-                                            // No cabe ni arriba ni abajo. ¿Qué hacer?
-                                            // Opción A: Dejarlo arriba (finalTop = idealTop) aunque se salga un poco.
-                                            // Opción B: Dejarlo abajo (finalTop = topBelow) aunque se salga un poco.
-                                            // Opción C: Ponerlo lo más centrado verticalmente posible en la pantalla. (Más complejo)
-                                            // Opción D: Ponerlo pegado al borde superior o inferior.
-
-                                            // Vamos con la Opción A (priorizar la posición original 'encima') si no cabe abajo.
-                                            // Si la razón original fue !tooltipFitsAbove pero sí cabía en pantalla (finalTop >= scrollY + edgeSpacing),
-                                            // entonces forzamos 'arriba'. Si se salía por arriba (finalTop < scrollY),
-                                            // intentamos ponerlo pegado al borde superior.
-                                            if (finalTop < scrollY + edgeSpacing) {
-                                                finalTop = scrollY + edgeSpacing; // Pegar al borde superior como último recurso
-                                            }
-                                            // else: Se mantiene el idealTop calculado aunque no quepa perfectamente encima del icono.
-
-                                        } else {
-                                            // Cabe debajo, usar esa posición
-                                            finalTop = topBelow;
-                                        }
-                                    }
-                                    // Si se calculó una posición 'debajo' (finalTop > idealTop), y aun así se sale por abajo
-                                    // (esto puede pasar si el icono está muy abajo y el tooltip es alto),
-                                    // lo pegamos al borde inferior como último recurso.
-                                    if (finalTop + tooltipRect.height > scrollY + viewportHeight - edgeSpacing) {
-                                        finalTop = scrollY + viewportHeight - tooltipRect.height - edgeSpacing;
-                                    }
+                        // Asegurarse de que el tooltip esté en el body para evitar problemas de
+                        // posicionamiento relativo a contenedores padres con overflow: hidden o position: relative.
+                        // Es más seguro hacerlo una vez al inicio.
+                        // OJO: Si el tooltip originalmente estaba dentro de otro elemento y dependía de estilos
+                        //      relativos a ese contenedor, moverlo al body podría requerir ajustes de CSS.
+                        //      Si esto causa problemas, podríamos intentar posicionarlo sin moverlo,
+                        //      pero es más propenso a errores de clipping (que el tooltip se corte).
+                        if (tooltipElement.parentNode !== document.body) {
+                            document.body.appendChild(tooltipElement);
+                            console.warn('Tooltip movido al final del <body> para un posicionamiento más fiable.');
+                            // Asegurarse de que tenga position: absolute o fixed tras moverlo.
+                            // Si no estás seguro, añade esta línea (o mejor, hazlo en el CSS):
+                            // tooltipElement.style.position = 'absolute';
+                        }
 
 
-                                    // 7. Aplicar estilos finales para mostrar y posicionar
-                                    tooltipElement.style.top = `${finalTop}px`;
-                                    tooltipElement.style.left = `${finalLeft}px`;
-                                    tooltipElement.style.opacity = '1'; // Hacer visible (activará transición si existe)
-
-                                }); // Fin de mouseenter
-
-                                icon.addEventListener('mouseleave', () => {
-                                    // Ocultar el tooltip
-                                    // No usar display:none inmediatamente si hay transición de opacidad
+                        clockIcons.forEach(icon => {
+                            icon.addEventListener('mouseenter', (event) => {
+                                const dias = event.target.getAttribute('data-dias');
+                                if (!dias) {
+                                    console.warn('El icono no tiene el atributo data-dias:', event.target);
+                                    // Opcional: ocultar el tooltip si ya estaba visible por otro icono
+                                    tooltipElement.style.display = 'none';
                                     tooltipElement.style.opacity = '0';
-                                    // Podrías usar un setTimeout para poner display:none después de la transición,
-                                    // o manejarlo con eventos 'transitionend'. Por simplicidad, lo dejamos así.
-                                    // Si causa problemas (ej. el tooltip invisible bloquea clicks),
-                                    // podrías volver a display:none aquí o después de un pequeño retraso.
-                                    // Ejemplo con retraso (ajusta el tiempo a tu transición CSS):
-                                    // setTimeout(() => {
-                                    //    if (tooltipElement.style.opacity === '0') { // Solo ocultar si sigue invisible
-                                    //         tooltipElement.style.display = 'none';
-                                    //    }
-                                    // }, 300); // 300ms = tiempo de ejemplo para la transición
-                                    tooltipElement.style.display = 'none'; // Lo ponemos de vuelta como estaba en tu código original
-                                }); // Fin de mouseleave
-                            }); // Fin de forEach
+                                    return; // Salir si no hay datos
+                                }
 
-                        }); // Fin de DOMContentLoaded
+                                // 1. Actualizar contenido
+                                tooltipElement.textContent = `El servicio estará activo durante ${dias} días`;
+
+                                // 2. Hacer visible (pero aún no posicionado correctamente) para medir dimensiones
+                                //    Si hay transiciones CSS, esto podría causar un pequeño "salto" visual
+                                //    al aparecer en 0,0 antes de moverse. Una alternativa es usar
+                                //    visibility: hidden; display: block; para medir, pero es más complejo.
+                                //    Probemos así primero.
+                                tooltipElement.style.display = 'block';
+                                tooltipElement.style.opacity = '0'; // Empezar invisible para la transición
+
+                                // 3. Obtener dimensiones DESPUÉS de poner contenido y display:block
+                                const iconRect = event.target.getBoundingClientRect();
+                                const tooltipRect = tooltipElement.getBoundingClientRect(); // Ahora debería tener dimensiones correctas
+
+                                // --- Constantes de posicionamiento ---
+                                const spacing = 10; // Espacio entre el icono y el tooltip
+                                const edgeSpacing = 5; // Espacio mínimo desde el borde de la pantalla
+
+                                // --- Obtener límites de la ventana (viewport) ---
+                                const viewportWidth = window.innerWidth;
+                                const viewportHeight = window.innerHeight;
+                                const scrollX = window.scrollX;
+                                const scrollY = window.scrollY;
+
+                                // 4. Calcular posición ideal (encima y centrado)
+                                let idealTop = scrollY + iconRect.top - tooltipRect.height - spacing;
+                                let idealLeft = scrollX + iconRect.left + (iconRect.width / 2) - (tooltipRect.width / 2);
+
+                                // 5. Ajustar posición horizontal (Izquierda / Derecha)
+                                let finalLeft = idealLeft;
+                                // Comprobar borde izquierdo
+                                if (finalLeft < scrollX + edgeSpacing) {
+                                    finalLeft = scrollX + edgeSpacing;
+                                }
+                                // Comprobar borde derecho
+                                else if (finalLeft + tooltipRect.width > scrollX + viewportWidth - edgeSpacing) {
+                                    finalLeft = scrollX + viewportWidth - tooltipRect.width - edgeSpacing;
+                                }
+
+                                // 6. Ajustar posición vertical (Arriba / Abajo)
+                                let finalTop = idealTop;
+                                // Comprobar si se sale por arriba O si no hay espacio suficiente encima del icono
+                                const tooltipFitsAbove = (iconRect.top >= tooltipRect.height + spacing);
+                                if (finalTop < scrollY + edgeSpacing || !tooltipFitsAbove) {
+                                    // Intentar ponerlo debajo
+                                    let topBelow = scrollY + iconRect.bottom + spacing;
+                                    // Comprobar si al ponerlo debajo, se sale por abajo
+                                    if (topBelow + tooltipRect.height > scrollY + viewportHeight - edgeSpacing) {
+                                        // No cabe ni arriba ni abajo. ¿Qué hacer?
+                                        // Opción A: Dejarlo arriba (finalTop = idealTop) aunque se salga un poco.
+                                        // Opción B: Dejarlo abajo (finalTop = topBelow) aunque se salga un poco.
+                                        // Opción C: Ponerlo lo más centrado verticalmente posible en la pantalla. (Más complejo)
+                                        // Opción D: Ponerlo pegado al borde superior o inferior.
+
+                                        // Vamos con la Opción A (priorizar la posición original 'encima') si no cabe abajo.
+                                        // Si la razón original fue !tooltipFitsAbove pero sí cabía en pantalla (finalTop >= scrollY + edgeSpacing),
+                                        // entonces forzamos 'arriba'. Si se salía por arriba (finalTop < scrollY),
+                                        // intentamos ponerlo pegado al borde superior.
+                                        if (finalTop < scrollY + edgeSpacing) {
+                                            finalTop = scrollY + edgeSpacing; // Pegar al borde superior como último recurso
+                                        }
+                                        // else: Se mantiene el idealTop calculado aunque no quepa perfectamente encima del icono.
+
+                                    } else {
+                                        // Cabe debajo, usar esa posición
+                                        finalTop = topBelow;
+                                    }
+                                }
+                                // Si se calculó una posición 'debajo' (finalTop > idealTop), y aun así se sale por abajo
+                                // (esto puede pasar si el icono está muy abajo y el tooltip es alto),
+                                // lo pegamos al borde inferior como último recurso.
+                                if (finalTop + tooltipRect.height > scrollY + viewportHeight - edgeSpacing) {
+                                    finalTop = scrollY + viewportHeight - tooltipRect.height - edgeSpacing;
+                                }
+
+
+                                // 7. Aplicar estilos finales para mostrar y posicionar
+                                tooltipElement.style.top = `${finalTop}px`;
+                                tooltipElement.style.left = `${finalLeft}px`;
+                                tooltipElement.style.opacity = '1'; // Hacer visible (activará transición si existe)
+
+                            }); // Fin de mouseenter
+
+                            icon.addEventListener('mouseleave', () => {
+                                // Ocultar el tooltip
+                                // No usar display:none inmediatamente si hay transición de opacidad
+                                tooltipElement.style.opacity = '0';
+                                // Podrías usar un setTimeout para poner display:none después de la transición,
+                                // o manejarlo con eventos 'transitionend'. Por simplicidad, lo dejamos así.
+                                // Si causa problemas (ej. el tooltip invisible bloquea clicks),
+                                // podrías volver a display:none aquí o después de un pequeño retraso.
+                                // Ejemplo con retraso (ajusta el tiempo a tu transición CSS):
+                                // setTimeout(() => {
+                                //    if (tooltipElement.style.opacity === '0') { // Solo ocultar si sigue invisible
+                                //         tooltipElement.style.display = 'none';
+                                //    }
+                                // }, 300); // 300ms = tiempo de ejemplo para la transición
+                                tooltipElement.style.display = 'none'; // Lo ponemos de vuelta como estaba en tu código original
+                            }); // Fin de mouseleave
+                        }); // Fin de forEach
+
+                    }); // Fin de DOMContentLoaded
                 </script>
                 <!-- ========= FIN: JavaScript para el Tooltip ========= -->
             </div>
