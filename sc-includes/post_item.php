@@ -201,7 +201,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             if ($result_u) {
                                 $id_user = lastIdSQL();
                                 echo "<pre>Usuario CREADO con éxito. ID: " . $id_user . "</pre>";
-                                // mailWelcome($datos_u['name'], $datos_u['mail'], $pass);
+                                mailWelcome($datos_u['name'], $datos_u['mail'], $pass);
                             } else {
                                 echo "<pre>ERROR: Falló la inserción del nuevo usuario (insertSQL devolvió false).</pre>";
                                 // Intenta obtener error MySQL si es posible
