@@ -586,7 +586,7 @@
                         // 3. Limpiar el indicador del input de archivo
                         delete inputElement.dataset.replacingFilename;
                     } else {
-                         // --- ESTAMOS AÑADIENDO ---
+                        // --- ESTAMOS AÑADIENDO ---
                         console.log(`Añadiendo nueva foto: ${newFilename}`);
                         // No se elimina nada al añadir
                     }
@@ -606,7 +606,6 @@
 
                     // Validar: limpiar error si se añadió la primera foto
                     validarCampo(listaFotosContainer, '#error-fotos', true, '');
-
                 } else {
                     // --- ERROR: El servidor no devolvió un filename válido ---
                     mostrarErrorFotos(`Error procesando la respuesta del servidor para "${file.name}". Respuesta: ${html}`);
@@ -620,7 +619,6 @@
                 // --- Actualizar estado de botones de flecha SIEMPRE ---
                 // Se ejecuta después de añadir, reemplazar (que implica eliminar y añadir) o fallar.
                 updateArrowButtonStates();
-
             })
             .catch(error => {
                 loadingIndicator.remove(); // Asegurar quitar loading en error de red
@@ -659,15 +657,17 @@
         const div = document.createElement('div');
         div.classList.add('foto-subida-item');
         div.dataset.filename = filename;
-        div.innerHTML = htmlContent;
+        div.innerHTML = htmlContent; // El HTML base que viene del servidor
 
+        // Limpiar input oculto si viene en el HTML (como en el original)
         const hiddenInPreview = div.querySelector('input[name="photo_name[]"]');
         hiddenInPreview?.remove();
 
+        // Contenedor para los botones de acción
         const actionsDiv = document.createElement('div');
         actionsDiv.classList.add('preview-actions');
 
-        // --- NUEVO: Botón Mover Izquierda ---
+        // --- Botón Mover Izquierda (Existente) ---
         const moveLeftBtn = document.createElement('button');
         moveLeftBtn.type = 'button';
         moveLeftBtn.classList.add('btn-preview-action', 'btn-move-left');
@@ -678,10 +678,10 @@
             <svg data-testid="geist-icon" height="12" stroke-linejoin="round" style="color:currentColor" viewBox="0 0 16 16" width="12" aria-hidden="true">
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M6.46966 13.7803L6.99999 14.3107L8.06065 13.25L7.53032 12.7197L3.56065 8.75001H14.25H15V7.25001H14.25H3.56065L7.53032 3.28034L8.06065 2.75001L6.99999 1.68935L6.46966 2.21968L1.39644 7.2929C1.00592 7.68342 1.00592 8.31659 1.39644 8.70711L6.46966 13.7803Z" fill="currentColor"></path>
             </svg>`;
-        moveLeftBtn.addEventListener('click', handleMoveFotoClick); // Nuevo handler
+        moveLeftBtn.addEventListener('click', handleMoveFotoClick);
         actionsDiv.appendChild(moveLeftBtn);
 
-        // --- NUEVO: Botón Mover Derecha ---
+        // --- Botón Mover Derecha (Existente) ---
         const moveRightBtn = document.createElement('button');
         moveRightBtn.type = 'button';
         moveRightBtn.classList.add('btn-preview-action', 'btn-move-right');
@@ -692,7 +692,7 @@
             <svg data-testid="geist-icon" height="12" stroke-linejoin="round" style="color:currentColor" viewBox="0 0 16 16" width="12" aria-hidden="true">
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M9.53033 2.21968L9 1.68935L7.93934 2.75001L8.46967 3.28034L12.4393 7.25001H1.75H1V8.75001H1.75H12.4393L8.46967 12.7197L7.93934 13.25L9 14.3107L9.53033 13.7803L14.6036 8.70711C14.9941 8.31659 14.9941 7.68342 14.6036 7.2929L9.53033 2.21968Z" fill="currentColor"></path>
             </svg>`;
-        moveRightBtn.addEventListener('click', handleMoveFotoClick); // Nuevo handler
+        moveRightBtn.addEventListener('click', handleMoveFotoClick);
         actionsDiv.appendChild(moveRightBtn);
 
         // --- Botón Cambiar Foto (Existente) ---
@@ -705,29 +705,29 @@
         changeBtn.innerHTML = `
             <?xml version="1.0" encoding="UTF-8"?>
             <svg id="uuid-67eca691-fad9-4dbb-8a42-6bf39e0830b8" data-name="Capa 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28">
-            <defs>
-                <style>
-                .uuid-7cc435b7-ba6c-40a3-af33-f3f74dcd5e16, .uuid-94213a7e-b161-4609-ad8f-10b2f930d26d {
-                    fill: #fff;
-                }
-
-                .uuid-94213a7e-b161-4609-ad8f-10b2f930d26d {
-                    fill-rule: evenodd;
-                }
-
-                .uuid-b5d097c8-88a9-4c72-9377-d504ca5b4c63 {
-                    fill: #d84740;
-                }
-                </style>
-            </defs>
+            <defs><style>.uuid-7cc435b7-ba6c-40a3-af33-f3f74dcd5e16, .uuid-94213a7e-b161-4609-ad8f-10b2f930d26d {fill: #fff;}.uuid-94213a7e-b161-4609-ad8f-10b2f930d26d {fill-rule: evenodd;}.uuid-b5d097c8-88a9-4c72-9377-d504ca5b4c63 {fill: #d84740;}</style></defs>
             <circle class="uuid-b5d097c8-88a9-4c72-9377-d504ca5b4c63" cx="14" cy="14" r="14"/>
-            <g>
-                <path class="uuid-94213a7e-b161-4609-ad8f-10b2f930d26d" d="m20.8,5.01l-.38-.37-.38.37-7.18,7.09c-.5.49-.78,1.16-.78,1.86v1.76h1.78c.71,0,1.38-.28,1.88-.77l7.18-7.09.38-.37-.38-.37-2.13-2.1Zm-1.75,2.47l1.38-1.36,1.38,1.36-1.38,1.36-1.38-1.36Zm-.75.74l-4.68,4.62c-.3.3-.47.7-.47,1.11v.71h.71c.42,0,.83-.17,1.13-.46l4.68-4.62-1.38-1.36Z"/>
-                <polygon class="uuid-7cc435b7-ba6c-40a3-af33-f3f74dcd5e16" points="21.12 21.37 6.54 21.37 6.54 7.74 13.11 7.74 13.11 8.65 7.46 8.65 7.46 20.46 20.21 20.46 20.21 12.11 21.12 12.11 21.12 21.37"/>
-            </g>
-            </svg>`;
+            <g><path class="uuid-94213a7e-b161-4609-ad8f-10b2f930d26d" d="m20.8,5.01l-.38-.37-.38.37-7.18,7.09c-.5.49-.78,1.16-.78,1.86v1.76h1.78c.71,0,1.38-.28,1.88-.77l7.18-7.09.38-.37-.38-.37-2.13-2.1Zm-1.75,2.47l1.38-1.36,1.38,1.36-1.38,1.36-1.38-1.36Zm-.75.74l-4.68,4.62c-.3.3-.47.7-.47,1.11v.71h.71c.42,0,.83-.17,1.13-.46l4.68-4.62-1.38-1.36Z"/>
+            <polygon class="uuid-7cc435b7-ba6c-40a3-af33-f3f74dcd5e16" points="21.12 21.37 6.54 21.37 6.54 7.74 13.11 7.74 13.11 8.65 7.46 8.65 7.46 20.46 20.21 20.46 20.21 12.11 21.12 12.11 21.12 21.37"/></g>
+            </svg>`; // Mantenemos el SVG original para este botón
         changeBtn.addEventListener('click', handleChangeFotoClick);
         actionsDiv.appendChild(changeBtn);
+
+        // --- ***NUEVO: Botón Rotar Foto*** ---
+        const rotateBtn = document.createElement('button');
+        rotateBtn.type = 'button';
+        rotateBtn.classList.add('btn-preview-action', 'btn-rotate-foto'); // Clase específica
+        rotateBtn.title = 'Rotar foto 90°';
+        rotateBtn.setAttribute('aria-label', `Rotar la foto ${filename} 90 grados`);
+        rotateBtn.dataset.filename = filename;
+        // Usamos el icono SVG proporcionado por el usuario
+        rotateBtn.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" height="12" width="12" viewBox="0 0 512 512" style="color:currentColor;" aria-hidden="true">
+                <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                <path fill="currentColor" d="M496 48V192c0 17.7-14.3 32-32 32s-32-14.3-32-32V91.3l-64 42.7L336.1 256l63.9 42L432 350.7v100.7c0 17.7-14.3 32-32 32s-32-14.3-32-32V420.7l-66.3-44.2L256 421.2l-45.7-44.7-66.3 44.2V480c0 17.7-14.3 32-32 32s-32-14.3-32-32V350.7l64-42.7L175.9 256l-63.9-42L80 161.3V48c0-17.7 14.3-32 32-32s32 14.3 32 32V91.3l66.3 44.2L256 90.8l45.7 44.7L368 91.3V48c0-17.7 14.3-32 32-32s32 14.3 32 32v100.7l-64 42.7L336.1 256l63.9 42L432 350.7V464c17.7 0 32-14.3 32-32V350.7l32.9-21.9c7.8-5.2 11.1-15 8.1-24.1s-12.4-15.7-22.1-15.7H432V91.3l32.9-21.9c7.8-5.2 11.1-15 8.1-24.1s-12.4-15.7-22.1-15.7H496z"/>
+            </svg>`;
+        rotateBtn.addEventListener('click', handleRotateFotoClick); // ¡Nuevo handler!
+        actionsDiv.appendChild(rotateBtn);
 
         // --- Botón Eliminar Foto (Existente) ---
         const deleteBtn = document.createElement('button');
@@ -744,7 +744,8 @@
         actionsDiv.appendChild(deleteBtn);
 
         // --- Adjuntar Contenedor de Acciones ---
-        const optionsContainer = div.querySelector('.photos_options'); // Busca si existe un contenedor específico
+        // Busca el div específico si existe, si no, lo añade al final del preview
+        const optionsContainer = div.querySelector('.photos_options');
         if (optionsContainer) {
             optionsContainer.innerHTML = ''; // Limpia por si acaso
             optionsContainer.appendChild(actionsDiv);
@@ -759,6 +760,110 @@
         }
 
         return div;
+    }
+
+    function handleRotateFotoClick(event) {
+        const button = event.currentTarget;
+        const filename = button.dataset.filename; // Lo mantenemos por si acaso, aunque no se use para llamar al servidor
+        if (!filename) {
+            console.error('Error Rotar (Visual): No se encontró filename en el botón.');
+            // No mostramos alerta al usuario, es un problema interno menor en este caso
+            return;
+        }
+
+        const previewItem = button.closest('.foto-subida-item');
+        if (!previewItem) {
+            console.error(`Error Rotar (Visual): No se encontró el contenedor preview para ${filename}`);
+            return;
+        }
+        const imgElement = previewItem.querySelector('img');
+        if (!imgElement) {
+            console.error(`Error Rotar (Visual): No se encontró el elemento <img> para ${filename}`);
+            return;
+        }
+
+        // --- Lógica de Rotación Visual ---
+
+        // 1. Obtener la rotación actual (desde un atributo data o asumir 0)
+        let currentRotation = parseInt(imgElement.dataset.rotation || '0', 10);
+
+        // 2. Calcular la nueva rotación (sumar 90 grados, ciclo 0 -> 90 -> 180 -> 270 -> 0)
+        const newRotation = (currentRotation + 90) % 360;
+
+        // 3. Aplicar la rotación CSS al elemento <img>
+        imgElement.style.transform = `rotate(${newRotation}deg)`;
+        // Opcional: Añadir transición para suavizar
+        imgElement.style.transition = 'transform 0.3s ease';
+
+        // 4. Guardar el nuevo estado de rotación en el atributo data
+        imgElement.dataset.rotation = newRotation;
+
+        console.log(`Rotación visual aplicada a ${filename}: ${newRotation} grados.`);
+
+        /* --- CÓDIGO DE LLAMADA AL SERVIDOR COMENTADO ---
+        // --- Feedback Visual y Prevención ---
+        button.disabled = true; // Deshabilita mientras procesa
+        previewItem.classList.add('rotating'); // Clase para feedback visual (ej. spinner) - requiere CSS
+
+        // --- URL del script backend ---
+        // !!! IMPORTANTE: CONFIRMAR O CAMBIAR ESTA URL !!!
+        const rotateUrl = 'sc-includes/php/ajax/rotate_picture.php';
+        const degreesToRotate = 90; // Rotar 90 grados horario por defecto
+
+        const formData = new FormData();
+        formData.append('filename', filename);
+        formData.append('degrees', degreesToRotate);
+
+        console.log(`Intentando rotar ${filename} llamando a ${rotateUrl}`);
+
+        fetch(rotateUrl, {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => {
+                if (!response.ok) {
+                    // Intenta obtener un mensaje de error más detallado del cuerpo de la respuesta
+                    return response.text().then(text => {
+                        throw new Error(`Error del servidor ${response.status}: ${text || response.statusText}`);
+                    });
+                }
+                // Asumimos que el servidor devuelve JSON
+                return response.json();
+            })
+            .then(data => {
+                if (data && data.success === true) {
+                    console.log(`Imagen ${filename} rotada con éxito en el servidor.`);
+                    // --- Actualizar la imagen en el navegador ---
+                    // Añadimos un timestamp como parámetro query para evitar problemas de caché del navegador
+                    const currentSrc = imgElement.src;
+                    // Quitamos cualquier parámetro query anterior antes de añadir el nuevo
+                    const baseSrc = currentSrc.split('?')[0];
+                    imgElement.src = `${baseSrc}?v=${Date.now()}`; // Cache buster
+                    console.log(`Fuente de imagen actualizada a: ${imgElement.src}`);
+
+                    // Opcional: Si el servidor devuelve una nueva URL/path, usar data.newImageUrl
+                    // if (data.newImageUrl) {
+                    //    imgElement.src = data.newImageUrl;
+                    // }
+                } else {
+                    // El servidor indicó un fallo o la respuesta no fue la esperada
+                    throw new Error(data.message || `La rotación falló en el servidor para ${filename}. Respuesta inesperada.`);
+                }
+            })
+            .catch(error => {
+                console.error(`Error al rotar la imagen ${filename}:`, error);
+                // Muestra un error más específico si es posible
+                const errorMsg = error.message.includes('NetworkError') || error.message.includes('Failed to fetch') ? 'No se pudo conectar con el servidor para rotar la imagen.' : `Error al rotar: ${error.message}`;
+                // Podríamos usar mostrarErrorFotos si queremos el error en esa zona, o un simple alert
+                alert(errorMsg);
+                // mostrarErrorFotos(`Error rotando ${filename}: ${error.message}`);
+            })
+            .finally(() => {
+                // --- Restaurar Estado del Botón y Quitar Feedback ---
+                button.disabled = false;
+                previewItem.classList.remove('rotating');
+            });
+        --- FIN CÓDIGO COMENTADO --- */
     }
 
     function handleMoveFotoClick(event) {
