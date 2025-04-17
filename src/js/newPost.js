@@ -759,6 +759,7 @@
         return div;
     }
 
+    // aqui necesito que cuando este a 90 grados y 270 la imagen tenga max-width: 80px;, eso es todo
     function handleRotateFotoClick(event) {
         const button = event.currentTarget;
         const filename = button.dataset.filename; // Lo mantenemos por si acaso, aunque no se use para llamar al servidor
@@ -790,77 +791,25 @@
         // 3. Aplicar la rotación CSS al elemento <img>
         imgElement.style.transform = `rotate(${newRotation}deg)`;
         // Opcional: Añadir transición para suavizar
-        imgElement.style.transition = 'transform 0.3s ease';
+        imgElement.style.transition = 'transform 0.3s ease'; // Mantenemos la transición si ya estaba
 
         // 4. Guardar el nuevo estado de rotación en el atributo data
         imgElement.dataset.rotation = newRotation;
 
+        // --- INICIO: Lógica para aplicar max-width en 90/270 grados ---
+        if (newRotation === 90 || newRotation === 270) {
+            // Si la rotación es 90 o 270 (orientación vertical), aplicamos max-width
+            imgElement.style.maxWidth = '80px';
+            console.log(`Aplicado max-width: 80px a ${filename} (Rotación: ${newRotation})`);
+        } else {
+            // Si la rotación es 0 o 180 (orientación horizontal), quitamos el max-width
+            // Establecer a '' elimina el estilo inline específico de max-width
+            imgElement.style.maxWidth = '';
+            console.log(`Quitado max-width de ${filename} (Rotación: ${newRotation})`);
+        }
+        // --- FIN: Lógica para aplicar max-width ---
+
         console.log(`Rotación visual aplicada a ${filename}: ${newRotation} grados.`);
-
-        /* --- CÓDIGO DE LLAMADA AL SERVIDOR COMENTADO ---
-        // --- Feedback Visual y Prevención ---
-        button.disabled = true; // Deshabilita mientras procesa
-        previewItem.classList.add('rotating'); // Clase para feedback visual (ej. spinner) - requiere CSS
-
-        // --- URL del script backend ---
-        // !!! IMPORTANTE: CONFIRMAR O CAMBIAR ESTA URL !!!
-        const rotateUrl = 'sc-includes/php/ajax/rotate_picture.php';
-        const degreesToRotate = 90; // Rotar 90 grados horario por defecto
-
-        const formData = new FormData();
-        formData.append('filename', filename);
-        formData.append('degrees', degreesToRotate);
-
-        console.log(`Intentando rotar ${filename} llamando a ${rotateUrl}`);
-
-        fetch(rotateUrl, {
-            method: 'POST',
-            body: formData
-        })
-            .then(response => {
-                if (!response.ok) {
-                    // Intenta obtener un mensaje de error más detallado del cuerpo de la respuesta
-                    return response.text().then(text => {
-                        throw new Error(`Error del servidor ${response.status}: ${text || response.statusText}`);
-                    });
-                }
-                // Asumimos que el servidor devuelve JSON
-                return response.json();
-            })
-            .then(data => {
-                if (data && data.success === true) {
-                    console.log(`Imagen ${filename} rotada con éxito en el servidor.`);
-                    // --- Actualizar la imagen en el navegador ---
-                    // Añadimos un timestamp como parámetro query para evitar problemas de caché del navegador
-                    const currentSrc = imgElement.src;
-                    // Quitamos cualquier parámetro query anterior antes de añadir el nuevo
-                    const baseSrc = currentSrc.split('?')[0];
-                    imgElement.src = `${baseSrc}?v=${Date.now()}`; // Cache buster
-                    console.log(`Fuente de imagen actualizada a: ${imgElement.src}`);
-
-                    // Opcional: Si el servidor devuelve una nueva URL/path, usar data.newImageUrl
-                    // if (data.newImageUrl) {
-                    //    imgElement.src = data.newImageUrl;
-                    // }
-                } else {
-                    // El servidor indicó un fallo o la respuesta no fue la esperada
-                    throw new Error(data.message || `La rotación falló en el servidor para ${filename}. Respuesta inesperada.`);
-                }
-            })
-            .catch(error => {
-                console.error(`Error al rotar la imagen ${filename}:`, error);
-                // Muestra un error más específico si es posible
-                const errorMsg = error.message.includes('NetworkError') || error.message.includes('Failed to fetch') ? 'No se pudo conectar con el servidor para rotar la imagen.' : `Error al rotar: ${error.message}`;
-                // Podríamos usar mostrarErrorFotos si queremos el error en esa zona, o un simple alert
-                alert(errorMsg);
-                // mostrarErrorFotos(`Error rotando ${filename}: ${error.message}`);
-            })
-            .finally(() => {
-                // --- Restaurar Estado del Botón y Quitar Feedback ---
-                button.disabled = false;
-                previewItem.classList.remove('rotating');
-            });
-        --- FIN CÓDIGO COMENTADO --- */
     }
 
     function handleMoveFotoClick(event) {
