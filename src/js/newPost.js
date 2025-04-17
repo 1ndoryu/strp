@@ -552,27 +552,20 @@
                 return response.text(); // El backend devuelve HTML según el código original
             })
             .then(html => {
-                loadingIndicator.remove();
+                loadingIndicator.remove(); // Siempre quitar el loading
                 const photoData = parsePhotoUploadResponse(html);
-                const previewElement = crearPreviewFoto(photoData.previewHtml, newFilename);
-                listaFotosContainer.appendChild(previewElement);
-                console.log(`Nuevo preview [${newFilename}] añadido.`);
 
-                // [Código para añadir hiddenInput] ...
-
-                validarCampo(listaFotosContainer, '#error-fotos', true, ''); // Revalida
-
-                updateArrowButtonStates();
-
+                // --- Comprobar si la subida fue exitosa ANTES de hacer nada más ---
                 if (photoData.filename) {
+                    // DECLARAR newFilename AQUÍ, donde sabemos que photoData.filename existe
                     const newFilename = photoData.filename;
                     const filenameToReplace = inputElement.dataset.replacingFilename; // Comprueba si estábamos reemplazando
-                    
 
                     if (filenameToReplace) {
                         // --- ESTAMOS REEMPLAZANDO ---
                         console.log(`Reemplazando: ${filenameToReplace} con ${newFilename}`);
-                        // 1. Eliminar el preview antiguo
+
+                        // 1. Eliminar el preview antiguo (MOVER AQUÍ)
                         const oldPreview = listaFotosContainer.querySelector(`.foto-subida-item[data-filename="${filenameToReplace}"]`);
                         if (oldPreview) {
                             oldPreview.remove();
@@ -581,7 +574,7 @@
                             console.warn(`No se encontró el preview antiguo para [${filenameToReplace}].`);
                         }
 
-                        // 2. Eliminar el input oculto antiguo
+                        // 2. Eliminar el input oculto antiguo (MOVER AQUÍ)
                         const oldHiddenInput = hiddenPhotoInputsContainer.querySelector(`input[name="photo_name[]"][value="${filenameToReplace}"]`);
                         if (oldHiddenInput) {
                             oldHiddenInput.remove();
@@ -593,10 +586,13 @@
                         // 3. Limpiar el indicador del input de archivo
                         delete inputElement.dataset.replacingFilename;
                     } else {
+                         // --- ESTAMOS AÑADIENDO ---
                         console.log(`Añadiendo nueva foto: ${newFilename}`);
+                        // No se elimina nada al añadir
                     }
 
-                    // --- AÑADIR NUEVO PREVIEW E INPUT (SIEMPRE) ---
+                    // --- AÑADIR NUEVO PREVIEW E INPUT (MOVER AQUÍ) ---
+                    // Solo se crean si la subida fue exitosa y tenemos newFilename
                     const previewElement = crearPreviewFoto(photoData.previewHtml, newFilename);
                     listaFotosContainer.appendChild(previewElement);
                     console.log(`Nuevo preview [${newFilename}] añadido.`);
@@ -608,24 +604,34 @@
                     hiddenPhotoInputsContainer.appendChild(hiddenInput);
                     console.log(`Nuevo input oculto [${newFilename}] añadido.`);
 
-                    validarCampo(listaFotosContainer, '#error-fotos', true, ''); // Revalida que haya al menos una foto
+                    // Validar: limpiar error si se añadió la primera foto
+                    validarCampo(listaFotosContainer, '#error-fotos', true, '');
+
                 } else {
-                    // El servidor no devolvió un filename válido
+                    // --- ERROR: El servidor no devolvió un filename válido ---
                     mostrarErrorFotos(`Error procesando la respuesta del servidor para "${file.name}". Respuesta: ${html}`);
-                    // Limpiar el estado de reemplazo si falló
+                    // Limpiar el estado de reemplazo si falló durante el reemplazo
                     if (inputElement.dataset.replacingFilename) {
                         delete inputElement.dataset.replacingFilename;
                     }
+                    // No se crea preview ni input oculto si falla
                 }
+
+                // --- Actualizar estado de botones de flecha SIEMPRE ---
+                // Se ejecuta después de añadir, reemplazar (que implica eliminar y añadir) o fallar.
+                updateArrowButtonStates();
+
             })
             .catch(error => {
-                loadingIndicator.remove();
+                loadingIndicator.remove(); // Asegurar quitar loading en error de red
                 mostrarErrorFotos(`Error subiendo "${file.name}": ${error.message}`);
                 console.error('Error en fetch:', error);
                 // Limpiar el estado de reemplazo si falló
                 if (inputElement.dataset.replacingFilename) {
                     delete inputElement.dataset.replacingFilename;
                 }
+                // Actualizar botones por si acaso algo cambió antes del error
+                updateArrowButtonStates();
             });
     }
 
