@@ -392,6 +392,12 @@ input[type='radio'] {
     flex-direction: column;
     align-items: center;
     gap: 10px;
+    position: relative;
+}
+
+svg#uuid-67eca691-fad9-4dbb-8a42-6bf39e0830b8 {
+    height: 24px;
+    width: 24px;
 }
 
 .foto-subida-item img {
@@ -1296,7 +1302,7 @@ svg#uuid-a38627c9-109d-413f-b7ed-005836ef688e {
 button.btn-preview-action.btn-change-foto {
     position: absolute;
     top: 9px;
-    right: 0px;
+    right: -4px;
 }
 
 p.textoayudafal, .tamañotextodiv {
