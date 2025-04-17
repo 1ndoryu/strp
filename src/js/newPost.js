@@ -703,28 +703,8 @@
         changeBtn.setAttribute('aria-label', `Cambiar la foto ${filename}`);
         changeBtn.dataset.filename = filename;
         changeBtn.innerHTML = `
-            <?xml version="1.0" encoding="UTF-8"?>
-            <svg id="uuid-67eca691-fad9-4dbb-8a42-6bf39e0830b8" data-name="Capa 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28">
-            <defs>
-                <style>
-                .uuid-7cc435b7-ba6c-40a3-af33-f3f74dcd5e16, .uuid-94213a7e-b161-4609-ad8f-10b2f930d26d {
-                    fill: #fff;
-                }
-
-                .uuid-94213a7e-b161-4609-ad8f-10b2f930d26d {
-                    fill-rule: evenodd;
-                }
-
-                .uuid-b5d097c8-88a9-4c72-9377-d504ca5b4c63 {
-                    fill: #d84740;
-                }
-                </style>
-            </defs>
-            <circle class="uuid-b5d097c8-88a9-4c72-9377-d504ca5b4c63" cx="14" cy="14" r="14"/>
-            <g>
-                <path class="uuid-94213a7e-b161-4609-ad8f-10b2f930d26d" d="m20.8,5.01l-.38-.37-.38.37-7.18,7.09c-.5.49-.78,1.16-.78,1.86v1.76h1.78c.71,0,1.38-.28,1.88-.77l7.18-7.09.38-.37-.38-.37-2.13-2.1Zm-1.75,2.47l1.38-1.36,1.38,1.36-1.38,1.36-1.38-1.36Zm-.75.74l-4.68,4.62c-.3.3-.47.7-.47,1.11v.71h.71c.42,0,.83-.17,1.13-.46l4.68-4.62-1.38-1.36Z"/>
-                <polygon class="uuid-7cc435b7-ba6c-40a3-af33-f3f74dcd5e16" points="21.12 21.37 6.54 21.37 6.54 7.74 13.11 7.74 13.11 8.65 7.46 8.65 7.46 20.46 20.21 20.46 20.21 12.11 21.12 12.11 21.12 21.37"/>
-            </g>
+            <svg data-testid="geist-icon" height="12" stroke-linejoin="round" viewBox="0 0 16 16" width="12" style="color: currentcolor;" aria-hidden="true">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M8.00002 1.25C5.33749 1.25 3.02334 2.73677 1.84047 4.92183L1.48342 5.58138L2.80253 6.29548L3.15958 5.63592C4.09084 3.91566 5.90986 2.75 8.00002 2.75C10.4897 2.75 12.5941 4.40488 13.2713 6.67462H11.8243H11.0743V8.17462H11.8243H15.2489C15.6631 8.17462 15.9989 7.83883 15.9989 7.42462V4V3.25H14.4989V4V5.64468C13.4653 3.06882 10.9456 1.25 8.00002 1.25ZM1.50122 10.8555V12.5V13.25H0.0012207V12.5V9.07538C0.0012207 8.66117 0.337007 8.32538 0.751221 8.32538H4.17584H4.92584V9.82538H4.17584H2.72876C3.40596 12.0951 5.51032 13.75 8.00002 13.75C10.0799 13.75 11.8912 12.5958 12.8266 10.8895L13.1871 10.2318L14.5025 10.9529L14.142 11.6105C12.9539 13.7779 10.6494 15.25 8.00002 15.25C5.05453 15.25 2.53485 13.4313 1.50122 10.8555Z" fill="currentColor"></path>
             </svg>`;
         changeBtn.addEventListener('click', handleChangeFotoClick);
         actionsDiv.appendChild(changeBtn);
