@@ -349,6 +349,10 @@ input[type='radio'] {
     gap: var(--espaciado-pequeno) var(--espaciado-base);
 }
 
+.formulario-multi-etapa {
+    font-family: Poppins, Nunito, Roboto, Arial, sans-serif;
+}
+
 /* ======================================== */
 /*         COMPONENTES ESPECÍFICOS         */
 /* ======================================== */

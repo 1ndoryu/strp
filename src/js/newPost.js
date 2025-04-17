@@ -70,12 +70,12 @@
             // Esto es un fallback, el CSS debería manejarlo
             // contenedorHorario.classList.add('oculto');
             // ayudaTextoHorario?.classList.add('oculto');
-       }
-       if (btnMostrarHorario && contenedorHorario && contenedorHorario.classList.contains('oculto')) {
+        }
+        if (btnMostrarHorario && contenedorHorario && contenedorHorario.classList.contains('oculto')) {
             btnMostrarHorario.classList.remove('oculto'); // Asegurarse que el botón se vea
-       } else if (btnMostrarHorario && contenedorHorario && !contenedorHorario.classList.contains('oculto')) {
+        } else if (btnMostrarHorario && contenedorHorario && !contenedorHorario.classList.contains('oculto')) {
             btnMostrarHorario.classList.add('oculto'); // Si por alguna razón el horario ya está visible, ocultar botón
-       }
+        }
     }
 
     function agregarListeners() {
@@ -304,7 +304,7 @@
             return validarCampo(contenedorHorarioElem, '#error-horario', false, 'Debes marcar al menos un día como disponible.');
         } else {
             // Limpia el error si hay días disponibles
-             return validarCampo(contenedorHorarioElem, '#error-horario', true, '');
+            return validarCampo(contenedorHorarioElem, '#error-horario', true, '');
         }
     }
 
@@ -336,8 +336,9 @@
 
     function actualizarHorarioOculto() {
         let diasSeleccionados = [];
-        let horarios = { inicio: '23:59', fin: '00:00' };
-        let primerDia = -1, ultimoDia = -1;
+        let horarios = {inicio: '23:59', fin: '00:00'};
+        let primerDia = -1,
+            ultimoDia = -1;
         const diasMapping = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo']; // Para obtener el índice
 
         // Iterar sobre los botones de estado para encontrar los disponibles
@@ -350,25 +351,24 @@
                 const contenedorDia = boton.closest('.dia-horario');
 
                 if (diaKey && contenedorDia && diaIndex !== -1) {
-                     diasSeleccionados.push(diaKey);
-                     if (primerDia === -1) primerDia = diaIndex;
-                     ultimoDia = diaIndex;
+                    diasSeleccionados.push(diaKey);
+                    if (primerDia === -1) primerDia = diaIndex;
+                    ultimoDia = diaIndex;
 
-                     const inicioSelect = contenedorDia.querySelector('select[name$="[inicio]"]');
-                     const finSelect = contenedorDia.querySelector('select[name$="[fin]"]');
+                    const inicioSelect = contenedorDia.querySelector('select[name$="[inicio]"]');
+                    const finSelect = contenedorDia.querySelector('select[name$="[fin]"]');
 
-                     if (inicioSelect && inicioSelect.value < horarios.inicio) {
-                         horarios.inicio = inicioSelect.value;
-                     }
-                     if (finSelect && finSelect.value > horarios.fin) {
-                         horarios.fin = finSelect.value;
-                     }
+                    if (inicioSelect && inicioSelect.value < horarios.inicio) {
+                        horarios.inicio = inicioSelect.value;
+                    }
+                    if (finSelect && finSelect.value > horarios.fin) {
+                        horarios.fin = finSelect.value;
+                    }
                 } else {
-                     console.warn("Error al procesar día disponible:", boton);
+                    console.warn('Error al procesar día disponible:', boton);
                 }
             }
         });
-
 
         // El resto de la lógica para calcular 'dis' y actualizar hidden inputs es la misma
         if (diasSeleccionados.length === 0) {
@@ -423,23 +423,22 @@
             boton.classList.add('no-disponible');
             horasDiv.classList.add('oculto');
             // Deshabilitar selects para que no se envíen
-            selectsHora.forEach(select => select.disabled = true);
+            selectsHora.forEach(select => (select.disabled = true));
             diaHorarioDiv.classList.remove('dia-activo'); // Clase visual opcional
-
         } else {
             // Cambiar a Disponible
             boton.textContent = 'Disponible';
             boton.classList.remove('no-disponible');
             boton.classList.add('disponible');
             horasDiv.classList.remove('oculto');
-             // Habilitar selects
-            selectsHora.forEach(select => select.disabled = false);
+            // Habilitar selects
+            selectsHora.forEach(select => (select.disabled = false));
             diaHorarioDiv.classList.add('dia-activo'); // Clase visual opcional
         }
-         // Re-validar después de cada cambio para quitar el mensaje de error si se añade el primer día
-         if (etapas[etapaActualIndex]?.id === 'etapa-anuncio') {
-             validarHorarioSeleccionado();
-         }
+        // Re-validar después de cada cambio para quitar el mensaje de error si se añade el primer día
+        if (etapas[etapaActualIndex]?.id === 'etapa-anuncio') {
+            validarHorarioSeleccionado();
+        }
     }
 
     function manejarSeleccionFotos(event) {
@@ -640,22 +639,6 @@
         return div;
     }
 
-    /* 
-    
-    hola gemini fijate aca en este comentario, 
-    necesito mejorar esta parte, hacer un div, que contenga 2 botones, uno para cambiar la foto, y otro para eliminar, aqui ya tiene un boton que funciona pero, quiero que ambos botenes esten dentro de un, y que tengan estos iconos
-
-    para borrar
-
-    <svg data-testid="geist-icon" height="12" stroke-linejoin="round" viewBox="0 0 16 16" width="12" style="color: currentcolor;"><path fill-rule="evenodd" clip-rule="evenodd" d="M12.4697 13.5303L13 14.0607L14.0607 13L13.5303 12.4697L9.06065 7.99999L13.5303 3.53032L14.0607 2.99999L13 1.93933L12.4697 2.46966L7.99999 6.93933L3.53032 2.46966L2.99999 1.93933L1.93933 2.99999L2.46966 3.53032L6.93933 7.99999L2.46966 12.4697L1.93933 13L2.99999 14.0607L3.53032 13.5303L7.99999 9.06065L12.4697 13.5303Z" fill="currentColor"></path></svg>
-
-    para cambiar
-
-    <svg data-testid="geist-icon" height="12" stroke-linejoin="round" viewBox="0 0 16 16" width="12" style="color: currentcolor;"><path fill-rule="evenodd" clip-rule="evenodd" d="M8.00002 1.25C5.33749 1.25 3.02334 2.73677 1.84047 4.92183L1.48342 5.58138L2.80253 6.29548L3.15958 5.63592C4.09084 3.91566 5.90986 2.75 8.00002 2.75C10.4897 2.75 12.5941 4.40488 13.2713 6.67462H11.8243H11.0743V8.17462H11.8243H15.2489C15.6631 8.17462 15.9989 7.83883 15.9989 7.42462V4V3.25H14.4989V4V5.64468C13.4653 3.06882 10.9456 1.25 8.00002 1.25ZM1.50122 10.8555V12.5V13.25H0.0012207V12.5V9.07538C0.0012207 8.66117 0.337007 8.32538 0.751221 8.32538H4.17584H4.92584V9.82538H4.17584H2.72876C3.40596 12.0951 5.51032 13.75 8.00002 13.75C10.0799 13.75 11.8912 12.5958 12.8266 10.8895L13.1871 10.2318L14.5025 10.9529L14.142 11.6105C12.9539 13.7779 10.6494 15.25 8.00002 15.25C5.05453 15.25 2.53485 13.4313 1.50122 10.8555Z" fill="currentColor"></path></svg>
-
-    y hacer que el boton de cambiar la imagen funcione
-
-    */
     function crearPreviewFoto(htmlContent, filename) {
         const div = document.createElement('div');
         div.classList.add('foto-subida-item');
@@ -747,7 +730,7 @@
         const button = event.currentTarget; // El botón de eliminar que se presionó
         const filename = button.dataset.filename;
         if (!filename) {
-            console.error("No se encontró el filename en el botón de eliminar.");
+            console.error('No se encontró el filename en el botón de eliminar.');
             return;
         }
 
@@ -759,9 +742,8 @@
             previewItem.remove();
             console.log(`Preview [${filename}] eliminado.`);
         } else {
-             console.warn(`No se encontró el elemento preview para [${filename}] (selector: .foto-subida-item).`);
+            console.warn(`No se encontró el elemento preview para [${filename}] (selector: .foto-subida-item).`);
         }
-
 
         // 2. Eliminar el input oculto correspondiente
         const hiddenInput = hiddenPhotoInputsContainer.querySelector(`input[name="photo_name[]"][value="${filename}"]`);
@@ -774,47 +756,94 @@
 
         // Revalidar si aún quedan fotos (por si se eliminó la última)
         const fotosRestantes = hiddenPhotoInputsContainer.querySelectorAll('input[name="photo_name[]"]').length;
-         validarCampo(listaFotosContainer, '#error-fotos', fotosRestantes > 0, 'Debes subir al menos una foto.');
+        validarCampo(listaFotosContainer, '#error-fotos', fotosRestantes > 0, 'Debes subir al menos una foto.');
 
         // Si estábamos en proceso de reemplazar esta foto y la eliminamos, limpiar el estado
-         if (fotosInput && fotosInput.dataset.replacingFilename === filename) {
+        if (fotosInput && fotosInput.dataset.replacingFilename === filename) {
             delete fotosInput.dataset.replacingFilename;
             console.log(`Estado de reemplazo limpiado para [${filename}] porque fue eliminada.`);
-         }
+        }
     }
-
 
     function mostrarErrorFotos(mensaje) {
         const errorDiv = form.querySelector('#error-fotos');
         if (errorDiv) {
             errorDiv.textContent = mensaje;
             errorDiv.classList.remove('oculto');
-             // Añadir clase de inválido al contenedor de la lista para resaltarlo visualmente
-             listaFotosContainer?.classList.add('invalido');
-             // También al input de fotos original, aunque esté oculto puede ser útil
-             fotosInput?.classList.add('invalido');
+            // Añadir clase de inválido al contenedor de la lista para resaltarlo visualmente
+            listaFotosContainer?.classList.add('invalido');
+            // También al input de fotos original, aunque esté oculto puede ser útil
+            fotosInput?.classList.add('invalido');
         } else {
             // Fallback si no existe el div de error específico
-            console.error("Error fotos (div #error-fotos no encontrado):", mensaje);
+            console.error('Error fotos (div #error-fotos no encontrado):', mensaje);
             alert(mensaje);
         }
     }
 
     function manejarEnvioFinal(event) {
-        event.preventDefault();
+        event.preventDefault(); // Previene el envío por defecto
 
+        // Validaciones...
         if (!validarFormularioCompleto()) {
             alert('Por favor, revisa el formulario. Hay errores o campos incompletos en alguna de las etapas.');
             irAPrimeraEtapaConError();
-            return;
+            return; // Detiene la ejecución si hay errores
         }
 
+        // Actualiza campos ocultos justo antes del (potencial) envío
         actualizarSellerTypeOculto();
         actualizarHorarioOculto();
         actualizarIdiomasOculto();
 
-        form.submit();
-    }
+        // --- INICIO: Código añadido para ver los datos del formulario ---
+
+        console.log('--- Preparando para enviar formulario ---');
+        console.log('Valores que se enviarían:');
+
+        // Usamos FormData para recopilar los datos tal como el navegador los enviaría
+        const formData = new FormData(form);
+
+        // Iteramos sobre los datos para mostrarlos en la consola
+        console.group('Datos del FormData:'); // Agrupa los logs para mejor lectura
+        let hasFiles = false;
+        for (const [key, value] of formData.entries()) {
+            if (value instanceof File) {
+                // Si es un archivo, muestra info básica (no el contenido)
+                console.log(`${key}: Archivo { nombre: "${value.name}", tamaño: ${value.size}, tipo: "${value.type}" }`);
+                hasFiles = true;
+            } else {
+                // Si es un valor normal, lo muestra
+                console.log(`${key}: ${value}`);
+            }
+        }
+        console.groupEnd(); // Fin del grupo
+
+        if (hasFiles) {
+            console.log('(Nota: Los archivos no se pueden ver directamente en la consola, solo su información)');
+        }
+
+        // Opcional: Ver los datos como un objeto (puede ser más legible, pero ojo con campos con el mismo nombre, como arrays)
+        try {
+            const dataObject = Object.fromEntries(formData.entries());
+            console.log('Datos como objeto (puede ocultar valores si hay claves repetidas):', dataObject);
+        } catch (e) {
+            console.warn('No se pudo convertir FormData a objeto:', e);
+        }
+
+        console.log('--- Inspección de datos finalizada ---');
+
+        // --- FIN: Código añadido para ver los datos del formulario ---
+
+        // IMPORTANTE: Decide qué hacer a continuación:
+        // Opción 1: Ver los datos y LUEGO enviar (DESCOMENTA la línea de abajo)
+        // form.submit();
+        // console.log("Formulario enviado.");
+
+        // Opción 2: Ver los datos y DETENER el envío para analizar (DEJA COMENTADA la línea form.submit())
+        console.warn("¡Envío detenido! Descomenta 'form.submit();' en el código para permitir el envío real.");
+        // No llames a form.submit() si solo quieres ver los datos por ahora
+    } // Fin de manejarEnvioFinal
 
     function validarFormularioCompleto() {
         let todoValido = true;
