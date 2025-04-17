@@ -1289,6 +1289,10 @@ p.numero-etapa {
     /* border: 1px solid; */
 }
 
+svg#uuid-a38627c9-109d-413f-b7ed-005836ef688e {
+    max-width: 50px;
+}
+
 p.textoayudafal, .tamañotextodiv {
     color: black;
     opacity: 70%;
