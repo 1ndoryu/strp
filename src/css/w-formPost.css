@@ -1293,6 +1293,12 @@ svg#uuid-a38627c9-109d-413f-b7ed-005836ef688e {
     max-width: 50px;
 }
 
+button.btn-preview-action.btn-change-foto {
+    position: absolute;
+    top: 9px;
+    right: 0px;
+}
+
 p.textoayudafal, .tamañotextodiv {
     color: black;
     opacity: 70%;
