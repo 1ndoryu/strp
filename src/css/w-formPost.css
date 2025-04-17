@@ -22,14 +22,6 @@
 /* ======================================== */
 /*          ESTILOS GENERALES              */
 /* ======================================== */
-body {
-    font-family: Poppins;
-    line-height: 1.6;
-    color: var(--color-texto);
-    background-color: var(--color-fondo);
-    margin: 0;
-    padding: 0;
-}
 
 .lista-opciones {
     display: grid;
