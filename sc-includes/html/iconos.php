@@ -101,7 +101,7 @@ function svgs()
         }
 
         .uuid-252eb8aa-eef3-4ea5-8a92-2744a21901a1 {
-            opacity: .56;
+            opacity: .100;
         }
         </style>
     </defs>

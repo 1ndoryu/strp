@@ -395,9 +395,9 @@ input[type='radio'] {
 }
 
 .foto-subida-item img {
-    max-width: 140px;
-    max-height: 140px;
-    aspect-ratio: 1 / 1;
+    max-width: 200px;
+    max-height: 200px;
+    aspect-ratio: 4 / 6;
     object-fit: cover;
 }
 
@@ -1242,4 +1242,61 @@ p.numero-etapa {
     border-width: 5px;
     border-style: solid;
     border-color: #333 transparent transparent transparent;
+}
+
+.subir-imagen-div-div {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.inputfalso {
+    display: flex;
+    align-items: center;
+    align-content: center;
+    flex-direction: row;
+    color: black;
+    FONT-WEIGHT: 600;
+    opacity: 70%;
+}
+
+.inputfalsodiv {
+    border: 1px solid #929292;
+    border-right: unset;
+    height: 38px;
+    padding: 0px 10px;
+    width: 270px;
+    border-radius: 5px;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+    display: flex;
+    align-items: center;
+}
+
+.inputfalso button {
+    height: 38px;
+    background: #000000;
+    border: unset;
+    padding: 9px 20px;
+    color: white;
+    FONT-WEIGHT: 600;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    max-height: 38px;
+    /* border: 1px solid; */
+}
+
+p.textoayudafal, .tamañotextodiv {
+    color: black;
+    opacity: 70%;
+    FONT-WEIGHT: 400;
+    margin-top: 5px;
+    margin-bottom: 0px;
+}
+
+.inputfalsodiv p {
+    margin: 0px;
 }

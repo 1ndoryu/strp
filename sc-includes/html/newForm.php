@@ -515,7 +515,7 @@ function newForm()
                                     </div>
                                 </div>
                                 <p class="textoayudafal">
-                                    Solo admitimis imágenes .jpg, .jpeg y .png
+                                    Solo admitimos imágenes .jpg, .jpeg y .png
                                 </p>
                                 <p class="tamañotextodiv">
                                     Tamaño maximo 2mb
