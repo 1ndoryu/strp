@@ -554,10 +554,20 @@
             .then(html => {
                 loadingIndicator.remove();
                 const photoData = parsePhotoUploadResponse(html);
+                const previewElement = crearPreviewFoto(photoData.previewHtml, newFilename);
+                listaFotosContainer.appendChild(previewElement);
+                console.log(`Nuevo preview [${newFilename}] añadido.`);
+
+                // [Código para añadir hiddenInput] ...
+
+                validarCampo(listaFotosContainer, '#error-fotos', true, ''); // Revalida
+
+                updateArrowButtonStates();
 
                 if (photoData.filename) {
                     const newFilename = photoData.filename;
                     const filenameToReplace = inputElement.dataset.replacingFilename; // Comprueba si estábamos reemplazando
+                    
 
                     if (filenameToReplace) {
                         // --- ESTAMOS REEMPLAZANDO ---
@@ -642,68 +652,159 @@
     function crearPreviewFoto(htmlContent, filename) {
         const div = document.createElement('div');
         div.classList.add('foto-subida-item');
-        // Guardamos el filename en el div principal para fácil acceso al reemplazar/eliminar
         div.dataset.filename = filename;
-        div.innerHTML = htmlContent; // Inserta el HTML del servidor (ej: la imagen)
+        div.innerHTML = htmlContent;
 
-        // Elimina cualquier input oculto que pudiera venir en la respuesta HTML,
-        // ya que gestionamos los inputs ocultos de forma centralizada.
         const hiddenInPreview = div.querySelector('input[name="photo_name[]"]');
         hiddenInPreview?.remove();
 
-        // --- Crear Contenedor de Acciones ---
         const actionsDiv = document.createElement('div');
-        actionsDiv.classList.add('preview-actions'); // Clase para estilizar el contenedor de botones
+        actionsDiv.classList.add('preview-actions');
 
-        // --- Botón Cambiar Foto ---
+        // --- NUEVO: Botón Mover Izquierda ---
+        const moveLeftBtn = document.createElement('button');
+        moveLeftBtn.type = 'button';
+        moveLeftBtn.classList.add('btn-preview-action', 'btn-move-left');
+        moveLeftBtn.title = 'Mover a la izquierda';
+        moveLeftBtn.setAttribute('aria-label', `Mover foto ${filename} a la izquierda`);
+        moveLeftBtn.dataset.filename = filename;
+        moveLeftBtn.innerHTML = `
+            <svg data-testid="geist-icon" height="12" stroke-linejoin="round" style="color:currentColor" viewBox="0 0 16 16" width="12" aria-hidden="true">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M6.46966 13.7803L6.99999 14.3107L8.06065 13.25L7.53032 12.7197L3.56065 8.75001H14.25H15V7.25001H14.25H3.56065L7.53032 3.28034L8.06065 2.75001L6.99999 1.68935L6.46966 2.21968L1.39644 7.2929C1.00592 7.68342 1.00592 8.31659 1.39644 8.70711L6.46966 13.7803Z" fill="currentColor"></path>
+            </svg>`;
+        moveLeftBtn.addEventListener('click', handleMoveFotoClick); // Nuevo handler
+        actionsDiv.appendChild(moveLeftBtn);
+
+        // --- Botón Cambiar Foto (Existente) ---
         const changeBtn = document.createElement('button');
         changeBtn.type = 'button';
         changeBtn.classList.add('btn-preview-action', 'btn-change-foto');
-        changeBtn.title = 'Cambiar foto'; // Tooltip para el usuario
-        changeBtn.setAttribute('aria-label', `Cambiar la foto ${filename}`); // Accesibilidad
-        changeBtn.dataset.filename = filename; // Guardamos el filename para saber cuál cambiar
+        changeBtn.title = 'Cambiar foto';
+        changeBtn.setAttribute('aria-label', `Cambiar la foto ${filename}`);
+        changeBtn.dataset.filename = filename;
         changeBtn.innerHTML = `
             <svg data-testid="geist-icon" height="12" stroke-linejoin="round" viewBox="0 0 16 16" width="12" style="color: currentcolor;" aria-hidden="true">
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M8.00002 1.25C5.33749 1.25 3.02334 2.73677 1.84047 4.92183L1.48342 5.58138L2.80253 6.29548L3.15958 5.63592C4.09084 3.91566 5.90986 2.75 8.00002 2.75C10.4897 2.75 12.5941 4.40488 13.2713 6.67462H11.8243H11.0743V8.17462H11.8243H15.2489C15.6631 8.17462 15.9989 7.83883 15.9989 7.42462V4V3.25H14.4989V4V5.64468C13.4653 3.06882 10.9456 1.25 8.00002 1.25ZM1.50122 10.8555V12.5V13.25H0.0012207V12.5V9.07538C0.0012207 8.66117 0.337007 8.32538 0.751221 8.32538H4.17584H4.92584V9.82538H4.17584H2.72876C3.40596 12.0951 5.51032 13.75 8.00002 13.75C10.0799 13.75 11.8912 12.5958 12.8266 10.8895L13.1871 10.2318L14.5025 10.9529L14.142 11.6105C12.9539 13.7779 10.6494 15.25 8.00002 15.25C5.05453 15.25 2.53485 13.4313 1.50122 10.8555Z" fill="currentColor"></path>
             </svg>`;
-        changeBtn.addEventListener('click', handleChangeFotoClick); // Llama a la nueva función handler
+        changeBtn.addEventListener('click', handleChangeFotoClick);
         actionsDiv.appendChild(changeBtn);
 
-        // --- Botón Eliminar Foto ---
+        // --- NUEVO: Botón Mover Derecha ---
+        const moveRightBtn = document.createElement('button');
+        moveRightBtn.type = 'button';
+        moveRightBtn.classList.add('btn-preview-action', 'btn-move-right');
+        moveRightBtn.title = 'Mover a la derecha';
+        moveRightBtn.setAttribute('aria-label', `Mover foto ${filename} a la derecha`);
+        moveRightBtn.dataset.filename = filename;
+        moveRightBtn.innerHTML = `
+            <svg data-testid="geist-icon" height="12" stroke-linejoin="round" style="color:currentColor" viewBox="0 0 16 16" width="12" aria-hidden="true">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M9.53033 2.21968L9 1.68935L7.93934 2.75001L8.46967 3.28034L12.4393 7.25001H1.75H1V8.75001H1.75H12.4393L8.46967 12.7197L7.93934 13.25L9 14.3107L9.53033 13.7803L14.6036 8.70711C14.9941 8.31659 14.9941 7.68342 14.6036 7.2929L9.53033 2.21968Z" fill="currentColor"></path>
+            </svg>`;
+        moveRightBtn.addEventListener('click', handleMoveFotoClick); // Nuevo handler
+        actionsDiv.appendChild(moveRightBtn);
+
+        // --- Botón Eliminar Foto (Existente) ---
         const deleteBtn = document.createElement('button');
         deleteBtn.type = 'button';
-        deleteBtn.classList.add('btn-preview-action', 'btn-delete-foto'); // Mantenemos clase original si es útil
-        deleteBtn.title = 'Eliminar foto'; // Tooltip
-        deleteBtn.setAttribute('aria-label', `Eliminar la foto ${filename}`); // Accesibilidad
-        deleteBtn.dataset.filename = filename; // Necesario para la función eliminarFoto
+        deleteBtn.classList.add('btn-preview-action', 'btn-delete-foto');
+        deleteBtn.title = 'Eliminar foto';
+        deleteBtn.setAttribute('aria-label', `Eliminar la foto ${filename}`);
+        deleteBtn.dataset.filename = filename;
         deleteBtn.innerHTML = `
             <svg data-testid="geist-icon" height="12" stroke-linejoin="round" viewBox="0 0 16 16" width="12" style="color: currentcolor;" aria-hidden="true">
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M12.4697 13.5303L13 14.0607L14.0607 13L13.5303 12.4697L9.06065 7.99999L13.5303 3.53032L14.0607 2.99999L13 1.93933L12.4697 2.46966L7.99999 6.93933L3.53032 2.46966L2.99999 1.93933L1.93933 2.99999L2.46966 3.53032L6.93933 7.99999L2.46966 12.4697L1.93933 13L2.99999 14.0607L3.53032 13.5303L7.99999 9.06065L12.4697 13.5303Z" fill="currentColor"></path>
             </svg>`;
-        deleteBtn.addEventListener('click', eliminarFoto); // Usa la función existente
+        deleteBtn.addEventListener('click', eliminarFoto);
         actionsDiv.appendChild(deleteBtn);
 
-        // --- Adjuntar Contenedor de Acciones al Preview ---
-        // Intentar encontrar un contenedor específico dentro del HTML devuelto si existe
-        // (como el '.photos_options' que mencionaste). Si no, añadirlo al final del div principal.
-        const optionsContainer = div.querySelector('.photos_options');
+        // --- Adjuntar Contenedor de Acciones ---
+        const optionsContainer = div.querySelector('.photos_options'); // Busca si existe un contenedor específico
         if (optionsContainer) {
-            // Limpiar contenido previo por si acaso y añadir el nuevo div de acciones
-            optionsContainer.innerHTML = '';
+            optionsContainer.innerHTML = ''; // Limpia por si acaso
             optionsContainer.appendChild(actionsDiv);
         } else {
-            // Si no hay un div específico, intenta añadirlo después de la imagen principal
+            // Si no hay contenedor específico, añade después de la imagen o al final
             const img = div.querySelector('img');
             if (img && img.parentNode) {
-                // Inserta el div de acciones justo después de la imagen
                 img.parentNode.insertBefore(actionsDiv, img.nextSibling);
             } else {
-                // Fallback: Añadir al final del div principal si no hay imagen o contenedor
-                div.appendChild(actionsDiv);
+                div.appendChild(actionsDiv); // Fallback
             }
         }
 
         return div;
+    }
+
+    function handleMoveFotoClick(event) {
+        const button = event.currentTarget;
+        const filename = button.dataset.filename;
+        const direction = button.classList.contains('btn-move-left') ? 'left' : 'right';
+
+        const currentPreviewItem = button.closest('.foto-subida-item');
+        if (!currentPreviewItem) return;
+
+        // Encuentra el input oculto correspondiente al preview actual
+        const currentHiddenInput = hiddenPhotoInputsContainer.querySelector(`input[name="photo_name[]"][value="${filename}"]`);
+        if (!currentHiddenInput) {
+            console.error(`No se encontró el input oculto para ${filename}`);
+            return;
+        }
+
+        let siblingPreviewItem = null;
+        let siblingHiddenInput = null;
+
+        if (direction === 'left') {
+            siblingPreviewItem = currentPreviewItem.previousElementSibling;
+        } else {
+            // direction === 'right'
+            siblingPreviewItem = currentPreviewItem.nextElementSibling;
+        }
+
+        // Verifica que el hermano sea también un item de foto (y no el botón de subir, por ejemplo)
+        if (siblingPreviewItem && siblingPreviewItem.classList.contains('foto-subida-item')) {
+            const siblingFilename = siblingPreviewItem.dataset.filename;
+            siblingHiddenInput = hiddenPhotoInputsContainer.querySelector(`input[name="photo_name[]"][value="${siblingFilename}"]`);
+
+            if (siblingHiddenInput) {
+                // Mover los elementos visuales (previews)
+                if (direction === 'left') {
+                    listaFotosContainer.insertBefore(currentPreviewItem, siblingPreviewItem);
+                } else {
+                    // right
+                    listaFotosContainer.insertBefore(currentPreviewItem, siblingPreviewItem.nextElementSibling); // Insertar después del hermano
+                }
+
+                // Mover los inputs ocultos
+                if (direction === 'left') {
+                    hiddenPhotoInputsContainer.insertBefore(currentHiddenInput, siblingHiddenInput);
+                } else {
+                    // right
+                    hiddenPhotoInputsContainer.insertBefore(currentHiddenInput, siblingHiddenInput.nextElementSibling); // Insertar después del hermano
+                }
+
+                // Actualizar el estado de los botones de flecha
+                updateArrowButtonStates();
+            } else {
+                console.error(`No se encontró el input oculto para el hermano ${siblingFilename}`);
+            }
+        }
+    }
+
+    function updateArrowButtonStates() {
+        const previewItems = listaFotosContainer.querySelectorAll('.foto-subida-item');
+        const itemCount = previewItems.length;
+
+        previewItems.forEach((item, index) => {
+            const moveLeftBtn = item.querySelector('.btn-move-left');
+            const moveRightBtn = item.querySelector('.btn-move-right');
+
+            if (moveLeftBtn) {
+                moveLeftBtn.disabled = index === 0; // Deshabilitar izquierda si es el primero
+            }
+            if (moveRightBtn) {
+                moveRightBtn.disabled = index === itemCount - 1; // Deshabilitar derecha si es el último
+            }
+        });
     }
 
     function handleChangeFotoClick(event) {
@@ -763,6 +864,8 @@
             delete fotosInput.dataset.replacingFilename;
             console.log(`Estado de reemplazo limpiado para [${filename}] porque fue eliminada.`);
         }
+
+        updateArrowButtonStates();
     }
 
     function mostrarErrorFotos(mensaje) {
@@ -782,68 +885,20 @@
     }
 
     function manejarEnvioFinal(event) {
-        event.preventDefault(); // Previene el envío por defecto
+        event.preventDefault();
 
-        // Validaciones...
         if (!validarFormularioCompleto()) {
             alert('Por favor, revisa el formulario. Hay errores o campos incompletos en alguna de las etapas.');
             irAPrimeraEtapaConError();
-            return; // Detiene la ejecución si hay errores
+            return;
         }
 
-        // Actualiza campos ocultos justo antes del (potencial) envío
         actualizarSellerTypeOculto();
         actualizarHorarioOculto();
         actualizarIdiomasOculto();
 
-        // --- INICIO: Código añadido para ver los datos del formulario ---
-
-        console.log('--- Preparando para enviar formulario ---');
-        console.log('Valores que se enviarían:');
-
-        // Usamos FormData para recopilar los datos tal como el navegador los enviaría
-        const formData = new FormData(form);
-
-        // Iteramos sobre los datos para mostrarlos en la consola
-        console.group('Datos del FormData:'); // Agrupa los logs para mejor lectura
-        let hasFiles = false;
-        for (const [key, value] of formData.entries()) {
-            if (value instanceof File) {
-                // Si es un archivo, muestra info básica (no el contenido)
-                console.log(`${key}: Archivo { nombre: "${value.name}", tamaño: ${value.size}, tipo: "${value.type}" }`);
-                hasFiles = true;
-            } else {
-                // Si es un valor normal, lo muestra
-                console.log(`${key}: ${value}`);
-            }
-        }
-        console.groupEnd(); // Fin del grupo
-
-        if (hasFiles) {
-            console.log('(Nota: Los archivos no se pueden ver directamente en la consola, solo su información)');
-        }
-
-        // Opcional: Ver los datos como un objeto (puede ser más legible, pero ojo con campos con el mismo nombre, como arrays)
-        try {
-            const dataObject = Object.fromEntries(formData.entries());
-            console.log('Datos como objeto (puede ocultar valores si hay claves repetidas):', dataObject);
-        } catch (e) {
-            console.warn('No se pudo convertir FormData a objeto:', e);
-        }
-
-        console.log('--- Inspección de datos finalizada ---');
-
-        // --- FIN: Código añadido para ver los datos del formulario ---
-
-        // IMPORTANTE: Decide qué hacer a continuación:
-        // Opción 1: Ver los datos y LUEGO enviar (DESCOMENTA la línea de abajo)
-        // form.submit();
-        // console.log("Formulario enviado.");
-
-        // Opción 2: Ver los datos y DETENER el envío para analizar (DEJA COMENTADA la línea form.submit())
-        console.warn("¡Envío detenido! Descomenta 'form.submit();' en el código para permitir el envío real.");
-        // No llames a form.submit() si solo quieres ver los datos por ahora
-    } // Fin de manejarEnvioFinal
+        form.submit();
+    }
 
     function validarFormularioCompleto() {
         let todoValido = true;
