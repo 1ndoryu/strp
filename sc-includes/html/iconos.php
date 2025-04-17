@@ -91,6 +91,26 @@ function svgs()
     </svg>';
 
     $GLOBALS['clock'] = '<svg data-testid="geist-icon" height="12" stroke-linejoin="round" viewBox="0 0 16 16" width="12" style="color: currentcolor;"><path fill-rule="evenodd" clip-rule="evenodd" d="M14.5 8C14.5 11.5899 11.5899 14.5 8 14.5C4.41015 14.5 1.5 11.5899 1.5 8C1.5 4.41015 4.41015 1.5 8 1.5C11.5899 1.5 14.5 4.41015 14.5 8ZM16 8C16 12.4183 12.4183 16 8 16C3.58172 16 0 12.4183 0 8C0 3.58172 3.58172 0 8 0C12.4183 0 16 3.58172 16 8ZM8.75 4.75V4H7.25V4.75V7.875C7.25 8.18976 7.39819 8.48615 7.65 8.675L9.55 10.1L10.15 10.55L11.05 9.35L10.45 8.9L8.75 7.625V4.75Z" fill="currentColor"></path></svg>';
+
+    $GLOBALS['imagen'] = '<?xml version="1.0" encoding="UTF-8"?>
+    <svg id="uuid-a38627c9-109d-413f-b7ed-005836ef688e" data-name="Capa 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 197 198">
+    <defs>
+        <style>
+        .uuid-2f0a57e3-c330-4a8e-ab75-53544eebee37 {
+            fill: #383a39;
+        }
+
+        .uuid-252eb8aa-eef3-4ea5-8a92-2744a21901a1 {
+            opacity: .56;
+        }
+        </style>
+    </defs>
+    <g class="uuid-252eb8aa-eef3-4ea5-8a92-2744a21901a1">
+        <path class="uuid-2f0a57e3-c330-4a8e-ab75-53544eebee37" d="m177.51,0H19.49C8.73,0,0,8.73,0,19.49v159.02c0,10.76,8.73,19.49,19.49,19.49h158.02c10.76,0,19.49-8.73,19.49-19.49V19.49c0-10.76-8.73-19.49-19.49-19.49Zm-11.51,143H25V29h141v114Z"/>
+    </g>
+    <polygon class="uuid-2f0a57e3-c330-4a8e-ab75-53544eebee37" points="41 126 67 95 83.95 110.5 109 78 146.93 126 41 126"/>
+    <circle class="uuid-2f0a57e3-c330-4a8e-ab75-53544eebee37" cx="53" cy="57" r="12"/>
+    </svg>';
 }
 
 svgs();

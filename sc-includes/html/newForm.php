@@ -503,8 +503,10 @@ function newForm()
                         <label class="frm-etiqueta">Sube tus fotos (hasta <?= htmlspecialchars($DATAJSON['max_photos'] ?? 3) ?>)</label>
                         <div class="ayuda-texto">Puedes arrastrar y soltar las imágenes. Tamaño máx. 2 MB (JPG, PNG). La primera foto será la principal.</div>
                         <div class="subida-fotos-contenedor">
-                            <div id="boton-subir-foto" class="boton-subir">
-                                <span>Haz clic o arrastra para subir</span>
+                            <div id="boton-subir-foto" class="boton-subir div-subir-imagen">
+                                <div class="subir-imagen-div-div">
+
+                                </div>
                                 <input type="file" id="campo-subir-foto" multiple accept="image/jpeg, image/png" style="/* display: none; */ position:absolute; opacity: 0; top:0; left:0; bottom:0; right:0; cursor:pointer;">
                             </div>
                             <div id="lista-fotos-subidas" class="lista-fotos sortable">
