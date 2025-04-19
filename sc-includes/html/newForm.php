@@ -551,22 +551,26 @@ function newForm()
                                     <button type="button" class="btn-dia-estado no-disponible" data-dia="<?= $key ?>">No disponible</button>
 
                                     <div class="horas-dia oculto"> <?php /* Sigue oculto por defecto */ ?>
-                                        <label>De:</label>
-                                        <select name="horario_dia[<?= $key ?>][inicio]" class="frm-campo frm-select corto" disabled> <?php /* Añadido disabled inicial */ ?>
-                                            <?php for ($h = 0; $h < 24; $h++) {
-                                                $hora = sprintf('%02d', $h);
-                                                echo "<option value='{$hora}:00'>{$hora}:00</option><option value='{$hora}:30'>{$hora}:30</option>";
-                                            } ?>
-                                        </select>
-                                        <label>A:</label>
-                                        <select name="horario_dia[<?= $key ?>][fin]" class="frm-campo frm-select corto" disabled> <?php /* Añadido disabled inicial */ ?>
-                                            <?php for ($h = 0; $h < 24; $h++) {
-                                                $hora = sprintf('%02d', $h);
-                                                // Ajuste para que la hora final por defecto sea razonable (p.ej., 18:00)
-                                                $selected_fin = ($hora == 18) ? 'selected' : '';
-                                                echo "<option value='{$hora}:00' " . (($h == 18 && !$selected_fin) ? 'selected' : '') . ">{$hora}:00</option><option value='{$hora}:30' " . (($h == 18) ? 'selected' : '') . ">{$hora}:30</option>";
-                                            } ?>
-                                        </select>
+                                        <div class="inputhorahorario">
+                                            <label class="iconohorario"><?php echo $GLOBALS['sol'] ?>:</label>
+                                            <select name="horario_dia[<?= $key ?>][inicio]" class="frm-campo frm-select corto" disabled> <?php /* Añadido disabled inicial */ ?>
+                                                <?php for ($h = 0; $h < 24; $h++) {
+                                                    $hora = sprintf('%02d', $h);
+                                                    echo "<option value='{$hora}:00'>{$hora}:00</option><option value='{$hora}:30'>{$hora}:30</option>";
+                                                } ?>
+                                            </select>
+                                        </div>
+                                        <div class="inputhorahorario">
+                                            <label class="iconohorario"><?php echo $GLOBALS['sol'] ?></label>
+                                            <select name="horario_dia[<?= $key ?>][fin]" class="frm-campo frm-select corto" disabled> <?php /* Añadido disabled inicial */ ?>
+                                                <?php for ($h = 0; $h < 24; $h++) {
+                                                    $hora = sprintf('%02d', $h);
+                                                    // Ajuste para que la hora final por defecto sea razonable (p.ej., 18:00)
+                                                    $selected_fin = ($hora == 18) ? 'selected' : '';
+                                                    echo "<option value='{$hora}:00' " . (($h == 18 && !$selected_fin) ? 'selected' : '') . ">{$hora}:00</option><option value='{$hora}:30' " . (($h == 18) ? 'selected' : '') . ">{$hora}:30</option>";
+                                                } ?>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
                             <?php } ?>
