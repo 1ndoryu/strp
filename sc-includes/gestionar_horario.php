@@ -46,6 +46,11 @@ svgs1();
     /* ======================================== */
     /*          VARIABLES GLOBALES             */
     /* ======================================== */
+
+    body {
+        font-family: Poppins;
+    }
+
     :root {
         --color-primario: #007bff;
         /* Azul ejemplo */
@@ -1529,9 +1534,6 @@ svgs1();
 <body>
 
     <div class="contenedor-principal">
-        <h2>Configura tu Disponibilidad</h2>
-        <p>Marca los días que estás disponible y selecciona las horas. Pulsa Guardar cuando termines.</p>
-
         <div class="horario-semanal" id="contenedor-horario"> <?php /* Ya no necesita la clase oculto aquí */ ?>
             <?php
             $dias = ['lunes' => 'Lunes', 'martes' => 'Martes', 'miercoles' => 'Miércoles', 'jueves' => 'Jueves', 'viernes' => 'Viernes', 'sabado' => 'Sábado', 'domingo' => 'Domingo'];
