@@ -4,14 +4,12 @@ require_once 'html/iconos.php';
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <base href="<?= getConfParam('SITE_URL'); ?>">
-    <? getCanonical(); ?>
+
     <!--[if lt IE 9]>
 <script src="http://css3-mediaqueries-js.googlecode.com/svn/trunk/css3-mediaqueries.js"></script>
 <![endif]-->
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <link rel="shortcut icon" type="image/x-icon" href="<?= getConfParam('SITE_URL'); ?><?= IMG_PATH; ?>favicon.ico">
     <title><?= $TITLE_; ?></title>
     <?php if (DEBUG): ?>
         <meta name="robots" content="noindex,nofollow">
@@ -24,8 +22,8 @@ require_once 'html/iconos.php';
     <meta property="og:site_name" content="<?= getConfParam('SITE_NAME'); ?>">
     <meta property="og:url" content="<?= trim(getConfParam('SITE_URL'), '/'); ?><?= $_SERVER['REQUEST_URI']; ?>">
     <meta property="og:type" content="<?= $TYPE_SITE; ?>">
-    <? getImageHead(); ?>
-    <!--<link rel="stylesheet" media="all" type="text/css" href="<?= getConfParam('SITE_URL'); ?><?= CSS_PATH; ?>fonts/font-awesome.min.css">-->
+
+
 
     <link rel="preload" href="src/css/select2.min.css" rel="stylesheet" as="style" onload="this.onload=null;this.rel='stylesheet'" />
     <noscript>
@@ -78,12 +76,9 @@ require_once 'html/iconos.php';
 
 
     <script defer src="src/js/select2.js"></script>
-    <script defer type="text/javascript" src="<?= getConfParam('SITE_URL'); ?><?= JS_PATH; ?>jquery.sortable.min.js"></script>
-    <script defer type="text/javascript" src="<?= getConfParam('SITE_URL'); ?><?= JS_PATH; ?>jquerynumeric.js"></script>
 
-    <script type="text/javascript">
-        var site_url = '<?= getConfParam('SITE_URL'); ?>';
-    </script>
+
+
     <script src="src/js/main.js?v=0.2" defer></script>
     <!--<link rel="stylesheet" href="node_modules/@glidejs/glide/dist/css/glide.core.min.css">-->
     <!--<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>-->
