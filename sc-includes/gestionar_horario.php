@@ -1536,24 +1536,46 @@ svgs1();
                     <div class="horas-dia oculto">
                         <div class="inputhorahorario">
                             <label class="iconohorario"><?php echo $GLOBALS['sol']; ?></label>
-                            <!-- Selector de hora de inicio reemplazado por input type="time" -->
-                            <input type="time" name="horario_dia[<?= $key ?>][inicio]" class="frm-campo corto" disabled>
+                            <input type="text"
+                                name="horario_dia[<?= $key ?>][inicio]"
+                                class="frm-campo corto" <?php // Mantenemos clases relevantes 
+                                                        ?>
+                                value="09:00" <?php // Valor por defecto opcional 
+                                                ?>
+                                placeholder="HH:MM"
+                                pattern="([01]?[0-9]|2[0-3]):[0-5][0-9]" <?php // Valida formato HH:MM (00:00 a 23:59) 
+                                                                            ?>
+                                maxlength="5"
+                                title="Introduce la hora de inicio en formato HH:MM (ej. 09:00)"
+                                disabled> <?php // Mantenemos el estado inicial disabled 
+                                            ?>
                         </div>
                         <div class="inputhorahorario">
                             <label class="iconohorario"><?php echo $GLOBALS['luna']; ?></label>
-                            <!-- Selector de hora de fin reemplazado por input type="time" -->
-                            <!-- Se mantiene el valor por defecto (18:00) si aplica -->
-                            <input type="time" name="horario_dia[<?= $key ?>][fin]" class="frm-campo corto" disabled value="18:00">
+                            <input type="text"
+                                name="horario_dia[<?= $key ?>][fin]"
+                                class="frm-campo corto" <?php // Mantenemos clases relevantes 
+                                                        ?>
+                                value="18:30" <?php // Valor por defecto opcional (basado en tu select original) 
+                                                ?>
+                                placeholder="HH:MM"
+                                pattern="([01]?[0-9]|2[0-3]):[0-5][0-9]" <?php // Valida formato HH:MM (00:00 a 23:59) 
+                                                                            ?>
+                                maxlength="5"
+                                title="Introduce la hora de fin en formato HH:MM (ej. 17:30)"
+                                disabled> <?php // Mantenemos el estado inicial disabled 
+                                            ?>
                         </div>
                     </div>
                 </div>
             <?php } ?>
             <div class="error-msg oculto" id="error-horario-guardar">Debes marcar al menos un día como disponible.</div>
         </div>
+    </div>
 
-        <div id="mensaje-estado" class="mensaje-estado oculto"></div>
+    <div id="mensaje-estado" class="mensaje-estado oculto"></div>
 
-        <button type="button" id="btn-guardar-horario" class="boton-guardar">Guardar Horario y Cerrar</button>
+    <button type="button" id="btn-guardar-horario" class="boton-guardar">Guardar Horario y Cerrar</button>
 
     </div>
 
