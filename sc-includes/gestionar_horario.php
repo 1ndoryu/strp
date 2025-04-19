@@ -1580,14 +1580,15 @@ svgs1();
             const btnGuardar = document.getElementById('btn-guardar-horario');
             const errorMsgDiv = document.getElementById('error-horario-guardar');
             const mensajeEstadoDiv = document.getElementById('mensaje-estado');
-            const HORARIO_STORAGE_KEY = 'userPendingSchedule'; // Misma clave que en la página principal
+            const HORARIO_STORAGE_KEY = 'userPendingSchedule';
 
-            // --- Función para cambiar estado del día (Copiada y pegada, o refactorizada) ---
+            // --- Función para cambiar estado del día (CORREGIDA) ---
             function toggleDiaEstado(event) {
                 const boton = event.currentTarget;
                 const diaHorarioDiv = boton.closest('.dia-horario');
                 const horasDiv = diaHorarioDiv.querySelector('.horas-dia');
-                const selectsHora = horasDiv.querySelectorAll('select');
+                // CORREGIDO: Buscar inputs en lugar de selects
+                const inputsHora = horasDiv.querySelectorAll('input[type="text"]');
                 const esDisponibleAhora = boton.classList.contains('disponible');
 
                 if (esDisponibleAhora) {
@@ -1595,28 +1596,25 @@ svgs1();
                     boton.classList.remove('disponible');
                     boton.classList.add('no-disponible');
                     horasDiv.classList.add('oculto');
-                    selectsHora.forEach(select => (select.disabled = true));
+                    // CORREGIDO: Deshabilitar inputs
+                    inputsHora.forEach(input => (input.disabled = true));
                     diaHorarioDiv.classList.remove('dia-activo');
                 } else {
                     boton.textContent = 'Disponible';
                     boton.classList.remove('no-disponible');
                     boton.classList.add('disponible');
                     horasDiv.classList.remove('oculto');
-                    selectsHora.forEach(select => (select.disabled = false));
-                    // Pre-seleccionar horas por defecto si se desea al activar
-                    // const inicioSelect = horasDiv.querySelector('select[name$="[inicio]"]');
-                    // const finSelect = horasDiv.querySelector('select[name$="[fin]"]');
-                    // if (!inicioSelect.value) inicioSelect.value = '09:00'; // Ejemplo
-                    // if (!finSelect.value || finSelect.value < inicioSelect.value) finSelect.value = '18:00'; // Ejemplo
+                    // CORREGIDO: Habilitar inputs
+                    inputsHora.forEach(input => (input.disabled = false));
                     diaHorarioDiv.classList.add('dia-activo');
                 }
                 // Limpiar error al interactuar
                 errorMsgDiv.classList.add('oculto');
-                mensajeEstadoDiv.classList.add('oculto'); // Ocultar mensajes anteriores
-                btnGuardar.disabled = false; // Habilitar botón si estaba deshabilitado
+                mensajeEstadoDiv.classList.add('oculto');
+                btnGuardar.disabled = false;
             }
 
-            // --- Función para cargar estado inicial desde localStorage ---
+            // --- Función para cargar estado inicial desde localStorage (CORREGIDA) ---
             function cargarEstadoInicial() {
                 const savedData = localStorage.getItem(HORARIO_STORAGE_KEY);
                 if (savedData) {
@@ -1625,36 +1623,33 @@ svgs1();
                         diaEstadoBotones.forEach(boton => {
                             const diaKey = boton.dataset.dia;
                             const diaInfo = schedule[diaKey];
+                            const diaHorarioDiv = boton.closest('.dia-horario'); // Mover fuera del if/else
+                            const horasDiv = diaHorarioDiv.querySelector('.horas-dia'); // Mover fuera del if/else
+                            // CORREGIDO: Buscar inputs específicos
+                            const inicioInput = horasDiv.querySelector('input[name$="[inicio]"]');
+                            const finInput = horasDiv.querySelector('input[name$="[fin]"]');
+                            // CORREGIDO: Buscar todos los inputs para habilitar/deshabilitar
+                            const inputsHora = horasDiv.querySelectorAll('input[type="text"]');
+
                             if (diaInfo && diaInfo.disponible) {
-                                // Simular un click para ponerlo en estado disponible
-                                // O establecer clases y valores directamente
                                 boton.textContent = 'Disponible';
                                 boton.classList.remove('no-disponible');
                                 boton.classList.add('disponible');
-
-                                const diaHorarioDiv = boton.closest('.dia-horario');
-                                const horasDiv = diaHorarioDiv.querySelector('.horas-dia');
-                                const selectsHora = horasDiv.querySelectorAll('select');
-                                const inicioSelect = horasDiv.querySelector('select[name$="[inicio]"]');
-                                const finSelect = horasDiv.querySelector('select[name$="[fin]"]');
-
                                 horasDiv.classList.remove('oculto');
-                                selectsHora.forEach(select => (select.disabled = false));
+                                // CORREGIDO: Habilitar inputs
+                                inputsHora.forEach(input => (input.disabled = false));
                                 diaHorarioDiv.classList.add('dia-activo');
 
-                                // Establecer valores guardados
-                                if (inicioSelect) inicioSelect.value = diaInfo.inicio || '09:00'; // Valor por defecto si falta
-                                if (finSelect) finSelect.value = diaInfo.fin || '18:00'; // Valor por defecto si falta
+                                // Establecer valores guardados (asegurarse que los inputs existen)
+                                if (inicioInput) inicioInput.value = diaInfo.inicio || '09:00';
+                                if (finInput) finInput.value = diaInfo.fin || '18:30'; // Usar el default del HTML
                             } else {
-                                // Asegurar que está en estado no disponible (ya es el default, pero por si acaso)
                                 boton.textContent = 'No disponible';
                                 boton.classList.remove('disponible');
                                 boton.classList.add('no-disponible');
-                                const diaHorarioDiv = boton.closest('.dia-horario');
-                                const horasDiv = diaHorarioDiv.querySelector('.horas-dia');
-                                const selectsHora = horasDiv.querySelectorAll('select');
                                 horasDiv.classList.add('oculto');
-                                selectsHora.forEach(select => (select.disabled = true));
+                                // CORREGIDO: Deshabilitar inputs
+                                inputsHora.forEach(input => (input.disabled = true));
                                 diaHorarioDiv.classList.remove('dia-activo');
                             }
                         });
@@ -1662,6 +1657,9 @@ svgs1();
                         console.error("Error al cargar horario desde localStorage:", e);
                         mostrarMensaje('error', 'No se pudo cargar el horario guardado previamente.');
                     }
+                } else {
+                    // Asegurarse de que todos los inputs estén deshabilitados al inicio si no hay datos guardados
+                    contenedorHorario.querySelectorAll('.horas-dia input[type="text"]').forEach(input => input.disabled = true);
                 }
             }
 
@@ -1673,41 +1671,53 @@ svgs1();
                 mensajeEstadoDiv.classList.remove('oculto');
             }
 
-            // --- Lógica de Guardado ---
+            // --- Lógica de Guardado (CORREGIDA) ---
             function guardarHorario() {
-                errorMsgDiv.classList.add('oculto'); // Limpiar error previo
+                errorMsgDiv.classList.add('oculto');
                 mensajeEstadoDiv.classList.add('oculto');
 
                 const diasDisponibles = contenedorHorario.querySelectorAll('.btn-dia-estado.disponible');
 
-                // *** Validación Obligatoria ***
                 if (diasDisponibles.length === 0) {
                     errorMsgDiv.textContent = 'Debes marcar al menos un día como disponible.';
                     errorMsgDiv.classList.remove('oculto');
-                    return; // Detener guardado
+                    return;
                 }
 
-                // Recopilar datos
                 const scheduleData = {};
                 const dias = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
+                let errorEnHoras = false; // Flag para detener si hay error
+
                 dias.forEach(key => {
                     const diaDiv = contenedorHorario.querySelector(`#horario-${key}`);
                     const botonEstado = diaDiv.querySelector('.btn-dia-estado');
                     if (botonEstado.classList.contains('disponible')) {
-                        const inicioSelect = diaDiv.querySelector('select[name$="[inicio]"]');
-                        const finSelect = diaDiv.querySelector('select[name$="[fin]"]');
-                        // Validación simple de horas (fin > inicio) - Opcional pero recomendable
-                        if (finSelect.value <= inicioSelect.value) {
-                            mostrarMensaje('error', `La hora de fin debe ser mayor que la de inicio para el ${key.charAt(0).toUpperCase() + key.slice(1)}.`);
-                            // Podríamos detener el guardado aquí o simplemente advertir
-                            // return; // Descomentar para detener si la hora es inválida
-                        }
+                        // CORREGIDO: Buscar inputs
+                        const inicioInput = diaDiv.querySelector('input[name$="[inicio]"]');
+                        const finInput = diaDiv.querySelector('input[name$="[fin]"]');
 
-                        scheduleData[key] = {
-                            disponible: true,
-                            inicio: inicioSelect.value,
-                            fin: finSelect.value
-                        };
+                        // Asegurarse de que los inputs existen antes de leer 'value'
+                        if (inicioInput && finInput) {
+                            // Validación simple de horas (fin > inicio)
+                            // Convertir a minutos o usar comparación de strings directa (HH:MM funciona)
+                            if (finInput.value <= inicioInput.value) {
+                                mostrarMensaje('error', `La hora de fin debe ser mayor que la de inicio para el ${key.charAt(0).toUpperCase() + key.slice(1)}.`);
+                                errorEnHoras = true; // Marcar que hubo un error
+                                // No añadir este día a los datos si hay error
+                            } else {
+                                // Añadir solo si las horas son válidas
+                                scheduleData[key] = {
+                                    disponible: true,
+                                    inicio: inicioInput.value,
+                                    fin: finInput.value
+                                };
+                            }
+                        } else {
+                            // Esto no debería pasar si el HTML es correcto, pero por seguridad
+                            console.error(`Error: No se encontraron inputs de hora para ${key}`);
+                            mostrarMensaje('error', `Error interno al procesar el horario de ${key}.`);
+                            errorEnHoras = true; // Marcar que hubo un error
+                        }
                     } else {
                         scheduleData[key] = {
                             disponible: false
@@ -1715,28 +1725,37 @@ svgs1();
                     }
                 });
 
-                // Guardar en localStorage
+                // Detener si hubo error en la validación de horas
+                if (errorEnHoras) {
+                    return;
+                }
+
+                // --- Guardado en localStorage (sin cambios aquí, pero ahora recibe datos correctos) ---
                 try {
                     localStorage.setItem(HORARIO_STORAGE_KEY, JSON.stringify(scheduleData));
                     mostrarMensaje('exito', '¡Horario guardado con éxito! Puedes cerrar esta pestaña.');
-                    btnGuardar.disabled = true; // Deshabilitar después de guardar
+                    btnGuardar.disabled = true;
 
-                    // Informar a la ventana original que se guardó (Opcional, 'focus' listener es más robusto)
                     if (window.opener && !window.opener.closed) {
-                        // Podrías llamar a una función específica si existe, pero puede fallar
-                        // window.opener.cargarHorarioDesdeStorage();
-                        // O simplemente confiar en el listener 'focus' de la pestaña original
+                        // Intenta notificar a la ventana principal si es posible
+                        // Esto puede fallar por restricciones de seguridad o si la función no existe
+                        try {
+                            if (typeof window.opener.horarioActualizado === 'function') {
+                                window.opener.horarioActualizado();
+                            }
+                        } catch (e) {
+                            console.warn("No se pudo notificar a la ventana principal (puede ser normal).");
+                        }
                     }
 
-                    // Cerrar la ventana después de un breve retraso
                     setTimeout(() => {
                         window.close();
-                    }, 1500); // 1.5 segundos para que el usuario lea el mensaje
+                    }, 1500);
 
                 } catch (e) {
                     console.error("Error al guardar en localStorage:", e);
                     mostrarMensaje('error', 'Ocurrió un error al intentar guardar el horario. Verifica el espacio de almacenamiento o permisos.');
-                    btnGuardar.disabled = false; // Re-habilitar si falla
+                    btnGuardar.disabled = false;
                 }
             }
 
