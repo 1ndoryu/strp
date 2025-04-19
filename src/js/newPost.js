@@ -110,7 +110,7 @@
         // Si no, usa la misma página con un parámetro ?gestionar_horario=1
         // y en el JS/PHP de carga, detecta ese parámetro para mostrar solo el horario.
         // Asumamos una página separada por claridad:
-        const urlGestor = 'gestionar_horario.php'; // *** ¡Crea esta página! ***
+        const urlGestor = 'sc-includes/gestionar_horario.php/'; // *** ¡Crea esta página! ***
         window.open(urlGestor, 'gestorHorarioTab', 'width=600,height=700,scrollbars=yes,resizable=yes');
 
         // Actualizar feedback en la página principal
