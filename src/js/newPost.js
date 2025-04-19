@@ -194,17 +194,17 @@
         let mensajeHTML = '';
         switch (estado) {
             case 'gestionando':
-                mensajeHTML = `El horario se está administrando en una nueva pestaña. <button type="button" id="btn-recargar-horario">Recargar horario guardado</button>`;
+                mensajeHTML = `<button type="button" class="botones-horario-pestana" id="btn-recargar-horario">Recargar horario guardado</button>`;
                 break;
             case 'cargado':
-                mensajeHTML = `Horario cargado: ${data.dias} día(s) disponible(s) aprox. de ${data.inicio} a ${data.fin}. <button type="button" id="btn-modificar-horario">Modificar</button> <button type="button" id="btn-borrar-horario">Borrar horario</button>`;
+                mensajeHTML = `<button class="botones-horario-pestana" type="button" id="btn-modificar-horario">Administrar horario</button>`;
                 break;
             case 'error_carga':
-                mensajeHTML = `<span style="color: red;">${data.message || 'Error al cargar el horario.'}</span> <button type="button" id="btn-intentar-gestor">Administrar horario</button>`;
+                mensajeHTML = `<button type="button" class="botones-horario-pestana" id="btn-intentar-gestor">Administrar horario</button>`;
                 break;
             case 'no_configurado':
             default:
-                mensajeHTML = `Aún no has configurado tu horario. <button type="button" id="btn-administrar-horario-feedback">Administrar horario</button>`;
+                mensajeHTML = `<button type="button" class="botones-horario-pestana" id="btn-administrar-horario-feedback">Administrar horario</button>`;
                 break;
         }
         horarioFeedbackDiv.innerHTML = mensajeHTML;

@@ -513,9 +513,29 @@ svgs1();
 
     button.btn-dia-estado.no-disponible {
         border: unset;
-        /* background: #ff99cb; */
         padding: 10px;
         font-weight: 600;
+        border: 2px solid #7a1c44;
+        background-color: #de5962;
+        height: 92px;
+        width: 140px;
+    }
+
+    span.nombre-dia {
+        width: 140px;
+        padding: 40px;
+    }
+
+    button#btn-guardar-horario {
+        color: black;
+        font-weight: 400;
+        font-size: 14px;
+        background: unset;
+        border: 1px solid #d3d3d3;
+        padding: var(--espaciado-pequeno) var(--espaciado-mediano);
+        border-radius: 5px;
+        margin-top: 30px;
+        margin-bottom: 40px;
     }
 
     span.nombre-dia {
@@ -1520,6 +1540,12 @@ svgs1();
     .iconohorario svg {
         height: 15px;
         width: 15px;
+    }
+
+    .inputhorahorario input.frm-campo.corto {
+        border-radius: 0px;
+        width: 100px;
+        height: 42px;
     }
 </style>
 
