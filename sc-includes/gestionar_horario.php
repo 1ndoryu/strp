@@ -427,6 +427,16 @@ svgs1();
         margin-bottom: var(--espaciado-pequeno);
     }
 
+    .botones-horario-pestana {
+        color: black;
+        font-weight: 400;
+        font-size: 14px;
+        background: unset;
+        border: 1px solid #d3d3d3;
+        padding: var(--espaciado-pequeno) var(--espaciado-mediano);
+        border-radius: 5px;
+    }
+
     .contador-caracteres {
         font-size: 0.8em;
         color: var(--color-texto-secundario);
@@ -508,7 +518,8 @@ svgs1();
         border: 2px solid #4E8059;
         background-color: #8ade8f;
         height: 92px;
-        width: 140px;
+        min-width: 140px;
+        cursor: pointer;
     }
 
     button.btn-dia-estado.no-disponible {
@@ -519,6 +530,7 @@ svgs1();
         background-color: #de5962;
         height: 92px;
         width: 140px;
+        cursor: pointer;
     }
 
     span.nombre-dia {
@@ -538,9 +550,17 @@ svgs1();
         margin-bottom: 40px;
     }
 
-    span.nombre-dia {
-        width: 85px;
+    button#btn-modificar-horario {
+        color: black;
+        font-weight: 400;
+        font-size: 14px;
+        background: unset;
+        border: 1px solid #d3d3d3;
+        padding: var(--espaciado-pequeno) var(--espaciado-mediano);
+        border-radius: 5px;
     }
+
+
 
     /* Estilo para las previsualizaciones (necesitarás añadir elementos img/div aquí con JS) */
     .lista-fotos .foto-preview {
