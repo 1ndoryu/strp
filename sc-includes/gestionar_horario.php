@@ -711,15 +711,6 @@ svgs1();
         /* Se gestiona con la clase .oculto desde JS */
     }
 
-    /* Estilo opcional para campos con error (requiere JS para añadir la clase) */
-    /*
-.frm-campo.error,
-.frm-select.error,
-.frm-textarea.error {
-    border-color: var(--color-error);
-}
-*/
-
     /* ======================================== */
     /*                ALERTAS PHP              */
     /* ======================================== */
@@ -1533,7 +1524,6 @@ svgs1();
 </style>
 
 <body>
-
     <div class="contenedor-principal">
         <div class="horario-semanal" id="contenedor-horario"> <?php /* Ya no necesita la clase oculto aquí */ ?>
             <?php
@@ -1546,22 +1536,14 @@ svgs1();
                     <div class="horas-dia oculto">
                         <div class="inputhorahorario">
                             <label class="iconohorario"><?php echo $GLOBALS['sol']; ?></label>
-                            <select name="horario_dia[<?= $key ?>][inicio]" class="frm-campo frm-select corto" disabled>
-                                <?php for ($h = 0; $h < 24; $h++) {
-                                    $hora = sprintf('%02d', $h);
-                                    echo "<option value='{$hora}:00'>{$hora}:00</option><option value='{$hora}:30'>{$hora}:30</option>";
-                                } ?>
-                            </select>
+                            <!-- Selector de hora de inicio reemplazado por input type="time" -->
+                            <input type="time" name="horario_dia[<?= $key ?>][inicio]" class="frm-campo corto" disabled>
                         </div>
                         <div class="inputhorahorario">
                             <label class="iconohorario"><?php echo $GLOBALS['luna']; ?></label>
-                            <select name="horario_dia[<?= $key ?>][fin]" class="frm-campo frm-select corto" disabled>
-                                <?php for ($h = 0; $h < 24; $h++) {
-                                    $hora = sprintf('%02d', $h);
-                                    $selected_fin = ($h == 18) ? 'selected' : ''; // Mantener el default
-                                    echo "<option value='{$hora}:00' " . (($h == 18 && !$selected_fin) ? 'selected' : '') . ">{$hora}:00</option><option value='{$hora}:30' " . (($h == 18) ? 'selected' : '') . ">{$hora}:30</option>";
-                                } ?>
-                            </select>
+                            <!-- Selector de hora de fin reemplazado por input type="time" -->
+                            <!-- Se mantiene el valor por defecto (18:00) si aplica -->
+                            <input type="time" name="horario_dia[<?= $key ?>][fin]" class="frm-campo corto" disabled value="18:00">
                         </div>
                     </div>
                 </div>
