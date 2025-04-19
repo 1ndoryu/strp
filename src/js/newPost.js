@@ -1,6 +1,8 @@
 (function () {
     'use strict';
 
+    const HORARIO_STORAGE_KEY = 'userPendingSchedule';
+
     const form = document.getElementById('form-nuevo-anuncio');
     if (!form) {
         return;
@@ -84,10 +86,19 @@
         if (contenedorHorario) contenedorHorario.classList.add('oculto');
         if (ayudaTextoHorario) ayudaTextoHorario.classList.add('oculto');
         if (btnMostrarHorario) {
-            // El botón ya no muestra/oculta, abre la nueva pestaña
-            btnMostrarHorario.removeEventListener('click', toggleHorarioOriginal); // Quita listener viejo si existía
-            btnMostrarHorario.addEventListener('click', abrirGestorHorario);
-            // Mantenemos el botón visible para que el usuario pueda hacer click
+            // Limpiamos CUALQUIER listener de click previo para evitar conflictos
+            // Clonando y reemplazando el nodo (forma segura de quitar todos los listeners)
+            const btnClone = btnMostrarHorario.cloneNode(true);
+            btnMostrarHorario.parentNode.replaceChild(btnClone, btnMostrarHorario);
+            // Obtenemos la referencia al nuevo botón clonado
+            const newBtnMostrarHorario = document.getElementById('btn-mostrar-horario');
+            // Añadimos SOLO el listener correcto al clon
+            if (newBtnMostrarHorario) {
+                // Verificar que el clon se encontró
+                newBtnMostrarHorario.addEventListener('click', abrirGestorHorario);
+            } else {
+                console.error('No se pudo encontrar el botón de horario clonado.');
+            }
         }
         cargarHorarioDesdeStorage();
     }
@@ -218,23 +229,7 @@
         if (descripcionTextarea && contDesc) descripcionTextarea.addEventListener('input', actualizarContadores);
         if (fotosInput) fotosInput.addEventListener('change', manejarSeleccionFotos);
 
-        // --- Listener para el botón "Administrar horario" ---
-        if (btnMostrarHorario && contenedorHorario) {
-            btnMostrarHorario.addEventListener('click', () => {
-                contenedorHorario.classList.remove('oculto');
-                ayudaTextoHorario?.classList.remove('oculto'); // Muestra el texto de ayuda también
-                btnMostrarHorario.classList.add('oculto'); // Oculta el botón una vez pulsado
-                // Opcional: Mover el foco al primer elemento interactivo del horario
-                contenedorHorario.querySelector('button, select')?.focus();
-            });
-        }
-
         window.addEventListener('focus', cargarHorarioDesdeStorage);
-
-        // --- Listeners para los botones de estado del día ---
-        // diaEstadoBotones.forEach(boton => {
-        //     boton.addEventListener('click', toggleDiaEstado);
-        // });
 
         form.addEventListener('submit', manejarEnvioFinal);
 
@@ -359,14 +354,29 @@
                     esValido = false;
                     inputsInvalidos.push(fotosInput);
                 }
-                // Solo validar si el contenedor de horario está visible
-                if (contenedorHorario && !contenedorHorario.classList.contains('oculto')) {
-                    if (!validarHorarioSeleccionado()) {
+
+                // --- Validación del Horario (NUEVA LÓGICA) ---
+                const horarioGuardadoEtapa = localStorage.getItem(HORARIO_STORAGE_KEY);
+                const horarioRequeridoEtapa = true; // Define si el horario es siempre obligatorio en esta etapa
+
+                // Asegúrate de tener un div de error cerca del feedback del horario
+                // <div id="error-horario-etapa" class="error-msg oculto"></div>
+                const errorHorarioEtapaSelector = '#error-horario-etapa'; // Selector para el mensaje de error
+
+                if (horarioRequeridoEtapa && !horarioGuardadoEtapa) {
+                    // Mostrar error cerca del botón/feedback de horario
+                    // Usamos horarioFeedbackDiv como 'elemento' para validarCampo, ya que el contenedor original está oculto
+                    if (!validarCampo(horarioFeedbackDiv, errorHorarioEtapaSelector, false, 'Debes configurar y guardar tu horario.')) {
                         esValido = false;
-                        // Empujar el contenedor o el primer botón como referencia para scroll/focus
-                        inputsInvalidos.push(form.querySelector('.horario-semanal .btn-dia-estado') || contenedorHorario);
+                        // Intentamos obtener el botón real para el foco, incluso si fue clonado
+                        const currentBtnMostrarHorario = document.getElementById('btn-mostrar-horario');
+                        inputsInvalidos.push(currentBtnMostrarHorario || horarioFeedbackDiv); // Enfocar el botón o el feedback
                     }
-                } // Si está oculto, no validamos (implica que no se ha administrado)
+                    if (horarioSubmitErrorDiv) horarioSubmitErrorDiv.classList.add('oculto'); // Limpiar error de submit final si este aparece antes
+                } else {
+                    validarCampo(horarioFeedbackDiv, errorHorarioEtapaSelector, true, ''); // Limpiar error si existe
+                }
+                // --- Fin Validación Horario ---
 
                 const telefonoVal = telefonoInput?.value.replace(/\D/g, '') || '';
                 if (!validarCampo(telefonoInput, '#error-telefono', /^[0-9]{9,15}$/.test(telefonoVal), 'Introduce un teléfono válido (9-15 dígitos).')) {
@@ -441,7 +451,6 @@
                 actualizarSellerTypeOculto();
                 break;
             case 'etapa-anuncio':
-                actualizarHorarioOculto();
                 actualizarIdiomasOculto();
                 break;
         }
@@ -452,63 +461,6 @@
         if (seleccionado && hiddenSellerType) {
             hiddenSellerType.value = seleccionado.value === 'visitante' ? '' : seleccionado.value;
         }
-    }
-
-    function actualizarHorarioOculto() {
-        let diasSeleccionados = [];
-        let horarios = {inicio: '23:59', fin: '00:00'};
-        let primerDia = -1,
-            ultimoDia = -1;
-        const diasMapping = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo']; // Para obtener el índice
-
-        // Iterar sobre los botones de estado para encontrar los disponibles
-        const botonesDia = form.querySelectorAll('.btn-dia-estado');
-
-        botonesDia.forEach(boton => {
-            if (boton.classList.contains('disponible')) {
-                const diaKey = boton.dataset.dia; // Obtener el día desde data-dia
-                const diaIndex = diasMapping.indexOf(diaKey); // Encontrar el índice 0-6
-                const contenedorDia = boton.closest('.dia-horario');
-
-                if (diaKey && contenedorDia && diaIndex !== -1) {
-                    diasSeleccionados.push(diaKey);
-                    if (primerDia === -1) primerDia = diaIndex;
-                    ultimoDia = diaIndex;
-
-                    const inicioSelect = contenedorDia.querySelector('select[name$="[inicio]"]');
-                    const finSelect = contenedorDia.querySelector('select[name$="[fin]"]');
-
-                    if (inicioSelect && inicioSelect.value < horarios.inicio) {
-                        horarios.inicio = inicioSelect.value;
-                    }
-                    if (finSelect && finSelect.value > horarios.fin) {
-                        horarios.fin = finSelect.value;
-                    }
-                } else {
-                    console.warn('Error al procesar día disponible:', boton);
-                }
-            }
-        });
-
-        // El resto de la lógica para calcular 'dis' y actualizar hidden inputs es la misma
-        if (diasSeleccionados.length === 0) {
-            hiddenDis.value = '0';
-            hiddenHorarioInicio.value = '00:00';
-            hiddenHorarioFinal.value = '00:00';
-            return;
-        }
-
-        let valorDis = '0'; // Por defecto o personalizado
-        // Lógica para determinar 'dis' (1=Todos, 2=L-V, 3=L-S, 4=S-D) - Mantenida
-        if (diasSeleccionados.length === 7) valorDis = '1';
-        else if (diasSeleccionados.length === 5 && primerDia === 0 && ultimoDia === 4) valorDis = '2'; // Lunes a Viernes
-        else if (diasSeleccionados.length === 6 && primerDia === 0 && ultimoDia === 5) valorDis = '3'; // Lunes a Sábado
-        else if (diasSeleccionados.length === 2 && primerDia === 5 && ultimoDia === 6) valorDis = '4'; // Sábado y Domingo
-        else valorDis = '1'; // Si no coincide, quizás '1' (Todos los marcados) o un código específico? Ajustar según necesidad del backend. Asumiendo '1' por ahora.
-
-        hiddenDis.value = valorDis;
-        hiddenHorarioInicio.value = horarios.inicio;
-        hiddenHorarioFinal.value = horarios.fin;
     }
 
     function actualizarIdiomasOculto() {
@@ -529,37 +481,6 @@
         }
     }
 
-    function toggleDiaEstado(event) {
-        const boton = event.currentTarget;
-        const diaHorarioDiv = boton.closest('.dia-horario');
-        const horasDiv = diaHorarioDiv.querySelector('.horas-dia');
-        const selectsHora = horasDiv.querySelectorAll('select');
-        const esDisponibleAhora = boton.classList.contains('disponible');
-
-        if (esDisponibleAhora) {
-            // Cambiar a No Disponible
-            boton.textContent = 'No disponible';
-            boton.classList.remove('disponible');
-            boton.classList.add('no-disponible');
-            horasDiv.classList.add('oculto');
-            // Deshabilitar selects para que no se envíen
-            selectsHora.forEach(select => (select.disabled = true));
-            diaHorarioDiv.classList.remove('dia-activo'); // Clase visual opcional
-        } else {
-            // Cambiar a Disponible
-            boton.textContent = 'Disponible';
-            boton.classList.remove('no-disponible');
-            boton.classList.add('disponible');
-            horasDiv.classList.remove('oculto');
-            // Habilitar selects
-            selectsHora.forEach(select => (select.disabled = false));
-            diaHorarioDiv.classList.add('dia-activo'); // Clase visual opcional
-        }
-        // Re-validar después de cada cambio para quitar el mensaje de error si se añade el primer día
-        if (etapas[etapaActualIndex]?.id === 'etapa-anuncio') {
-            validarHorarioSeleccionado();
-        }
-    }
 
     function manejarSeleccionFotos(event) {
         const files = event.target.files;
@@ -1093,7 +1014,7 @@
         }
 
         actualizarSellerTypeOculto();
-        //actualizarHorarioOculto();
+
         actualizarIdiomasOculto();
 
         form.submit();
