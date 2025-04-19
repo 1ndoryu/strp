@@ -29,308 +29,1730 @@ function svgs1()
 
 svgs1();
 
+
 ?>
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrar Horario</title>
 
-    <!--[if lt IE 9]>
-<script src="http://css3-mediaqueries-js.googlecode.com/svn/trunk/css3-mediaqueries.js"></script>
-<![endif]-->
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+</head>
 
+<style>
+    /* ======================================== */
+    /*          VARIABLES GLOBALES             */
+    /* ======================================== */
+    :root {
+        --color-primario: #007bff;
+        /* Azul ejemplo */
+        --color-secundario: #6c757d;
+        /* Gris ejemplo */
+        --color-exito: #28a745;
+        /* Verde ejemplo */
+        --color-error: #dc3545;
+        /* Rojo ejemplo */
+        --color-info: #17a2b8;
+        /* Azul claro ejemplo */
+        --color-fondo: #f8f9fa;
+        --color-borde: #dee2e6;
+        --color-texto: #1a1a1a;
+        --color-texto-claro: #fff;
+        --color-texto-secundario: #1a1a1a;
+        --radio-borde: 4px;
+        --espaciado-base: 1rem;
+        /* 16px por defecto */
+        --espaciado-pequeno: calc(var(--espaciado-base) * 0.5);
+        --espaciado-mediano: calc(var(--espaciado-base) * 1.5);
+        --espaciado-grande: calc(var(--espaciado-base) * 2);
+    }
 
-    <link rel="preload" href="src/css/select2.min.css" rel="stylesheet" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-    <noscript>
-        <link rel="stylesheet" href="src/css/select2.min.css">
-    </noscript>
-    <!-- <link rel="stylesheet" href="src/css/all.min.css"> -->
-    <link rel="stylesheet" href="src/css/webfonts/fuentes.css">
+    /* ======================================== */
+    /*          ESTILOS GENERALES              */
+    /* ======================================== */
 
+    .lista-opciones {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: var(--espaciado-base);
+    }
 
-
-    <!--- css -->
-    <!-- <link rel="preload" href="src/css/bootstrap.min.css" rel="stylesheet" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-<noscript><link rel="stylesheet" href="src/css/bootstrap.min.css"></noscript> -->
-
-    <link rel="stylesheet" href="src/css/bootstrap.min.css">
-
-    <!-- <script src="src/js/glide.min.js"></script> -->
-
-
-    <!-- js -->
-    <script defer src="src/js/splide.min.js"></script>
-    <!-- <script src="src/js/jquery.min.js"></script> -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script defer src="src/js/jquery-ui.min.js"></script>
-    <script defer src="src/js/bootstrap.min.js"></script>
-
-    <!-- <link rel="stylesheet" type="text/css" href="src/css/cookies.css"> -->
-    <!-- <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"> -->
-    <!-- <link rel="alternate" type="application/rss+xml" title="<?= $TITLE_; ?>" href="<?= getConfParam('SITE_URL'); ?>feed/"> -->
-    <!--<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>-->
-
-    <link rel="stylesheet" href="src/css/style.css?v=0.6">
-    <link rel="stylesheet" href="src/css/main.css?=v=0.5">
-    <link rel="stylesheet" type="text/css" href="src/css/w-formPost.css?v=0.4">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-
-    <link rel="preload" href="src/css/item.css" rel="stylesheet" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-    <noscript>
-        <link rel="stylesheet" href="src/css/item.css">
-    </noscript>
-
-    <link rel="preload" href="src/css/splide.min.css" rel="stylesheet" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-    <noscript>
-        <link rel="stylesheet" href="src/css/splide.min.css">
-    </noscript>
-
-
-    <script defer src="src/js/select2.js"></script>
-
-
-
-    <script src="src/js/main.js?v=0.2" defer></script>
-    <!--<link rel="stylesheet" href="node_modules/@glidejs/glide/dist/css/glide.core.min.css">-->
-    <!--<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>-->
-    <!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@glidejs/glide">-->
-    <style>
-        .splide {
-            visibility: hidden;
-            position: relative;
+    @media (min-width: 576px) {
+        .lista-opciones {
+            grid-template-columns: repeat(2, 1fr);
         }
-    </style>
+    }
+
+    @media (min-width: 992px) {
+        .lista-opciones {
+            grid-template-columns: repeat(4, 1fr);
+        }
+    }
+
+    .titulo-etapa-tipo-usuario {
+        color: #ff339a;
+        font-size: 21px;
+        margin-bottom: 20px;
+    }
+
+    #boton-subir-foto {
+        position: relative;
+        cursor: pointer;
+        overflow: hidden;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    a {
+        color: var(--color-primario);
+        text-decoration: none;
+    }
+
+    a:hover {
+        text-decoration: underline;
+    }
+
+    /* ======================================== */
+    /*      CONTENEDOR Y FORMULARIO BASE       */
+    /* ======================================== */
+
+    .opcion-contenido {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+    }
+
+    .beneficio-tipo-usuario {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        align-content: center;
+        /* margin-bottom: 2px; */
+        padding: 2px;
+    }
+
+    .separador-opcion-perfil {
+        border-bottom: 2px solid #ff339a;
+        margin-top: -5px;
+        margin-bottom: 5px;
+    }
+
+    .boton-selecionar-perfil {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        align-content: center;
+        background: #ff339a;
+        border-radius: 5px;
+        padding: 7px;
+        color: white;
+        margin-top: 10px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .contenedor-formulario {
+        max-width: 800px;
+        /* Ajusta según necesites */
+        margin: var(--espaciado-mediano) auto;
+        padding: var(--espaciado-mediano);
+        background-color: #fff;
+        border-radius: var(--radio-borde);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .formulario-multi-etapa {
+        /* Estilos generales para el form si son necesarios */
+    }
+
+    .titulo-principal {
+        text-align: center;
+        color: var(--color-primario);
+        margin-bottom: var(--espaciado-mediano);
+    }
+
+    /* ======================================== */
+    /*                ETAPAS                   */
+    /* ======================================== */
+    .etapa {
+        display: none;
+        /* Ocultas por defecto */
+        padding: var(--espaciado-base);
+        border-radius: var(--radio-borde);
+        margin-bottom: var(--espaciado-mediano);
+        background-color: #fff;
+        /* Fondo blanco para cada etapa */
+    }
+
+    .etapa.activa {
+        display: block;
+        /* Muestra la etapa activa */
+    }
+
+    /* Clase de utilidad para ocultar elementos con JS */
+    .oculto {
+        display: none !important;
+    }
+
+    /* ======================================== */
+    /*      GRUPOS DE CAMPOS Y ETIQUETAS       */
+    /* ======================================== */
+    .frm-seccion {
+        margin-bottom: var(--espaciado-mediano);
+        border-radius: var(--radio-borde);
+    }
+
+    .frm-seccion legend {
+        font-weight: bold;
+        color: var(--color-primario);
+        padding: 0 var(--espaciado-pequeno);
+    }
+
+    .frm-grupo {
+        margin-bottom: var(--espaciado-base);
+    }
+
+    .frm-etiqueta {
+        display: block;
+        margin-bottom: var(--espaciado-pequeno);
+        font-weight: bold;
+        color: var(--color-texto-secundario);
+    }
+
+    /* ======================================== */
+    /*      CAMPOS DE FORMULARIO (Inputs)      */
+    /* ======================================== */
+    .frm-campo,
+    .frm-select,
+    .frm-textarea {
+        width: 100%;
+        padding: var(--espaciado-pequeno) var(--espaciado-base);
+        border: 1px solid var(--color-borde);
+        border-radius: var(--radio-borde);
+        font-size: 1rem;
+        transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+
+    .frm-campo:focus,
+    .frm-select:focus,
+    .frm-textarea:focus {
+        outline: none;
+        border-color: var(--color-primario);
+        box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+    }
+
+    .frm-textarea {
+        min-height: 120px;
+        resize: vertical;
+        /* Permite redimensionar verticalmente */
+    }
+
+    .frm-select.corto {
+        width: auto;
+        /* Para selectores de hora */
+        min-width: 80px;
+    }
+
+    /* ======================================== */
+    /*      CHECKBOXES Y RADIOS PERSONALIZADOS */
+    /* ======================================== */
+
+    /* Ajustar columnas para diferentes listas si es necesario */
+    .grupo-radios-plan {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        /* 3 columnas en desktop */
+    }
+
+    .grupo-checkboxes-extra {
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        /* 2 o 3 columnas */
+    }
+
+    .opcion-checkbox.opcion-extra svg {
+        height: 36px;
+        width: 36px;
+    }
+
+    .opcion-radio,
+    .opcion-checkbox {
+        display: block;
+        border: 2px solid var(--color-borde);
+        padding: var(--espaciado-base);
+        border-radius: var(--radio-borde);
+        cursor: pointer;
+        transition: border-color 0.2s ease, background-color 0.2s ease;
+        width: 100%;
+        position: relative;
+    }
+
+    .opcion-radio:hover,
+    .opcion-checkbox:hover,
+    .opcion-radio.marcado {
+        border-color: var(--color-primario);
+        background-color: #f0f8ff;
+    }
+
+    label.opcion-checkbox.opcion-extra {
+        display: flex !important;
+        gap: 20px;
+        align-items: center;
+    }
+
+    .precio-y-tiempo {
+        margin-left: auto;
+        display: flex;
+        gap: 15px;
+    }
+
+    /* Estilo cuando el input dentro está seleccionado */
+    .opcion-radio input:checked+.opcion-contenido,
+    .opcion-checkbox input:checked+.opcion-contenido {
+        /* Puedes añadir algún indicador visual si quieres */
+    }
+
+    .opcion-radio input:checked,
+    .opcion-checkbox input:checked {
+        /* Estilo para el borde de la opción seleccionada */
+        /* Necesitas seleccionar el padre, lo hacemos con JS o ajustando estructura. */
+        /* Alternativa: Estilar la etiqueta contenedora cuando el input está checked */
+    }
+
+    .opcion-radio input[type='radio'],
+    .opcion-checkbox input[type='checkbox'] {
+        /* Ocultar el input por defecto si quieres un look totalmente custom */
+        /* appearance: none; margin-right: 10px; */
+        /* Por ahora, lo dejamos visible por simplicidad */
+        margin-right: var(--espaciado-pequeno);
+        vertical-align: middle;
+        display: none;
+    }
+
+    .imagen-anuncio img {
+        max-width: 160px;
+        max-height: 100%;
+        object-fit: cover;
+        aspect-ratio: 1 / 7;
+    }
+
+    .opcion-contenido strong {
+        display: block;
+        color: var(--color-texto);
+        font-size: 16px;
+    }
+
+    .opcion-contenido span {
+        display: block;
+        font-size: 14px;
+        color: var(--color-texto-secundario);
+        margin-top: -5px;
+    }
+
+    .precio-y-tiempo p {
+        margin: 0;
+        font-weight: 700;
+        font-size: 18px;
+        /* width: 50px; */
+        white-space: nowrap;
+        line-height: 34px;
+    }
+
+    input[type='radio'] {
+        display: none;
+    }
+
+    .frm-grupo.opcion-gratis-extra {
+        margin-top: 12px;
+    }
+
+    .frm-checkbox a {
+        margin-left: 4px;
+        margin-right: 4px;
+    }
+
+    .precio-y-tiempo {
+        margin-left: auto;
+    }
+
+    .precio-plan {
+        font-weight: bold;
+        color: var(--color-exito);
+        margin-top: var(--espaciado-pequeno);
+        font-size: 34px !important;
+    }
+
+    /* Checkboxes normales (no en lista de opciones) */
+    .frm-checkbox {
+        display: inline-flex;
+        /* O block si prefieres uno por línea */
+        align-items: center;
+        margin-right: var(--espaciado-base);
+        /* Espacio entre checkboxes en línea */
+        margin-bottom: var(--espaciado-pequeno);
+        cursor: pointer;
+    }
+
+    .frm-checkbox input[type='checkbox'] {
+        margin-right: var(--espaciado-pequeno);
+    }
+
+    .grupo-checkboxes {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--espaciado-pequeno) var(--espaciado-base);
+    }
+
+    .formulario-multi-etapa {
+        font-family: Poppins, Nunito, Roboto, Arial, sans-serif;
+    }
+
+    /* ======================================== */
+    /*         COMPONENTES ESPECÍFICOS         */
+    /* ======================================== */
+
+    /* --- Ayuda y Contadores --- */
+    .ayuda-texto {
+        font-size: 0.85em;
+        color: var(--color-texto-secundario);
+        margin-top: var(--espaciado-pequeno);
+        margin-bottom: var(--espaciado-pequeno);
+    }
+
+    .contador-caracteres {
+        font-size: 0.8em;
+        color: var(--color-texto-secundario);
+        text-align: right;
+        margin-top: var(--espaciado-pequeno);
+    }
+
+    /* --- Subida de Fotos --- */
+    .subida-fotos-contenedor {
+        border: 2px dashed var(--color-borde);
+        padding: var(--espaciado-mediano);
+        text-align: center;
+        border-radius: var(--radio-borde);
+        margin-bottom: var(--espaciado-base);
+    }
+
+    .boton-subir {
+        cursor: pointer;
+        color: var(--color-primario);
+        font-weight: bold;
+        padding: var(--espaciado-base);
+    }
+
+    .boton-subir:hover {
+        background-color: #f0f8ff;
+    }
+
+    .lista-fotos {
+        margin-top: var(--espaciado-base);
+        gap: var(--espaciado-base);
+        display: flex;
+        flex-direction: row;
+    }
+
+    .foto-subida-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        position: relative;
+    }
+
+    svg#uuid-67eca691-fad9-4dbb-8a42-6bf39e0830b8 {
+        height: 24px;
+        width: 24px;
+    }
+
+    .foto-subida-item img {
+        max-width: 200px;
+        max-height: 200px;
+        aspect-ratio: 4 / 6;
+        object-fit: cover;
+    }
+
+    .foto-subida-item .removeImg {
+        display: none;
+    }
+
+    .foto-subida-item a.edit-photo-icon {
+        display: none;
+    }
+
+    .preview-actions {
+        display: flex;
+        justify-content: space-evenly;
+        width: 100%;
+    }
+
+    .preview-actions button {
+        all: unset;
+        cursor: pointer;
+        padding: 5px 10px;
+    }
+
+    button.btn-dia-estado.disponible {
+        border: unset;
+        padding: 10px;
+        font-weight: 600;
+        border: 2px solid #4E8059;
+        background-color: #8ade8f;
+        height: 92px;
+        width: 140px;
+    }
+
+    button.btn-dia-estado.no-disponible {
+        border: unset;
+        /* background: #ff99cb; */
+        padding: 10px;
+        font-weight: 600;
+    }
+
+    span.nombre-dia {
+        width: 85px;
+    }
+
+    /* Estilo para las previsualizaciones (necesitarás añadir elementos img/div aquí con JS) */
+    .lista-fotos .foto-preview {
+        position: relative;
+        border: 1px solid var(--color-borde);
+        border-radius: var(--radio-borde);
+        overflow: hidden;
+        cursor: pointer;
+        /* Para seleccionar principal */
+        aspect-ratio: 1 / 1;
+        /* Mantiene cuadrada la previsualización */
+    }
+
+    .lista-fotos .foto-preview img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        /* Escala y recorta la imagen */
+    }
+
+    .lista-fotos .foto-preview.principal {
+        border: 3px solid var(--color-primario);
+    }
+
+    .lista-fotos .foto-preview .eliminar-foto {
+        /* Botón para eliminar (opcional) */
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background-color: rgba(220, 53, 69, 0.8);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        font-size: 12px;
+        line-height: 20px;
+        text-align: center;
+        cursor: pointer;
+    }
+
+    /* --- Horario Semanal --- */
+    .horario-semanal {
+        /* Contenedor general */
+    }
+
+    .dia-horario {
+        display: flex;
+        align-items: center;
+        gap: var(--espaciado-base);
+        padding: var(--espaciado-pequeno) 0;
+        border-bottom: 1px dotted var(--color-borde);
+    }
+
+    .dia-horario:last-child {
+        border-bottom: none;
+    }
+
+    .dia-horario .check-dia {
+        flex-basis: 150px;
+        /* Ancho fijo para el nombre del día */
+        flex-shrink: 0;
+        margin: 0;
+        /* Resetear margen de frm-checkbox */
+    }
+
+    .horas-dia {
+        display: flex;
+        align-items: center;
+        gap: var(--espaciado-pequeno);
+        flex-grow: 1;
+    }
+
+    .horas-dia label {
+        font-weight: normal;
+        /* Sobrescribir frm-etiqueta si hereda */
+        margin-bottom: 0;
+        color: var(--color-texto-secundario);
+    }
+
+    /* --- Grupo Teléfono --- */
+    .grupo-telefono {
+        display: flex;
+        align-items: center;
+        gap: var(--espaciado-base);
+    }
+
+    .grupo-telefono .frm-campo {
+        flex-grow: 1;
+        max-width: 300px;
+        width: 100%;
+    }
+
+    .grupo-telefono .check-whatsapp {
+        margin: 0;
+        /* Resetear margen de frm-checkbox */
+        white-space: nowrap;
+        /* Evita que se parta el texto */
+    }
+
+    button#btn-mostrar-horario {
+        color: black;
+        font-weight: 400;
+        font-size: 14px;
+        background: unset;
+        border: 1px solid #d3d3d3;
+    }
+
+    /* --- Grupo Idiomas --- */
+    .grupo-idiomas {
+        display: grid;
+        gap: var(--espaciado-base);
+    }
+
+    .par-idioma {
+        display: flex;
+        gap: var(--espaciado-base);
+    }
+
+    .par-idioma .frm-select {
+        flex: 1;
+        /* Ocupan espacio equitativo */
+    }
+
+    /* ======================================== */
+    /*             NAVEGACIÓN ETAPAS           */
+    /* ======================================== */
+    .navegacion-etapa {
+        display: flex;
+        justify-content: space-between;
+        /* Separa botones anterior/siguiente */
+        margin-top: var(--espaciado-mediano);
+        padding-top: var(--espaciado-base);
+    }
+
+    .frm-boton {
+        padding: var(--espaciado-pequeno) var(--espaciado-mediano);
+        border: none;
+        border-radius: var(--radio-borde);
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.2s ease, transform 0.1s ease;
+        color: var(--color-texto-claro);
+    }
+
+    .frm-boton:hover {
+        opacity: 0.9;
+    }
+
+    .frm-boton:active {
+        transform: scale(0.98);
+    }
+
+    .btn-siguiente,
+    .btn-publicar {
+        /* background-color: var(--color-primario); */
+        color: black;
+        font-weight: 400;
+        font-size: 14px;
+        background: unset;
+        border: 1px solid #d3d3d3;
+    }
+
+    .btn-anterior {
+        color: black;
+        font-weight: 400;
+        font-size: 14px;
+        background: unset;
+        border: 1px solid #d3d3d3;
+    }
+
+    .btn-pago {
+        background-color: var(--color-exito);
+        /* Verde para pago */
+    }
+
+    /* ======================================== */
+    /*           MENSAJES DE ERROR             */
+    /* ======================================== */
+    .error-msg {
+        color: var(--color-error);
+        font-size: 0.85em;
+        margin-top: var(--espaciado-pequeno);
+        /* display: none; */
+        /* Se gestiona con la clase .oculto desde JS */
+    }
+
+    /* Estilo opcional para campos con error (requiere JS para añadir la clase) */
+    /*
+.frm-campo.error,
+.frm-select.error,
+.frm-textarea.error {
+    border-color: var(--color-error);
+}
+*/
+
+    /* ======================================== */
+    /*                ALERTAS PHP              */
+    /* ======================================== */
+    .alerta {
+        padding: var(--espaciado-base);
+        margin-bottom: var(--espaciado-mediano);
+        border: 1px solid transparent;
+        border-radius: var(--radio-borde);
+    }
+
+    .alerta.error {
+        color: #721c24;
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+    }
+
+    .alerta.info {
+        color: #0c5460;
+        background-color: #d1ecf1;
+        border-color: #bee5eb;
+    }
+
+    /* ======================================== */
+    /*                OTROS ESTILOS            */
+    /* ======================================== */
+    .ayuda-post {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 var(--espaciado-base) 0;
+        text-align: center;
+    }
+
+    .ayuda-post-item {
+        display: inline-block;
+        margin: 0 var(--espaciado-pequeno);
+        font-size: 0.9em;
+    }
+
+    .terminos-finales {
+        margin-top: var(--espaciado-grande);
+    }
+
+    .texto-fijo {
+        padding: var(--espaciado-pequeno) 0;
+        display: inline-block;
+        color: var(--color-texto-secundario);
+    }
+
+    /* ======================================== */
+    /*             RESPONSIVIDAD               */
+    /* ======================================== */
+    @media (max-width: 768px) {
+        .contenedor-formulario {
+            margin: var(--espaciado-base) auto;
+            padding: var(--espaciado-base);
+        }
+
+        .grupo-radios-plan,
+        .grupo-checkboxes-extra {
+            grid-template-columns: 1fr;
+            /* Una columna en móvil */
+        }
+
+        .dia-horario {
+            align-items: flex-start;
+            gap: var(--espaciado-pequeno);
+        }
+
+        .dia-horario .check-dia {
+            flex-basis: auto;
+            margin-bottom: var(--espaciado-pequeno);
+        }
+
+        .horas-dia {
+            flex-wrap: wrap;
+            /* Permitir que los selects se envuelvan */
+            width: 100%;
+        }
+
+        .horas-dia .frm-select.corto {
+            min-width: 100px;
+            /* Ajustar ancho mínimo */
+        }
+
+        .par-idioma {
+            flex-direction: column;
+        }
+
+        .navegacion-etapa {
+            flex-direction: column-reverse;
+            /* Poner siguiente arriba */
+            gap: var(--espaciado-base);
+        }
+
+        .navegacion-etapa .frm-boton {
+            width: 100%;
+            /* Botones ocupan todo el ancho */
+        }
+    }
+
+    @media (max-width: 480px) {
+        .grupo-telefono {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .grupo-telefono .frm-campo {
+            width: 100%;
+        }
+
+        .lista-fotos {
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: var(--espaciado-pequeno);
+        }
+    }
+
+    .poppins-thin {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 100;
+        font-style: normal;
+    }
+
+    .poppins-extralight {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 200;
+        font-style: normal;
+    }
+
+    .poppins-light {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 300;
+        font-style: normal;
+    }
+
+    .poppins-regular {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 400;
+        font-style: normal;
+    }
+
+    .poppins-medium {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 500;
+        font-style: normal;
+    }
+
+    .poppins-semibold {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 600;
+        font-style: normal;
+    }
+
+    .poppins-bold {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-style: normal;
+    }
+
+    .poppins-extrabold {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 800;
+        font-style: normal;
+    }
+
+    .poppins-black {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 900;
+        font-style: normal;
+    }
+
+    .poppins-thin-italic {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 100;
+        font-style: italic;
+    }
+
+    .poppins-extralight-italic {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 200;
+        font-style: italic;
+    }
+
+    .poppins-light-italic {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 300;
+        font-style: italic;
+    }
+
+    .poppins-regular-italic {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 400;
+        font-style: italic;
+    }
+
+    .poppins-medium-italic {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 500;
+        font-style: italic;
+    }
+
+    .poppins-semibold-italic {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 600;
+        font-style: italic;
+    }
+
+    .poppins-bold-italic {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-style: italic;
+    }
+
+    .poppins-extrabold-italic {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 800;
+        font-style: italic;
+    }
+
+    .poppins-black-italic {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 900;
+        font-style: italic;
+    }
+
+    .lista-opciones.grupo-radios-plan {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .planes-primer-div p {
+        margin: 0px;
+    }
+
+    .planes-primer-div {
+        padding: 15px 35px;
+        border: 1px solid #d3d3d3;
+        border-radius: 5px;
+        justify-items: anchor-center;
+        font-weight: 700;
+        font-size: 17px;
+    }
+
+    .planes-segundo-div {
+        display: flex;
+        flex-direction: row;
+        border: 1px solid #d3d3d3;
+        padding: 15px 25px;
+        border-radius: 5px;
+        align-items: center;
+        cursor: pointer;
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .contenido-planes-segundo-div p {
+        margin: 0px;
+    }
+
+    .segundo-div-plan {
+        width: 100%;
+        max-width: 900px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    p.titulosegundodiv {
+        font-size: 16px;
+    }
+
+    .contenido-planes-segundo-div {
+        font-weight: 700;
+    }
+
+    .tiempo-plan {
+        position: absolute;
+        background: #fbc300;
+        padding: 5px 10px;
+        border-radius: 40px;
+        color: white;
+        font-weight: 700;
+        top: -15px;
+        right: 10px;
+        font-size: 13px;
+    }
+
+    button.btn-seleccionar-plan {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        align-content: center;
+        background: #fbc300;
+        border-radius: 5px;
+        padding: 7px 14px;
+        color: white;
+        font-size: 14px;
+        font-weight: 600;
+        border: unset;
+    }
+
+    .tercer-div-plan {
+        margin-top: 20px;
+    }
+
+    p.titulotercerdiv {
+        background: #ececec;
+        width: 100%;
+        padding: 15px;
+        text-align-last: center;
+        font-weight: 700;
+        font-size: 15px;
+    }
+
+    .primer-div-plan {
+        display: flex;
+        gap: 15px;
+    }
+
+    table.comparar-caracteristicas-tabla {
+        padding: 40px;
+        padding-top: 0px;
+    }
+
+    h2.titulo-etapa-plan {
+        justify-self: center;
+        padding: 20px;
+        color: #1a1a1a;
+    }
+
+    .tercer-div-plan {
+        width: 100%;
+        max-width: 750px;
+    }
+
+    td {
+        padding-bottom: 10px;
+    }
+
+    .divisor-anuncio {
+        max-width: 700px;
+        width: 100%;
+    }
+
+    .divisor-anuncio-principal {
+        display: flex;
+        gap: 20px;
+        margin: auto;
+        flex-direction: row;
+        justify-content: center;
+    }
+
+    .titulo-etapa-anuncio-div {
+        display: flex;
+        align-items: center;
+        align-content: center;
+        gap: 10px;
+        padding: 18px 0px;
+    }
+
+    p.numero-etapa {
+        margin: 0px;
+        background: #fbc300;
+        border-radius: 130px;
+        /* padding: 13px 13px; */
+        height: 30px;
+        width: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        align-content: center;
+        padding-top: 3px;
+        font-weight: 700;
+        color: white;
+    }
+
+    .titulo-etapa {
+        color: var(--color-secundario);
+    }
+
+    .progresos-etapa {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 30px;
+    }
+
+    .numero-etapa-progreso p {
+        margin: 0px;
+        /* background: #fbc300; */
+        border-radius: 130px;
+        /* padding: 13px 13px; */
+        height: 30px;
+        width: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        align-content: center;
+        padding-top: 3px;
+        font-weight: 700;
+        /* color: white; */
+        background: #eaeaea;
+    }
+
+    .numero-etapa-progreso.etapa-actual-progreso p {
+        background: #fbc300;
+        color: white;
+    }
+
+    .linea-etapa-progreso {
+        border-bottom: 1px solid #3e3e3e;
+        width: 200px;
+        opacity: 0.2;
+    }
+
+    @media (max-width: 992px) {
+        .imagen-anuncio {
+            display: none;
+        }
+    }
+
+    /* --- Estilos Base Selector Personalizado --- */
+    .custom-select-wrapper {
+        position: relative;
+        /* Necesario para posicionar el dropdown */
+        width: 100%;
+    }
+
+    .custom-select-trigger {
+        display: flex;
+        /* Para alinear texto y flecha */
+        justify-content: space-between;
+        /* Empuja la flecha a la derecha */
+        align-items: center;
+        width: 100%;
+        text-align: left;
+        cursor: pointer;
+        /* Hereda estilos de .frm-campo o añade los tuyos */
+        padding: 10px 15px;
+        border: 1px solid #ccc;
+        background-color: #fff;
+        min-height: 40px;
+        /* Asegura altura mínima como otros campos */
+        box-sizing: border-box;
+        /* Importante */
+    }
+
+    .custom-select-trigger:focus {
+        outline: 2px solid dodgerblue;
+        /* O el color de foco de tu tema */
+        outline-offset: 2px;
+    }
+
+    .custom-select-value {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        flex-grow: 1;
+        /* Ocupa el espacio disponible */
+        padding-right: 10px;
+        /* Espacio antes de la flecha */
+    }
+
+    .custom-select-arrow {
+        flex-shrink: 0;
+        /* Evita que la flecha se encoja */
+        transition: transform 0.2s ease;
+    }
+
+    .custom-select-wrapper.open .custom-select-arrow {
+        transform: rotate(180deg);
+    }
+
+    .custom-select-dropdown {
+        position: absolute;
+        /* Posición por defecto (desktop) */
+        top: calc(100% + 5px);
+        /* Debajo del trigger */
+        left: 0;
+        width: 100%;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        /* Asegura que esté por encima de otros elementos */
+        max-height: 250px;
+        /* Altura máxima antes de scroll (desktop) */
+        display: flex;
+        flex-direction: column;
+        /* Estructura vertical */
+        opacity: 0;
+        /* Para transición suave */
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+    }
+
+    .custom-select-wrapper.open .custom-select-dropdown {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+
+    .custom-select-header {
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        /* Alinea buscador y botón cerrar */
+        align-items: center;
+    }
+
+    .custom-select-search {
+        width: 100%;
+        /* Ocupa el espacio */
+        padding: 8px 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        margin-right: 10px;
+        /* Espacio con el botón cerrar */
+        box-sizing: border-box;
+    }
+
+    .custom-select-close {
+        background: none;
+        border: none;
+        font-size: 1.5em;
+        line-height: 1;
+        padding: 0 5px;
+        cursor: pointer;
+        color: #888;
+        display: none;
+        /* Oculto por defecto (visible en móvil) */
+        flex-shrink: 0;
+    }
+
+    .custom-select-options {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        overflow-y: auto;
+        /* Scroll si hay muchas opciones */
+        flex-grow: 1;
+        /* Ocupa el espacio restante en el dropdown */
+    }
+
+    .custom-select-options li {
+        padding: 10px 15px;
+        cursor: pointer;
+        transition: background-color 0.15s ease;
+    }
+
+    .custom-select-options li:hover,
+    .custom-select-options li:focus {
+        background-color: #f0f0f0;
+        outline: none;
+    }
+
+    .custom-select-options li.selected {
+        background-color: #e0e0e0;
+        /* O un color que indique selección */
+        font-weight: bold;
+    }
+
+    .custom-select-options li.filtered-out {
+        display: none;
+        /* Oculta opciones filtradas */
+    }
+
+    /* --- Estilo para Ocultar el Select Original Accesiblemente --- */
+    .visually-hidden {
+        position: absolute !important;
+        height: 1px;
+        width: 1px;
+        overflow: hidden;
+        clip: rect(1px, 1px, 1px, 1px);
+        white-space: nowrap;
+        /* Evita que el contenido afecte al layout */
+        border: 0;
+        /* Asegura que no tenga borde visible */
+        padding: 0;
+        /* Asegura que no tenga padding visible */
+        margin: -1px;
+        /* Evita posible espacio extra */
+    }
+
+    /* --- Estilos Específicos para Móvil (Pantalla Completa) --- */
+    @media (max-width: 768px) {
+
+        /* Ajusta este breakpoint si es necesario */
+        .custom-select-wrapper.open .custom-select-dropdown {
+            position: fixed;
+            /* Fija a la ventana */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            max-height: 100%;
+            background-color: rgba(255, 255, 255, 0.98);
+            /* Fondo semi-transparente o sólido */
+            z-index: 1001;
+            /* Por encima de otros elementos fijos */
+            border: none;
+            box-shadow: none;
+            /* Animación de entrada (opcional) */
+            transform: translateY(0);
+            animation: slideInUp 0.3s ease forwards;
+        }
+
+        .custom-select-header {
+            background-color: #f8f8f8;
+            /* Un fondo para el header */
+            padding: 15px;
+        }
+
+        .custom-select-close {
+            display: block;
+            /* Muestra el botón de cerrar en móvil */
+        }
+
+        .custom-select-options {
+            padding: 10px 0;
+            /* Espacio arriba/abajo en la lista */
+        }
+
+        .custom-select-options li {
+            padding: 15px 20px;
+            /* Más espacio táctil */
+            font-size: 1.1em;
+        }
+
+        /* Animación (Opcional) */
+        @keyframes slideInUp {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    }
+
+    .icono-clock {
+        position: relative;
+        /* Necesario para posicionar el tooltip relativo al icono */
+        cursor: pointer;
+        /* Indica que se puede interactuar */
+    }
+
+    .clock-tooltip {
+        display: none;
+        position: absolute;
+        bottom: 110%;
+        left: 50%;
+        background-color: #f4f4f4;
+        color: #1b1b1b;
+        padding: 5px 10px;
+        height: 30px;
+        border-radius: 4px;
+        font-size: 12px;
+        white-space: nowrap;
+        z-index: 10;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+    }
+
+    /* Opcional: Pequeño triángulo/flecha para el tooltip */
+    .clock-tooltip::after {
+        content: '';
+        position: absolute;
+        top: 100%;
+        /* En la parte inferior del tooltip */
+        left: 50%;
+        margin-left: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: #333 transparent transparent transparent;
+    }
+
+    .subir-imagen-div-div {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .inputfalso {
+        display: flex;
+        align-items: center;
+        align-content: center;
+        flex-direction: row;
+        color: black;
+        FONT-WEIGHT: 600;
+        opacity: 70%;
+    }
+
+    .inputfalsodiv {
+        border: 1px solid #929292;
+        border-right: unset;
+        height: 38px;
+        padding: 0px 10px;
+        width: 270px;
+        border-radius: 5px;
+        border-top-right-radius: 0px;
+        border-bottom-right-radius: 0px;
+        display: flex;
+        align-items: center;
+    }
+
+    .inputfalso button {
+        height: 38px;
+        background: #000000;
+        border: unset;
+        padding: 9px 20px;
+        color: white;
+        FONT-WEIGHT: 600;
+        border-top-right-radius: 5px;
+        border-bottom-right-radius: 5px;
+        max-height: 38px;
+        /* border: 1px solid; */
+    }
+
+    svg#uuid-a38627c9-109d-413f-b7ed-005836ef688e {
+        max-width: 50px;
+    }
+
+    button.btn-preview-action.btn-change-foto {
+        position: absolute;
+        top: 9px;
+        right: -4px;
+    }
+
+    p.textoayudafal,
+    .tamañotextodiv {
+        color: black;
+        opacity: 70%;
+        FONT-WEIGHT: 400;
+        margin-top: 5px;
+        margin-bottom: 0px;
+    }
+
+    .inputfalsodiv p {
+        margin: 0px;
+    }
+
+    .foto-subida-item.rotating {
+        opacity: 0.7;
+        /* Podrías añadir un overlay con un spinner aquí si quieres */
+        position: relative;
+        /* Necesario si usas un spinner absoluto */
+        cursor: progress;
+    }
+
+    /* Ejemplo básico de spinner (necesitarías ajustar estilos) */
+    .foto-subida-item.rotating::after {
+        content: '';
+        display: block;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 20px;
+        height: 20px;
+        margin-top: -10px;
+        margin-left: -10px;
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* Deshabilitar acciones mientras rota */
+    .foto-subida-item.rotating .btn-preview-action {
+        pointer-events: none;
+    }
+
+    select.frm-campo.frm-select.corto {
+        border-radius: 0px;
+        height: 42px;
+    }
+
+    .inputhorahorario {
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+    }
+
+    .iconohorario {
+        background: #3166cc;
+        height: 42px;
+        width: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .iconohorario svg {
+        height: 15px;
+        width: 15px;
+    }
+</style>
 
 <body>
 
-<div class="contenedor-principal">
-    <h2>Configura tu Disponibilidad</h2>
-    <p>Marca los días que estás disponible y selecciona las horas. Pulsa Guardar cuando termines.</p>
+    <div class="contenedor-principal">
+        <h2>Configura tu Disponibilidad</h2>
+        <p>Marca los días que estás disponible y selecciona las horas. Pulsa Guardar cuando termines.</p>
 
-    <div class="horario-semanal" id="contenedor-horario"> <?php /* Ya no necesita la clase oculto aquí */ ?>
-        <?php
-        $dias = ['lunes' => 'Lunes', 'martes' => 'Martes', 'miercoles' => 'Miércoles', 'jueves' => 'Jueves', 'viernes' => 'Viernes', 'sabado' => 'Sábado', 'domingo' => 'Domingo'];
-        foreach ($dias as $key => $nombre) {
-        ?>
-            <div class="dia-horario" id="horario-<?= $key ?>" data-dia="<?= $key ?>">
-                <span class="nombre-dia"><?= $nombre ?>:</span>
-                <button type="button" class="btn-dia-estado no-disponible" data-dia="<?= $key ?>">No disponible</button>
-                <div class="horas-dia oculto">
-                    <div class="inputhorahorario">
-                        <label class="iconohorario"><?php echo $GLOBALS['sol']; ?></label>
-                        <select name="horario_dia[<?= $key ?>][inicio]" class="frm-campo frm-select corto" disabled>
-                            <?php for ($h = 0; $h < 24; $h++) {
-                                $hora = sprintf('%02d', $h);
-                                echo "<option value='{$hora}:00'>{$hora}:00</option><option value='{$hora}:30'>{$hora}:30</option>";
-                            } ?>
-                        </select>
-                    </div>
-                    <div class="inputhorahorario">
-                        <label class="iconohorario"><?php echo $GLOBALS['luna']; ?></label>
-                        <select name="horario_dia[<?= $key ?>][fin]" class="frm-campo frm-select corto" disabled>
-                            <?php for ($h = 0; $h < 24; $h++) {
-                                $hora = sprintf('%02d', $h);
-                                $selected_fin = ($h == 18) ? 'selected' : ''; // Mantener el default
-                                echo "<option value='{$hora}:00' " . (($h == 18 && !$selected_fin) ? 'selected' : '') . ">{$hora}:00</option><option value='{$hora}:30' " . (($h == 18) ? 'selected' : '') . ">{$hora}:30</option>";
-                            } ?>
-                        </select>
+        <div class="horario-semanal" id="contenedor-horario"> <?php /* Ya no necesita la clase oculto aquí */ ?>
+            <?php
+            $dias = ['lunes' => 'Lunes', 'martes' => 'Martes', 'miercoles' => 'Miércoles', 'jueves' => 'Jueves', 'viernes' => 'Viernes', 'sabado' => 'Sábado', 'domingo' => 'Domingo'];
+            foreach ($dias as $key => $nombre) {
+            ?>
+                <div class="dia-horario" id="horario-<?= $key ?>" data-dia="<?= $key ?>">
+                    <span class="nombre-dia"><?= $nombre ?>:</span>
+                    <button type="button" class="btn-dia-estado no-disponible" data-dia="<?= $key ?>">No disponible</button>
+                    <div class="horas-dia oculto">
+                        <div class="inputhorahorario">
+                            <label class="iconohorario"><?php echo $GLOBALS['sol']; ?></label>
+                            <select name="horario_dia[<?= $key ?>][inicio]" class="frm-campo frm-select corto" disabled>
+                                <?php for ($h = 0; $h < 24; $h++) {
+                                    $hora = sprintf('%02d', $h);
+                                    echo "<option value='{$hora}:00'>{$hora}:00</option><option value='{$hora}:30'>{$hora}:30</option>";
+                                } ?>
+                            </select>
+                        </div>
+                        <div class="inputhorahorario">
+                            <label class="iconohorario"><?php echo $GLOBALS['luna']; ?></label>
+                            <select name="horario_dia[<?= $key ?>][fin]" class="frm-campo frm-select corto" disabled>
+                                <?php for ($h = 0; $h < 24; $h++) {
+                                    $hora = sprintf('%02d', $h);
+                                    $selected_fin = ($h == 18) ? 'selected' : ''; // Mantener el default
+                                    echo "<option value='{$hora}:00' " . (($h == 18 && !$selected_fin) ? 'selected' : '') . ">{$hora}:00</option><option value='{$hora}:30' " . (($h == 18) ? 'selected' : '') . ">{$hora}:30</option>";
+                                } ?>
+                            </select>
+                        </div>
                     </div>
                 </div>
-            </div>
-        <?php } ?>
-        <div class="error-msg oculto" id="error-horario-guardar">Debes marcar al menos un día como disponible.</div>
+            <?php } ?>
+            <div class="error-msg oculto" id="error-horario-guardar">Debes marcar al menos un día como disponible.</div>
+        </div>
+
+        <div id="mensaje-estado" class="mensaje-estado oculto"></div>
+
+        <button type="button" id="btn-guardar-horario" class="boton-guardar">Guardar Horario y Cerrar</button>
+
     </div>
 
-    <div id="mensaje-estado" class="mensaje-estado oculto"></div>
+    <script>
+        (function() {
+            'use strict';
 
-    <button type="button" id="btn-guardar-horario" class="boton-guardar">Guardar Horario y Cerrar</button>
+            const contenedorHorario = document.getElementById('contenedor-horario');
+            const diaEstadoBotones = contenedorHorario.querySelectorAll('.btn-dia-estado');
+            const btnGuardar = document.getElementById('btn-guardar-horario');
+            const errorMsgDiv = document.getElementById('error-horario-guardar');
+            const mensajeEstadoDiv = document.getElementById('mensaje-estado');
+            const HORARIO_STORAGE_KEY = 'userPendingSchedule'; // Misma clave que en la página principal
 
-</div>
+            // --- Función para cambiar estado del día (Copiada y pegada, o refactorizada) ---
+            function toggleDiaEstado(event) {
+                const boton = event.currentTarget;
+                const diaHorarioDiv = boton.closest('.dia-horario');
+                const horasDiv = diaHorarioDiv.querySelector('.horas-dia');
+                const selectsHora = horasDiv.querySelectorAll('select');
+                const esDisponibleAhora = boton.classList.contains('disponible');
 
-<script>
-(function() {
-    'use strict';
+                if (esDisponibleAhora) {
+                    boton.textContent = 'No disponible';
+                    boton.classList.remove('disponible');
+                    boton.classList.add('no-disponible');
+                    horasDiv.classList.add('oculto');
+                    selectsHora.forEach(select => (select.disabled = true));
+                    diaHorarioDiv.classList.remove('dia-activo');
+                } else {
+                    boton.textContent = 'Disponible';
+                    boton.classList.remove('no-disponible');
+                    boton.classList.add('disponible');
+                    horasDiv.classList.remove('oculto');
+                    selectsHora.forEach(select => (select.disabled = false));
+                    // Pre-seleccionar horas por defecto si se desea al activar
+                    // const inicioSelect = horasDiv.querySelector('select[name$="[inicio]"]');
+                    // const finSelect = horasDiv.querySelector('select[name$="[fin]"]');
+                    // if (!inicioSelect.value) inicioSelect.value = '09:00'; // Ejemplo
+                    // if (!finSelect.value || finSelect.value < inicioSelect.value) finSelect.value = '18:00'; // Ejemplo
+                    diaHorarioDiv.classList.add('dia-activo');
+                }
+                // Limpiar error al interactuar
+                errorMsgDiv.classList.add('oculto');
+                mensajeEstadoDiv.classList.add('oculto'); // Ocultar mensajes anteriores
+                btnGuardar.disabled = false; // Habilitar botón si estaba deshabilitado
+            }
 
-    const contenedorHorario = document.getElementById('contenedor-horario');
-    const diaEstadoBotones = contenedorHorario.querySelectorAll('.btn-dia-estado');
-    const btnGuardar = document.getElementById('btn-guardar-horario');
-    const errorMsgDiv = document.getElementById('error-horario-guardar');
-    const mensajeEstadoDiv = document.getElementById('mensaje-estado');
-    const HORARIO_STORAGE_KEY = 'userPendingSchedule'; // Misma clave que en la página principal
+            // --- Función para cargar estado inicial desde localStorage ---
+            function cargarEstadoInicial() {
+                const savedData = localStorage.getItem(HORARIO_STORAGE_KEY);
+                if (savedData) {
+                    try {
+                        const schedule = JSON.parse(savedData);
+                        diaEstadoBotones.forEach(boton => {
+                            const diaKey = boton.dataset.dia;
+                            const diaInfo = schedule[diaKey];
+                            if (diaInfo && diaInfo.disponible) {
+                                // Simular un click para ponerlo en estado disponible
+                                // O establecer clases y valores directamente
+                                boton.textContent = 'Disponible';
+                                boton.classList.remove('no-disponible');
+                                boton.classList.add('disponible');
 
-    // --- Función para cambiar estado del día (Copiada y pegada, o refactorizada) ---
-    function toggleDiaEstado(event) {
-        const boton = event.currentTarget;
-        const diaHorarioDiv = boton.closest('.dia-horario');
-        const horasDiv = diaHorarioDiv.querySelector('.horas-dia');
-        const selectsHora = horasDiv.querySelectorAll('select');
-        const esDisponibleAhora = boton.classList.contains('disponible');
+                                const diaHorarioDiv = boton.closest('.dia-horario');
+                                const horasDiv = diaHorarioDiv.querySelector('.horas-dia');
+                                const selectsHora = horasDiv.querySelectorAll('select');
+                                const inicioSelect = horasDiv.querySelector('select[name$="[inicio]"]');
+                                const finSelect = horasDiv.querySelector('select[name$="[fin]"]');
 
-        if (esDisponibleAhora) {
-            boton.textContent = 'No disponible';
-            boton.classList.remove('disponible');
-            boton.classList.add('no-disponible');
-            horasDiv.classList.add('oculto');
-            selectsHora.forEach(select => (select.disabled = true));
-            diaHorarioDiv.classList.remove('dia-activo');
-        } else {
-            boton.textContent = 'Disponible';
-            boton.classList.remove('no-disponible');
-            boton.classList.add('disponible');
-            horasDiv.classList.remove('oculto');
-            selectsHora.forEach(select => (select.disabled = false));
-             // Pre-seleccionar horas por defecto si se desea al activar
-             // const inicioSelect = horasDiv.querySelector('select[name$="[inicio]"]');
-             // const finSelect = horasDiv.querySelector('select[name$="[fin]"]');
-             // if (!inicioSelect.value) inicioSelect.value = '09:00'; // Ejemplo
-             // if (!finSelect.value || finSelect.value < inicioSelect.value) finSelect.value = '18:00'; // Ejemplo
-            diaHorarioDiv.classList.add('dia-activo');
-        }
-        // Limpiar error al interactuar
-        errorMsgDiv.classList.add('oculto');
-        mensajeEstadoDiv.classList.add('oculto'); // Ocultar mensajes anteriores
-        btnGuardar.disabled = false; // Habilitar botón si estaba deshabilitado
-    }
+                                horasDiv.classList.remove('oculto');
+                                selectsHora.forEach(select => (select.disabled = false));
+                                diaHorarioDiv.classList.add('dia-activo');
 
-    // --- Función para cargar estado inicial desde localStorage ---
-    function cargarEstadoInicial() {
-        const savedData = localStorage.getItem(HORARIO_STORAGE_KEY);
-        if (savedData) {
-            try {
-                const schedule = JSON.parse(savedData);
-                diaEstadoBotones.forEach(boton => {
-                    const diaKey = boton.dataset.dia;
-                    const diaInfo = schedule[diaKey];
-                    if (diaInfo && diaInfo.disponible) {
-                        // Simular un click para ponerlo en estado disponible
-                        // O establecer clases y valores directamente
-                        boton.textContent = 'Disponible';
-                        boton.classList.remove('no-disponible');
-                        boton.classList.add('disponible');
+                                // Establecer valores guardados
+                                if (inicioSelect) inicioSelect.value = diaInfo.inicio || '09:00'; // Valor por defecto si falta
+                                if (finSelect) finSelect.value = diaInfo.fin || '18:00'; // Valor por defecto si falta
+                            } else {
+                                // Asegurar que está en estado no disponible (ya es el default, pero por si acaso)
+                                boton.textContent = 'No disponible';
+                                boton.classList.remove('disponible');
+                                boton.classList.add('no-disponible');
+                                const diaHorarioDiv = boton.closest('.dia-horario');
+                                const horasDiv = diaHorarioDiv.querySelector('.horas-dia');
+                                const selectsHora = horasDiv.querySelectorAll('select');
+                                horasDiv.classList.add('oculto');
+                                selectsHora.forEach(select => (select.disabled = true));
+                                diaHorarioDiv.classList.remove('dia-activo');
+                            }
+                        });
+                    } catch (e) {
+                        console.error("Error al cargar horario desde localStorage:", e);
+                        mostrarMensaje('error', 'No se pudo cargar el horario guardado previamente.');
+                    }
+                }
+            }
 
-                        const diaHorarioDiv = boton.closest('.dia-horario');
-                        const horasDiv = diaHorarioDiv.querySelector('.horas-dia');
-                        const selectsHora = horasDiv.querySelectorAll('select');
-                        const inicioSelect = horasDiv.querySelector('select[name$="[inicio]"]');
-                        const finSelect = horasDiv.querySelector('select[name$="[fin]"]');
+            // --- Función para mostrar mensajes de estado ---
+            function mostrarMensaje(tipo, texto) {
+                mensajeEstadoDiv.textContent = texto;
+                mensajeEstadoDiv.className = 'mensaje-estado'; // Reset clases
+                mensajeEstadoDiv.classList.add(tipo === 'exito' ? 'exito' : 'error');
+                mensajeEstadoDiv.classList.remove('oculto');
+            }
 
-                        horasDiv.classList.remove('oculto');
-                        selectsHora.forEach(select => (select.disabled = false));
-                        diaHorarioDiv.classList.add('dia-activo');
+            // --- Lógica de Guardado ---
+            function guardarHorario() {
+                errorMsgDiv.classList.add('oculto'); // Limpiar error previo
+                mensajeEstadoDiv.classList.add('oculto');
 
-                        // Establecer valores guardados
-                        if (inicioSelect) inicioSelect.value = diaInfo.inicio || '09:00'; // Valor por defecto si falta
-                        if (finSelect) finSelect.value = diaInfo.fin || '18:00'; // Valor por defecto si falta
+                const diasDisponibles = contenedorHorario.querySelectorAll('.btn-dia-estado.disponible');
+
+                // *** Validación Obligatoria ***
+                if (diasDisponibles.length === 0) {
+                    errorMsgDiv.textContent = 'Debes marcar al menos un día como disponible.';
+                    errorMsgDiv.classList.remove('oculto');
+                    return; // Detener guardado
+                }
+
+                // Recopilar datos
+                const scheduleData = {};
+                const dias = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
+                dias.forEach(key => {
+                    const diaDiv = contenedorHorario.querySelector(`#horario-${key}`);
+                    const botonEstado = diaDiv.querySelector('.btn-dia-estado');
+                    if (botonEstado.classList.contains('disponible')) {
+                        const inicioSelect = diaDiv.querySelector('select[name$="[inicio]"]');
+                        const finSelect = diaDiv.querySelector('select[name$="[fin]"]');
+                        // Validación simple de horas (fin > inicio) - Opcional pero recomendable
+                        if (finSelect.value <= inicioSelect.value) {
+                            mostrarMensaje('error', `La hora de fin debe ser mayor que la de inicio para el ${key.charAt(0).toUpperCase() + key.slice(1)}.`);
+                            // Podríamos detener el guardado aquí o simplemente advertir
+                            // return; // Descomentar para detener si la hora es inválida
+                        }
+
+                        scheduleData[key] = {
+                            disponible: true,
+                            inicio: inicioSelect.value,
+                            fin: finSelect.value
+                        };
                     } else {
-                        // Asegurar que está en estado no disponible (ya es el default, pero por si acaso)
-                         boton.textContent = 'No disponible';
-                         boton.classList.remove('disponible');
-                         boton.classList.add('no-disponible');
-                         const diaHorarioDiv = boton.closest('.dia-horario');
-                         const horasDiv = diaHorarioDiv.querySelector('.horas-dia');
-                         const selectsHora = horasDiv.querySelectorAll('select');
-                         horasDiv.classList.add('oculto');
-                         selectsHora.forEach(select => (select.disabled = true));
-                         diaHorarioDiv.classList.remove('dia-activo');
+                        scheduleData[key] = {
+                            disponible: false
+                        };
                     }
                 });
-            } catch (e) {
-                console.error("Error al cargar horario desde localStorage:", e);
-                mostrarMensaje('error', 'No se pudo cargar el horario guardado previamente.');
+
+                // Guardar en localStorage
+                try {
+                    localStorage.setItem(HORARIO_STORAGE_KEY, JSON.stringify(scheduleData));
+                    mostrarMensaje('exito', '¡Horario guardado con éxito! Puedes cerrar esta pestaña.');
+                    btnGuardar.disabled = true; // Deshabilitar después de guardar
+
+                    // Informar a la ventana original que se guardó (Opcional, 'focus' listener es más robusto)
+                    if (window.opener && !window.opener.closed) {
+                        // Podrías llamar a una función específica si existe, pero puede fallar
+                        // window.opener.cargarHorarioDesdeStorage();
+                        // O simplemente confiar en el listener 'focus' de la pestaña original
+                    }
+
+                    // Cerrar la ventana después de un breve retraso
+                    setTimeout(() => {
+                        window.close();
+                    }, 1500); // 1.5 segundos para que el usuario lea el mensaje
+
+                } catch (e) {
+                    console.error("Error al guardar en localStorage:", e);
+                    mostrarMensaje('error', 'Ocurrió un error al intentar guardar el horario. Verifica el espacio de almacenamiento o permisos.');
+                    btnGuardar.disabled = false; // Re-habilitar si falla
+                }
             }
-        }
-    }
 
-     // --- Función para mostrar mensajes de estado ---
-     function mostrarMensaje(tipo, texto) {
-         mensajeEstadoDiv.textContent = texto;
-         mensajeEstadoDiv.className = 'mensaje-estado'; // Reset clases
-         mensajeEstadoDiv.classList.add(tipo === 'exito' ? 'exito' : 'error');
-         mensajeEstadoDiv.classList.remove('oculto');
-     }
+            // --- Añadir Listeners ---
+            diaEstadoBotones.forEach(boton => {
+                boton.addEventListener('click', toggleDiaEstado);
+            });
 
-    // --- Lógica de Guardado ---
-    function guardarHorario() {
-        errorMsgDiv.classList.add('oculto'); // Limpiar error previo
-        mensajeEstadoDiv.classList.add('oculto');
+            btnGuardar.addEventListener('click', guardarHorario);
 
-        const diasDisponibles = contenedorHorario.querySelectorAll('.btn-dia-estado.disponible');
+            // Cargar estado al iniciar la página
+            cargarEstadoInicial();
 
-        // *** Validación Obligatoria ***
-        if (diasDisponibles.length === 0) {
-            errorMsgDiv.textContent = 'Debes marcar al menos un día como disponible.';
-            errorMsgDiv.classList.remove('oculto');
-            return; // Detener guardado
-        }
-
-        // Recopilar datos
-        const scheduleData = {};
-        const dias = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
-        dias.forEach(key => {
-            const diaDiv = contenedorHorario.querySelector(`#horario-${key}`);
-            const botonEstado = diaDiv.querySelector('.btn-dia-estado');
-            if (botonEstado.classList.contains('disponible')) {
-                const inicioSelect = diaDiv.querySelector('select[name$="[inicio]"]');
-                const finSelect = diaDiv.querySelector('select[name$="[fin]"]');
-                // Validación simple de horas (fin > inicio) - Opcional pero recomendable
-                 if (finSelect.value <= inicioSelect.value) {
-                     mostrarMensaje('error', `La hora de fin debe ser mayor que la de inicio para el ${key.charAt(0).toUpperCase() + key.slice(1)}.`);
-                     // Podríamos detener el guardado aquí o simplemente advertir
-                     // return; // Descomentar para detener si la hora es inválida
-                 }
-
-                scheduleData[key] = {
-                    disponible: true,
-                    inicio: inicioSelect.value,
-                    fin: finSelect.value
-                };
-            } else {
-                scheduleData[key] = { disponible: false };
-            }
-        });
-
-        // Guardar en localStorage
-        try {
-            localStorage.setItem(HORARIO_STORAGE_KEY, JSON.stringify(scheduleData));
-            mostrarMensaje('exito', '¡Horario guardado con éxito! Puedes cerrar esta pestaña.');
-            btnGuardar.disabled = true; // Deshabilitar después de guardar
-
-            // Informar a la ventana original que se guardó (Opcional, 'focus' listener es más robusto)
-             if (window.opener && !window.opener.closed) {
-                 // Podrías llamar a una función específica si existe, pero puede fallar
-                 // window.opener.cargarHorarioDesdeStorage();
-                 // O simplemente confiar en el listener 'focus' de la pestaña original
-             }
-
-            // Cerrar la ventana después de un breve retraso
-            setTimeout(() => {
-                window.close();
-            }, 1500); // 1.5 segundos para que el usuario lea el mensaje
-
-        } catch (e) {
-            console.error("Error al guardar en localStorage:", e);
-            mostrarMensaje('error', 'Ocurrió un error al intentar guardar el horario. Verifica el espacio de almacenamiento o permisos.');
-            btnGuardar.disabled = false; // Re-habilitar si falla
-        }
-    }
-
-    // --- Añadir Listeners ---
-    diaEstadoBotones.forEach(boton => {
-        boton.addEventListener('click', toggleDiaEstado);
-    });
-
-    btnGuardar.addEventListener('click', guardarHorario);
-
-    // Cargar estado al iniciar la página
-    cargarEstadoInicial();
-
-})();
-</script>
+        })();
+    </script>
 
 </body>
+
 </html>
