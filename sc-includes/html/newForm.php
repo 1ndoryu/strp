@@ -532,10 +532,7 @@ function newForm()
                     </div>
 
                     <div class="frm-grupo">
-                        <label class="frm-etiqueta">Administrar horario*</label>
-
-                        <?php /* Botón para mostrar/ocultar el horario */ ?>
-                        <button type="button" id="btn-mostrar-horario" class="frm-boton">Administrar horario</button>
+                        <label class="frm-etiqueta" id="btn-mostrar-horario">Administrar horario*</label>
 
                         <div class="ayuda-texto oculto" id="ayuda-horario">Marca los días que estás disponible y selecciona tu horario.</div>
 

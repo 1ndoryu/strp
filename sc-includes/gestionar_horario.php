@@ -1,63 +1,100 @@
 <?php
-// Puedes incluir cabeceras básicas de HTML, CSS necesario, etc.
-// O simplemente empezar con el div del horario si usas un layout mínimo.
-
-// Incluir variables $GLOBALS['sol'] y $GLOBALS['luna'] si las necesitas aquí también.
-// Ejemplo simplificado (asegúrate de definir estas variables globalmente o pasarlas):
-$GLOBALS['sol'] = '☀️'; // Ejemplo
-$GLOBALS['luna'] = '🌙'; // Ejemplo
-
+require_once 'html/iconos.php';
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Administrar Horario</title>
-    <!-- Incluye aquí los mismos estilos CSS que afectan al horario en tu página principal -->
-    <link rel="stylesheet" href="ruta/a/tu/estilo_formulario.css">
+    <base href="<?= getConfParam('SITE_URL'); ?>">
+    <? getCanonical(); ?>
+    <!--[if lt IE 9]>
+<script src="http://css3-mediaqueries-js.googlecode.com/svn/trunk/css3-mediaqueries.js"></script>
+<![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <link rel="shortcut icon" type="image/x-icon" href="<?= getConfParam('SITE_URL'); ?><?= IMG_PATH; ?>favicon.ico">
+    <title><?= $TITLE_; ?></title>
+    <?php if (DEBUG): ?>
+        <meta name="robots" content="noindex,nofollow">
+    <?php endif ?>
+    <meta name="title" content="<?= $TITLE_; ?>" />
+    <meta name="description" content="<?= $DESCRIPTION_; ?>" />
+    <meta name="keywords" content="<?= $KEYWORDS_; ?>">
+    <meta property="og:title" content="<?= $TITLE_; ?>">
+    <meta property="og:description" content="<?= $DESCRIPTION_; ?>">
+    <meta property="og:site_name" content="<?= getConfParam('SITE_NAME'); ?>">
+    <meta property="og:url" content="<?= trim(getConfParam('SITE_URL'), '/'); ?><?= $_SERVER['REQUEST_URI']; ?>">
+    <meta property="og:type" content="<?= $TYPE_SITE; ?>">
+    <? getImageHead(); ?>
+    <!--<link rel="stylesheet" media="all" type="text/css" href="<?= getConfParam('SITE_URL'); ?><?= CSS_PATH; ?>fonts/font-awesome.min.css">-->
+
+    <link rel="preload" href="src/css/select2.min.css" rel="stylesheet" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript>
+        <link rel="stylesheet" href="src/css/select2.min.css">
+    </noscript>
+    <!-- <link rel="stylesheet" href="src/css/all.min.css"> -->
+    <link rel="stylesheet" href="src/css/webfonts/fuentes.css">
+
+
+
+    <!--- css -->
+    <!-- <link rel="preload" href="src/css/bootstrap.min.css" rel="stylesheet" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+<noscript><link rel="stylesheet" href="src/css/bootstrap.min.css"></noscript> -->
+
+    <link rel="stylesheet" href="src/css/bootstrap.min.css">
+
+    <!-- <script src="src/js/glide.min.js"></script> -->
+
+
+    <!-- js -->
+    <script defer src="src/js/splide.min.js"></script>
+    <!-- <script src="src/js/jquery.min.js"></script> -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script defer src="src/js/jquery-ui.min.js"></script>
+    <script defer src="src/js/bootstrap.min.js"></script>
+
+    <!-- <link rel="stylesheet" type="text/css" href="src/css/cookies.css"> -->
+    <!-- <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"> -->
+    <!-- <link rel="alternate" type="application/rss+xml" title="<?= $TITLE_; ?>" href="<?= getConfParam('SITE_URL'); ?>feed/"> -->
+    <!--<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>-->
+
+    <link rel="stylesheet" href="src/css/style.css?v=0.6">
+    <link rel="stylesheet" href="src/css/main.css?=v=0.5">
+    <link rel="stylesheet" type="text/css" href="src/css/w-formPost.css?v=0.4">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+    <link rel="preload" href="src/css/item.css" rel="stylesheet" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript>
+        <link rel="stylesheet" href="src/css/item.css">
+    </noscript>
+
+    <link rel="preload" href="src/css/splide.min.css" rel="stylesheet" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript>
+        <link rel="stylesheet" href="src/css/splide.min.css">
+    </noscript>
+
+
+    <script defer src="src/js/select2.js"></script>
+    <script defer type="text/javascript" src="<?= getConfParam('SITE_URL'); ?><?= JS_PATH; ?>jquery.sortable.min.js"></script>
+    <script defer type="text/javascript" src="<?= getConfParam('SITE_URL'); ?><?= JS_PATH; ?>jquerynumeric.js"></script>
+
+    <script type="text/javascript">
+        var site_url = '<?= getConfParam('SITE_URL'); ?>';
+    </script>
+    <script src="src/js/main.js?v=0.2" defer></script>
+    <!--<link rel="stylesheet" href="node_modules/@glidejs/glide/dist/css/glide.core.min.css">-->
+    <!--<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>-->
+    <!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@glidejs/glide">-->
     <style>
-        /* Estilos adicionales específicos para esta página si son necesarios */
-        body { padding: 20px; font-family: sans-serif; }
-        .contenedor-principal { max-width: 550px; margin: auto; border: 1px solid #ccc; padding: 20px; border-radius: 8px; }
-        .boton-guardar {
-            display: block; /* Ocupa todo el ancho */
-            width: 100%; /* Ocupa todo el ancho */
-            padding: 12px 20px;
-            margin-top: 25px;
-            background-color: #4CAF50; /* Verde */
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            text-align: center;
-            transition: background-color 0.3s ease;
+        .splide {
+            visibility: hidden;
+            position: relative;
         }
-        .boton-guardar:hover { background-color: #45a049; }
-        .boton-guardar:disabled { background-color: #cccccc; cursor: not-allowed; }
-        .mensaje-estado { margin-top: 15px; padding: 10px; border-radius: 4px; text-align: center; }
-        .mensaje-estado.exito { background-color: #e7f4e7; color: #0d6a0d; border: 1px solid #b7d8b7;}
-        .mensaje-estado.error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;}
-        .oculto { display: none; } /* Asegúrate que la clase oculto funciona */
-
-         /* Copia aquí TODOS los estilos CSS relevantes para .horario-semanal y sus hijos */
-        .horario-semanal { /* ... tus estilos ... */ }
-        .dia-horario { display: flex; align-items: center; margin-bottom: 10px; flex-wrap: wrap; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-        .nombre-dia { font-weight: bold; min-width: 80px; margin-right: 10px; }
-        .btn-dia-estado { /* ... tus estilos ... */ padding: 5px 10px; cursor: pointer; border-radius: 4px; border: 1px solid; margin-right: 10px; }
-        .btn-dia-estado.disponible { background-color: #d4edda; border-color: #c3e6cb; color: #155724; }
-        .btn-dia-estado.no-disponible { background-color: #f8d7da; border-color: #f5c6cb; color: #721c24; }
-        .horas-dia { display: flex; align-items: center; margin-left: auto; /* Empuja a la derecha */ }
-        .inputhorahorario { display: flex; align-items: center; margin-left: 15px; }
-        .iconohorario { margin-right: 5px; }
-        .frm-campo.frm-select.corto { width: 90px; /* Ajusta según necesites */ padding: 5px; }
-        .horas-dia.oculto { display: none; }
-        .dia-activo { background-color: #f0f9f4; /* Un ligero fondo para días activos */ }
-        .error-msg { color: #dc3545; font-size: 0.9em; margin-top: 5px; width: 100%; /* Para que ocupe el ancho */}
-
     </style>
-</head>
+
 <body>
 
 <div class="contenedor-principal">
