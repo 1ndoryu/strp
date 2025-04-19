@@ -39,9 +39,6 @@ svgs1();
 <![endif]-->
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <?php if (DEBUG): ?>
-        <meta name="robots" content="noindex,nofollow">
-    <?php endif ?>
 
 
     <link rel="preload" href="src/css/select2.min.css" rel="stylesheet" as="style" onload="this.onload=null;this.rel='stylesheet'" />
