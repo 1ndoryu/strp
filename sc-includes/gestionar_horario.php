@@ -590,9 +590,10 @@ svgs1();
 
     .horas-dia {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         gap: var(--espaciado-pequeno);
         flex-grow: 1;
+        flex-direction: column;
     }
 
     .horas-dia label {
