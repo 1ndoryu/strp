@@ -552,7 +552,7 @@ function newForm()
 
                                     <div class="horas-dia oculto"> <?php /* Sigue oculto por defecto */ ?>
                                         <div class="inputhorahorario">
-                                            <label class="iconohorario"><?php echo $GLOBALS['sol']; ?>:</label>
+                                            <label class="iconohorario"><?php echo $GLOBALS['sol']; ?></label>
                                             <select name="horario_dia[<?= $key ?>][inicio]" class="frm-campo frm-select corto" disabled> <?php /* Añadido disabled inicial */ ?>
                                                 <?php for ($h = 0; $h < 24; $h++) {
                                                     $hora = sprintf('%02d', $h);

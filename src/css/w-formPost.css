@@ -429,9 +429,12 @@ svg#uuid-67eca691-fad9-4dbb-8a42-6bf39e0830b8 {
 
 button.btn-dia-estado.disponible {
     border: unset;
-    background: #ff99cb;
     padding: 10px;
     font-weight: 600;
+    border: 2px solid #4E8059;
+    background-color: #8ade8f;
+    height: 92px;
+    width: 140px;
 }
 
 button.btn-dia-estado.no-disponible {
@@ -677,7 +680,6 @@ button#btn-mostrar-horario {
     }
 
     .dia-horario {
-        flex-direction: column;
         align-items: flex-start;
         gap: var(--espaciado-pequeno);
     }
@@ -1348,4 +1350,29 @@ p.textoayudafal, .tamañotextodiv {
 /* Deshabilitar acciones mientras rota */
 .foto-subida-item.rotating .btn-preview-action {
     pointer-events: none;
+}
+
+select.frm-campo.frm-select.corto {
+    border-radius: 0px;
+    height: 42px;
+}
+
+.inputhorahorario {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+}
+
+.iconohorario {
+    background: #3166cc;
+    height: 42px;
+    width: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.iconohorario svg {
+    height: 15px;
+    width: 15px;
 }

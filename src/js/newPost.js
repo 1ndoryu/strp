@@ -28,6 +28,21 @@
     const ayudaTextoHorario = document.getElementById('ayuda-horario');
     const diaEstadoBotones = form.querySelectorAll('.btn-dia-estado'); // Selector para los NUEVOS botones
 
+    const horarioFeedbackDiv = document.createElement('div');
+    horarioFeedbackDiv.id = 'horario-feedback';
+    horarioFeedbackDiv.style.marginTop = '10px'; // Espacio
+    if (contenedorHorario) {
+        contenedorHorario.parentNode.insertBefore(horarioFeedbackDiv, contenedorHorario.nextSibling);
+    }
+    // NUEVO: Un div para errores específicos del horario no configurado en el submit final
+    const horarioSubmitErrorDiv = document.createElement('div');
+    horarioSubmitErrorDiv.id = 'error-horario-submit';
+    horarioSubmitErrorDiv.classList.add('error-msg', 'oculto'); // Clase de error, oculto por defecto
+    if (horarioFeedbackDiv) {
+        // Insertar después del feedback
+        horarioFeedbackDiv.parentNode.insertBefore(horarioSubmitErrorDiv, horarioFeedbackDiv.nextSibling);
+    }
+
     // --- SELECTOR ANTIGUO (ya no se usa directamente para listeners o toggle) ---
     // const horarioCheckboxes = form.querySelectorAll('.check-dia input[type="checkbox"]'); // Comentado o eliminado
     const telefonoInput = form.querySelector('#telefono');
@@ -66,16 +81,133 @@
         actualizarMarcadoVisualRadios(tipoUsuarioRadios);
         actualizarMarcadoVisualPlan();
 
-        if (contenedorHorario && !contenedorHorario.classList.contains('oculto')) {
-            // Esto es un fallback, el CSS debería manejarlo
-            // contenedorHorario.classList.add('oculto');
-            // ayudaTextoHorario?.classList.add('oculto');
+        if (contenedorHorario) contenedorHorario.classList.add('oculto');
+        if (ayudaTextoHorario) ayudaTextoHorario.classList.add('oculto');
+        if (btnMostrarHorario) {
+            // El botón ya no muestra/oculta, abre la nueva pestaña
+            btnMostrarHorario.removeEventListener('click', toggleHorarioOriginal); // Quita listener viejo si existía
+            btnMostrarHorario.addEventListener('click', abrirGestorHorario);
+            // Mantenemos el botón visible para que el usuario pueda hacer click
         }
-        if (btnMostrarHorario && contenedorHorario && contenedorHorario.classList.contains('oculto')) {
-            btnMostrarHorario.classList.remove('oculto'); // Asegurarse que el botón se vea
-        } else if (btnMostrarHorario && contenedorHorario && !contenedorHorario.classList.contains('oculto')) {
-            btnMostrarHorario.classList.add('oculto'); // Si por alguna razón el horario ya está visible, ocultar botón
+        cargarHorarioDesdeStorage();
+    }
+
+    // --- NUEVA FUNCIÓN: Abrir la pestaña de gestión ---
+    function abrirGestorHorario(event) {
+        event.preventDefault();
+        // Idealmente, crea una página separada (e.g., gestor_horario.html o .php)
+        // Si no, usa la misma página con un parámetro ?gestionar_horario=1
+        // y en el JS/PHP de carga, detecta ese parámetro para mostrar solo el horario.
+        // Asumamos una página separada por claridad:
+        const urlGestor = 'gestionar_horario.php'; // *** ¡Crea esta página! ***
+        window.open(urlGestor, 'gestorHorarioTab', 'width=600,height=700,scrollbars=yes,resizable=yes');
+
+        // Actualizar feedback en la página principal
+        actualizarFeedbackHorario('gestionando');
+    }
+
+    // --- NUEVA FUNCIÓN: Cargar datos desde localStorage y actualizar campos ocultos ---
+    function cargarHorarioDesdeStorage() {
+        const savedData = localStorage.getItem(HORARIO_STORAGE_KEY);
+        if (horarioSubmitErrorDiv) horarioSubmitErrorDiv.classList.add('oculto'); // Limpiar error de submit
+
+        if (savedData) {
+            try {
+                const schedule = JSON.parse(savedData);
+                let diasSeleccionados = [];
+                let horarios = {inicio: '23:59', fin: '00:00'};
+                let primerDia = -1,
+                    ultimoDia = -1;
+                const diasMapping = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
+                let diaDisponibleEncontrado = false;
+
+                diasMapping.forEach((key, index) => {
+                    if (schedule[key] && schedule[key].disponible) {
+                        diaDisponibleEncontrado = true;
+                        diasSeleccionados.push(key);
+                        if (primerDia === -1) primerDia = index;
+                        ultimoDia = index;
+                        if (schedule[key].inicio < horarios.inicio) horarios.inicio = schedule[key].inicio;
+                        if (schedule[key].fin > horarios.fin) horarios.fin = schedule[key].fin;
+                    }
+                });
+
+                if (diaDisponibleEncontrado) {
+                    // Calcular 'dis' value (misma lógica que tenías en actualizarHorarioOculto)
+                    let valorDis = '0';
+                    if (diasSeleccionados.length === 7) valorDis = '1';
+                    else if (diasSeleccionados.length === 5 && primerDia === 0 && ultimoDia === 4) valorDis = '2';
+                    else if (diasSeleccionados.length === 6 && primerDia === 0 && ultimoDia === 5) valorDis = '3';
+                    else if (diasSeleccionados.length === 2 && primerDia === 5 && ultimoDia === 6) valorDis = '4';
+                    else valorDis = '1'; // Ajusta según necesidad del backend si no encaja
+
+                    hiddenDis.value = valorDis;
+                    hiddenHorarioInicio.value = horarios.inicio === '23:59' ? '00:00' : horarios.inicio; // Fallback si algo raro pasa
+                    hiddenHorarioFinal.value = horarios.fin === '00:00' ? '23:59' : horarios.fin; // Fallback
+
+                    actualizarFeedbackHorario('cargado', {dias: diasSeleccionados.length, inicio: hiddenHorarioInicio.value, fin: hiddenHorarioFinal.value});
+                    // Limpiar error de validación si la etapa estaba activa
+                    validarCampo(contenedorHorario, '#error-horario', true, ''); // Usa el div original como referencia
+                    if (horarioSubmitErrorDiv) horarioSubmitErrorDiv.classList.add('oculto'); // Oculta error específico de submit
+                } else {
+                    // Datos guardados pero sin días disponibles (raro si la validación funciona)
+                    limpiarDatosHorarioOcultosYStorage(false); // Limpia campos y storage sin actualizar feedback principal
+                    actualizarFeedbackHorario('error_carga', {message: 'Los datos guardados no tienen días disponibles.'});
+                }
+            } catch (e) {
+                console.error('Error al parsear horario desde localStorage:', e);
+                limpiarDatosHorarioOcultosYStorage(false);
+                actualizarFeedbackHorario('error_carga', {message: 'Error al leer los datos guardados.'});
+            }
+        } else {
+            // No hay datos guardados
+            limpiarDatosHorarioOcultosYStorage(false); // Asegura que los campos ocultos estén vacíos/default
+            actualizarFeedbackHorario('no_configurado');
         }
+    }
+
+    // --- NUEVA FUNCIÓN: Limpiar campos ocultos y opcionalmente storage ---
+    function limpiarDatosHorarioOcultosYStorage(removeFromStorage = true) {
+        hiddenDis.value = '0'; // O el valor por defecto que espere tu backend
+        hiddenHorarioInicio.value = '00:00';
+        hiddenHorarioFinal.value = '00:00';
+        if (removeFromStorage) {
+            localStorage.removeItem(HORARIO_STORAGE_KEY);
+            console.log('Datos del horario borrados de localStorage.');
+            actualizarFeedbackHorario('no_configurado'); // Actualiza el mensaje
+        }
+    }
+
+    // --- NUEVA FUNCIÓN: Actualizar el mensaje de feedback ---
+    function actualizarFeedbackHorario(estado, data = {}) {
+        let mensajeHTML = '';
+        switch (estado) {
+            case 'gestionando':
+                mensajeHTML = `El horario se está administrando en una nueva pestaña. <button type="button" id="btn-recargar-horario">Recargar horario guardado</button>`;
+                break;
+            case 'cargado':
+                mensajeHTML = `Horario cargado: ${data.dias} día(s) disponible(s) aprox. de ${data.inicio} a ${data.fin}. <button type="button" id="btn-modificar-horario">Modificar</button> <button type="button" id="btn-borrar-horario">Borrar horario</button>`;
+                break;
+            case 'error_carga':
+                mensajeHTML = `<span style="color: red;">${data.message || 'Error al cargar el horario.'}</span> <button type="button" id="btn-intentar-gestor">Administrar horario</button>`;
+                break;
+            case 'no_configurado':
+            default:
+                mensajeHTML = `Aún no has configurado tu horario. <button type="button" id="btn-administrar-horario-feedback">Administrar horario</button>`;
+                break;
+        }
+        horarioFeedbackDiv.innerHTML = mensajeHTML;
+
+        // Añadir listeners a los nuevos botones del feedback
+        horarioFeedbackDiv.querySelector('#btn-recargar-horario')?.addEventListener('click', cargarHorarioDesdeStorage);
+        horarioFeedbackDiv.querySelector('#btn-modificar-horario')?.addEventListener('click', abrirGestorHorario);
+        horarioFeedbackDiv.querySelector('#btn-borrar-horario')?.addEventListener('click', () => {
+            if (confirm('¿Estás seguro de que quieres borrar la configuración del horario?')) {
+                limpiarDatosHorarioOcultosYStorage(true);
+            }
+        });
+        horarioFeedbackDiv.querySelector('#btn-intentar-gestor')?.addEventListener('click', abrirGestorHorario);
+        horarioFeedbackDiv.querySelector('#btn-administrar-horario-feedback')?.addEventListener('click', abrirGestorHorario);
     }
 
     function agregarListeners() {
@@ -97,10 +229,12 @@
             });
         }
 
+        window.addEventListener('focus', cargarHorarioDesdeStorage);
+
         // --- Listeners para los botones de estado del día ---
-        diaEstadoBotones.forEach(boton => {
-            boton.addEventListener('click', toggleDiaEstado);
-        });
+        // diaEstadoBotones.forEach(boton => {
+        //     boton.addEventListener('click', toggleDiaEstado);
+        // });
 
         form.addEventListener('submit', manejarEnvioFinal);
 
@@ -291,20 +425,6 @@
             elemento?.classList.remove('invalido');
             campo?.classList.remove('invalido');
             return true;
-        }
-    }
-
-    function validarHorarioSeleccionado() {
-        const diasDisponibles = form.querySelectorAll('.btn-dia-estado.disponible');
-        const contenedorHorarioElem = form.querySelector('.horario-semanal'); // Referencia al div
-        const errorHorarioElem = form.querySelector('#error-horario'); // Referencia al div de error
-
-        if (diasDisponibles.length === 0) {
-            // Usa validarCampo para mostrar el error estandarizado
-            return validarCampo(contenedorHorarioElem, '#error-horario', false, 'Debes marcar al menos un día como disponible.');
-        } else {
-            // Limpia el error si hay días disponibles
-            return validarCampo(contenedorHorarioElem, '#error-horario', true, '');
         }
     }
 
@@ -964,6 +1084,8 @@
     function manejarEnvioFinal(event) {
         event.preventDefault();
 
+        cargarHorarioDesdeStorage();
+
         if (!validarFormularioCompleto()) {
             alert('Por favor, revisa el formulario. Hay errores o campos incompletos en alguna de las etapas.');
             irAPrimeraEtapaConError();
@@ -971,7 +1093,7 @@
         }
 
         actualizarSellerTypeOculto();
-        actualizarHorarioOculto();
+        //actualizarHorarioOculto();
         actualizarIdiomasOculto();
 
         form.submit();
@@ -979,18 +1101,55 @@
 
     function validarFormularioCompleto() {
         let todoValido = true;
+        let primeraEtapaInvalida = -1;
+
         for (let i = 0; i < etapas.length; i++) {
             const originalIndex = etapaActualIndex;
-            etapaActualIndex = i;
-            if (!validarEtapaActual()) {
+            etapaActualIndex = i; // Temporalmente cambia a la etapa para validar
+            const etapaValida = validarEtapaActual();
+            etapaActualIndex = originalIndex; // Restaura el índice actual
+
+            if (!etapaValida && primeraEtapaInvalida === -1) {
+                primeraEtapaInvalida = i;
                 todoValido = false;
+                // No rompemos el bucle, para mostrar todos los errores iniciales
             }
-            etapaActualIndex = originalIndex;
         }
+
+        // --- Validación específica del horario al final ---
+        const horarioGuardado = localStorage.getItem(HORARIO_STORAGE_KEY);
+        const horarioRequerido = true; // Define si es obligatorio
+
+        if (horarioRequerido && !horarioGuardado) {
+            if (horarioSubmitErrorDiv) {
+                horarioSubmitErrorDiv.textContent = 'Es obligatorio configurar y guardar el horario antes de finalizar.';
+                horarioSubmitErrorDiv.classList.remove('oculto');
+            }
+            todoValido = false;
+            // Si no se encontró otra etapa inválida antes, marca la del horario
+            if (primeraEtapaInvalida === -1) {
+                // Encuentra el índice de la etapa que contiene el horario
+                const etapaHorarioIndex = etapas.findIndex(etapa => etapa.querySelector('#btn-mostrar-horario'));
+                if (etapaHorarioIndex !== -1) {
+                    primeraEtapaInvalida = etapaHorarioIndex;
+                }
+            }
+        } else {
+            if (horarioSubmitErrorDiv) horarioSubmitErrorDiv.classList.add('oculto'); // Ocultar si es válido
+        }
+
         if (!todoValido) {
-            validarEtapaActual();
+            alert('Por favor, revisa el formulario. Hay errores o campos incompletos.');
+            if (primeraEtapaInvalida !== -1) {
+                cambiarEtapa(primeraEtapaInvalida); // Ir a la primera etapa con error
+                // Intentar hacer scroll al primer elemento inválido O al error del horario
+                const primerErrorVisible = form.querySelector('.error-msg:not(.oculto), .invalido');
+                primerErrorVisible?.scrollIntoView({behavior: 'smooth', block: 'center'});
+            }
+            return false; // Detiene el envío
         }
-        return todoValido;
+
+        return true; // Todo válido
     }
 
     function irAPrimeraEtapaConError() {
