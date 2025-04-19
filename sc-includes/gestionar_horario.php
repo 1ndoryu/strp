@@ -1525,7 +1525,7 @@ svgs1();
 
 <body>
     <div class="contenedor-principal">
-        <div class="horario-semanal" id="contenedor-horario"> <?php /* Ya no necesita la clase oculto aquí */ ?>
+        <div class="horario-semanal" id="contenedor-horario">
             <?php
             $dias = ['lunes' => 'Lunes', 'martes' => 'Martes', 'miercoles' => 'Miércoles', 'jueves' => 'Jueves', 'viernes' => 'Viernes', 'sabado' => 'Sábado', 'domingo' => 'Domingo'];
             foreach ($dias as $key => $nombre) {
@@ -1538,33 +1538,25 @@ svgs1();
                             <label class="iconohorario"><?php echo $GLOBALS['sol']; ?></label>
                             <input type="text"
                                 name="horario_dia[<?= $key ?>][inicio]"
-                                class="frm-campo corto" <?php // Mantenemos clases relevantes 
-                                                        ?>
-                                value="09:00" <?php // Valor por defecto opcional 
-                                                ?>
+                                class="frm-campo corto"
+                                value="09:00"
                                 placeholder="HH:MM"
-                                pattern="([01]?[0-9]|2[0-3]):[0-5][0-9]" <?php // Valida formato HH:MM (00:00 a 23:59) 
-                                                                            ?>
+                                pattern="([01]?[0-9]|2[0-3]):[0-5][0-9]"
                                 maxlength="5"
-                                title="Introduce la hora de inicio en formato HH:MM (ej. 09:00)"
-                                disabled> <?php // Mantenemos el estado inicial disabled 
-                                            ?>
+                                title="Introduce la hora de inicio en formato HH:MM (ej. 09:00)">
+                            <?php /* ¡Atributo 'disabled' eliminado de aquí! */ ?>
                         </div>
                         <div class="inputhorahorario">
                             <label class="iconohorario"><?php echo $GLOBALS['luna']; ?></label>
                             <input type="text"
                                 name="horario_dia[<?= $key ?>][fin]"
-                                class="frm-campo corto" <?php // Mantenemos clases relevantes 
-                                                        ?>
-                                value="18:30" <?php // Valor por defecto opcional (basado en tu select original) 
-                                                ?>
+                                class="frm-campo corto"
+                                value="18:30"
                                 placeholder="HH:MM"
-                                pattern="([01]?[0-9]|2[0-3]):[0-5][0-9]" <?php // Valida formato HH:MM (00:00 a 23:59) 
-                                                                            ?>
+                                pattern="([01]?[0-9]|2[0-3]):[0-5][0-9]"
                                 maxlength="5"
-                                title="Introduce la hora de fin en formato HH:MM (ej. 17:30)"
-                                disabled> <?php // Mantenemos el estado inicial disabled 
-                                            ?>
+                                title="Introduce la hora de fin en formato HH:MM (ej. 17:30)">
+                            <?php /* ¡Atributo 'disabled' eliminado de aquí! */ ?>
                         </div>
                     </div>
                 </div>
