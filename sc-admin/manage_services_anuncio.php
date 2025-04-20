@@ -119,7 +119,7 @@ else {
     // Asegúrate de que la consulta usa 'ord ASC' si quieres que el orden inicial se respete
     $services = selectSQL("sc_services", array(), "ord ASC");
     ?>
-    <h2>Gestionar Servicios</h2> <!-- Placeholder: NUEVO_LANG_STRING['manage_services.title_h1'] -->
+    <h2>Gestionar Servicios Anuncio</h2> <!-- Placeholder: NUEVO_LANG_STRING['manage_services.title_h1'] -->
 
     <!-- Formulario para añadir nuevo servicio -->
     <form action="index.php?id=manage_services_anuncio" method="post" class="param_form white_form">

@@ -449,13 +449,40 @@ function newForm()
 
                             <div class="grupo-checkboxes">
                                 <?php
-                                $servicios = ["Masaje relajante", "Masaje deportivo", "Masaje podal", "Masaje antiestrés", "Masaje linfático", "Masaje shiatsu", "Masaje descontracturante", "Masaje ayurvédico", "Masaje circulatorio", "Masaje tailandés"];
-                                // Repoblar si hubo error
+                                // 1. Consultar los servicios desde la base de datos
+                                // Asumiendo que la función selectSQL está disponible aquí
+                                $db_services = selectSQL("sc_services", array(), "ord ASC");
+
+                                // 2. Obtener los servicios seleccionados previamente (si hubo error y se repobla)
+                                // $form_data se pasa como argumento a la función newForm()
                                 $selected_services = $form_data['servicios'] ?? [];
-                                foreach ($servicios as $servicio) {
-                                    $valor = strtolower(str_replace(' ', '_', $servicio));
-                                    $checked = in_array($valor, $selected_services) ? 'checked' : '';
-                                    echo '<label class="frm-checkbox"><input type="checkbox" name="servicios[]" value="' . htmlspecialchars($valor) . '" ' . $checked . '> ' . htmlspecialchars($servicio) . '</label>';
+                                // Si $form_data['servicios'] es un JSON string (como se guarda en BD), decodifícalo.
+                                // Si ya viene como array (porque $_POST['servicios'] era un array), no hace falta.
+                                // Verifica cómo llega $form_data['servicios'] en caso de error.
+                                // Asumiremos que llega como array por ahora, basado en el código original.
+
+                                // 3. Verificar si la consulta devolvió resultados
+                                if ($db_services && count($db_services) > 0) {
+                                    // 4. Iterar sobre los servicios de la base de datos
+                                    foreach ($db_services as $db_servicio) {
+                                        // 5. Preparar los datos para el checkbox
+                                        $valor_servicio = $db_servicio['value']; // El valor único (ej: 'masaje_relajante')
+                                        $nombre_servicio = $db_servicio['name'];  // El nombre a mostrar (ej: 'Masaje relajante')
+
+                                        // 6. Comprobar si este servicio estaba seleccionado previamente
+                                        // Compara el 'value' del servicio de la BD con los 'values' guardados en $selected_services
+                                        $checked = in_array($valor_servicio, $selected_services) ? 'checked' : '';
+
+                                        // 7. Imprimir el HTML del checkbox
+                                        echo '<label class="frm-checkbox">';
+                                        echo    '<input type="checkbox" name="servicios[]" value="' . htmlspecialchars($valor_servicio) . '" ' . $checked . '>';
+                                        echo    ' ' . htmlspecialchars($nombre_servicio); // Muestra el nombre legible
+                                        echo '</label>';
+                                    }
+                                } else {
+                                    // Opcional: Mensaje si no hay servicios definidos en la BD
+                                    echo '<p>No hay servicios disponibles para seleccionar en este momento.</p>';
+                                    // O podrías simplemente no mostrar nada.
                                 }
                                 ?>
                             </div>
