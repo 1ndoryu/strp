@@ -381,7 +381,7 @@ if (isset($_GET['a'])) {
                             </div>
                         </div>
 
-                        <div class="row">
+                        <div class="row" style="display: none;">
                             <div class="col_lft">
                                 <label for="city"><?= $language['edit.label_city'] ?? 'Ciudad/Zona' ?> </label>
                             </div>
