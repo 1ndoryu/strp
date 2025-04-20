@@ -127,15 +127,24 @@ a:hover {
 /*                ETAPAS                   */
 /* ======================================== */
 .etapa {
-    display: none; /* Ocultas por defecto */
+    display: none;
     padding: var(--espaciado-base);
     border-radius: var(--radio-borde);
     margin-bottom: var(--espaciado-mediano);
-    background-color: #fff; /* Fondo blanco para cada etapa */
+    background-color: #f6f6f6;
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: row;
+}
+
+div#etapa-plan {
+    justify-content: center;
+    flex-direction: column;
+    background: white;
 }
 
 .etapa.activa {
-    display: block; /* Muestra la etapa activa */
+    display: flex; /* Muestra la etapa activa */
 }
 
 /* Clase de utilidad para ocultar elementos con JS */
@@ -167,7 +176,7 @@ a:hover {
     /* font-weight: bold; */
     color: var(--color-texto-secundario);
     font-size: 15px;
-    FONT-WEIGHT: 600;
+    font-weight: 600;
 }
 
 /* ======================================== */
@@ -433,7 +442,7 @@ button.btn-dia-estado.disponible {
     border: unset;
     padding: 10px;
     font-weight: 600;
-    border: 2px solid #4E8059;
+    border: 2px solid #4e8059;
     background-color: #8ade8f;
     height: 92px;
     width: 140px;
@@ -922,6 +931,16 @@ p.titulotercerdiv {
     font-size: 15px;
 }
 
+.botones-horario-pestana {
+    color: black;
+    font-weight: 400;
+    font-size: 14px;
+    background: unset;
+    border: 1px solid #d3d3d3;
+    padding: var(--espaciado-pequeno) var(--espaciado-mediano);
+    border-radius: 5px;
+}
+
 .primer-div-plan {
     display: flex;
     gap: 15px;
@@ -936,6 +955,8 @@ h2.titulo-etapa-plan {
     justify-self: center;
     padding: 20px;
     color: #1a1a1a;
+    display: flex;
+    justify-content: center;
 }
 
 .tercer-div-plan {
@@ -955,9 +976,13 @@ td {
 .divisor-anuncio-principal {
     display: flex;
     gap: 20px;
-    margin: auto;
+    /* margin: auto; */
     flex-direction: row;
-    justify-content: center;
+    justify-content: flex-start;
+    background: #fff;
+    padding: 20px;
+    min-width: 900px;
+    border-radius: 5px;
 }
 
 .titulo-etapa-anuncio-div {
@@ -1271,7 +1296,7 @@ p.numero-etapa {
     align-content: center;
     flex-direction: row;
     color: black;
-    FONT-WEIGHT: 600;
+    font-weight: 600;
     opacity: 70%;
 }
 
@@ -1294,7 +1319,7 @@ p.numero-etapa {
     border: unset;
     padding: 9px 20px;
     color: white;
-    FONT-WEIGHT: 600;
+    font-weight: 600;
     border-top-right-radius: 5px;
     border-bottom-right-radius: 5px;
     max-height: 38px;
@@ -1311,10 +1336,11 @@ button.btn-preview-action.btn-change-foto {
     right: -4px;
 }
 
-p.textoayudafal, .tamañotextodiv {
+p.textoayudafal,
+.tamañotextodiv {
     color: black;
     opacity: 70%;
-    FONT-WEIGHT: 400;
+    font-weight: 400;
     margin-top: 5px;
     margin-bottom: 0px;
 }
@@ -1348,7 +1374,9 @@ p.textoayudafal, .tamañotextodiv {
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 /* Deshabilitar acciones mientras rota */
