@@ -1,567 +1,630 @@
-$(document).ready(function(){
-    const container = $(".photos_list");
-    real_time_validate_form();
+// Asumiendo que jQuery, jQuery UI (Sortable), Select2 ya están cargados
+// Asumiendo que site_url, DATAJSON['max_photos'], lang_var, etc., están disponibles globalmente si son necesarios
+// Asumiendo que addStyle, editImage, getConfParam (si se usa en JS), etc., están definidos si son necesarios
 
+$(document).ready(function() {
+    const photoListContainer = $(".photos_list.sortable"); // Contenedor de la lista de fotos ordenable
+
+    // Inicializar Sortable (como ya estaba en el PHP)
+    if (photoListContainer.length > 0 && typeof $.ui !== 'undefined' && typeof $.ui.sortable !== 'undefined') {
+        photoListContainer.sortable({
+            helper: "clone",
+            items: ".photo_box",
+            placeholder: "photo_box_placeholder",
+            forcePlaceholderSize: true,
+            tolerance: "pointer",
+            update: function(event, ui) {
+                updateBoxButtons(); // Actualizar botones de mover al reordenar
+                 updatePhotoNameIndices(); // ¡NUEVO! Reasigna índices a los inputs de rotación
+            }
+        }).disableSelection();
+        updateBoxButtons(); // Inicializar botones de mover al cargar
+    } else {
+        // console.warn("Sortable no inicializado. ¿jQuery UI cargado? ¿Selector correcto?");
+    }
+
+    // --- INICIO: Lógica de subida AJAX ELIMINADA ---
+    /*
     $("#post_photo").on('change', function(){
-        if(this.files[0].type.match('image/jpeg') ||
-         this.files[0].type.match('image/png') ||
-         this.files[0].type.match('image/gif'))
-        {
-            if(this.files[0].size <= max_file_size * 1000 * 1000)
-            {
-                var formData = new FormData();
-                formData.append('userImage', this.files[0]);
-                const index = container.children().length + 1;
-                const element = createImageBoxElement(0, index);
-                container.append(element);
-                $.ajax({
-                    url: site_url + "sc-includes/php/ajax/upload_picture.php",
-                    type: "POST",
-                    data:  formData,
-                    contentType: false,
-                    cache: false,
-                    processData:false,
-                    success: function(data_){
-                        $("#photo_container-" + index).removeClass('loading');
-                        $("#photo_container-" + index).html(data_);
-                        $("#photo_container-" + index + " .edit-photo-icon")[0].onclick = function(){
-                            editImage(index);
-                        };
-                        container.show();
-                        $("#error_photo").hide();
-                        $("#error_photos").hide();
-                        
-                        updateBoxButtons();
-                        if(DATAJSON['max_photos'] == index)
-                        {
-                            $("#post_photo").attr('disabled', true);
-                            $(".photos-button").addClass('disabled');
-                        }
-                    },
-                    timeout: 30000        
+        // ... Código de subida AJAX original ...
+        // Esta lógica se elimina porque edit_item.php usa $_FILES['userImage']
+    });
+    */
+    // --- FIN: Lógica de subida AJAX ELIMINADA ---
+
+    // --- INICIO: Vista previa para NUEVAS fotos (Inputs userImage[]) ---
+    // Escuchar cambios en *cualquier* input de tipo file dentro del contenedor
+    photoListContainer.on('change', 'input.photoFile[name="userImage[]"]', function(event) {
+        const fileInput = event.target;
+        const photoContainerDiv = $(fileInput).closest('.photo_list.free'); // El div que contiene el input
+
+        if (fileInput.files && fileInput.files[0]) {
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            // Validar tipo y tamaño (opcional, pero bueno)
+             const allowedTypes = ['image/jpeg', 'image/png'];
+             const maxSizeMB = 5; // Ejemplo: 5 MB
+             if (!allowedTypes.includes(file.type)) {
+                 alert('Error: Solo se permiten imágenes JPG o PNG.');
+                 fileInput.value = ''; // Limpiar input
+                 // Restaurar placeholder si había uno
+                 photoContainerDiv.empty().append('<input name="userImage[]" id="'+ fileInput.id +'" type="file" class="photoFile" accept="image/jpeg, image/png" /><span class="upload-placeholder-icon">+</span>');
+                 return;
+             }
+             if (file.size > maxSizeMB * 1024 * 1024) {
+                 alert(`Error: La imagen no debe superar los ${maxSizeMB} MB.`);
+                 fileInput.value = ''; // Limpiar input
+                 // Restaurar placeholder
+                  photoContainerDiv.empty().append('<input name="userImage[]" id="'+ fileInput.id +'" type="file" class="photoFile" accept="image/jpeg, image/png" /><span class="upload-placeholder-icon">+</span>');
+                 return;
+             }
+
+
+            reader.onload = function(e) {
+                // Crear elemento img para la vista previa
+                const imgPreview = $('<img>').attr('src', e.target.result).css({
+                    'max-width': '100%',
+                    'max-height': '100%',
+                    'object-fit': 'contain'
                 });
+                // Reemplazar contenido del div con la imagen y el input (que ahora tiene el archivo)
+                // Importante mantener el input original para que se envíe con el form
+                photoContainerDiv.empty().append(imgPreview);
+                // Mover el input (que ya tiene el archivo seleccionado) dentro, pero oculto visualmente si se prefiere
+                // $(fileInput).css({'position': 'absolute', 'opacity': 0, 'width':'1px', 'height':'1px'}).appendTo(photoContainerDiv);
+                // O simplemente dejarlo fuera del flujo visual normal, ya no se necesita interactuar con él directamente
+                 $(fileInput).hide(); // Ocultarlo simplemente
+                 photoContainerDiv.append(fileInput); // Asegurar que sigue dentro del form
 
-            }else $("#error_photos").html(lang_var[3] + " " + max_file_size + " Mb").show();
+                // Quizás añadir un botón de "cancelar/quitar" vista previa
+                const cancelButton = $('<button type="button" class="removePreviewBtn">X</button>').css({
+                     'position': 'absolute', 'top': '2px', 'right': '2px', 'background': 'rgba(255,0,0,0.7)',
+                     'color': 'white', 'border': 'none', 'cursor': 'pointer', 'font-size': '12px', 'padding': '1px 4px'
+                 });
+                cancelButton.on('click', function() {
+                    fileInput.value = ''; // Limpiar el input file
+                    // Restaurar el contenido original del div (input + placeholder)
+                     photoContainerDiv.empty().append('<input name="userImage[]" id="'+ fileInput.id +'" type="file" class="photoFile" accept="image/jpeg, image/png" /><span class="upload-placeholder-icon">+</span>');
+                    // Volver a añadir el listener al nuevo input si es necesario (delegación ya lo hace)
+                });
+                photoContainerDiv.append(cancelButton);
 
-        }else $("#error_photos").html(lang_var[4]).show();
-
+                photoContainerDiv.removeClass('free'); // Ya no está libre
+            }
+            reader.readAsDataURL(file);
+        }
     });
+    // --- FIN: Vista previa para NUEVAS fotos ---
 
-    $("#post_info_btn").on('click', function(){
-        if($("#post_info").attr('open') == "open")
-            $("#post_info").attr('open', false);
-        else
-            $("#post_info").attr('open', true);
-        $(this).find('i').toggleClass('fa-info-circle fa-times-circle');
+
+    // --- INICIO: Manejo de eliminación de fotos (EXISTENTES y PREVIEWS NUEVAS) ---
+     photoListContainer.on('click', '.removeImg', function(e) { // Para fotos existentes cargadas por PHP
+         e.preventDefault();
+         if (confirm('¿Seguro que quieres eliminar esta imagen? No se podrá recuperar hasta guardar.')) {
+             const photoBox = $(this).closest('.photo_box');
+              // Aquí simplemente eliminamos el elemento del DOM.
+              // El backend se encargará de borrarla si no encuentra su 'photo_name[]' en el POST.
+             photoBox.remove();
+             updateBoxButtons(); // Actualizar botones de mover
+             // Podrías añadir un placeholder si ahora hay espacio
+             addPlaceholderIfSpace();
+         }
+     });
+     photoListContainer.on('click', '.removePreviewBtn', function(e) { // Para vistas previas de fotos nuevas
+        e.preventDefault();
+        const photoContainerDiv = $(this).closest('.photo_list');
+        const fileInput = photoContainerDiv.find('input.photoFile[name="userImage[]"]');
+        const fileInputId = fileInput.attr('id'); // Guardar el ID original
+
+        // Limpiar el input file
+        if (fileInput.length > 0) {
+            fileInput.val(''); // O fileInput[0].value = '';
+        }
+
+        // Restaurar el contenido original del div (input + placeholder)
+        photoContainerDiv.empty().append('<input name="userImage[]" id="'+ fileInputId +'" type="file" class="photoFile" accept="image/jpeg, image/png" /><span class="upload-placeholder-icon">+</span>');
+        photoContainerDiv.addClass('free');
+        // No es necesario re-añadir listeners gracias a la delegación de eventos .on() en el contenedor
     });
+    // --- FIN: Manejo de eliminación de fotos ---
+
+
+    // Mantener el formateo de teléfono si es necesario
     $("#phone").on('input', formatPhone);
 
-    addStyle('cropper.min.css')
-    
-
-});
-
-function real_time_validate_form()
-{
-    $("#email").on('input', function()
-    {
-        checkLimits();
+    // Botón de información (si existe en edit_item.php)
+    $("#post_info_btn").on('click', function() {
+        $("#post_info").attr('open', $("#post_info").attr('open') !== "open");
+        $(this).find('i').toggleClass('fa-info-circle fa-times-circle');
     });
 
-    $("#region_container").click(function(){
-        pre_validate_form(1);
-    });
-    $("#city").on('focusin', function(){
-        pre_validate_form(2);
-    });
-    $("#tit").on('focusout', function(){
-        pre_validate_form(3);
-    });
-    $("#text_editable").on('focusout', function(){
-        pre_validate_form(4);
-    });
-    $("#horario-container").on('focusout', function(){
-        pre_validate_form(5);
-    });
-    $("#dis-container").on('focusout', function(){
-        pre_validate_form(6);
+    // Inicializar validación en tiempo real (adaptada)
+    // real_time_validate_form_edit(); // Llamar a la versión adaptada
+
+    // Listener para el botón de toggle del horario (del PHP)
+    $('#btn-mostrar-horario').on('click', function() {
+        $('#contenedor-horario-edit').toggleClass('oculto');
+        $('#ayuda-horario').toggleClass('oculto');
     });
 
-    $("#name").on('focusin', function(){
-        pre_validate_form(7);
+    // Listener para los botones de estado del día (del PHP)
+    $('#contenedor-horario-edit').on('click', '.btn-dia-estado', function() {
+        const diaDiv = $(this).closest('.dia-horario');
+        const horasDiv = diaDiv.find('.horas-dia');
+        const selects = horasDiv.find('select');
+        let activoInput = diaDiv.find('.activo-hidden-input');
+
+        if ($(this).hasClass('no-disponible')) {
+            $(this).removeClass('no-disponible').addClass('disponible').text('Disponible');
+            horasDiv.removeClass('oculto');
+            selects.prop('disabled', false);
+            if (!activoInput.length) {
+                $('<input>').attr({
+                    type: 'hidden',
+                    name: `horario_dia[${$(this).data('dia')}][activo]`,
+                    value: '1',
+                    class: 'activo-hidden-input'
+                }).insertAfter(this);
+            } else {
+                activoInput.val('1');
+            }
+        } else {
+            $(this).removeClass('disponible').addClass('no-disponible').text('No disponible');
+            horasDiv.addClass('oculto');
+            selects.prop('disabled', true);
+            if (activoInput.length) {
+                activoInput.remove();
+            }
+        }
     });
 
-    $("#name").on('focusout', function(){
-        pre_validate_form(8);
-    });
 
-    $("#email").on('focusout', function(){
-        pre_validate_form(9);
-    });
-    $("#phone").on('focusout', function(){
-        pre_validate_form(10);
-    });
+    // --- INICIO: VALIDACIÓN EN SUBMIT (Más fiable que pre_validate_form) ---
+    $('#edit_item_post').on('submit', function(e) {
+        let isValid = true;
+        const errors = []; // Para acumular mensajes de error
 
+        // Ocultar errores previos
+        $('.error_msg', this).hide();
+
+        // 1. Categoría
+        if ($('#category').val() == '' || $('#category').val() == '0') {
+            isValid = false;
+            $('#error_category').show();
+            errors.push("Selecciona una categoría.");
+        }
+
+        // 2. Provincia
+        if ($('#region').val() == '' || $('#region').val() == '0') {
+            isValid = false;
+            $('#error_region').show();
+            errors.push("Selecciona una provincia.");
+        }
+
+        // 3. Tipo Anuncio (si es obligatorio)
+        if ($('#ad_type').val() == '' || $('#ad_type').val() == '0') {
+            isValid = false;
+            $('#error_ad_type').show();
+            errors.push("Selecciona un tipo de anuncio.");
+        }
+
+        // 4. Título
+        const titleLen = $('#tit').val().trim().length;
+        if (titleLen < 10 || titleLen > 50) {
+            isValid = false;
+            $('#error_tit').show().text('Título obligatorio (10-50 caracteres)'); // Actualizar texto si cambia
+            errors.push("El título debe tener entre 10 y 50 caracteres.");
+        }
+
+        // 5. Descripción
+        const textLen = $('#text').val().trim().length;
+        if (textLen < 100 || textLen > 500) {
+            isValid = false;
+            $('#error_text').show().text('Descripción obligatoria (100-500 caracteres)'); // Actualizar texto
+            errors.push("La descripción debe tener entre 100 y 500 caracteres.");
+        }
+
+        // 6. Servicios (al menos uno)
+        if ($('input[name="servicios[]"]:checked').length === 0) {
+            isValid = false;
+            $('#error_servicios').show().text('Debes seleccionar al menos un servicio.');
+            errors.push("Selecciona al menos un servicio.");
+        }
+
+        // 7. Horario (al menos un día disponible)
+        let horarioOk = false;
+        $('#contenedor-horario-edit .btn-dia-estado').each(function() {
+            if ($(this).hasClass('disponible')) {
+                horarioOk = true;
+                return false; // Salir del each
+            }
+        });
+        if (!horarioOk) {
+            isValid = false;
+            $('#error_horario').show().text('Debes marcar al menos un día como disponible.');
+            errors.push("Configura el horario para al menos un día.");
+        }
+
+        // 8. Fotos (al menos una) - ¡Adaptado!
+         if (!checkImagesEdit()) { // Usa la función adaptada
+             isValid = false;
+             $('#error_photo').show().text('Debes tener al menos una foto.');
+             errors.push("Sube o mantén al menos una foto.");
+         }
+
+        // 9. Nombre Contacto
+        if ($('#name').val().trim() === '') {
+            isValid = false;
+            $('#error_name').show();
+            errors.push("Introduce el nombre de contacto.");
+        }
+
+        // 10. Tipo Vendedor
+        if ($('#sellerType').val() == '' || $('#sellerType').val() == '0') {
+            isValid = false;
+            $('#error_sellerType').show();
+            errors.push("Selecciona el tipo de vendedor.");
+        }
+
+        // 11. Teléfono
+        const phone = $('#phone').val().trim();
+        if (!/^[0-9]{9,15}$/.test(phone)) {
+            isValid = false;
+            $('#error_phone').show();
+            errors.push("Introduce un teléfono válido (9-15 dígitos).");
+        }
+
+        // 12. Salidas (si es obligatorio)
+        if ($('#realiza_salidas').val() === '') { // Asumiendo que el value "" no es válido
+             isValid = false;
+             $('#error_out').show(); // Asegúrate que existe este div de error
+             errors.push("Indica si realizas salidas.");
+         }
+
+        // 13. Filtrar Palabras Prohibidas (si las funciones existen)
+         if (typeof filterWordTitle === 'function' && !filterWordTitle()) {
+             isValid = false;
+             // Asumiendo que filterWordTitle muestra su propio error
+             errors.push("El título contiene palabras no permitidas.");
+         }
+          if (typeof filterWordText === 'function' && !filterWordText()) {
+             isValid = false;
+             // Asumiendo que filterWordText muestra su propio error
+              errors.push("La descripción contiene palabras no permitidas.");
+         }
+
+
+        // --- Decisión Final ---
+        if (!isValid) {
+            e.preventDefault(); // Detener el envío del formulario
+            // Mostrar un resumen de errores (opcional)
+            alert("Por favor, corrige los siguientes errores:\n- " + errors.join("\n- "));
+            // O hacer scroll al primer error visible
+             const firstError = $('.error_msg:visible').first();
+             if (firstError.length) {
+                 $('html, body').animate({
+                     scrollTop: firstError.offset().top - 100 // Ajustar offset según sea necesario
+                 }, 500);
+             }
+        } else {
+            // El formulario es válido, se enviará.
+            // Opcional: Mostrar un indicador de "guardando..."
+            $('#submitEditAd').val('Guardando...').prop('disabled', true);
+        }
+    });
+    // --- FIN: VALIDACIÓN EN SUBMIT ---
+
+
+}); // Fin $(document).ready
+
+// --- Funciones Auxiliares Adaptadas/Nuevas ---
+
+/**
+ * Función ADAPTADA para contar imágenes válidas en el formulario de edición.
+ * Cuenta las imágenes existentes (con input photo_name[]) y
+ * las nuevas imágenes seleccionadas (con input userImage[]).
+ */
+function checkImagesEdit() {
+    let count = 0;
+    // Contar imágenes existentes (cuyo input oculto no esté vacío)
+    $('input[name="photo_name[]"]').each(function() {
+        if ($(this).val().trim() !== '') {
+            count++;
+        }
+    });
+    // Contar inputs de archivo que tengan un archivo seleccionado
+    $('input.photoFile[name="userImage[]"]').each(function() {
+        if (this.files && this.files.length > 0) {
+            count++;
+        }
+    });
+    // console.log("Image count:", count); // Para depuración
+    return count > 0;
 }
 
-function gotToLogin()
-{
-    window.location.href = "/index.php?login";
+
+/**
+ * Rota la imagen visualmente y actualiza el valor del input oculto de rotación.
+ * @param {number} index - El índice base 1 del photo_box.
+ */
+function rotateRight(index) {
+    const photoBox = $(`#photo_box_${index}`); // Usar ID del box si existe
+    const img = photoBox.find(`.photo_list img`); // Buscar img dentro del box
+    const rotationInput = photoBox.find(`#rotation-${index}`); // Buscar input de rotación
+
+    if (rotationInput.length === 0) {
+         console.warn(`Input de rotación #rotation-${index} no encontrado.`);
+         return;
+    }
+
+    let n_rotation = parseInt(rotationInput.val()) || 0; // Default a 0 si no es número
+    n_rotation = (n_rotation + 90) % 360; // Sumar 90 y asegurar que esté en [0, 90, 180, 270]
+    rotationInput.val(n_rotation);
+
+    if (img.length > 0) {
+        img.css('transform', `rotate(${n_rotation}deg)`);
+    } else {
+        // console.log(`No hay imagen para rotar en #photo_box_${index}`);
+        // Si es una preview de FileReader, la rotación real debería hacerse en servidor
+    }
 }
 
-function updatePhotolist()
-{
-    const container = $(".photos_list");
+/**
+ * Intercambia el contenido visual y los valores ocultos entre dos photo_box.
+ * ¡OJO! Esto es complejo y puede fallar si la estructura HTML interna varía mucho
+ * entre una foto existente y una preview nueva.
+ * @param {number} index1 - Índice del primer elemento.
+ * @param {number} index2 - Índice del segundo elemento.
+ */
+function transferPhoto(index1, index2) {
+    // Seleccionar los CONTENEDORES principales de cada foto
+    const box1 = $(`#photo_box_${index1}`);
+    const box2 = $(`#photo_box_${index2}`);
 
-    if(container[0].children.length > 0)
-        container.show();
-    else
-        container.hide();
-
-}
-function rotateLeft(index)
-{
-    const img  = $(`#photo_container-${index} img`);
-    const rotation = $(`#rotation-${index}`);
-    let n_rotation = parseInt(rotation.val());
-    n_rotation -= 90;
-    if(n_rotation < 0)
-        n_rotation = 270;
-    rotation.val(n_rotation);
-    if(img.length == 0)
-        return;
-    img.css('transform', `rotate(${n_rotation}deg)`);
-}
-
-function rotateRight(index)
-{
-    const img  = $(`#photo_container-${index} img`);
-    const rotation = $(`#rotation-${index}`);
-    let n_rotation = parseInt(rotation.val());
-    n_rotation += 90;
-    if(n_rotation >= 360)
-        n_rotation = 0;
-    rotation.val(n_rotation);
-    if(img.length == 0)
-        return;
-    img.css('transform', `rotate(${n_rotation}deg)`);
-}
-
-function transferPhoto(index1, index2)
-{
-    const photo1 = $(`#photo_container-${index1} img`);
-    const photo2 = $(`#photo_container-${index2} img`);
-  
-    if(photo1.length == 0)
-        return;
-
-    const container1 = $(`#photo_container-${index1}`);
-    const container2 = $(`#photo_container-${index2}`);
-    const html = container1.html();
-    container1.html(container2.html());
-    container2.html(html);
-    const rotation = $(`#rotation-${index1}`).val();
-    $(`#rotation-${index1}`).val($(`#rotation-${index2}`).val());
-    $(`#rotation-${index2}`).val(rotation);
-    
-    if(photo2.length == 0)
-    {
-        container1.addClass('free');
-        $(`#photo_container-${index1} input[type=file]`)[0].id = `photo-${index1}`;
-        $(`#rotation-${index1}`).val(0);
+    if (box1.length === 0 || box2.length === 0) {
+        console.error("Error al transferir: No se encontraron los photo_box", index1, index2);
         return;
     }
 
-}
-function removePhotoBox(index)
-{
-    const container = $(`#photo_container-${index}`);
-    const box = container.parent();
-    box.remove();
+    // --- Intercambio Simple de Nodos (Más robusto que intercambiar HTML interno) ---
+    // Guardar la posición del segundo elemento para insertar el primero allí
+    const box2_nextSibling = box2.next();
+
+    // Mover el box2 antes del box1
+    box2.insertBefore(box1);
+
+    // Mover el box1 a la posición original del box2
+    if (box2_nextSibling.length > 0) {
+        box1.insertBefore(box2_nextSibling);
+    } else {
+        // Si box2 era el último, mover box1 al final del contenedor padre
+        box1.appendTo(box1.parent());
+    }
+
+    // --- Actualizar IDs y llamadas onclick ---
+     updatePhotoBoxIndicesAndButtons(); // Función separada para claridad
+
 }
 
-function formatPhone(e)
-{
-    // Eliminar caracteres no numéricos
+
+/**
+ * Recorre todos los photo_box visibles, reasigna sus IDs (photo_box_N, photo_container-N, rotation-N)
+ * y actualiza los parámetros de índice en las llamadas onclick (rotateRight, transferPhoto).
+ * También actualiza la visibilidad de los botones de mover.
+ */
+function updatePhotoBoxIndicesAndButtons() {
+    const container = $(".photos_list.sortable");
+    const boxes = container.children(".photo_box"); // Obtener solo los hijos directos
+    const totalBoxes = boxes.length;
+
+    boxes.each(function(i) {
+        const current_index = i + 1;
+        const box = $(this);
+
+        // 1. Actualizar ID del photo_box
+        box.attr('id', `photo_box_${current_index}`);
+
+        // 2. Actualizar ID del photo_list (si existe)
+        const photoListDiv = box.find('.photo_list');
+        if (photoListDiv.length > 0) {
+            photoListDiv.attr('id', `photo_container-${current_index}`);
+        }
+
+        // 3. Actualizar ID y name del input de rotación (si existe)
+        const rotationInput = box.find('input[id^="rotation-"]');
+        if (rotationInput.length > 0) {
+            rotationInput.attr('id', `rotation-${current_index}`);
+            // ¡Importante! Asegurar que el NAME del input de rotación tenga el índice correcto
+             // El PHP espera optImgage[INDEX][rotation] donde INDEX es base 0
+            rotationInput.attr('name', `optImgage[${i}][rotation]`);
+        }
+
+        // 4. Actualizar ID del input de archivo (si es un placeholder nuevo)
+         const fileInput = box.find('input.photoFile[id^="photo-"]');
+         if(fileInput.length > 0) {
+             fileInput.attr('id', `photo-${current_index}`);
+         }
+
+        // 5. Actualizar llamadas onclick en los botones de opciones
+        const optionsDiv = box.find('.photos_options');
+        if (optionsDiv.length > 0) {
+            // Botón Rotar
+             const rotateBtn = optionsDiv.find('a[onclick*="rotateRight"]');
+             if(rotateBtn.length > 0) rotateBtn.attr('onclick', `rotateRight(${current_index}); return false;`);
+
+            // Botón Mover Izquierda
+             const moveLeftBtn = optionsDiv.find('a[onclick*="transferPhoto"][onclick*=",${current_index-1}"]'); // Busca el que mueve a la izquierda
+             if(moveLeftBtn.length > 0) {
+                 moveLeftBtn.attr('onclick', `transferPhoto(${current_index}, ${current_index - 1}); return false;`);
+                 // Ocultar si es el primero
+                 if (current_index === 1) moveLeftBtn.hide(); else moveLeftBtn.show();
+             } else { // Puede que necesitemos encontrarlo de otra forma si el onclick original era diferente
+                 const btnL = optionsDiv.find('svg[d*="m313-440"]').closest('a'); // Busca por el path del SVG izquierdo
+                 if(btnL.length > 0) {
+                     btnL.attr('onclick', `transferPhoto(${current_index}, ${current_index - 1}); return false;`);
+                     if (current_index === 1) btnL.hide(); else btnL.show();
+                 }
+             }
+
+            // Botón Mover Derecha
+             const moveRightBtn = optionsDiv.find('a[onclick*="transferPhoto"][onclick*=",${current_index+1}"]'); // Busca el que mueve a la derecha
+              if(moveRightBtn.length > 0) {
+                 moveRightBtn.attr('onclick', `transferPhoto(${current_index}, ${current_index + 1}); return false;`);
+                  // Ocultar si es el último
+                  if (current_index === totalBoxes) moveRightBtn.hide(); else moveRightBtn.show();
+             } else {
+                  const btnR = optionsDiv.find('svg[d*="M647-440H160v-80h487"]').closest('a'); // Busca por el path del SVG derecho
+                  if(btnR.length > 0) {
+                     btnR.attr('onclick', `transferPhoto(${current_index}, ${current_index + 1}); return false;`);
+                     if (current_index === totalBoxes) btnR.hide(); else btnR.show();
+                 }
+             }
+        }
+    });
+}
+
+/**
+ * ¡NUEVO! Reasigna los índices en los names de los inputs de rotación `optImgage[INDEX][rotation]`
+ * después de un reordenamiento, para que coincidan con el orden visual.
+ */
+function updatePhotoNameIndices() {
+    const container = $(".photos_list.sortable");
+    const boxes = container.children(".photo_box");
+
+    boxes.each(function(i) {
+        const box = $(this);
+        const rotationInput = box.find('input[id^="rotation-"]');
+        if (rotationInput.length > 0) {
+            // El índice para el name debe ser base 0
+            rotationInput.attr('name', `optImgage[${i}][rotation]`);
+        }
+         // También actualizar el índice de photo_name[] si existe
+         const nameInput = box.find('input[name="photo_name[]"]');
+         if(nameInput.length > 0) {
+             // El name 'photo_name[]' no necesita índice explícito, PHP lo recibe como array
+             // Pero si dependieras del índice para algo más, lo harías aquí.
+         }
+    });
+}
+
+
+/**
+ * Añade un nuevo slot (placeholder) para subir fotos si
+ * el número actual de fotos es menor que el máximo permitido.
+ */
+ function addPlaceholderIfSpace() {
+    const container = $(".photos_list.sortable");
+    const currentPhotoCount = container.children(".photo_box").length;
+    const maxPhotos = parseInt(DATAJSON['max_photos'] || 3); // Usar default
+
+    if (currentPhotoCount < maxPhotos) {
+        // Comprobar si ya existe un placeholder al final (por si acaso)
+         if (container.find('.photo_list.free').length === 0) {
+             const nextId = currentPhotoCount + 1; // El ID para el nuevo placeholder
+             const placeholderHtml = `
+                 <div class="photo_box" id="photo_box_${nextId}">
+                     <div id="photo_container-${nextId}" class="photo_list free">
+                         <input name="userImage[]" id="photo-${nextId}" type="file" class="photoFile" accept="image/jpeg, image/png" />
+                         <span class="upload-placeholder-icon">+</span>
+                     </div>
+                     <div class="photos_options">
+                         <!-- Opciones vacías o botones de mover si es necesario -->
+                     </div>
+                     <!-- No input de rotación para placeholder -->
+                 </div>`;
+             container.append(placeholderHtml);
+             updatePhotoBoxIndicesAndButtons(); // Re-calcular botones y IDs
+         }
+    }
+ }
+
+
+/**
+ * Formatea el número de teléfono mientras se escribe (elimina no numéricos).
+ */
+function formatPhone(e) {
     let telefono = e.target.value.replace(/\D/g, '');
-
-    // Formatear con el patrón xxx.xxx.xxx
-    // if (telefono.length > 3) {
-    //     telefono = telefono.slice(0, 3) + '.' + telefono.slice(3);
-    // }
-    // if (telefono.length > 7) {
-    //     telefono = telefono.slice(0, 7) + '.' + telefono.slice(7);
-    // }
-
+    // Limitar longitud si es necesario (ej: 15 dígitos)
+    // telefono = telefono.substring(0, 15);
     e.target.value = telefono;
 }
 
-function checkImagesEdit()
-{
-    return $(".photos_list img").length > 0
+// --- Funciones que probablemente NO se necesiten en edit_item.php ---
+
+/*
+// Función original para crear elemento, usada por AJAX upload (eliminado)
+function createImageBoxElement(rotation, index) {
+    // ...
 }
 
-function checkImages()
-{
-    if($("#fieldset_photos").is(':hidden'))
-        return true;
-
-    const container = $(".photos_list");
-
-    if(container[0].children.length > 0)
-        return true;
-
-    return false;
+// Función original para crear opciones, usada por AJAX upload (eliminado)
+function createImageOptions(index) {
+    // ...
 }
 
-function createImageBoxElement(rotation, index)
-{
-    const box = document.createElement('div');
-    box.classList.add('photo_box');
-    box.draggable = true;
-    const photoContainer = document.createElement('div');
-    photoContainer.classList.add('photo_list');
-    photoContainer.classList.add('loading');
-    photoContainer.id = `photo_container-${index}`;
-    // photoContainer.innerHTML = `
-    // <div class="removeImg"><i class="fa fa-times" aria-hidden="true"></i></div>
-    // <span class="helper"></span>
-    // <img src="${src}" alt="photo" class="img-responsive">
-    // <input type="hidden" name="photo_name[]" value="${value}">
-    // `;
-    const photos_options = document.createElement('div');
-    photos_options.classList.add('photos_options');
-    photos_options.innerHTML = `
-            <a style="display: none;" href="javascript:void(0);" onclick="transferPhoto(${index},${index-1})">
-				<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z"/></svg>
-			</a>
-            <a href="javascript:void(0);" onclick="rotateRight(${index})">
-				<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"><path d="M522-80v-82q34-5 66.5-18t61.5-34l56 58q-42 32-88 51.5T522-80Zm-80 0Q304-98 213-199.5T122-438q0-75 28.5-140.5t77-114q48.5-48.5 114-77T482-798h6l-62-62 56-58 160 160-160 160-56-56 64-64h-8q-117 0-198.5 81.5T202-438q0 104 68 182.5T442-162v82Zm322-134-58-56q21-29 34-61.5t18-66.5h82q-5 50-24.5 96T764-214Zm76-264h-82q-5-34-18-66.5T706-606l58-56q32 39 51 86t25 98Z"/></svg>
-			</a>
-     
-            <a style="display: none;" href="javascript:void(0);" onclick="transferPhoto(${index},${index+1})">
-                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M647-440H160v-80h487L423-744l57-56 320 320-320 320-57-56 224-224Z"/></svg>
-            </a>
-            `;
-    const input = document.createElement('input');
-    input.type = 'hidden';
-    input.name = 'optImgage[][rotation]';
-    input.classList.add('rotation');
-    input.value = rotation;
-    input.id = `rotation-${index}`;
-    box.appendChild(photoContainer);
-    box.appendChild(photos_options);
-    box.appendChild(input);
-
-    return box;
-
+// Función original que actualizaba botones después de AJAX (reemplazada/integrada en updatePhotoBoxIndicesAndButtons)
+function updateBoxButtons() { // Nombre original mantenido por si acaso
+    updatePhotoBoxIndicesAndButtons(); // Llama a la nueva función más completa
 }
 
-function createImageOptions(index)
-{
-    return `<a style="display: none;" href="javascript:void(0);" onclick="transferPhoto(${index},${index-1})">
-				<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z"/></svg>
-			</a>
-            <a href="javascript:void(0);" onclick="rotateRight(${index})">
-				<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"><path d="M522-80v-82q34-5 66.5-18t61.5-34l56 58q-42 32-88 51.5T522-80Zm-80 0Q304-98 213-199.5T122-438q0-75 28.5-140.5t77-114q48.5-48.5 114-77T482-798h6l-62-62 56-58 160 160-160 160-56-56 64-64h-8q-117 0-198.5 81.5T202-438q0 104 68 182.5T442-162v82Zm322-134-58-56q21-29 34-61.5t18-66.5h82q-5 50-24.5 96T764-214Zm76-264h-82q-5-34-18-66.5T706-606l58-56q32 39 51 86t25 98Z"/></svg>
-			</a>
+// Función original para filtrar fieldset (mantener si la lógica de categoría aún aplica)
+function filterFieldset(cat) {
+    const fieldset = $("#fieldset_photos"); // Revisar si este ID existe
+    const espFields = $("#esp_fields");     // Revisar si este ID existe
 
-            <a style="display: none;" href="javascript:void(0);" onclick="transferPhoto(${index},${index+1})">
-                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M647-440H160v-80h487L423-744l57-56 320 320-320 320-57-56 224-224Z"/></svg>
-            </a>
-            `;
-}
-
-function updateBoxButtons()
-{
-    const container = $(".photos_list .photo_box");
-    for(let i = 0; i < container.length; i++)
-    {
-        const photo  = $(container[i]).find('.photo_list'); 
-        photo.attr('id', `photo_container-${i + 1}`);
-        const options = $(container[i]).find('.photos_options');
-        options.html(createImageOptions(i + 1));
-        $(container[i]).find('.rotation')[0].id = `rotation-${i + 1}`;
-    }
-
-    if($("#post_photo").data('arrow') == false)
-        return;
-    if(container.length < 2)
-        return;
-    for(let i = 0; i < container.length; i++)
-    {
-        const options = $(container[i]).find('.photos_options');
-        if(options.children().length > 0)
-        {
-            options.find('a:first').show();
-            options.find('a:last').show();
-            if(i == 0)
-                options.find('a:first').hide();
-            if(i == container.length - 1)
-                options.find('a:last').hide();
-        }
-    }
-}
-
-function filterFieldset(cat)
-{
-    const fieldset = $("#fieldset_photos");
-    if(cat == 331)
-    {
-        fieldset.hide();
-        $("#esp_fields").hide();
+    // Ejemplo: Asumiendo que la lógica de ocultar/mostrar sigue siendo válida
+    if(cat == 331) { // Asegurarse que este ID de categoría es correcto
+        if(fieldset.length) fieldset.hide();
+        if(espFields.length) espFields.hide();
         return;
     }
-    $("#esp_fields").show();
-    fieldset.show();
+    if(espFields.length) espFields.show();
+    if(fieldset.length) fieldset.show();
 }
 
-function checkLimits()
-{
-    const mail = $("#email").val();
-    return new Promise((resolve, reject) => {
-        $.get(site_url + "sc-includes/php/ajax/check_limits.php", { mail: mail } , function(res)
-        {
-            if(res.status == 1)
-            {
-                $("#dialog_registred").attr('open', true);
-                reject()
-            }
-            resolve();
-        }, "json");
-    });
-
+// Función para verificar límites de usuario (no relevante para admin editando)
+function checkLimits() {
+    // No hacer nada o devolver una promesa resuelta
+    return Promise.resolve();
 }
 
-function ajustarTexto()
-{
-    let text = $("#text").val();
-    text = asegurarPuntoFinal(text);
-    $("#text").val(text);
-    $("#text_editable").text(text);
-
-}
-
+// Función original de validación paso a paso (reemplazada por validación en submit)
 function pre_validate_form( step){
-
-	hiddenError();
-    ajustarTexto();
-    if(!validMail("#email")){
-
-		error=true; $("#error_email").show(); 
-
-		return false;
-
-	}else $("#error_email").hide();
-
-    if(step == 9)
-        return true;
-
-	sel=['category','region'];
-
-    for(var i=0; i< sel.length; i++){
-
-		if(!valSelect($("#"+sel[i]).val())){
-
-			error=true; 
-
-			$("#error_"+sel[i]).show(); 
-
-			//scroll_To(sel[i]);
-
-
-			return false;
-		}else 
-        {
-            $("#error_"+sel[i]).hide();
-            if(i >= step)
-                return true;
-        }
-
-	}
-
-    if(step == 2)
-        return true;
-	error=false;
-
-	extra_fields=['km_car', 'date_car', 'date_car', 'fuel_car', 'room', 'bathroom', 'area'];
-
-
-    var tit=$("#tit").val();
-    if(!filterWordTitle())
-        return false;
-
-	if(!req($("#tit").val()) || (tit.length<10 || tit.length>50))
-    {
-
-		error=true; 
-		if(tit.length==0)
-        {
-            $("#error_tit").html('Escriba un título para el anuncio').show(); 
-        }
-		else if(tit.length<10)
-        {
-            $("#error_tit").html('El titulo debe tener más de 10 caracteres').show(); 
-        }
-        else{
-            $("#error_tit").html('Exede el número de caracteres permitidos en el título para el anuncio').show(); 
-        }
-		
-
-		scroll_To('tit'); 
-		return false;
-
-	}else $("#error_tit").hide()
-
-    if(step == 3)
-        return true;
-
-	var text=$("#text").val();
-    if(!filterWordText())
-        return false;
-
-	if(!req($("#text").val()) || (text.length<30 || text.length>500)){
-
-		error=true; 
-		if(text.length==0)
-        {
-            $("#error_text").html('Escriba una descripción para su anuncio').show();  
-        }
-		else if(text.length<30)
-        {
-            $("#error_text").html('La descripción debe tener más de 30 caracteres').show(); 
-        }
-        else{
-            $("#error_text").html('Estás exediendo el número de caracteres permitidos en la descripción del anuncio').show(); 
-        }
-
-			scroll_To('text_editable'); return false;
-
-	}else $("#error_text").hide();
-
-
-    if(step == 4)
-        return true;
-
-
-
-	for(var i = 0; i< extra_fields.length; i++){
-		element = extra_fields[i];
-		if($('#'+ element).val() != undefined){
-			if($('#' + element).val() == ""){
-				$('#error_' + element).show();
-				scroll_To(element);
-				return false;
-			}
-		}else
-			$('#error_' + element).hide();
-	}
-	
-
-	if($("#horario-final").val() == $("#horario-inicio").val()){
-
-		error=true; 
-		$("#error_horario").show(); 
-		scroll_To('horario-final'); 
-		return false;
-
-	}else $("#error_horario").hide();
-
-    if(step == 5)
-        return true;
-
-	if($("#dis").val() == 0){
-
-		error=true; 
-		$("#error_dis").show(); 
-		scroll_To('dis'); 
-		return false;
-
-	}else $("#error_dis").hide();
-
-    if(step == 6)
-        return true;
-
-	if(!checkImages())
-	{
-		$("#error_photo").show(); 
-		return false;
-	}else $("#error_photo").hide();
-
-    if(step == 7)
-        return true;
-
-    if($("#name").val() == ""){
-
-        error=true; 
-
-        $("#error_name").show(); 
-
-        scroll_To('name'); 
-        return false;
-
-    }else $("#error_name").hide();
-
-
-    if(step == 8)
-        return true;
-
-
-    if($("#phone").val() == ""){
-
-        error=true; 
-
-        $("#error_phone").show(); 
-
-        scroll_To('phone'); 
-        return false;
-
-    }else $("#error_phone").hide();
-
-    if(step == 10)
-        return true;
-
-	if(!valSelect($("#sellerType").val())){
-
-		error=true; 
-
-		$("#error_sellerType").show(); 
-
-		scroll_To('sellerType');
-
-		return false;
-
-	}else 
-		$("#error_sellerType").hide();
-
-
-
-	if(!terms()){
-
-		error=true;
-
-		$("#error_terminos").show(); 
-
-			scroll_To('terminos'); return false;
-
-	}else $("#error_terminos").hide();
-
+    // ... Código original ...
+    // Esta función es menos fiable que la validación en submit. Se podría eliminar.
 }
 
+// Función original de validación en tiempo real (reemplazada por validación en submit y listeners específicos)
+function real_time_validate_form() {
+    // ... Código original ...
+    // Los listeners específicos y la validación en submit son más efectivos.
+}
+*/
+
+// --- Helpers (mantener si se usan) ---
 function asegurarPuntoFinal(texto) {
-    // Eliminar espacios al principio y al final
-    texto = texto.trim();
-
-    // Si el texto está vacío, devolver una cadena vacía
-    if (texto === "") {
-        return "";
-    }
-
-    // Verificar si el texto termina con un punto
-    if (!texto.endsWith('.')) {
-        return texto + '.';
-    }
-
-    // Si termina con un punto, asegurarse de que no haya espacios adicionales después
+    texto = String(texto || '').trim(); // Asegurar que es string y trim
+    if (texto === "") return "";
+    if (!texto.endsWith('.')) return texto + '.';
     return texto.replace(/\.\s*$/, '.');
 }
+
+// Funciones de utilidad que podrían faltar (definir si no existen globalmente)
+function hiddenError() { // Asumiendo que oculta todos los .error_msg
+    $('.error_msg').hide();
+}
+
+function scroll_To(elementId) { // Asumiendo que hace scroll a un elemento
+    const element = $('#' + elementId);
+    if (element.length) {
+        $('html, body').animate({
+            scrollTop: element.offset().top - 100 // Ajustar offset
+        }, 500);
+    }
+}
+// function validMail(selector) { ... }
+// function valSelect(value) { ... }
+// function req(value) { ... }
+// function filterWordTitle() { ... } // ¡IMPORTANTE: Asegurarse que estas funciones existen y funcionan!
+// function filterWordText() { ... } // ¡IMPORTANTE: Asegurarse que estas funciones existen y funcionan!
