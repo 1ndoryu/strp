@@ -519,8 +519,8 @@ if (isset($_GET['a'])) {
                         <?php endif; ?>
 
 
-                        <div class="row"> <?php // Mantener precio si sigue siendo relevante 
-                                            ?>
+                        <div class="row" style="display: none;"> <?php // Mantener precio si sigue siendo relevante 
+                                                                    ?>
                             <div class="col_lft"><label for="precio"><?= $language['edit.label_price'] ?? 'Precio' ?></label></div>
                             <div class="col_rgt"><input class="numeric" name="precio" type="number" id="precio" size="8" maxlength="9" value="<?= htmlspecialchars($ad['ad']['price'] ?? '0'); ?>" step="0.01" min="0" /><span class="decimal_price"><b><?= COUNTRY_CURRENCY_CODE ?? 'EUR'; ?></b></span> <?php // Añadido tipo number y min=0 
                                                                                                                                                                                                                                                                                                             ?>
@@ -1055,6 +1055,13 @@ if (isset($_GET['a'])) {
                 align-items: center;
                 gap: 10px;
                 flex-wrap: wrap;
+                text-align-last: left;
+            }
+
+            .dia-horario-edit label {
+                width: 100px !important;
+                font-size: 14px;
+                padding: 0px 12px;
             }
 
             .horario-semanal-editor .dia-horario-edit label {
@@ -1150,6 +1157,24 @@ if (isset($_GET['a'])) {
 
             .formularioEditNew span.select2 {
                 max-width: 600px;
+            }
+
+            .formularioEditNew label.frm-checkbox {
+                text-align: left;
+                width: auto;
+            }
+
+            div#servicios-container {
+                display: flex;
+                flex-direction: row;
+                justify-content: flex-start;
+                flex-wrap: wrap;
+                gap: 10px;
+                margin-bottom: 20px;
+            }
+
+            .formularioEditNew input#phone {
+                text-align: left;
             }
 
             /* Placeholder para sortable */
