@@ -100,7 +100,7 @@ if (isset($_POST['edit_service_id'])) {
             // Deberías tener una variable de idioma para esto
             $exito_div = "Servicio modificado correctamente."; 
              // Redirigir o limpiar variables GET para evitar re-edición accidental al recargar
-             // header("Location: index.php?id=manage_services&success=edited"); // O una forma similar que use tu CMS
+             // header("Location: index.php?id=manage_services_new&success=edited"); // O una forma similar que use tu CMS
              // O simplemente limpiar el GET edit para que muestre la lista normal
              unset($_GET['edit']); 
         } else {
@@ -137,7 +137,7 @@ if (isset($_GET['edit'])) {
              <div class="info_error"><i class="fa fa-times-circle" aria-hidden="true"></i><?= htmlspecialchars($error_div); ?></div> <? // Asumiendo una clase info_error ?>
         <? } ?>
 
-        <form action="index.php?id=manage_services&edit=<?= $service_id_to_edit; ?>" method="post" class="param_form white_form">
+        <form action="index.php?id=manage_services_new&edit=<?= $service_id_to_edit; ?>" method="post" class="param_form white_form">
             <input type="hidden" name="edit_service_id" value="<?= $service_data['ID_service']; ?>">
 
             <label>Nombre del Servicio</label> <? // Cambiar por variable de idioma ?>
@@ -156,14 +156,14 @@ if (isset($_GET['edit'])) {
 
             <input name="Modificar" type="submit" value="Guardar Cambios"> <? // Cambiar por variable de idioma ?>
         </form>
-        <a href="index.php?id=manage_services" class="back">« Volver a la lista de Servicios</a> <? // Cambiar por variable de idioma ?>
+        <a href="index.php?id=manage_services_new" class="back">« Volver a la lista de Servicios</a> <? // Cambiar por variable de idioma ?>
         <?php
     } else {
         // Mostrar error si no se encontró el servicio a editar
         ?>
         <h2>Error</h2> <? // Cambiar por variable de idioma ?>
         <div class="info_error">Servicio no encontrado.</div> <? // Cambiar por variable de idioma ?>
-        <a href="index.php?id=manage_services" class="back">« Volver a la lista de Servicios</a> <? // Cambiar por variable de idioma ?>
+        <a href="index.php?id=manage_services_new" class="back">« Volver a la lista de Servicios</a> <? // Cambiar por variable de idioma ?>
         <?php
     }
 
@@ -176,7 +176,7 @@ if (isset($_GET['edit'])) {
     ?>
     <h2>Gestionar Servicios</h2> <? // Cambiar por variable de idioma ?>
 
-    <form action="index.php?id=manage_services" method="post" class="param_form white_form">
+    <form action="index.php?id=manage_services_new" method="post" class="param_form white_form">
         <label>Nombre del Nuevo Servicio</label> <? // Cambiar por variable de idioma ?>
         <input name="new_service_name" type="text" required>
         <div class="clear"></div>
@@ -205,8 +205,8 @@ if (isset($_GET['edit'])) {
                         <b><?= htmlspecialchars($service['name']); ?></b> (Valor: <?= htmlspecialchars($service['value']); ?> | Orden: <?= htmlspecialchars($service['ord']); ?>)
                     </span>
                     <span class="col_right">
-                        <a href="index.php?id=manage_services&edit=<?= $service['ID_service']; ?>">Editar</a> <? // Cambiar por variable de idioma ?>
-                        <a href="index.php?id=manage_services&del=<?= $service['ID_service']; ?>" onclick="return confirm('¿Estás seguro de que quieres eliminar este servicio?');">Eliminar</a> <? // Cambiar por variable de idioma ?>
+                        <a href="index.php?id=manage_services_new&edit=<?= $service['ID_service']; ?>">Editar</a> <? // Cambiar por variable de idioma ?>
+                        <a href="index.php?id=manage_services_new&del=<?= $service['ID_service']; ?>" onclick="return confirm('¿Estás seguro de que quieres eliminar este servicio?');">Eliminar</a> <? // Cambiar por variable de idioma ?>
                     </span>
                 </li>
             <? } ?>
@@ -214,7 +214,7 @@ if (isset($_GET['edit'])) {
         <div class="text-center">
             <button id="save_order_btn" class="btn btn-primary">Guardar Orden</button> <? // Cambiar por variable de idioma ?>
         </div>
-        <form action="index.php?id=manage_services" method="post" id="save_order_form">
+        <form action="index.php?id=manage_services_new" method="post" id="save_order_form">
             <input type="hidden" name="save_order" value="1">
             <input type="hidden" id="save_order_data" name="data" value="">
         </form>

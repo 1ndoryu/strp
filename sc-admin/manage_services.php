@@ -33,7 +33,7 @@
 	<option value="ref" <? if($_GET['field']=="ref") echo "selected";?>>Ref</option>
 </select>
 <input type="submit" value="Buscar" class="button_form">
-<input type="hidden" name="id" value="manage_services_new">
+<input type="hidden" name="id" value="manage_services">
 </form>
 <table class="table service-table table-responsive-md">
     <thead>
@@ -92,5 +92,5 @@
 </table>
 
 <? 
-	createPagButtons($tot_pag, $pag, "/sc-admin/index.php?id=manage_services_new");
+	createPagButtons($tot_pag, $pag, "/sc-admin/index.php?id=manage_services");
 ?>
