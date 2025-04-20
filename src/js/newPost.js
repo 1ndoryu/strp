@@ -1,4 +1,5 @@
 (function () {
+    //newPost.js
     'use strict';
 
     const HORARIO_STORAGE_KEY = 'userPendingSchedule';
@@ -480,7 +481,6 @@
             contDesc.textContent = descripcionTextarea.value.length;
         }
     }
-
 
     function manejarSeleccionFotos(event) {
         const files = event.target.files;
@@ -1016,6 +1016,72 @@
         actualizarSellerTypeOculto();
 
         actualizarIdiomasOculto();
+
+        // --- INICIO: Añadir campos ocultos para el horario detallado ---
+        console.log('Intentando añadir campos ocultos del horario detallado...');
+        const horarioGuardadoString = localStorage.getItem(HORARIO_STORAGE_KEY);
+        if (horarioGuardadoString) {
+            try {
+                const scheduleData = JSON.parse(horarioGuardadoString);
+                const dias = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
+
+                // Primero, eliminamos campos de horario_dia previos si existen (para evitar duplicados si algo sale mal)
+                form.querySelectorAll('input[name^="horario_dia["]').forEach(input => input.remove());
+
+                dias.forEach(diaKey => {
+                    const diaInfo = scheduleData[diaKey];
+
+                    if (diaInfo) {
+                        // Si hay información para este día
+                        const activoValue = diaInfo.disponible ? '1' : '0';
+                        const inicioValue = diaInfo.inicio || '00:00'; // Valor por defecto si no existe
+                        const finValue = diaInfo.fin || '23:30'; // Valor por defecto si no existe
+
+                        // Crear input para 'activo'
+                        const inputActivo = document.createElement('input');
+                        inputActivo.type = 'hidden';
+                        inputActivo.name = `horario_dia[${diaKey}][activo]`;
+                        inputActivo.value = activoValue;
+                        form.appendChild(inputActivo);
+
+                        // Crear input para 'inicio' (solo si está activo, aunque el PHP lo maneja)
+                        const inputInicio = document.createElement('input');
+                        inputInicio.type = 'hidden';
+                        inputInicio.name = `horario_dia[${diaKey}][inicio]`;
+                        inputInicio.value = inicioValue;
+                        form.appendChild(inputInicio);
+
+                        // Crear input para 'fin' (solo si está activo, aunque el PHP lo maneja)
+                        const inputFin = document.createElement('input');
+                        inputFin.type = 'hidden';
+                        inputFin.name = `horario_dia[${diaKey}][fin]`;
+                        inputFin.value = finValue;
+                        form.appendChild(inputFin);
+
+                        // console.log(`Añadido hidden para ${diaKey}: activo=${activoValue}, inicio=${inicioValue}, fin=${finValue}`);
+                    } else {
+                        // Si no hay info para el día, podemos añadir 'activo=0' para ser explícitos
+                        const inputActivo = document.createElement('input');
+                        inputActivo.type = 'hidden';
+                        inputActivo.name = `horario_dia[${diaKey}][activo]`;
+                        inputActivo.value = '0';
+                        form.appendChild(inputActivo);
+                        // No necesitamos añadir inicio/fin si no está activo
+                        // console.log(`Añadido hidden para ${diaKey}: activo=0 (no configurado en localStorage)`);
+                    }
+                });
+                console.log('Campos ocultos del horario detallado añadidos al formulario.');
+            } catch (e) {
+                console.error('Error al procesar horario desde localStorage para añadir campos ocultos:', e);
+                // Opcional: Mostrar un error al usuario antes de enviar?
+                // alert("Hubo un problema al procesar el horario guardado. No se enviará la información detallada.");
+            }
+        } else {
+            console.log('No se encontró horario detallado en localStorage para añadir campos ocultos.');
+            // Opcional: Asegurarse de que no queden campos viejos si se borró el storage
+            form.querySelectorAll('input[name^="horario_dia["]').forEach(input => input.remove());
+        }
+        // --- FIN: Añadir campos ocultos para el horario detallado ---
 
         form.submit();
     }
