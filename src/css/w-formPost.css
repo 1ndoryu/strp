@@ -163,9 +163,11 @@ a:hover {
 
 .frm-etiqueta {
     display: block;
-    margin-bottom: var(--espaciado-pequeno);
-    font-weight: bold;
+    margin-bottom: 10px;
+    /* font-weight: bold; */
     color: var(--color-texto-secundario);
+    font-size: 15px;
+    FONT-WEIGHT: 600;
 }
 
 /* ======================================== */
@@ -178,7 +180,7 @@ a:hover {
     padding: var(--espaciado-pequeno) var(--espaciado-base);
     border: 1px solid var(--color-borde);
     border-radius: var(--radio-borde);
-    font-size: 1rem;
+    font-size: 14px;
     transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
@@ -983,7 +985,8 @@ p.numero-etapa {
 }
 
 .titulo-etapa {
-    color: var(--color-secundario);
+    color: #1a1a44;
+    font-size: 21px;
 }
 
 .progresos-etapa {
@@ -1059,6 +1062,7 @@ p.numero-etapa {
     text-overflow: ellipsis;
     flex-grow: 1; /* Ocupa el espacio disponible */
     padding-right: 10px; /* Espacio antes de la flecha */
+    font-size: 14px;
 }
 
 .custom-select-arrow {

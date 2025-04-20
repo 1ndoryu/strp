@@ -49,7 +49,7 @@ function newForm()
                         <div class="opcion-contenido">
                             <strong>Masajista Particular</strong>
                             <div class="separador-opcion-perfil"></div>
-                            <span>Crea tu perfil individual para ofrecer tus servicios.</span>
+                            <span style="margin-bottom: 10px;">Crea tu perfil individual para ofrecer tus servicios.</span>
                             <div class="beneficio-tipo-usuario">
                                 <?php echo $GLOBALS['check']; ?>
                                 <span class="beneficio-value">1 perfil individual</span>
@@ -82,7 +82,7 @@ function newForm()
                         <div class="opcion-contenido">
                             <strong>Centro de Masajes</strong>
                             <div class="separador-opcion-perfil"></div>
-                            <span>Gestiona varios perfiles de masajistas de tu centro.</span>
+                            <span style="margin-bottom: 10px;">Gestiona varios perfiles de masajistas de tu centro.</span>
                             <div class="beneficio-tipo-usuario">
                                 <?php echo $GLOBALS['check']; ?>
                                 <span class="beneficio-value">Perfiles individuales</span>
@@ -115,7 +115,7 @@ function newForm()
                         <div class="opcion-contenido">
                             <strong>Publicista</strong>
                             <div class="separador-opcion-perfil"></div>
-                            <span>Promociona productos o servicios relacionados.</span>
+                            <span style="margin-bottom: 10px;">Promociona productos o servicios relacionados.</span>
                             <div class="opcion-contenido">
                                 <div class="beneficio-tipo-usuario">
                                     <?php echo $GLOBALS['check']; ?>
@@ -150,7 +150,7 @@ function newForm()
                         <div class="opcion-contenido">
                             <strong>Visitante</strong>
                             <div class="separador-opcion-perfil"></div>
-                            <span>Guarda perfiles favoritos y contacta fácilmente. (No publica anuncios)</span>
+                            <span style="margin-bottom: 10px;">Guarda perfiles favoritos y contacta fácilmente. (No publica anuncios)</span>
                             <div class="opcion-contenido">
                                 <div class="beneficio-tipo-usuario">
                                     <?php echo $GLOBALS['check']; ?>
