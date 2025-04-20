@@ -1,427 +1,356 @@
 <?php
-#edit_item.php
+#edit_item.php 
 
-// Activar errores para depuración (recomendado durante el desarrollo)
-// ini_set('display_errors', 1);
-// ini_set('display_startup_errors', 1);
-// error_reporting(E_ALL);
+// Incluir dependencias necesarias si no están auto-incluidas (ajusta según tu CMS)
+// require_once('ruta/a/tus/funciones/settings.inc.php'); // Ejemplo
+// require_once('ruta/a/tus/funciones/functions.inc.php'); // Ejemplo
+// require_once('ruta/a/tus/clases/Images.php'); // Ejemplo
+// require_once('ruta/a/tus/clases/User.php'); // Ejemplo
 
-// --- Funciones (asumiendo que están definidas en otro lugar o incluidas) ---
-// require_once('path/to/your/functions.php'); // Asegúrate que todas las funciones estén disponibles
-
+// --- Función de Compresión de Imagen (sin cambios) ---
 function compressImage($filePath, $quality = 90)
 {
-    if (!file_exists($filePath) || !is_readable($filePath)) {
-        // error_log("CompressImage Error: File not found or not readable - " . $filePath);
-        return false;
-    }
+    //die($filePath);
     $info = getimagesize($filePath);
-    if ($info === false) {
-         // error_log("CompressImage Error: getimagesize failed for - " . $filePath);
-        return false;
-    }
     $image = null;
 
-    try {
-        if ($info['mime'] == 'image/jpeg') {
-            $image = imagecreatefromjpeg($filePath);
-            if ($image) imagejpeg($image, $filePath, $quality);
-        } elseif ($info['mime'] == 'image/png') {
-            $image = imagecreatefrompng($filePath);
-            // La compresión PNG va de 0 (sin compresión) a 9 (máxima compresión)
-            if ($image) imagepng($image, $filePath, 9);
-        } else {
-            // error_log("CompressImage Warning: Unsupported file type - " . $info['mime'] . " for " . $filePath);
-             return false; // Unsupported file type
-        }
-    } catch (Exception $e) {
-        // error_log("CompressImage Exception: " . $e->getMessage() . " for " . $filePath);
-        return false;
+    if ($info['mime'] == 'image/jpeg') {
+        $image = imagecreatefromjpeg($filePath);
+        imagejpeg($image, $filePath, $quality);
+    } elseif ($info['mime'] == 'image/png') {
+        $image = imagecreatefrompng($filePath);
+        // La calidad en imagepng va de 0 (sin compresión) a 9 (máxima compresión)
+        // Un valor medio como 6 podría ser un buen balance si 9 es muy lento.
+        imagepng($image, $filePath, 6); 
+    } else {
+        // return false; // Unsupported file type
     }
-
+    //var_dump($filePath , $image , $info);
+    //die();
 
     if ($image) {
         imagedestroy($image);
-        return true;
     }
-    return false;
+    return true;
 }
-
-// Asumir que ImageStatus y otras clases/constantes están definidas
-class ImageStatus {
-    const Delete = -1; // Ejemplo, ajusta si es diferente
-    const Inactive = 0; // Ejemplo
-    const Active = 1;   // Ejemplo
-}
-// Asumir que Images::rotateImage, Images::deleteImage, etc. existen
-// Asumir que getConfParam, selectSQL, updateSQL, insertSQL, getDataAd, toAscii, formatName, console_log, loadBlock, etc. existen
 
 $edited = false;
-$error_message = ''; // Para mostrar errores específicos
 $DATAJSON = array();
 $DATAJSON['max_photos'] = getConfParam('MAX_PHOTOS_AD');
 
 if (isset($_GET['a'])) {
-    $id_ad_to_edit = (int)$_GET['a']; // Sanitize input
-    $check = selectSQL("sc_ad", $w = array('ID_ad' => $id_ad_to_edit));
+    $check = selectSQL("sc_ad", $w = array('ID_ad' => $_GET['a']));
+    if (count($check) != 0) {
+        // Obtener datos iniciales antes de procesar POST para tenerlos disponibles en caso de error
+        $ad = getDataAd($check[0]['ID_ad']); // Asume que esta función trae TODOS los campos necesarios
+        
+        $error_insert = false; // Renombrado para claridad, aunque es update
 
-    if ($check !== false && count($check) != 0) {
-        // Carga inicial de datos del anuncio
-        $ad = getDataAd($check[0]['ID_ad'], false); // false = no parsear cambios? revisar función
-        if (!$ad || !isset($ad['ad'])) {
-             die("Error: No se pudieron cargar los datos del anuncio.");
-        }
-        // Decodificar campos JSON para usarlos en el formulario
-        // Usar ?? '[]' o '{}' para evitar errores si el campo es NULL o no existe
-        $ad_servicios = json_decode($ad['ad']['servicios'] ?? '[]', true);
-        if (json_last_error() !== JSON_ERROR_NONE) $ad_servicios = []; // Fallback si JSON inválido
+        // --- Procesamiento del Formulario Enviado (POST) ---
+        if (isset($_POST['tit'])) { // Usamos 'tit' como indicador de que el form se envió
+            
+            $datos_ad = array(); // Array para guardar los datos a actualizar
 
-        $ad_horario = json_decode($ad['ad']['horario'] ?? '{}', true);
-         if (json_last_error() !== JSON_ERROR_NONE) $ad_horario = []; // Fallback si JSON inválido
+            // --- Campos Existentes ---
+            $datos_ad['ID_cat'] = $_POST['category'];
 
-        $ad_idiomas = json_decode($ad['ad']['idiomas'] ?? '[]', true);
-         if (json_last_error() !== JSON_ERROR_NONE) $ad_idiomas = []; // Fallback si JSON inválido
+            // Obtener parent_cat (asegúrate que selectSQL funciona correctamente)
+            $cat = selectSQL('sc_category', $w = array('ID_cat' => $_POST['category']));
+             if ($cat && isset($cat[0]['parent_cat'])) {
+                 $datos_ad['parent_cat'] = $cat[0]['parent_cat'];
+             } else {
+                // Intentar obtenerlo del anuncio existente si falla la consulta
+                $datos_ad['parent_cat'] = $ad['ad']['parent_cat'] ?? 0; 
+             }
 
+            $datos_ad['ID_region'] = $_POST['region'];
+            $datos_ad['location'] = $_POST['city']; // El campo se llama 'city' pero guarda la localización como texto
+            $datos_ad['ad_type'] = $_POST['ad_type'];
+            $datos_ad['title'] = trim($_POST['tit']); // Quitar espacios extra
+            $datos_ad['title_seo'] = toAscii($datos_ad['title']);
+            $datos_ad['texto'] = htmlspecialchars(trim($_POST['text']), ENT_QUOTES, 'UTF-8'); // Limpiar y asegurar codificación
+            
+            // Campos específicos de categoría (mantener por si se usan en algún lado)
+            $datos_ad['mileage'] = isset($_POST['km_car']) ? $_POST['km_car'] : null;
+            $datos_ad['fuel'] = isset($_POST['fuel_car']) ? $_POST['fuel_car'] : null;
+            $datos_ad['date_car'] = isset($_POST['date_car']) ? $_POST['date_car'] : null;
+            $datos_ad['area'] = isset($_POST['area']) ? $_POST['area'] : null;
+            $datos_ad['room'] = isset($_POST['room']) ? $_POST['room'] : null;
+            $datos_ad['broom'] = isset($_POST['bathroom']) ? $_POST['bathroom'] : null; // 'bathroom' en el form, 'broom' en BD? verificar
 
-        // --- Procesamiento del Formulario POST ---
-        if (isset($_POST['tit'])) { // Usar un campo clave como 'tit' para detectar submit
-            $datos_ad = array();
-            $error_insert = false; // Flag para errores lógicos
+            // Contacto
+            $datos_ad['name'] = isset($_POST['name']) ? formatName($_POST['name']) : '';
+            $datos_ad['phone'] = isset($_POST['phone']) ? trim($_POST['phone']) : '';
+            $datos_ad['whatsapp'] = isset($_POST['whatsapp']) ? 1 : 0;
+            $datos_ad['seller_type'] = isset($_POST['seller_type']) ? $_POST['seller_type'] : 0;
 
-            // --- Mapeo de Campos desde POST ---
-            $datos_ad['ID_cat'] = (int)($_POST['category'] ?? 0);
+            // Precio (mantener, podría ser usado) - Asegurarse que sea numérico
+            $datos_ad['price'] = isset($_POST['precio']) && is_numeric($_POST['precio']) ? $_POST['precio'] : 0;
+            
+            // --- NUEVOS CAMPOS (basado en newForm.php) ---
 
-            // Obtener parent_cat (asegurarse que selectSQL funciona)
-            if ($datos_ad['ID_cat'] > 0) {
-                $cat = selectSQL('sc_category', $w = array('ID_cat' => $datos_ad['ID_cat']));
-                $datos_ad['parent_cat'] = ($cat && isset($cat[0]['parent_cat'])) ? $cat[0]['parent_cat'] : 0;
-            } else {
-                $datos_ad['parent_cat'] = 0;
-                 $error_insert = true;
-                 $error_message = 'Categoría inválida.';
-            }
+            // 1. Salidas a domicilio/hotel (out)
+            $datos_ad['out'] = isset($_POST['out']) ? (int)$_POST['out'] : 0; // Asume 0 o 1
 
-            $datos_ad['ID_region'] = (int)($_POST['region'] ?? 0);
-            $datos_ad['location'] = trim($_POST['city'] ?? ''); // Campo de texto libre para ciudad
-
-            $datos_ad['ad_type'] = (int)($_POST['ad_type'] ?? 0); // Asegurar que sea int
-            $datos_ad['seller_type'] = (int)($_POST['seller_type'] ?? 0); // Asegurar que sea int
-
-            $datos_ad['title'] = trim($_POST['tit'] ?? '');
-            $datos_ad['title_seo'] = !empty($datos_ad['title']) ? toAscii($datos_ad['title']) : '';
-            $datos_ad['texto'] = htmlspecialchars(trim($_POST['text'] ?? ''), ENT_QUOTES, 'UTF-8');
-
-            $datos_ad['name'] = isset($_POST['name']) ? formatName($_POST['name']) : ''; // Usar formatName si existe
-            $datos_ad['phone'] = trim($_POST['phone'] ?? '');
-            $datos_ad['whatsapp'] = isset($_POST['whatsapp']) && $_POST['whatsapp'] == '1' ? 1 : 0;
-
-            // $datos_ad['phone1'] = trim($_POST['phone1'] ?? ''); // Mantener si aún se usa
-            // $datos_ad['whatsapp1'] = isset($_POST['whatsapp1']) ? 1 : 0; // Mantener si aún se usa
-
-            // Campos Condicionales (Coche/Inmobiliaria) - Mantener si la lógica de categorías sigue activa
-            $datos_ad['price'] = isset($_POST['precio']) ? preg_replace('/[^\d.]/', '', $_POST['precio']) : 0; // Limpiar precio, permitir decimales
-            $datos_ad['price'] = is_numeric($datos_ad['price']) ? (float)$datos_ad['price'] : 0;
-
-            $datos_ad['mileage'] = isset($_POST['km_car']) ? (int)$_POST['km_car'] : null;
-            $datos_ad['fuel'] = isset($_POST['fuel_car']) ? (int)$_POST['fuel_car'] : null;
-            $datos_ad['date_car'] = isset($_POST['date_car']) ? $_POST['date_car'] : null; // Podría ser INT o VARCHAR
-            $datos_ad['area'] = isset($_POST['area']) ? (int)$_POST['area'] : null;
-            $datos_ad['room'] = isset($_POST['room']) ? (int)$_POST['room'] : null;
-            $datos_ad['broom'] = isset($_POST['bathroom']) ? (int)$_POST['bathroom'] : null; // Nombre de campo 'bathroom' en form
-
-            // --- Nuevos Campos ---
-            // Servicios (JSON Array)
+            // 2. Servicios (servicios) - Guardar como JSON
             $lista_servicios = [];
             if (isset($_POST['servicios']) && is_array($_POST['servicios'])) {
-                // Filtrar valores vacíos y limpiar (ejemplo: trim)
-                $lista_servicios = array_map('trim', array_filter($_POST['servicios'], 'strlen'));
+                 // Filtra valores vacíos que podrían venir de checkboxes no marcados si se envían incorrectamente
+                $lista_servicios = array_filter($_POST['servicios'], 'strlen'); 
             }
-            $datos_ad['servicios'] = json_encode(array_values($lista_servicios)); // Reindexar y codificar
+             // Siempre guardar un JSON válido, incluso si está vacío
+            $datos_ad['servicios'] = json_encode(array_values($lista_servicios)); // array_values para asegurar array simple
 
-            // Horario Detallado (JSON Object)
+            // 3. Horario Detallado (horario) - Guardar como JSON
             $horario_completo = [];
             $dias_semana = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
-             $formato_hora = '/^([01]\d|2[0-3]):([0-5]\d)$/';
             if (isset($_POST['horario_dia']) && is_array($_POST['horario_dia'])) {
+                 $formato_hora = '/^([01]\d|2[0-3]):([0-5]\d)$/'; // HH:MM
                  foreach ($dias_semana as $dia) {
-                    // Asume que si el día está activo, se envía 'activo' = 1 (mediante JS o hidden input)
-                     $activo = isset($_POST['horario_dia'][$dia]['activo']) && $_POST['horario_dia'][$dia]['activo'] == '1' ? 1 : 0;
-                     $inicio = '00:00';
-                     $fin = '23:30';
-                     // Solo guardar horas si está activo
-                     if ($activo) {
-                        $inicio_raw = isset($_POST['horario_dia'][$dia]['inicio']) ? $_POST['horario_dia'][$dia]['inicio'] : '00:00';
-                        $fin_raw = isset($_POST['horario_dia'][$dia]['fin']) ? $_POST['horario_dia'][$dia]['fin'] : '23:30';
-                        // Validar formato HH:MM
-                         $inicio = preg_match($formato_hora, $inicio_raw) ? $inicio_raw : '00:00';
-                         $fin = preg_match($formato_hora, $fin_raw) ? $fin_raw : '23:30';
+                     // Verifica si existe la entrada para ese día en el POST
+                     if (isset($_POST['horario_dia'][$dia])) {
+                         $dia_data = $_POST['horario_dia'][$dia];
+                         $activo = isset($dia_data['activo']) && $dia_data['activo'] == '1';
+                         // Usar horas por defecto si no vienen o son inválidas
+                         $inicio = (isset($dia_data['inicio']) && preg_match($formato_hora, $dia_data['inicio'])) ? $dia_data['inicio'] : '09:00';
+                         $fin = (isset($dia_data['fin']) && preg_match($formato_hora, $dia_data['fin'])) ? $dia_data['fin'] : '18:00';
+
+                         $horario_completo[$dia] = [
+                             'activo' => $activo ? 1 : 0,
+                             'inicio' => $inicio,
+                             'fin'    => $fin
+                         ];
+                     } else {
+                         // Si no viene nada para un día, asumir 'no disponible'
+                          $horario_completo[$dia] = [
+                             'activo' => 0,
+                             'inicio' => '09:00', // O la hora por defecto que prefieras
+                             'fin'    => '18:00'
+                         ];
                      }
-
-                     $horario_completo[$dia] = [
-                         'activo' => $activo,
-                         'inicio' => $inicio,
-                         'fin' => $fin
-                     ];
                  }
+             } else {
+                 // Si no viene el array 'horario_dia', guardar un JSON vacío o estructura por defecto
+                 // Podrías inicializar todos los días como no activos si prefieres
+                  foreach ($dias_semana as $dia) {
+                      $horario_completo[$dia] = ['activo' => 0, 'inicio' => '09:00', 'fin' => '18:00'];
+                  }
              }
-             $datos_ad['horario'] = json_encode($horario_completo);
+            $datos_ad['horario'] = json_encode($horario_completo);
 
 
-            // Idiomas (JSON Array of Objects) + lang1/lang2 mapping
-             $lista_idiomas = [];
-             $i = 1;
-             // Asume que el formulario de edición tendrá inputs como idioma_1, nivel_idioma_1, etc.
-             while (isset($_POST['idioma_' . $i])) {
+            // 4. Idiomas (idiomas) - Guardar como JSON
+            $lista_idiomas = [];
+            $i = 1;
+             // Asume que los campos se llaman idioma_1, nivel_idioma_1, idioma_2, nivel_idioma_2, etc.
+            while (isset($_POST['idioma_' . $i])) {
                  $idioma_code = trim($_POST['idioma_' . $i]);
+                 // Solo añadir si se seleccionó un idioma
                  if (!empty($idioma_code)) {
-                     $nivel = isset($_POST['nivel_idioma_' . $i]) ? trim($_POST['nivel_idioma_' . $i]) : 'desconocido';
+                     // Nivel por defecto si no se selecciona
+                     $nivel = isset($_POST['nivel_idioma_' . $i]) && !empty($_POST['nivel_idioma_' . $i]) ? trim($_POST['nivel_idioma_' . $i]) : 'basico'; 
                      $lista_idiomas[] = ['idioma' => $idioma_code, 'nivel' => $nivel];
                  }
                  $i++;
+                 // Poner un límite por si acaso, ej. máximo 5 idiomas
+                 if ($i > 5) break; 
              }
-             $datos_ad['idiomas'] = json_encode($lista_idiomas);
+            $datos_ad['idiomas'] = json_encode($lista_idiomas); // Guardar siempre JSON válido
 
-            // Mapear los dos primeros a lang1/lang2 si esas columnas existen y se usan
-            // Asumiendo que lang1/lang2 guardan el código del idioma ('es', 'en', etc.) o un ID numérico.
-            // Ajusta el '0' por defecto si es necesario (e.g., null, '')
-             $datos_ad['lang1'] = $lista_idiomas[0]['idioma'] ?? 0;
-             $datos_ad['lang2'] = $lista_idiomas[1]['idioma'] ?? 0;
 
-            // Salidas a domicilio/hotel
-            $datos_ad['out'] = isset($_POST['out']) && in_array($_POST['out'], [0, 1]) ? (int)$_POST['out'] : 0;
+            // --- Rotación de Imágenes (ANTES de actualizar BD) ---
+            if (isset($_POST['photo_name']) && is_array($_POST['photo_name']) && isset($_POST['optImgage']) && is_array($_POST['optImgage'])) {
+                 foreach ($_POST['photo_name'] as $photo_index => $name) {
+                     // Asegurarse que el índice de rotación existe para esta foto
+                     if (isset($_POST['optImgage'][$photo_index]['rotation'])) {
+                         $rotation_value = (int)$_POST['optImgage'][$photo_index]['rotation'];
+                         // Solo rotar si el valor no es 0 o si la función maneja 0 como 'no rotar'
+                         if ($rotation_value != 0) { 
+                              // Construir path absoluto de forma segura
+                             $imagePath = rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/' . ltrim(IMG_ADS, '/') . $name;
+                             if (file_exists($imagePath)) {
+                                 Images::rotateImage($imagePath, $rotation_value); // Asume que rotateImage usa el path completo
+                             }
+                         }
+                     }
+                 }
+            }
 
-            // Notificaciones por email
-            $datos_ad['notifications'] = isset($_POST['notifications']) && $_POST['notifications'] == '1' ? 1 : 0;
+            // --- Validación (simplificada, puedes añadir más checks si es necesario) ---
+            // Añadir checks para campos obligatorios nuevos si aplica (ej: 'out')
+            $validation_ok = (
+                !empty($datos_ad['ID_cat']) && $datos_ad['ID_cat'] != 0 &&
+                !empty($datos_ad['ID_region']) && $datos_ad['ID_region'] != 0 &&
+                //!empty($datos_ad['location']) && // Ciudad no es obligatoria?
+                !empty($datos_ad['ad_type']) && $datos_ad['ad_type'] != 0 &&
+                !empty($datos_ad['seller_type']) && $datos_ad['seller_type'] != 0 &&
+                !empty($datos_ad['title']) && // strlen($datos_ad['title']) > 9 && // Ajusta longitud mínima si es necesario
+                !empty($datos_ad['texto']) && // strlen($datos_ad['texto']) > 9 && // Ajusta longitud mínima
+                isset($datos_ad['price']) && is_numeric($datos_ad['price']) && // Precio debe ser numérico (0 es válido)
+                isset($datos_ad['out']) && ($datos_ad['out'] == 0 || $datos_ad['out'] == 1) && // Out debe ser 0 o 1
+                !empty($datos_ad['name']) &&
+                !empty($datos_ad['phone']) 
+                // Añadir más validaciones aquí si hacen falta
+            );
 
-            // Campos Antiguos Eliminados (Asegurarse que no se intentan guardar si se quitaron de la tabla/lógica):
-            // unset($datos_ad['dis']); // Ya no se usa
-            // unset($datos_ad['hor_start']); // Ya no se usa
-            // unset($datos_ad['hor_end']); // Ya no se usa
+            if ($validation_ok) {
+                
+                // --- Actualizar Anuncio en BD ---
+                $update = updateSQL("sc_ad", $datos_ad, $w = array('ID_ad' => $ad['ad']['ID_ad']));
 
-            // --- Rotación de Imágenes (Antes de guardar, si se hace) ---
-             if (isset($_POST['photo_name']) && is_array($_POST['photo_name']) && isset($_POST['optImgage']) && is_array($_POST['optImgage'])) {
-                foreach ($_POST['photo_name'] as $photo_index => $name) {
-                    // Asegurarse que el índice existe en optImgage y tiene rotation
-                    if (isset($_POST['optImgage'][$photo_index]['rotation'])) {
-                        $rotation_value = (int)$_POST['optImgage'][$photo_index]['rotation'];
-                         if ($rotation_value != 0) { // Solo rotar si es necesario
-                             // Construir la ruta completa de forma segura
-                             // ¡CUIDADO! Evitar hardcodear rutas absolutas si es posible. Usar constantes o funciones del CMS.
-                             $imagePath = '/var/www/vhosts/41121521.servicio-online.net/httpdocs/' . IMG_ADS . $name; // Ruta original, revisar si es correcta/segura
-                              if (file_exists($imagePath) && is_writable($imagePath)) {
-                                 Images::rotateImage($imagePath, $rotation_value); // Asume que esta función existe y maneja la ruta
-                              } else {
-                                  // error_log("Rotate Error: File not found or not writable - " . $imagePath);
-                              }
+                if ($update) {
+                     // --- Procesamiento de Imágenes (Después de actualizar el anuncio principal) ---
+                    
+                     // 1. Nuevas Imágenes Subidas (si existen)
+                    if (isset($_FILES['userImage']) && !empty($_FILES['userImage']['name'][0])) { // Check si se subió algo
+                         $tot = count($_FILES['userImage']['name']);
+                         for ($i = 0; $i < $tot; $i++) {
+                              // Verificar si hubo error en la subida de este archivo específico
+                             if ($_FILES['userImage']['error'][$i] == UPLOAD_ERR_OK) { 
+                                 // Pasar el índice $i a uploadImage
+                                 $resultado = uploadImage($_FILES['userImage'], IMG_ADS, $i, true); 
+                                 if ($resultado !== false) {
+                                      // Construir path absoluto seguro para la compresión
+                                     $imagePath = rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/' . ltrim(IMG_ADS, '/') . $resultado;
+                                     if (file_exists($imagePath)) {
+                                          compressImage($imagePath); // Comprimir inmediatamente
+                                     }
+                                     // Insertar en BD la nueva imagen asociada al anuncio
+                                     // Determinar la posición (después de las existentes)
+                                     $current_images_count = selectSQL("sc_images", ['ID_ad' => $ad['ad']['ID_ad']], '', 'COUNT(*) as count')[0]['count'] ?? 0;
+                                     insertSQL("sc_images", $data = array(
+                                         'ID_ad' => $ad['ad']['ID_ad'], 
+                                         'name_image' => $resultado, 
+                                         'date_upload' => time(),
+                                         'position' => $current_images_count + $i, // Posición secuencial
+                                         'status' => 1 // Asumir status activo (ajusta si es necesario)
+                                     ));
+                                 }
+                             }
+                         }
+                     }
+
+                    // 2. Actualizar Posición y Comprimir Imágenes Existentes (si se reordenaron/rotaron)
+                    if (isset($_POST['photo_name']) && is_array($_POST['photo_name'])) {
+                         foreach ($_POST['photo_name'] as $photo_index => $name) {
+                             // Actualizar solo la posición de las imágenes existentes
+                             updateSQL("sc_images", $data = array('position' => $photo_index), $wa = array('name_image' => $name, 'ID_ad' => $ad['ad']['ID_ad']));
+
+                             // Comprimir imagen existente (por si se rotó o solo por si acaso)
+                             $imagePath = rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/' . ltrim(IMG_ADS, '/') . $name;
+                             if (file_exists($imagePath)) {
+                                  compressImage($imagePath); 
+                             }
                          }
                     }
-                }
-             }
 
-
-            // --- Validación Final (Adaptada del original y de newForm) ---
-            // Mantener las validaciones esenciales originales y añadir nuevas si es crítico
-             $condicion_region = ($datos_ad['ID_region'] != 0);
-             $condicion_ad_type = ($datos_ad['ad_type'] != 0); // ¿Sigue siendo obligatorio?
-             $condicion_seller_type = ($datos_ad['seller_type'] != 0); // ¿Sigue siendo obligatorio?
-             $condicion_cat = ($datos_ad['ID_cat'] != 0);
-             // $condicion_price = (is_numeric($datos_ad['price'])); // Precio 0 es válido
-             $condicion_titulo = (mb_strlen($datos_ad['title'], 'UTF-8') >= 10 && mb_strlen($datos_ad['title'], 'UTF-8') <= 50); // Límites de newForm
-             $condicion_texto = (mb_strlen($datos_ad['texto'], 'UTF-8') >= 100 && mb_strlen($datos_ad['texto'], 'UTF-8') <= 500); // Límites de newForm
-             $condicion_telefono = (!empty($datos_ad['phone']) && preg_match('/^[0-9]{9,15}$/', $datos_ad['phone'])); // Validación básica teléfono
-
-             // Comprobar si alguna de las condiciones falla
-             if (!$condicion_region) { $error_insert = true; $error_message = 'Debes seleccionar una provincia.'; }
-             elseif (!$condicion_cat) { $error_insert = true; $error_message = 'Debes seleccionar una categoría.'; }
-             elseif (!$condicion_ad_type) { $error_insert = true; $error_message = 'Debes seleccionar un tipo de anuncio.'; }
-             elseif (!$condicion_seller_type) { $error_insert = true; $error_message = 'Debes seleccionar un tipo de vendedor.'; }
-             elseif (!$condicion_titulo) { $error_insert = true; $error_message = 'El título debe tener entre 10 y 50 caracteres.'; }
-             elseif (!$condicion_texto) { $error_insert = true; $error_message = 'La descripción debe tener entre 100 y 500 caracteres.'; }
-             elseif (!$condicion_telefono) { $error_insert = true; $error_message = 'El teléfono no es válido (9-15 dígitos).'; }
-             // Añadir más validaciones si son necesarias (ej: servicios obligatorios?)
-
-
-            // --- Guardar en Base de Datos ---
-            if (!$error_insert) {
-                $insert = updateSQL("sc_ad", $datos_ad, $w = array('ID_ad' => $id_ad_to_edit));
-
-                if ($insert === false) {
-                     $error_insert = true;
-                     $error_message = 'Error al actualizar los datos del anuncio en la base de datos.';
-                     // Podrías intentar obtener el error de la BD aquí si tus funciones lo permiten
-                     // global $Connection; $error_message .= ' DB Error: ' . mysqli_error($Connection);
-                } else {
-                     // --- Manejo de Imágenes (Después de actualizar el anuncio) ---
-
-                    // 1. Subida de Nuevas Imágenes (si se añaden en la edición)
-                     if (isset($_FILES['userImage']) && is_array($_FILES['userImage']['name'])) {
-                        $tot = count($_FILES['userImage']['name']);
-                        for ($i = 0; $i < $tot; $i++) {
-                             // Solo procesar si se subió un archivo sin error
-                             if (isset($_FILES['userImage']['error'][$i]) && $_FILES['userImage']['error'][$i] == UPLOAD_ERR_OK && !empty($_FILES['userImage']['name'][$i])) {
-                                // Pasar el índice correcto a uploadImage
-                                $resultado = uploadImage($_FILES['userImage'], IMG_ADS, $i, true); // true = unique name?
-                                 if ($resultado !== false) {
-                                    // Ruta de la imagen subida - ¡Revisar esta ruta!
-                                     $imagePath = '/var/www/vhosts/41121521.servicio-online.net/httpdocs/' . IMG_ADS . $resultado;
-                                     compressImage($imagePath); // Comprimir inmediatamente
-                                     // Insertar en sc_images
-                                     insertSQL("sc_images", $data = array('ID_ad' => $id_ad_to_edit, 'name_image' => $resultado, 'date_upload' => time(), 'status' => ImageStatus::Active)); // Asegurar status activo
-                                 } else {
-                                      // Registrar error de subida si es necesario
-                                      // error_log("Upload Error: uploadImage failed for file index " . $i);
-                                 }
+                    // 3. Eliminar Imágenes Marcadas (asumiendo que el JS pone un status especial o un campo oculto)
+                    if (isset($_POST['deleted_images']) && is_array($_POST['deleted_images'])) {
+                         foreach ($_POST['deleted_images'] as $image_name_to_delete) {
+                              // Buscar el ID de la imagen por nombre y ID de anuncio para seguridad
+                             $img_data = selectSQL("sc_images", ['ID_ad' => $ad['ad']['ID_ad'], 'name_image' => $image_name_to_delete]);
+                             if ($img_data && count($img_data) > 0) {
+                                 Images::deleteImage($img_data[0]['ID_image']); // Asume que deleteImage borra de BD y archivo
                              }
                          }
-                     }
-
-                    // 2. Actualizar Posición/Estado de Imágenes Existentes y Comprimir
-                     if (isset($_POST['photo_name']) && is_array($_POST['photo_name'])) {
-                        $current_positions = [];
-                        foreach ($_POST['photo_name'] as $photo_index => $name) {
-                            // Validar que el nombre no esté vacío
-                             if (!empty($name)) {
-                                // Actualiza la posición de la imagen
-                                updateSQL("sc_images", $data = array('position' => $photo_index), $wa = array('name_image' => $name, 'ID_ad' => $id_ad_to_edit)); // Añadir ID_ad a la condición por seguridad
-
-                                // Comprimir la imagen existente (cuidado con la ruta)
-                                $imagePath = '/var/www/vhosts/41121521.servicio-online.net/httpdocs/' . IMG_ADS . $name;
-                                 if (file_exists($imagePath) && is_readable($imagePath)) {
-                                     compressImage($imagePath);
-                                 }
-                                 $current_positions[$name] = $photo_index; // Guardar las imágenes que permanecen
-                             }
-                        }
-
-                         // 3. Eliminar Imágenes Marcadas para Borrar (o las que ya no están en photo_name)
-                        // Cargar todas las imágenes actuales de la BD para este anuncio
-                         $images_in_db = selectSQL("sc_images", $w = array('ID_ad' => $id_ad_to_edit), 'ID_image ASC');
-                         if ($images_in_db) {
-                             foreach ($images_in_db as $img_db) {
-                                 // Si la imagen de la BD no está en el array $_POST['photo_name'] que se envió, significa que se eliminó en el formulario.
-                                 if (!isset($current_positions[$img_db['name_image']])) {
-                                     // Marcar como eliminada o borrar directamente
-                                      // Opción 1: Marcar (si tienes un estado 'eliminado')
-                                      // updateSQL("sc_images", ['status' => ImageStatus::Delete], ['ID_image' => $img_db['ID_image']]);
-                                      // Opción 2: Eliminar registro y archivo físico (¡CUIDADO!)
-                                     Images::deleteImage($img_db['ID_image']); // Asume que esta función borra registro Y archivo
-                                 }
-                             }
-                         }
-                     } else {
-                         // Si no se envió photo_name[], quizás todas las imágenes fueron eliminadas.
-                         // Habría que cargar las de la BD y borrarlas.
-                         $images_in_db = selectSQL("sc_images", $w = array('ID_ad' => $id_ad_to_edit));
-                         if ($images_in_db) {
-                             foreach ($images_in_db as $img_db) {
-                                 Images::deleteImage($img_db['ID_image']);
-                             }
-                         }
-                     }
-
-                     // 4. (Opcional) Re-activar imágenes si tenías lógica de status Inactive/Active
-                     // Esta parte del código original parecía genérica, podría no ser necesaria si manejas status en la subida/actualización
+                    } 
+                     // Alternativa si se usa status: Comentar lo anterior y descomentar/adaptar esto:
                      /*
-                     $images = selectSQL("sc_images", $w = array('ID_ad' => $id_ad_to_edit), 'position ASC, ID_image ASC');
-                     foreach ($images as $key => $value) {
-                         //if ($value['status'] == ImageStatus::Delete) // Ya manejado arriba
-                         //    Images::deleteImage($value['ID_image']);
-                         if ($value['status'] == ImageStatus::Inactive)
-                             updateSQL("sc_images", $d = array('status' => ImageStatus::Active), $w = array('ID_image' => $value['ID_image']));
+                     $images_check = selectSQL("sc_images", $w = array('ID_ad' => $ad['ad']['ID_ad']));
+                     foreach ($images_check as $img) {
+                         // Si tu JS actualiza un campo 'status' en el POST para cada imagen
+                         // if (isset($_POST['image_status'][$img['name_image']]) && $_POST['image_status'][$img['name_image']] == ImageStatus::Delete) { // Ajusta ImageStatus::Delete
+                         //     Images::deleteImage($img['ID_image']);
+                         // }
                      }
                      */
 
                     $edited = true; // Marcar como editado exitosamente
-                } // Fin else $insert
-            } // Fin if !$error_insert
+                     
+                     // Recargar los datos del anuncio actualizados para mostrar el mensaje
+                     $ad = getDataAd($check[0]['ID_ad'], false); 
+                     // $ad = parseChanges($ad); // Descomentar si esta función es necesaria
 
-             // Si hubo éxito, recargar los datos actualizados para mostrarlos (o cerrar ventana)
-             if ($edited) {
-                // Opcional: Recargar datos frescos para asegurar que se ven los cambios
-                // $ad = getDataAd($id_ad_to_edit, false);
-                // $ad_servicios = json_decode($ad['ad']['servicios'] ?? '[]', true);
-                // $ad_horario = json_decode($ad['ad']['horario'] ?? '{}', true);
-                // $ad_idiomas = json_decode($ad['ad']['idiomas'] ?? '[]', true);
+                } else {
+                    $error_insert = true; // Hubo un error al actualizar en BD
+                    // Considera guardar el error de la BD si tu función lo permite: $db_error = mysqli_error($Connection);
+                }
 
-                // Opcional: Forzar parseChanges si es necesario para reflejar cambios
-                // $ad = parseChanges($ad);
-             }
-             // Si hubo error ($error_insert), $edited será false y se mostrará el formulario con el mensaje de error.
+            } else {
+                 // La validación falló
+                 $error_insert = true; 
+                 // Puedes añadir mensajes de error específicos a sesión si lo necesitas
+                 // $_SESSION['edit_error_message'] = "Faltan campos obligatorios o son inválidos.";
+            }
 
-        } // Fin if (isset($_POST['tit']))
+        } // Fin del procesamiento POST
 
-        // --- Preparación Final de Datos para el Formulario (después de posible POST) ---
-         // Si no hubo POST o si hubo error, $ad ya tiene los datos (originales o recargados si hubo error y se recargó)
-         // Si hubo éxito en POST ($edited = true), $ad podría tener los datos actualizados si se recargaron arriba.
+        // --- Cargar Datos del Anuncio para Mostrar el Formulario ---
+        // (Se cargó al principio, pero lo volvemos a cargar si hubo edición exitosa)
+        if (!$edited && !$error_insert) { // Si no se procesó POST o hubo error, recargar por si acaso
+             $ad = getDataAd($check[0]['ID_ad'], false);
+             // $ad = parseChanges($ad); // Descomentar si esta función es necesaria
+        }
+        // Decodificar campos JSON para usarlos en el formulario
+        $ad_servicios = isset($ad['ad']['servicios']) ? json_decode($ad['ad']['servicios'], true) : [];
+        if (!is_array($ad_servicios)) $ad_servicios = []; // Asegurar que sea array
+        
+        $ad_horario = isset($ad['ad']['horario']) ? json_decode($ad['ad']['horario'], true) : [];
+         if (!is_array($ad_horario)) $ad_horario = []; // Asegurar que sea array
 
-         // Asegurar que $ad['ad'] y $ad['category'] existen antes de usarlos en el HTML
-         if (!isset($ad['ad'])) $ad['ad'] = [];
-         if (!isset($ad['category'])) $ad['category'] = []; // Para los campos condicionales field_x
-
-         // Variables de idioma (asegurar que $language existe)
-         global $language;
-         if (!isset($language)) $language = []; // Evitar errores si no está cargado
+        $ad_idiomas = isset($ad['ad']['idiomas']) ? json_decode($ad['ad']['idiomas'], true) : [];
+         if (!is_array($ad_idiomas)) $ad_idiomas = []; // Asegurar que sea array
 
 
 ?>
 
         <div class="col_single">
             <h2><?= $language['edit.title_h1'] ?? 'Editar Anuncio' ?></h2>
-
+            
             <?php if ($edited): ?>
-                <?php /* Decidir si cerrar la ventana o mostrar mensaje de éxito */ ?>
+                <?php /* <script> window.close(); </script> // Comentado, quizá prefieras no cerrar la ventana */ ?>
                 <div class="info_valid"><i class="fa fa-check-circle" aria-hidden="true"></i> Anuncio modificado correctamente!</div>
                 <div class="text-center">
-                    <a class="btn btn-primary" href="javascript:void(0);" onclick="window.close(); return false;"><i class="fa fa-times" aria-hidden="true"></i> Cerrar</a>
-                    <?php /* O redirigir a la lista de anuncios del admin?
-                    <a class="btn btn-primary" href="/admin/list_items.php"> Volver a la lista</a>
-                    */ ?>
+                    <a class="btn btn-primary" href="javascript:void(0);" onclick="window.opener?.location?.reload(); window.close();"><i class="fa fa-check" aria-hidden="true"></i> Cerrar y Recargar Panel</a>
+                    <?php /* O un enlace para volver al panel principal si no es una ventana emergente */ ?>
+                    <?php /* <a class="btn btn-secondary" href="/admin/dashboard.php"><i class="fa fa-arrow-left"></i> Volver al Panel</a> */ ?>
                 </div>
-                 <script>
-                     // Opcional: Cerrar automáticamente después de un delay
-                     // setTimeout(function() { window.close(); }, 2000);
-                 </script>
             <?php else: ?>
-                <?php // Mostrar error si lo hubo durante el POST
-                 if (!empty($error_message)): ?>
-                    <div class="error_msg" style="display: block; border: 1px solid red; padding: 10px; margin-bottom: 15px; background-color: #ffebeb;">
-                        <strong>Error:</strong> <?= htmlspecialchars($error_message); ?>
-                    </div>
-                <?php endif; ?>
+                 <?php if ($error_insert): ?>
+                     <div class="error_msg" style="display: block; border: 1px solid red; padding: 10px; margin-bottom: 15px; background-color: #ffebeb;">
+                         <strong>Error:</strong> No se pudo guardar el anuncio. Revisa los campos marcados.
+                         <?php // Si tienes un mensaje de error más específico: echo htmlspecialchars($_SESSION['edit_error_message']); ?>
+                     </div>
+                 <?php endif; ?>
 
-                <form id="edit_item_post" class="fm" method="post" action="<?= htmlspecialchars($_SERVER['REQUEST_URI']); // Usar REQUEST_URI para mantener el ?a=ID ?>" enctype="multipart/form-data">
-                    <?php /* Considerar añadir un token CSRF si el CMS lo soporta */ ?>
-                    <?php // echo generateFormToken('editAdToken'); // Ejemplo ?>
-                    <?php // <input type="hidden" name="token" value="..."> ?>
-
+                <form id="new_item_post" class="fm" method="post" action="<?= htmlspecialchars($_SERVER['REQUEST_URI']); // Usa REQUEST_URI para mantener el ?a=ID ?>" enctype="multipart/form-data">
                     <fieldset>
-                        <legend>Información Principal</legend>
+                         <legend>Información Básica</legend>
                         <div class="row">
-                            <div class="col_lft"><label><?= $language['post.label_category'] ?? 'Categoría' ?> *</label></div>
-                            <div class="col_rgt"><select name="category" id="category" required>
-                                    <option value=""><?= $language['post.select_category'] ?? 'Seleccionar Categoría' ?></option>
+                            <div class="col_lft"><label for="category"><?= $language['post.label_category'] ?? 'Categoría' ?> *</label></div>
+                            <div class="col_rgt"><select name="category" id="category" required> <?php // Añadido required ?>
+                                    <option value=""><?= $language['post.select_category'] ?? 'Selecciona categoría...' ?></option>
                                     <?php
-                                    // Lógica de categorías original - Revisar si sigue siendo válida
-                                    $parent_cat_actual = $ad['ad']['parent_cat'] ?? 0;
-                                    $cat_actual = $ad['ad']['ID_cat'] ?? 0;
-
-                                    $parent_cats = selectSQL("sc_category", $where = array('parent_cat' => -1), "ord ASC");
-                                    if ($parent_cats) {
-                                        foreach ($parent_cats as $parent) {
-                                             echo '<optgroup label="' . htmlspecialchars($parent['name']) . '">';
-                                             $child_cats = selectSQL("sc_category", $where = array('parent_cat' => $parent['ID_cat']), "name ASC");
-                                             if ($child_cats) {
-                                                foreach ($child_cats as $child) {
-                                                    $selected = ($child['ID_cat'] == $cat_actual) ? ' selected' : '';
-                                                    echo '<option value="' . $child['ID_cat'] . '"' . $selected . '>  ' . htmlspecialchars($child['name']) . '</option>';
-                                                }
-                                             } else {
-                                                 // Si no hay hijos, la categoría padre podría ser seleccionable? Originalmente no lo parecía.
-                                                 // $selected = ($parent['ID_cat'] == $cat_actual) ? ' selected' : '';
-                                                 // echo '<option value="' . $parent['ID_cat'] . '"' . $selected . '>' . htmlspecialchars($parent['name']) . '</option>';
-                                             }
-                                              echo '</optgroup>';
+                                    // Lógica para cargar categorías (asumiendo que funciona)
+                                    $parent_categories = selectSQL("sc_category", $where = array('parent_cat' => -1), "ord ASC");
+                                    foreach ($parent_categories as $parent_cat) {
+                                        $child_categories = selectSQL("sc_category", $where = array('parent_cat' => $parent_cat['ID_cat']), "name ASC");
+                                        // Crear un optgroup para la categoría padre
+                                        echo '<optgroup label="' . htmlspecialchars($parent_cat['name']) . '">';
+                                        if (count($child_categories) > 0) {
+                                            foreach ($child_categories as $child) {
+                                                // Usar ID_cat del hijo como valor
+                                                $selected = ($child['ID_cat'] == $ad['ad']['ID_cat']) ? ' selected' : '';
+                                                echo '<option value="' . $child['ID_cat'] . '"' . $selected . '>' . htmlspecialchars($child['name']) . '</option>';
+                                            }
+                                        } else {
+                                             // Si no hay hijos, la categoría padre es seleccionable (si tu lógica lo permite)
+                                             // $selected = ($parent_cat['ID_cat'] == $ad['ad']['ID_cat']) ? ' selected' : '';
+                                             // echo '<option value="' . $parent_cat['ID_cat'] . '"' . $selected . '>'. htmlspecialchars($parent_cat['name']) . '</option>';
+                                             // O mostrar un mensaje o deshabilitar el optgroup si las padres no son seleccionables
+                                             echo '<option value="" disabled>-- No hay subcategorías --</option>';
                                         }
+                                        echo '</optgroup>';
                                     }
                                     ?>
                                 </select>
@@ -429,20 +358,22 @@ if (isset($_GET['a'])) {
                             </div>
                         </div>
 
-                         <div class="row">
+                        <div class="row">
                             <div class="col_lft">
-                                <label><?= $language['edit.label_region'] ?? 'Provincia' ?> *</label>
+                                <label for="region"><?= $language['edit.label_region'] ?? 'Provincia' ?> *</label>
                             </div>
                             <div class="col_rgt">
-                                <select name="region" size="1" id="region" required>
-                                    <option value=""><?= $language['edit.select_region'] ?? 'Seleccionar Provincia' ?></option>
-                                    <?php $regions = selectSQL("sc_region", $arr = array(), "name ASC");
-                                    if ($regions) {
-                                        foreach ($regions as $region) {
-                                            $selected = ($region['ID_region'] == ($ad['ad']['ID_region'] ?? 0)) ? ' selected' : '';
-                                            echo '<option value="' . $region['ID_region'] . '"' . $selected . '>' . htmlspecialchars($region['name']) . '</option>';
-                                        }
-                                     } ?>
+                                <select name="region" size="1" id="region" required> <?php // Añadido required ?>
+                                    <option value=""><?= $language['edit.select_region'] ?? 'Selecciona provincia...' ?></option>
+                                    <?php 
+                                    $regions = selectSQL("sc_region", $arr = array(), "name ASC");
+                                    foreach ($regions as $region) { 
+                                        $selected = ($region['ID_region'] == $ad['ad']['ID_region']) ? ' selected' : '';
+                                        ?>
+                                        <option value="<?= htmlspecialchars($region['ID_region']); ?>"<?= $selected ?>>
+                                            <?= htmlspecialchars($region['name']); ?>
+                                        </option>
+                                    <?php } ?>
                                 </select>
                                 <div class="error_msg" id="error_region"><?= $language['edit.error_region'] ?? 'Selecciona una provincia' ?></div>
                             </div>
@@ -450,638 +381,634 @@ if (isset($_GET['a'])) {
 
                         <div class="row">
                             <div class="col_lft">
-                                <label><?= $language['edit.label_city'] ?? 'Localidad/Zona' ?> </label>
+                                <label for="city"><?= $language['edit.label_city'] ?? 'Ciudad/Zona' ?> </label>
                             </div>
                             <div class="col_rgt">
-                                <?php /* El select de ciudad se eliminó en favor de un input de texto */ ?>
-                                <input name="city" type="text" id="city" maxlength="250" value="<?= htmlspecialchars(stripslashes($ad['ad']['location'] ?? '')); ?>" />
-                                <div class="error_msg" id="error_city"><?= $language['edit.error_city'] ?? 'Introduce la localidad o zona' ?></div>
+                                <input name="city" type="text" id="city" maxlength="250" value="<?= htmlspecialchars(stripslashes($ad['ad']['location'] ?? '')); ?>" placeholder="Ej: Centro, Barrio Gótico"/>
+                                <div class="error_msg" id="error_city"><?= $language['edit.error_city'] ?? 'Indica la ciudad o zona' ?></div>
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="col_lft">
-                                <label><?= $language['edit.label_ad_type'] ?? 'Tipo Anuncio' ?> *</label>
+                                <label for="ad_type"><?= $language['edit.label_ad_type'] ?? 'Tipo Anuncio' ?> *</label>
                             </div>
                             <div class="col_rgt">
-                                <select name="ad_type" size="1" id="ad_type" required>
-                                    <option value="" <?= ($ad['ad']['ad_type'] ?? '') == '' ? 'selected' : '' ?>><?= $language['edit.select_ad_type'] ?? 'Seleccionar Tipo' ?></option>
-                                    <option value="1" <?= ($ad['ad']['ad_type'] ?? '') == '1' ? 'selected' : '' ?>><?= $language['edit.ad_type_option_1'] ?? 'Oferta' ?></option> <?php /* Ajusta textos */ ?>
-                                    <option value="2" <?= ($ad['ad']['ad_type'] ?? '') == '2' ? 'selected' : '' ?>><?= $language['edit.ad_type_option_2'] ?? 'Demanda' ?></option> <?php /* Ajusta textos */ ?>
+                                <select name="ad_type" size="1" id="ad_type" required> <?php // Añadido required ?>
+                                     <option value="" <?= ($ad['ad']['ad_type'] ?? 0) == 0 ? 'selected' : '' ?>><?= $language['edit.select_ad_type'] ?? 'Selecciona tipo...' ?></option>
+                                    <option value="1" <?= ($ad['ad']['ad_type'] ?? 0) == 1 ? 'selected' : '' ?>><?= $language['edit.ad_type_option_1'] ?? 'Oferta' ?></option>
+                                    <option value="2" <?= ($ad['ad']['ad_type'] ?? 0) == 2 ? 'selected' : '' ?>><?= $language['edit.ad_type_option_2'] ?? 'Demanda' ?></option>
                                 </select>
                                 <div class="error_msg" id="error_ad_type"><?= $language['edit.error_ad_type'] ?? 'Selecciona el tipo de anuncio' ?></div>
                             </div>
                         </div>
                     </fieldset>
-
-                     <fieldset>
-                        <legend>Detalles del Anuncio</legend>
+                    
+                    <fieldset>
+                         <legend>Detalles del Anuncio</legend>
                         <div class="row">
-                            <div class="col_lft"><label><?= $language['edit.label_title'] ?? 'Título' ?> *</label></div>
+                            <div class="col_lft"><label for="tit"><?= $language['edit.label_title'] ?? 'Título' ?> *</label></div>
                             <div class="col_rgt">
-                                <input name="tit" type="text" id="tit" value="<?= htmlspecialchars(stripslashes($ad['ad']['title'] ?? '')); ?>" required minlength="10" maxlength="50" />
-                                <div class="input_count">Caracteres <span id="nro-car-tit"><?= mb_strlen($ad['ad']['title'] ?? '', 'UTF-8') ?></span> (min 10 / máx 50)</div>
-                                <div class="error_msg" id="error_tit"><?= $language['edit.error_title'] ?? 'Título obligatorio (10-50 caracteres)' ?></div>
+                                <input name="tit" type="text" id="tit" value="<?= htmlspecialchars(stripslashes($ad['ad']['title'] ?? '')); ?>" required minlength="10" maxlength="50" /> <?php // Añadido required y min/max length ?>
+                                <div class="input_count">Caracteres <span id="nro-car-tit"><?= strlen($ad['ad']['title'] ?? '') ?></span> (min 10/máx 50)</div>
+                                <div class="error_msg" id="error_tit"><?= $language['edit.error_title'] ?? 'Título inválido (10-50 caracteres)' ?></div>
                             </div>
                         </div>
 
                         <div class="row">
-                            <div class="col_lft"><label><?= $language['edit.label_description'] ?? 'Descripción' ?> *</label></div>
+                            <div class="col_lft"><label for="text"><?= $language['edit.label_description'] ?? 'Descripción' ?> *</label></div>
                             <div class="col_rgt">
-                                <?php // Usar htmlspecialchars_decode si el texto se guarda ya codificado, o stripslashes si solo tiene slashes
-                                $text_value = $ad['ad']['texto'] ?? '';
-                                // Decidir si decodificar o no. Si se usa htmlspecialchars al guardar, se debe mostrar el texto plano aquí.
-                                $text_value = htmlspecialchars_decode($text_value, ENT_QUOTES);
-                                ?>
-                                <textarea name="text" rows="8" id="text" required minlength="100" maxlength="500"><?= htmlspecialchars($text_value); // Volver a codificar para el atributo value/contenido ?></textarea>
-                                <div class="input_count">Caracteres <span id="nro-car-text"><?= mb_strlen($text_value, 'UTF-8') ?></span> (min 100 / máx 500)</div>
-                                <div class="error_msg" id="error_text"><?= $language['edit.error_description'] ?? 'Descripción obligatoria (100-500 caracteres)' ?></div>
+                                <textarea name="text" rows="8" id="text" maxlength="1200" required minlength="30"><?= htmlspecialchars(stripslashes($ad['ad']['texto'] ?? '')); ?></textarea> <?php // Aumentado rows, añadido required y minlength ?>
+                                <div class="input_count">Caracteres <span id="nro-car-text"><?= strlen($ad['ad']['texto'] ?? '') ?></span> (min 30/máx 1200)</div> <?php // Ajustado min/max ?>
+                                <div class="error_msg" id="error_text"><?= $language['edit.error_description'] ?? 'Descripción inválida (30-1200 caracteres)' ?></div>
                             </div>
                         </div>
 
-                        <?php // --- NUEVO: Sección de Servicios --- ?>
+                        <?php // --- Sección Servicios --- ?>
                         <div class="row">
-                            <div class="col_lft"><label>Servicios *</label></div>
-                            <div class="col_rgt">
-                                <div class="grupo-checkboxes" style="max-height: 150px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;">
-                                    <?php
-                                    // *** IMPORTANTE: Define aquí la lista COMPLETA de servicios posibles ***
-                                    $all_servicios = [
-                                        "Masaje relajante", "Masaje deportivo", "Masaje podal", "Masaje antiestrés",
-                                        "Masaje linfático", "Masaje shiatsu", "Masaje descontracturante", "Masaje ayurvédico",
-                                        "Masaje circulatorio", "Masaje tailandés", "Otros masajes" // Añade todos los que tengas
-                                    ];
-                                    // $ad_servicios ya está decodificado más arriba
-
-                                    foreach ($all_servicios as $servicio) {
-                                        $valor = strtolower(str_replace(' ', '_', $servicio)); // Generar valor consistente
-                                        $checked = ($ad_servicios && in_array($valor, $ad_servicios)) ? 'checked' : '';
-                                        echo '<label style="display: block; margin-bottom: 5px;">';
-                                        echo '<input type="checkbox" name="servicios[]" value="' . htmlspecialchars($valor) . '" ' . $checked . '> ';
-                                        echo htmlspecialchars($servicio);
-                                        echo '</label>';
-                                    }
-                                    ?>
-                                </div>
-                                <div class="error_msg" id="error_servicios">Selecciona al menos un servicio.</div>
-                            </div>
-                        </div>
-
-                        <?php // --- Campos Condicionales (Coche/Inmobiliaria) --- ?>
-                        <?php // Mantener esta lógica si sigue siendo relevante según la categoría ?>
-                        <div id="extra_fields" style="<?= ($ad['category']['field_0'] ?? 0) == 1 || ($ad['category']['field_2'] ?? 0) == 1 || ($ad['category']['field_3'] ?? 0) == 1 ? 'display: block;' : 'display: none;' ?>">
-                            <legend>Detalles Adicionales (Según Categoría)</legend>
-                             <?php if (($ad['category']['field_0'] ?? 0) == 1): // Coche ?>
-                                <div class="row">
-                                    <div class="col_lft"><label>Kilómetros</label></div>
-                                    <div class="col_rgt"><input name="km_car" type="tel" id="km_car" size="10" maxlength="10" value="<?= htmlspecialchars($ad['ad']['mileage'] ?? '') ?>" /></div>
-                                </div>
-                                <div class="row">
-                                    <div class="col_lft"><label>Año</label></div>
-                                    <div class="col_rgt"><select name="date_car" id="date_car">
-                                            <option value="">Año</option>
-                                            <?php for ($i = date("Y"); $i > 1970; $i--): ?>
-                                                <option value="<?= $i ?>" <?= (($ad['ad']['date_car'] ?? '') == $i) ? 'selected' : ''; ?>><?= $i ?></option>
-                                            <?php endfor; ?>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col_lft"><label>Combustible</label></div>
-                                    <div class="col_rgt"><select name="fuel_car" id="fuel_car">
-                                            <option value="">Combustible</option>
-                                            <?php $type_fuel = selectSQL("sc_type_fuel", $w = array(), 'ID_fuel ASC');
-                                            if ($type_fuel) {
-                                                foreach ($type_fuel as $fuel) {
-                                                    $selected = (($ad['ad']['fuel'] ?? '') == $fuel['ID_fuel']) ? 'selected' : '';
-                                                    echo '<option value="' . $fuel['ID_fuel'] . '" ' . $selected . '>' . htmlspecialchars($fuel['name']) . '</option>';
-                                                }
-                                            }
-                                            ?>
-                                        </select>
-                                    </div>
-                                </div>
-                            <?php endif; ?>
-                            <?php if (($ad['category']['field_3'] ?? 0) == 1): // Habitaciones/Baños ?>
-                                <div class="row">
-                                    <div class="col_lft"><label>Habitaciones</label></div>
-                                    <div class="col_rgt"><input type="tel" id="room" name="room" maxlength="4" value="<?= htmlspecialchars($ad['ad']['room'] ?? '') ?>"></div>
-                                </div>
-                                <div class="row">
-                                    <div class="col_lft"><label>Baños</label></div>
-                                    <div class="col_rgt"><input type="tel" id="bathroom" name="bathroom" maxlength="4" value="<?= htmlspecialchars($ad['ad']['broom'] ?? '') ?>"></div>
-                                </div>
-                            <?php endif; ?>
-                            <?php if (($ad['category']['field_2'] ?? 0) == 1): // Superficie ?>
-                                <div class="row">
-                                    <div class="col_lft"><label>Superficie (m<sup>2</sup>)</label></div>
-                                    <div class="col_rgt"><input type="tel" id="area" name="area" maxlength="10" value="<?= htmlspecialchars($ad['ad']['area'] ?? '') ?>"><span class="decimal_price">.00 <b>m<sup>2</sup></b></span></div>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-
-                        <div class="row"> <?php // Mantener precio si se puede editar ?>
-                            <div class="col_lft"><label><?= $language['edit.label_price'] ?? 'Precio' ?></label></div>
-                            <div class="col_rgt"><input class="numeric" name="precio" type="text" id="precio" size="10" maxlength="12" value="<?= htmlspecialchars($ad['ad']['price'] ?? '0'); ?>" /><span class="decimal_price"><b><?= COUNTRY_CURRENCY_CODE ?? 'EUR'; ?></b></span>
-                                <div class="error_msg" id="error_price">Indica un precio válido (puede ser 0).</div>
-                            </div>
-                        </div>
-
-                         <?php // --- NUEVO: Horario Detallado --- ?>
-                        <div class="row">
-                             <div class="col_lft"><label>Horario Detallado *</label></div>
+                             <div class="col_lft"><label>Servicios Ofrecidos</label></div>
                              <div class="col_rgt">
-                                 <div class="horario-semanal" id="contenedor-horario-edit" style="border: 1px solid #ccc; padding: 10px;">
+                                 <div class="grupo-checkboxes" id="servicios-container">
                                      <?php
-                                     $dias = ['lunes' => 'Lunes', 'martes' => 'Martes', 'miercoles' => 'Miércoles', 'jueves' => 'Jueves', 'viernes' => 'Viernes', 'sabado' => 'Sábado', 'domingo' => 'Domingo'];
-                                     // $ad_horario ya está decodificado más arriba
-                                     foreach ($dias as $key => $nombre) {
-                                         $dia_data = $ad_horario[$key] ?? ['activo' => 0, 'inicio' => '09:00', 'fin' => '18:00']; // Defaults razonables
-                                         $is_active = $dia_data['activo'] ?? 0;
-                                         $start_time = $dia_data['inicio'] ?? '09:00';
-                                         $end_time = $dia_data['fin'] ?? '18:00';
-                                         // Clases y estado inicial para HTML y JS
-                                         $active_class = $is_active ? 'disponible' : 'no-disponible';
-                                         $hours_hidden_class = !$is_active ? 'oculto' : ''; // Ocultar si no está activo
+                                     // Lista de servicios posibles (debería venir de la BD o config)
+                                     $possible_services = ["Masaje relajante", "Masaje deportivo", "Masaje podal", "Masaje antiestrés", "Masaje linfático", "Masaje shiatsu", "Masaje descontracturante", "Masaje ayurvédico", "Masaje circulatorio", "Masaje tailandés"]; // Ejemplo
+                                     foreach ($possible_services as $service_name) {
+                                         $service_value = strtolower(str_replace(' ', '_', $service_name)); // Generar valor consistente
+                                         $checked = (in_array($service_value, $ad_servicios)) ? 'checked' : '';
+                                         echo '<label class="frm-checkbox" style="display: inline-block; margin-right: 15px; margin-bottom: 5px;">';
+                                         echo '<input type="checkbox" name="servicios[]" value="' . htmlspecialchars($service_value) . '" ' . $checked . '> ';
+                                         echo htmlspecialchars($service_name);
+                                         echo '</label>';
+                                     }
                                      ?>
-                                         <div class="dia-horario" id="horario-edit-<?= $key ?>" data-dia="<?= $key ?>" style="margin-bottom: 8px; padding-bottom: 5px; border-bottom: 1px dashed #eee; display: flex; align-items: center; flex-wrap: wrap;">
-                                             <span class="nombre-dia" style="width: 80px; font-weight: bold;"><?= $nombre ?>:</span>
-                                             <button type="button" class="btn-dia-estado <?= $active_class ?>" data-dia="<?= $key ?>" style="margin: 0 10px; padding: 2px 8px; cursor: pointer;"><?= $is_active ? 'Disponible' : 'No disponible' ?></button>
-                                             <?php /* Input oculto para enviar estado activo (JS lo maneja) */ ?>
-                                             <?php if ($is_active): ?>
-                                                <input type="hidden" name="horario_dia[<?= $key ?>][activo]" value="1" class="activo-hidden-input">
-                                             <?php endif; ?>
-                                             <div class="horas-dia <?= $hours_hidden_class ?>" style="display: inline-flex; align-items: center;">
-                                                <label style="margin-right: 5px;">De:</label>
-                                                 <select name="horario_dia[<?= $key ?>][inicio]" class="frm-select corto" <?= !$is_active ? 'disabled' : '' ?> style="width: 80px; margin-right: 10px;">
-                                                     <?php for ($h = 0; $h < 24; $h++) {
-                                                         $hora = sprintf('%02d', $h);
-                                                         $sel00 = ($start_time == "{$hora}:00") ? 'selected' : '';
-                                                         $sel30 = ($start_time == "{$hora}:30") ? 'selected' : '';
-                                                         echo "<option value='{$hora}:00' $sel00>{$hora}:00</option>";
-                                                         if ($h < 24) echo "<option value='{$hora}:30' $sel30>{$hora}:30</option>";
-                                                     } ?>
-                                                 </select>
-                                                 <label style="margin-right: 5px;">A:</label>
-                                                 <select name="horario_dia[<?= $key ?>][fin]" class="frm-select corto" <?= !$is_active ? 'disabled' : '' ?> style="width: 80px;">
-                                                     <?php for ($h = 0; $h < 24; $h++) {
-                                                         $hora = sprintf('%02d', $h);
-                                                         $sel00 = ($end_time == "{$hora}:00") ? 'selected' : '';
-                                                         $sel30 = ($end_time == "{$hora}:30") ? 'selected' : '';
-                                                         echo "<option value='{$hora}:00' $sel00>{$hora}:00</option>";
-                                                          if ($h < 24) echo "<option value='{$hora}:30' $sel30>{$hora}:30</option>";
-                                                     } ?>
-                                                 </select>
-                                             </div>
-                                         </div>
-                                     <?php } // Fin foreach dias ?>
                                  </div>
-                                 <div class="error_msg" id="error_horario">Configura el horario para los días disponibles.</div>
+                                 <div class="error-msg oculto" id="error-servicios">Selecciona al menos un servicio si aplica.</div>
                              </div>
                         </div>
-                        <?php // Script JS básico para manejar los botones de disponibilidad del horario ?>
-                        <script>
-                        document.addEventListener('DOMContentLoaded', () => {
-                            document.querySelectorAll('#contenedor-horario-edit .btn-dia-estado').forEach(button => {
-                                button.addEventListener('click', function(e) {
-                                    e.preventDefault(); // Prevenir submit si estuviera dentro de form
-                                    const diaDiv = this.closest('.dia-horario');
-                                    const horasDiv = diaDiv.querySelector('.horas-dia');
-                                    const selects = horasDiv.querySelectorAll('select');
-                                    let activoInput = diaDiv.querySelector('.activo-hidden-input'); // Buscar existente
 
-                                    if (this.classList.contains('no-disponible')) {
-                                        // Cambiar a Disponible
-                                        this.classList.remove('no-disponible');
-                                        this.classList.add('disponible');
-                                        this.textContent = 'Disponible';
-                                        horasDiv.classList.remove('oculto');
-                                        selects.forEach(s => s.disabled = false);
-                                        // Añadir o asegurar input oculto activo=1
-                                        if (!activoInput) {
-                                             const hidden = document.createElement('input');
-                                             hidden.type = 'hidden';
-                                             hidden.name = `horario_dia[${this.dataset.dia}][activo]`;
-                                             hidden.value = '1';
-                                             hidden.classList.add('activo-hidden-input');
-                                             // Insertar después del botón
-                                             this.parentNode.insertBefore(hidden, this.nextSibling);
-                                        } else {
-                                            activoInput.value = '1'; // Asegurar valor
-                                        }
-                                    } else {
-                                        // Cambiar a No Disponible
-                                        this.classList.remove('disponible');
-                                        this.classList.add('no-disponible');
-                                        this.textContent = 'No disponible';
-                                        horasDiv.classList.add('oculto');
-                                        selects.forEach(s => s.disabled = true);
-                                        // Eliminar input oculto si existe
-                                         if (activoInput) {
-                                             activoInput.remove();
+                        <?php // --- Campos Extra Condicionales (Mantener si siguen siendo relevantes) --- ?>
+                        <?php 
+                         // Verificar si $ad['category'] existe antes de acceder a sus índices
+                         $show_car_fields = isset($ad['category']['field_0']) && $ad['category']['field_0'] == 1;
+                         $show_realestate_fields_1 = isset($ad['category']['field_3']) && $ad['category']['field_3'] == 1;
+                         $show_realestate_fields_2 = isset($ad['category']['field_2']) && $ad['category']['field_2'] == 1;
+                        ?>
+                        <?php if ($show_car_fields || $show_realestate_fields_1 || $show_realestate_fields_2): ?>
+                            <div id="extra_fields"> <?php // No ocultar por defecto, mostrar si aplica ?>
+                                <hr> 
+                                <p><strong>Campos Adicionales (Categoría):</strong></p>
+                                <?php if ($show_car_fields): ?>
+                                    <div class="row">
+                                        <div class="col_lft"><label for="km_car">Kilómetros</label></div>
+                                        <div class="col_rgt"><input name="km_car" type="tel" id="km_car" size="10" maxlength="10" value="<?= htmlspecialchars($ad['ad']['mileage'] ?? '') ?>" /></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col_lft"><label for="date_car">Año</label></div>
+                                        <div class="col_rgt"><select name="date_car" id="date_car">
+                                                <option value="">Año</option>
+                                                <?php for ($i = date("Y"); $i > 1970; $i--) { 
+                                                    $selected = ($i == ($ad['ad']['date_car'] ?? '')) ? 'selected' : ''; ?>
+                                                    <option value="<?= $i ?>" <?= $selected ?>><?= $i ?></option>
+                                                <?php } ?>
+                                            </select></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col_lft"><label for="fuel_car">Combustible</label></div>
+                                        <div class="col_rgt"><select name="fuel_car" id="fuel_car">
+                                                <option value="">Combustible</option>
+                                                <?php 
+                                                $type_fuel = selectSQL("sc_type_fuel", $w = array(), 'ID_fuel ASC');
+                                                if ($type_fuel) {
+                                                    foreach ($type_fuel as $fuel) { 
+                                                        $selected = (($ad['ad']['fuel'] ?? '') == $fuel['ID_fuel']) ? 'selected' : ''; ?>
+                                                        <option value="<?= $fuel['ID_fuel'] ?>" <?= $selected ?>><?= htmlspecialchars($fuel['name']) ?></option>
+                                                    <?php } 
+                                                }?>
+                                            </select></div>
+                                    </div>
+                                <?php endif; ?>
+                                
+                                <?php if ($show_realestate_fields_1): ?>
+                                    <div class="row">
+                                        <div class="col_lft"><label for="room">Habitaciones</label></div>
+                                        <div class="col_rgt"><input type="tel" id="room" name="room" maxlength="4" value="<?= htmlspecialchars($ad['ad']['room'] ?? '') ?>"></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col_lft"><label for="bathroom">Baños</label></div>
+                                        <div class="col_rgt"><input type="tel" id="bathroom" name="bathroom" maxlength="4" value="<?= htmlspecialchars($ad['ad']['broom'] ?? '') ?>"></div> <?php // Usar 'bathroom' consistentemente ?>
+                                    </div>
+                                <?php endif; ?>
+                                <?php if ($show_realestate_fields_2): ?>
+                                    <div class="row">
+                                        <div class="col_lft"><label for="area">Superficie (m<sup>2</sup>)</label></div>
+                                        <div class="col_rgt"><input type="tel" id="area" name="area" maxlength="10" value="<?= htmlspecialchars($ad['ad']['area'] ?? '') ?>"><span class="decimal_price">.00 <b>m<sup>2</sup></b></span></div>
+                                    </div>
+                                <?php endif; ?>
+                                <hr>
+                            </div>
+                        <?php endif; ?>
+
+
+                        <div class="row"> <?php // Mantener precio si sigue siendo relevante ?>
+                            <div class="col_lft"><label for="precio"><?= $language['edit.label_price'] ?? 'Precio' ?></label></div>
+                            <div class="col_rgt"><input class="numeric" name="precio" type="number" id="precio" size="8" maxlength="9" value="<?= htmlspecialchars($ad['ad']['price'] ?? '0'); ?>" step="0.01" min="0"/><span class="decimal_price"><b><?= COUNTRY_CURRENCY_CODE ?? 'EUR'; ?></b></span> <?php // Añadido tipo number y min=0 ?>
+                                <div class="error_msg" id="error_price">Indica un precio numérico válido (0 si es gratis o a consultar)</div>
+                            </div>
+                        </div>
+
+                        <?php // --- Sección Horario Detallado --- ?>
+                        <div class="row">
+                             <div class="col_lft"><label>Horario Semanal</label></div>
+                             <div class="col_rgt">
+                                 <div class="horario-semanal-editor" id="horario-container">
+                                     <?php
+                                     $dias_es = ['lunes' => 'Lunes', 'martes' => 'Martes', 'miercoles' => 'Miércoles', 'jueves' => 'Jueves', 'viernes' => 'Viernes', 'sabado' => 'Sábado', 'domingo' => 'Domingo'];
+                                     foreach ($dias_es as $key => $nombre_dia) {
+                                         $dia_actual_data = $ad_horario[$key] ?? ['activo' => 0, 'inicio' => '09:00', 'fin' => '18:00'];
+                                         $activo = $dia_actual_data['activo'] == 1;
+                                         $inicio = $dia_actual_data['inicio'];
+                                         $fin = $dia_actual_data['fin'];
+                                     ?>
+                                         <div class="dia-horario-edit" style="margin-bottom: 10px; padding: 5px; border: 1px solid #eee;">
+                                             <label style="display:inline-block; width: 100px;">
+                                                 <input type="checkbox" name="horario_dia[<?= $key ?>][activo]" value="1" <?= $activo ? 'checked' : '' ?> >
+                                                 <strong><?= $nombre_dia ?></strong>
+                                             </label>
+                                             <span class="horas-dia-edit" style="margin-left: 10px; <?= $activo ? '' : 'opacity:0.5;' // Atenuar si no está activo ?>">
+                                                 De: <select name="horario_dia[<?= $key ?>][inicio]" class="frm-select corto" <?= $activo ? '' : 'disabled' ?>>
+                                                     <?php for ($h = 0; $h < 24; $h++) {
+                                                         $hora00 = sprintf('%02d:00', $h); $sel00 = ($hora00 == $inicio) ? 'selected' : '';
+                                                         $hora30 = sprintf('%02d:30', $h); $sel30 = ($hora30 == $inicio) ? 'selected' : '';
+                                                         echo "<option value='$hora00' $sel00>$hora00</option><option value='$hora30' $sel30>$hora30</option>";
+                                                     } ?>
+                                                 </select>
+                                                 A: <select name="horario_dia[<?= $key ?>][fin]" class="frm-select corto" <?= $activo ? '' : 'disabled' ?>>
+                                                      <?php for ($h = 0; $h < 24; $h++) {
+                                                          $hora00 = sprintf('%02d:00', $h); $sel00 = ($hora00 == $fin) ? 'selected' : '';
+                                                          $hora30 = sprintf('%02d:30', $h); $sel30 = ($hora30 == $fin) ? 'selected' : '';
+                                                          echo "<option value='$hora00' $sel00>$hora00</option><option value='$hora30' $sel30>$hora30</option>";
+                                                     } ?>
+                                                 </select>
+                                             </span>
+                                         </div>
+                                     <?php } ?>
+                                 </div>
+                                 <div class="error-msg oculto" id="error-horario">Configura el horario para los días disponibles.</div>
+                                 <script>
+                                     // Script simple para habilitar/deshabilitar selects de hora al marcar/desmarcar el día
+                                     document.addEventListener('DOMContentLoaded', function() {
+                                         document.querySelectorAll('.dia-horario-edit input[type="checkbox"]').forEach(function(checkbox) {
+                                             checkbox.addEventListener('change', function() {
+                                                 var selects = this.closest('.dia-horario-edit').querySelectorAll('select');
+                                                 var spanHoras = this.closest('.dia-horario-edit').querySelector('.horas-dia-edit');
+                                                 if (this.checked) {
+                                                     selects.forEach(function(select){ select.disabled = false; });
+                                                     spanHoras.style.opacity = '1';
+                                                 } else {
+                                                     selects.forEach(function(select){ select.disabled = true; });
+                                                     spanHoras.style.opacity = '0.5';
+                                                 }
+                                             });
+                                             // Disparar el evento al cargar para establecer estado inicial
+                                             checkbox.dispatchEvent(new Event('change')); 
+                                         });
+                                     });
+                                 </script>
+                             </div>
+                        </div>
+
+                         <?php // --- Sección Idiomas --- ?>
+                         <div class="row">
+                             <div class="col_lft"><label>Idiomas Hablados</label></div>
+                             <div class="col_rgt">
+                                 <div id="idiomas-container">
+                                     <?php 
+                                     // Cargar lista completa de idiomas (ejemplo, obtener de BD/config)
+                                     $possible_languages = ['es' => 'Español', 'en' => 'Inglés', 'fr' => 'Francés', 'de' => 'Alemán', 'pt' => 'Portugués', 'it' => 'Italiano', 'ru' => 'Ruso', 'zh' => 'Chino']; 
+                                     $levels = ['basico' => 'Básico', 'intermedio' => 'Intermedio', 'avanzado' => 'Avanzado', 'nativo' => 'Nativo'];
+                                     
+                                     // Mostrar campos para idiomas guardados + 1 vacío
+                                     $idioma_count = 0;
+                                     foreach ($ad_idiomas as $index => $lang_data) {
+                                         $idioma_count++;
+                                         echo '<div class="par-idioma" style="margin-bottom: 5px;">';
+                                         echo '<select name="idioma_' . $idioma_count . '" class="frm-campo frm-select" style="width: auto; margin-right: 5px;">';
+                                         echo '<option value="">-- Idioma ' . $idioma_count . ' --</option>';
+                                         foreach ($possible_languages as $code => $name) {
+                                             $selected = ($lang_data['idioma'] == $code) ? 'selected' : '';
+                                             echo '<option value="' . htmlspecialchars($code) . '" ' . $selected . '>' . htmlspecialchars($name) . '</option>';
                                          }
-                                    }
-                                });
-                            });
-                            // Opcional: inicializar selects basados en data-initial-active si es necesario
-                        });
-                        </script>
-
-                         <?php // --- NUEVO: Idiomas --- ?>
-                        <div class="row">
-                            <div class="col_lft"><label>Idiomas Hablados</label></div>
-                            <div class="col_rgt">
-                                 <?php
-                                 // $ad_idiomas ya está decodificado
-                                 $lang1_data = $ad_idiomas[0] ?? null;
-                                 $lang2_data = $ad_idiomas[1] ?? null;
-                                 // *** IMPORTANTE: Carga aquí la lista COMPLETA de idiomas y niveles ***
-                                 $idiomas_lista = ['es' => 'Español', 'en' => 'Inglés', 'fr' => 'Francés', 'de' => 'Alemán', 'pt' => 'Portugués', 'it' => 'Italiano', /* ... añadir más */ ];
-                                 $niveles = ['basico' => 'Básico', 'intermedio' => 'Intermedio', 'avanzado' => 'Avanzado', 'nativo' => 'Nativo', 'desconocido' => 'Desconocido'];
-                                 ?>
-                                 <div style="margin-bottom: 10px; display: flex; gap: 10px;">
-                                     <select name="idioma_1" class="frm-select" style="flex: 1;">
-                                         <option value="">-- Idioma 1 --</option>
-                                         <?php foreach ($idiomas_lista as $code => $name): ?>
-                                             <option value="<?= htmlspecialchars($code) ?>" <?= ($lang1_data && isset($lang1_data['idioma']) && $lang1_data['idioma'] == $code) ? 'selected' : '' ?>><?= htmlspecialchars($name) ?></option>
-                                         <?php endforeach; ?>
-                                     </select>
-                                     <select name="nivel_idioma_1" class="frm-select" style="flex: 1;">
-                                         <option value="">-- Nivel 1 --</option>
-                                          <?php foreach ($niveles as $code => $name): ?>
-                                             <option value="<?= htmlspecialchars($code) ?>" <?= ($lang1_data && isset($lang1_data['nivel']) && $lang1_data['nivel'] == $code) ? 'selected' : '' ?>><?= htmlspecialchars($name) ?></option>
-                                         <?php endforeach; ?>
-                                     </select>
+                                         echo '</select>';
+                                         echo '<select name="nivel_idioma_' . $idioma_count . '" class="frm-campo frm-select" style="width: auto;">';
+                                         echo '<option value="">-- Nivel --</option>';
+                                         foreach ($levels as $level_code => $level_name) {
+                                             $selected = (isset($lang_data['nivel']) && $lang_data['nivel'] == $level_code) ? 'selected' : '';
+                                             echo '<option value="' . htmlspecialchars($level_code) . '" ' . $selected . '>' . htmlspecialchars($level_name) . '</option>';
+                                         }
+                                         echo '</select>';
+                                         echo '</div>';
+                                     }
+                                     
+                                     // Añadir un par de campos vacíos para agregar más (hasta un límite)
+                                     $max_langs = 3; // Define cuántos idiomas puede añadir como máximo
+                                     for ($i = $idioma_count + 1; $i <= $max_langs; $i++) {
+                                          echo '<div class="par-idioma" style="margin-bottom: 5px;">';
+                                         echo '<select name="idioma_' . $i . '" class="frm-campo frm-select" style="width: auto; margin-right: 5px;">';
+                                         echo '<option value="">-- Idioma ' . $i . ' (Opcional) --</option>';
+                                         foreach ($possible_languages as $code => $name) {
+                                             echo '<option value="' . htmlspecialchars($code) . '">' . htmlspecialchars($name) . '</option>';
+                                         }
+                                         echo '</select>';
+                                         echo '<select name="nivel_idioma_' . $i . '" class="frm-campo frm-select" style="width: auto;">';
+                                         echo '<option value="">-- Nivel --</option>';
+                                         foreach ($levels as $level_code => $level_name) {
+                                              echo '<option value="' . htmlspecialchars($level_code) . '">' . htmlspecialchars($level_name) . '</option>';
+                                         }
+                                         echo '</select>';
+                                         echo '</div>';
+                                     }
+                                     ?>
                                  </div>
-                                  <div style="display: flex; gap: 10px;">
-                                     <select name="idioma_2" class="frm-select" style="flex: 1;">
-                                         <option value="">-- Idioma 2 --</option>
-                                          <?php foreach ($idiomas_lista as $code => $name): ?>
-                                             <option value="<?= htmlspecialchars($code) ?>" <?= ($lang2_data && isset($lang2_data['idioma']) && $lang2_data['idioma'] == $code) ? 'selected' : '' ?>><?= htmlspecialchars($name) ?></option>
-                                         <?php endforeach; ?>
-                                     </select>
-                                     <select name="nivel_idioma_2" class="frm-select" style="flex: 1;">
-                                         <option value="">-- Nivel 2 --</option>
-                                          <?php foreach ($niveles as $code => $name): ?>
-                                             <option value="<?= htmlspecialchars($code) ?>" <?= ($lang2_data && isset($lang2_data['nivel']) && $lang2_data['nivel'] == $code) ? 'selected' : '' ?>><?= htmlspecialchars($name) ?></option>
-                                         <?php endforeach; ?>
-                                     </select>
-                                 </div>
-                            </div>
-                        </div>
-
-                        <?php // --- NUEVO: Salidas --- ?>
+                             </div>
+                         </div>
+                         
+                         <?php // --- Sección Salidas a Domicilio --- ?>
                         <div class="row">
-                            <div class="col_lft"><label>¿Realizas salidas? *</label></div>
+                            <div class="col_lft"><label for="realiza_salidas">¿Realiza salidas? *</label></div>
                             <div class="col_rgt">
-                                <select name="out" id="realiza_salidas" class="frm-select" required>
-                                    <?php // Usar ?? '0' por si el campo es NULL en la BD ?>
-                                    <option value="0" <?= (($ad['ad']['out'] ?? '0') == '0') ? 'selected' : '' ?>>No</option>
-                                    <option value="1" <?= (($ad['ad']['out'] ?? '0') == '1') ? 'selected' : '' ?>>Sí</option>
+                                <select name="out" id="realiza_salidas" class="frm-campo frm-select" required>
+                                    <?php $selected_out = $ad['ad']['out'] ?? '0'; ?>
+                                    <option value="0" <?= ($selected_out == 0) ? 'selected' : ''; ?>>No</option>
+                                    <option value="1" <?= ($selected_out == 1) ? 'selected' : ''; ?>>Sí, a domicilio/hotel</option>
                                 </select>
-                                 <div class="error_msg" id="error_out">Indica si realizas salidas.</div>
+                                <div class="error_msg oculto" id="error_out">Debes indicar si realizas salidas.</div>
                             </div>
                         </div>
+
 
                     </fieldset>
-
                     <fieldset>
                         <legend>Fotos del Anuncio</legend>
-                        <div class="title_photos_list" id="title_photos_list">Gestionar fotos (Máx: <?= $DATAJSON['max_photos'] ?? 3 ?>)</div>
-                        <div class="error_msg" id="error_photo" style="display: none;">Sube al menos una foto para tu anuncio.</div>
+                        <div class="title_photos_list" id="title_photos_list">¡Sube o modifica las fotos de tu anuncio! (Máx: <?= $DATAJSON['max_photos'] ?>)</div>
+                        <div class="error_msg" id="error_photo" style="display:none;">Sube al menos una foto.</div>
                         <div class="photos_list sortable">
                             <?php
-                            // Cargar imágenes existentes
-                            $ad_images = $ad['images'] ?? []; // Usar array vacío si no hay imágenes
-                            $current_photos = count($ad_images);
-                             $upload_photos = ($DATAJSON['max_photos'] ?? 3) - $current_photos; // Espacios libres
-                             $photo_id = 1; // Contador para IDs de elementos HTML/JS
-
+                            // Imágenes Actuales
+                            $current_photos = isset($ad['images']) && is_array($ad['images']) ? count($ad['images']) : 0;
+                            // Ordenar imágenes por posición si existe el campo
+                            if ($current_photos > 0 && isset($ad['images'][0]['position'])) {
+                                usort($ad['images'], function($a, $b) {
+                                    return ($a['position'] ?? 99) <=> ($b['position'] ?? 99);
+                                });
+                            }
+                            $max_photos = $DATAJSON['max_photos'];
+                            $upload_slots = $max_photos - $current_photos;
+                            $photo_id_counter = 1; // Para IDs únicos en JS
+                            
                             // Mostrar imágenes existentes
-                            foreach ($ad_images as $image_data) {
-                                 if (!isset($image_data['name_image']) || empty($image_data['name_image'])) continue; // Saltar si no hay nombre
-                                $image_name = $image_data['name_image'];
-                                // ¡Revisar la URL base de las imágenes! ¿Es correcta para el admin?
-                                $image_url = (getConfParam('SITE_URL') ?? '/') . 'src/photos/' . $image_name; // Asumiendo estructura original
-                                ?>
-                                <div class="photo_box" id="photo_box_<?= $photo_id ?>">
-                                    <div id="photo_container-<?= $photo_id; ?>" class="photo_list">
-                                         <div class="removeImg" title="Eliminar esta imagen"><i class="fa fa-times" aria-hidden="true"></i></div>
-                                         <?php /* El icono de editar/rotar del original necesita JS (editImage, rotateRight, etc) */ ?>
-                                         <a href="javascript:void(0);" class="edit-photo-icon" onclick="editImage(<?= $photo_id ?>); return false;" title="Rotar/Editar">
-                                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#333"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h357l-80 80H200v560h560v-278l80-80v358q0 33-23.5 56.5T760-120H200Zm280-360ZM360-360v-170l367-367q12-12 27-18t30-6q16 0 30.5 6t26.5 18l56 57q11 12 17 26.5t6 29.5q0 15-5.5 29.5T897-728L530-360H360Zm481-424-56-56 56 56ZM440-440h56l232-232-28-28-29-28-231 231v57Zm260-260-29-28 29 28 28 28-28-28Z"/></svg>
-                                         </a>
-                                         <span class="helper"></span>
-                                         <?php // Comprobar si la imagen existe antes de mostrarla
-                                         // La ruta física real podría ser diferente a la URL
-                                         $physical_path = '/var/www/vhosts/41121521.servicio-online.net/httpdocs/' . IMG_ADS . $image_name; // Revisar ruta
-                                          if (file_exists($physical_path)): ?>
-                                            <img class="<?= getImgOrientation($physical_path) // Necesita ruta física? Revisar función ?>" src="<?= htmlspecialchars($image_url) ?>" alt="Foto <?= $photo_id ?>" />
-                                         <?php else: ?>
-                                             <span style="color: red; font-size: 0.8em;">Imagen no encontrada</span>
-                                         <?php endif; ?>
-                                         <input type="hidden" name="photo_name[]" value="<?= htmlspecialchars($image_name); ?>">
-                                    </div>
-                                     <div class="photos_options">
-                                         <?php /* Los controles de mover/rotar necesitan JS (transferPhoto, rotateRight) */ ?>
-                                        <?php /* Icono Rotar Derecha */ ?>
-                                         <a href="javascript:void(0);" onclick="rotateRight(<?= $photo_id ?>); return false;" title="Rotar Derecha">
-                                             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#333"><path d="M522-80v-82q34-5 66.5-18t61.5-34l56 58q-42 32-88 51.5T522-80Zm-80 0Q304-98 213-199.5T122-438q0-75 28.5-140.5t77-114q48.5-48.5 114-77T482-798h6l-62-62 56-58 160 160-160 160-56-56 64-64h-8q-117 0-198.5 81.5T202-438q0 104 68 182.5T442-162v82Zm322-134-58-56q21-29 34-61.5t18-66.5h82q-5 50-24.5 96T764-214Zm76-264h-82q-5-34-18-66.5T706-606l58-56q32 39 51 86t25 98Z"/></svg>
-                                         </a>
-                                         <?php /* Inputs ocultos para opciones de imagen (rotación) */ ?>
-                                         <input type="hidden" name="optImgage[<?= $photo_id-1 ?>][rotation]" id="rotation-<?= $photo_id; ?>" value="0"> <?php // Asegura el índice correcto ?>
-                                    </div>
-                                </div>
-                            <?php $photo_id++;
-                             } // Fin foreach imágenes existentes ?>
-
-                            <?php // Mostrar placeholders para subir nuevas fotos
-                            for ($i = 0; $i < $upload_photos; $i++) { ?>
-                                <div class="photo_box">
-                                    <div id="photo_container-<?= $photo_id; ?>" class="photo_list free">
-                                         <?php /* Cambiar name a userImage[] para coincidir con POST handling */ ?>
-                                        <input name="userImage[]" id="photo-<?= $photo_id; ?>" type="file" class="photoFile" accept="image/jpeg, image/png" />
-                                        <span class="upload-placeholder-icon">+</span> <?php // Placeholder visual ?>
+                            if ($current_photos > 0) {
+                                foreach($ad['images'] as $img) {
+                                    $image_url = getConfParam('SITE_URL') . ltrim(IMG_ADS, '/') . $img['name_image'];
+                            ?>
+                                <div class="photo_box" data-photo-id="<?= $photo_id_counter ?>">
+                                    <div id="photo_container-<?= $photo_id_counter; ?>" class="photo_list">
+                                         <?php // Botón para marcar para eliminar (requiere JS) ?>
+                                         <div class="removeImg" title="Marcar para eliminar" onclick="markImageForDeletion(this, '<?= htmlspecialchars($img['name_image']) ?>')"><i class="fa fa-times" aria-hidden="true"></i></div>
+                                         <?php /* <a href="javascript:void(0);" class="edit-photo-icon" onclick="editImage(<?= $photo_id_counter ?>)">...</a> // Si tienes editor */ ?>
+                                        <span class="helper"></span>
+                                        <img class="<?= getImgOrientation($img['name_image']) ?>" src="<?= $image_url ?>" alt="Foto <?= $photo_id_counter ?>" />
+                                        <input type="hidden" name="photo_name[]" value="<?= htmlspecialchars($img['name_image']); ?>"> <?php // Nombre de imagen existente ?>
+                                        <input type="hidden" name="optImgage[<?= $photo_id_counter-1 ?>][rotation]" id="rotation-<?= $photo_id_counter; ?>" value="0"> <?php // Rotación para esta imagen ?>
                                     </div>
                                     <div class="photos_options">
-                                         <?php /* Opciones vacías o deshabilitadas para placeholders */ ?>
+                                        <?php /* Botones de rotación, etc. (si tu JS los maneja) */ ?>
+                                        <a href="javascript:void(0);" onclick="rotateRight(<?= $photo_id_counter ?>)" title="Rotar Derecha">
+                                            <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px"><path d="M522-80v-82q34-5 66.5-18t61.5-34l56 58q-42 32-88 51.5T522-80Zm-80 0Q304-98 213-199.5T122-438q0-75 28.5-140.5t77-114q48.5-48.5 114-77T482-798h6l-62-62 56-58 160 160-160 160-56-56 64-64h-8q-117 0-198.5 81.5T202-438q0 104 68 182.5T442-162v82Zm322-134-58-56q21-29 34-61.5t18-66.5h82q-5 50-24.5 96T764-214Zm76-264h-82q-5-34-18-66.5T706-606l58-56q32 39 51 86t25 98Z"/></svg>
+                                        </a>
                                     </div>
-                                     <?php /* No necesita input de rotación hasta que se suba */ ?>
-                                     <?php /* <input type="hidden" name="optImgage[<?= $photo_id-1 ?>][rotation]" id="rotation-<?= $photo_id; ?>" value="0"> */ ?>
                                 </div>
-                            <?php $photo_id++;
-                            } // Fin for placeholders ?>
-                            <div class="error_msg" id="error_photos_upload" style="clear: both; padding-top: 10px;"></div> <?php // Mensajes de error JS ?>
+                            <?php 
+                                $photo_id_counter++;
+                                } // Fin foreach imágenes existentes
+                            } // Fin if current_photos > 0
+
+                            // Mostrar slots vacíos para subir nuevas fotos
+                            for ($i = 0; $i < $upload_slots; $i++) { 
+                                $current_slot_id = $photo_id_counter + $i;
+                            ?>
+                                <div class="photo_box empty_slot" data-photo-id="<?= $current_slot_id ?>">
+                                    <div id="photo_container-<?= $current_slot_id; ?>" class="photo_list free">
+                                        <input name="userImage[]" id="photo-<?= $current_slot_id; ?>" type="file" class="photoFile" accept="image/jpeg, image/png" onchange="previewImage(this, <?= $current_slot_id ?>)" />
+                                        <div class="upload-placeholder">
+                                            <i class="fa fa-plus-circle" style="font-size: 24px; color: #ccc;"></i><br>Añadir Foto
+                                        </div>
+                                         <?php // Placeholder para la preview ?>
+                                        <img src="#" alt="Previsualización" class="img-preview" style="display:none; max-width: 100%; max-height: 100%; position: absolute; top: 0; left: 0;"/>
+                                    </div>
+                                    <div class="photos_options" style="visibility: hidden;"> <?php // Opciones ocultas para slots vacíos ?>
+                                    </div>
+                                     <?php // No necesitamos input de rotación para slots vacíos inicialmente ?>
+                                </div>
+                            <?php 
+                            } // Fin for slots vacíos
+                            ?>
+                             <?php // Input oculto para guardar nombres de imágenes a borrar ?>
+                             <div id="deleted-images-container"></div>
                         </div>
-                        <?php // Script básico para eliminar imagen (necesitarás adaptarlo/integrarlo con tu JS existente) ?>
+                        <div class="error_msg" id="error_photos"></div>
                          <script>
-                            document.addEventListener('DOMContentLoaded', function() {
-                                document.querySelectorAll('.photos_list .removeImg').forEach(button => {
-                                    button.addEventListener('click', function(e) {
-                                        e.preventDefault();
-                                        if (confirm('¿Seguro que quieres eliminar esta imagen? No se podrá recuperar.')) {
-                                            const photoBox = this.closest('.photo_box');
-                                            const photoInput = photoBox.querySelector('input[name="photo_name[]"]');
-                                            if (photoInput) {
-                                                // Opción 1: Vaciar el valor para que la lógica PHP lo detecte como eliminado
-                                                // photoInput.value = "";
-                                                // photoBox.style.display = 'none'; // Ocultarlo visualmente
+                             // JS Básico para preview y marcar para borrar (requiere jQuery si usas sortable)
+                            
+                             function previewImage(input, id) {
+                                 if (input.files && input.files[0]) {
+                                     var reader = new FileReader();
+                                     reader.onload = function (e) {
+                                         var container = document.getElementById('photo_container-' + id);
+                                         var preview = container.querySelector('.img-preview');
+                                         var placeholder = container.querySelector('.upload-placeholder');
+                                         if (preview) {
+                                             preview.src = e.target.result;
+                                             preview.style.display = 'block';
+                                         }
+                                         if(placeholder) placeholder.style.display = 'none';
+                                         container.classList.remove('free'); // Ya no está libre
+                                     }
+                                     reader.readAsDataURL(input.files[0]);
+                                 }
+                             }
 
-                                                // Opción 2: Eliminar completamente el photo_box (preferido si es seguro)
-                                                 photoBox.remove();
-
-                                                // Aquí podrías necesitar lógica adicional, como:
-                                                // - Contar cuántos quedan y mostrar/ocultar el error de "mínimo una foto".
-                                                // - Añadir un nuevo placeholder si se elimina uno y hay espacio libre.
-                                            } else {
-                                                 console.error("No se encontró el input oculto de la imagen para eliminar.");
-                                            }
-                                        }
-                                    });
-                                });
-                                // Añadir aquí la inicialización de Sortable y otros JS necesarios para las fotos
-                                // $('.sortable').sortable({ ... });
-                            });
+                            function markImageForDeletion(button, imageName) {
+                                var photoBox = button.closest('.photo_box');
+                                if (photoBox.classList.contains('marked-for-deletion')) {
+                                     // Desmarcar
+                                     photoBox.classList.remove('marked-for-deletion');
+                                     photoBox.style.opacity = '1';
+                                     // Quitar input oculto de borrado
+                                     var hiddenInput = document.getElementById('delete_' + imageName.replace(/\./g, '_')); // Crear ID único
+                                     if (hiddenInput) hiddenInput.remove();
+                                } else {
+                                    // Marcar
+                                    photoBox.classList.add('marked-for-deletion');
+                                     photoBox.style.opacity = '0.5'; // Indicar visualmente
+                                     // Añadir input oculto para enviar al POST
+                                     var input = document.createElement('input');
+                                     input.type = 'hidden';
+                                     input.name = 'deleted_images[]';
+                                     input.value = imageName;
+                                     input.id = 'delete_' + imageName.replace(/\./g, '_');
+                                     document.getElementById('deleted-images-container').appendChild(input);
+                                }
+                            }
+                            
+                             // Rotación (si tu JS lo maneja)
+                             function rotateRight(id) {
+                                 var rotationInput = document.getElementById('rotation-' + id);
+                                 if (rotationInput) {
+                                     var currentRotation = parseInt(rotationInput.value) || 0;
+                                     var newRotation = (currentRotation - 90) % 360; // -90 para rotar a la derecha en GD
+                                     if (newRotation < 0) newRotation += 360; // Asegurar positivo
+                                     rotationInput.value = newRotation;
+                                     
+                                     // Opcional: Rotar visualmente la imagen con CSS (no afecta al servidor)
+                                     var imgElement = document.querySelector('#photo_container-' + id + ' img');
+                                     if(imgElement) imgElement.style.transform = 'rotate(' + newRotation + 'deg)';
+                                     
+                                     alert('Imagen marcada para rotar ' + newRotation + ' grados al guardar.'); // Feedback visual
+                                 }
+                             }
+                             
+                             // Inicializar Sortable si usas jQuery UI (ejemplo)
+                             if (typeof $ !== 'undefined' && $.ui && $.ui.sortable) {
+                                 $(document).ready(function() {
+                                     $('.sortable').sortable({
+                                         placeholder: "ui-state-highlight", // Clase para el placeholder
+                                         forcePlaceholderSize: true,
+                                         update: function( event, ui ) {
+                                             // Actualizar los índices de los inputs si es necesario tras reordenar
+                                             $('.sortable .photo_box').each(function(index) {
+                                                 var rotationInput = $(this).find('input[name^="optImgage"]');
+                                                 if (rotationInput.length) {
+                                                     rotationInput.attr('name', 'optImgage[' + index + '][rotation]');
+                                                 }
+                                                  // Si necesitas actualizar position en BD dinámicamente, aquí iría una llamada AJAX
+                                             });
+                                         }
+                                     }).disableSelection();
+                                 });
+                             }
                          </script>
-
                     </fieldset>
-
                     <fieldset>
                         <legend>Datos de Contacto</legend>
-
                         <div class="row">
-                            <div class="col_lft"><label><?= $language['post.label_name'] ?? 'Nombre Contacto' ?> *</label></div>
-                            <div class="col_rgt"><input name="name" type="text" id="name" size="30" maxlength="50" required value="<?= htmlspecialchars($ad['ad']['name'] ?? ''); ?>" />
-                                <div class="error_msg" id="error_name"><?= $language['post.error_name'] ?? 'Introduce tu nombre' ?></div>
+                            <div class="col_lft"><label for="name"><?= $language['post.label_name'] ?? 'Tu Nombre/Alias' ?> *</label></div>
+                            <div class="col_rgt"><input name="name" type="text" id="name" size="30" maxlength="50" value="<?= htmlspecialchars($ad['ad']['name'] ?? ''); ?>" required /> <?php // Maxlength aumentado, añadido required ?>
+                                <div class="error_msg" id="error_name"><?= $language['post.error_name'] ?? 'Indica tu nombre o alias' ?></div>
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="col_lft">
-                                <label><?= $language['edit.label_seller_type'] ?? 'Tipo Vendedor' ?> *</label>
+                                <label for="sellerType"><?= $language['edit.label_seller_type'] ?? 'Tipo Vendedor' ?> *</label>
                             </div>
                             <div class="col_rgt">
-                                <select id="sellerType" name="seller_type" size="1" required>
-                                     <option value="" <?= (($ad['ad']['seller_type'] ?? '') == '') ? 'selected' : '' ?>><?= $language['edit.select_seller_type'] ?? 'Seleccionar Tipo' ?></option>
-                                     <?php // Asegúrate que los valores (1, 2) coinciden con tu lógica/BD ?>
-                                     <option value="1" <?= (($ad['ad']['seller_type'] ?? '') == '1') ? 'selected' : '' ?>><?= $language['edit.seller_type_option_1'] ?? 'Particular' ?></option> <?php /* Ajusta texto */ ?>
-                                     <option value="2" <?= (($ad['ad']['seller_type'] ?? '') == '2') ? 'selected' : '' ?>><?= $language['edit.seller_type_option_2'] ?? 'Profesional/Centro' ?></option> <?php /* Ajusta texto */ ?>
-                                     <?php /* <option value="3" ...>Publicista</option> si aplica */ ?>
+                                <select id="sellerType" name="seller_type" size="1" required> <?php // Añadido required ?>
+                                     <option value="" <?= ($ad['ad']['seller_type'] ?? 0) == 0 ? 'selected' : '' ?>><?= $language['edit.select_seller_type'] ?? 'Selecciona tipo...' ?></option>
+                                     <?php // Asume que los valores 1, 2, 3 corresponden a los tipos definidos ?>
+                                    <option value="1" <?= ($ad['ad']['seller_type'] ?? 0) == 1 ? 'selected' : '' ?>><?= $language['edit.seller_type_option_1'] ?? 'Particular' ?></option>
+                                    <option value="2" <?= ($ad['ad']['seller_type'] ?? 0) == 2 ? 'selected' : '' ?>><?= $language['edit.seller_type_option_2'] ?? 'Profesional/Centro' ?></option>
+                                     <?php // Añadir opción 3 si existe (Publicista?)
+                                        // <option value="3" <?= ($ad['ad']['seller_type'] ?? 0) == 3 ? 'selected' : '' ?>>Publicista</option> 
+                                     ?>
                                 </select>
-                                <div class="error_msg" id="error_sellerType"><?= $language['edit.error_seller_type'] ?? 'Selecciona el tipo de vendedor' ?></div>
+                                <div class="error_msg" id="error_sellerType"><?= $language['edit.error_seller_type'] ?? 'Selecciona tu tipo de vendedor' ?></div>
                             </div>
                         </div>
+
 
                         <div class="row">
-                            <div class="col_lft"><label><?= $language['post.label_phone'] ?? 'Teléfono' ?> *</label></div>
+                            <div class="col_lft"><label for="phone"><?= $language['post.label_phone'] ?? 'Teléfono' ?> *</label></div>
                             <div class="col_rgt">
-                                <div class="phone_container" style="display: flex; align-items: center; gap: 15px; margin-bottom: 5px;">
-                                    <input name="phone" type="tel" id="phone" size="20" maxlength="15" required pattern="[0-9]{9,15}" value="<?= htmlspecialchars($ad['ad']['phone'] ?? ''); ?>" />
-                                    <label style="white-space: nowrap;">
-                                        <input type="checkbox" value="1" name="whatsapp" <?= (($ad['ad']['whatsapp'] ?? 0) == 1) ? 'checked' : '' ?>> WhatsApp
-                                    </label>
+                                <div class="phone_container">
+                                     <?php // Usar tipo tel y pattern para validación básica HTML5 ?>
+                                    <input name="phone" type="tel" id="phone" size="20" maxlength="20" value="<?= htmlspecialchars($ad['ad']['phone'] ?? ''); ?>" required pattern="[0-9\s\+\-]{7,20}"/> 
+                                    <label style="margin-left: 10px;"><input type="checkbox" value="1" name="whatsapp" <?= ($ad['ad']['whatsapp'] ?? 0) == 1 ? 'checked' : '' ?>> Whatsapp </label>
                                 </div>
-                                <?php /* Teléfono secundario - Mantener si aún es relevante
-                                <div class="phone_container" style="display: flex; align-items: center; gap: 15px;">
-                                    <input name="phone1" type="tel" id="phone1" size="20" maxlength="15" value="<?= htmlspecialchars($ad['ad']['phone1'] ?? ''); ?>"/>
-                                    <label style="white-space: nowrap;">
-                                        <input type="checkbox" value="1" name="whatsapp1" <?= (($ad['ad']['whatsapp1'] ?? 0) == 1) ? 'checked' : '' ?> > WhatsApp Sec.
-                                    </label>
-                                </div>
-                                */ ?>
-                                <div class="error_msg" id="error_phone"><?= $language['post.error_phone'] ?? 'Introduce un teléfono válido (9-15 dígitos)' ?></div>
+                                <div class="error_msg" id="error_phone"><?= $language['post.error_phone'] ?? 'Introduce un teléfono válido' ?></div>
+                            </div>
+                        </div>
+                        
+                         <?php // Email no suele ser editable directamente si está ligado a la cuenta ?>
+                         <div class="row">
+                            <div class="col_lft"><label>Email (Cuenta)</label></div>
+                            <div class="col_rgt">
+                                <input type="email" value="<?= htmlspecialchars($ad['user']['mail'] ?? 'No disponible'); ?>" disabled style="background-color: #eee;"/>
+                                <small>El email está asociado a la cuenta del usuario.</small>
                             </div>
                         </div>
 
-                         <?php // --- NUEVO: Notifications --- ?>
-                         <div class="row">
-                            <div class="col_lft"><label>Notificaciones</label></div>
-                            <div class="col_rgt">
-                                 <label>
-                                    <?php // Default a 1 (checked) si no existe el campo? Decide según tu lógica.
-                                    $notifications_checked = ($ad['ad']['notifications'] ?? 1) == 1;
-                                    ?>
-                                    <input type="checkbox" value="1" name="notifications" <?= $notifications_checked ? 'checked' : '' ?>>
-                                    Recibir emails cuando contacten por el anuncio
-                                 </label>
-                             </div>
-                         </div>
-
                     </fieldset>
-
-                     <?php /* Términos y condiciones no suelen ser necesarios en edición */ ?>
-                     <?php /*
-                    <div class="row">
-                        <label class="radio">
-                            <input name="terminos" type="checkbox" id="terminos" value="1"/>
-                            <?=$language['edit.label_terms']?></label><div class="error_msg" id="error_terminos"><?=$language['edit.error_terms']?></div>
-                    </div>
-                    */ ?>
-
-                    <div class="row text-center" style="margin-top: 20px;">
-                        <?php // Cambiar ID del botón si causa conflictos con JS ?>
-                        <input type="submit" class="button btn btn-success" id="submitEditAd" value="<?= $language['edit.button_update'] ?? 'Guardar Cambios' ?>" />
-                         <a href="javascript:void(0);" onclick="window.close(); return false;" class="button btn btn-danger" style="margin-left: 15px;">Cancelar</a>
+                    
+                    <?php /* Términos y condiciones no suelen mostrarse en la edición */ ?>
+                    
+                    <div class="row submit-row" style="margin-top: 20px; text-align: center;">
+                        <input type="submit" class="button btn btn-success" id="editPub" value="<?= $language['edit.button_update'] ?? 'Guardar Cambios' ?>" />
+                         <a href="javascript:void(0);" onclick="window.close();" class="btn btn-secondary" style="margin-left: 15px;">Cancelar</a>
                     </div>
                 </form>
-            <?php endif; // Fin else ($edited) ?>
+                
+            <?php endif // Fin else ($edited) ?>
 
-            <?php
-            // Cargar bloques adicionales si es necesario (editor WYSIWYG, etc.)
-            // loadBlock("editor"); // ¿Sigue siendo necesario si usas textarea simple?
-            ?>
+            <?php // loadBlock("editor"); // ¿Sigue siendo necesario si textarea no usa editor WYSIWYG? Comentar si no. ?>
         </div> <?php // Fin col_single ?>
 
-        <?php // Cargar JS necesario para esta página de edición ?>
-        <?php /* Asegúrate que las rutas son correctas para el admin */ ?>
-        <?php $admin_base_url = getConfParam('SITE_URL') ?? '/'; // O la URL base del admin ?>
-        <script src="<?= $admin_base_url ?>src/js/jquery.min.js"></script> <?php // Asumiendo jQuery necesario ?>
-        <script src="<?= $admin_base_url ?>src/js/select2.min.js"></script> <?php // Si usas Select2 ?>
-        <script src="<?= $admin_base_url ?>src/js/jquery-ui.min.js"></script> <?php // Si usas Sortable de jQuery UI ?>
-        <?php /* Cargar tus JS específicos de admin/post si los tienes */ ?>
-         <script src="<?= $admin_base_url ?>src/js/filter.js"></script> <?php // Original ?>
-         <script src="<?= $admin_base_url ?>src/js/post.js"></script> <?php // Original - ¡Revisar y adaptar! ?>
+         <?php // Cargar JS necesario (asegúrate que las rutas sean correctas) ?>
+         <?php // Cargar jQuery si Select2 o Sortable lo necesitan ?>
+         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script> 
+         <?php // Cargar jQuery UI si usas Sortable ?>
+         <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+         <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+         
+         <?php // Cargar Select2 ?>
+         <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+         <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+        <?php // Cargar tus JS personalizados (asegúrate que filter.js y post.js no interfieran negativamente) ?>
+        <script src="<?= getConfParam('SITE_URL') ?>src/js/filter.js?v=<?= time() // Cache busting ?>"></script> <?php // ¿Necesario en edit? ?>
+        <script src="<?= getConfParam('SITE_URL') ?>src/js/post.js?v=<?= time() // Cache busting ?>"></script> <?php // ¿Necesario en edit? O renombrar a item_form.js? ?>
 
         <script type="text/javascript">
+             // Inicializar Select2 y Sortable (Ejemplo usando jQuery)
             $(document).ready(function() {
-                // Inicializar Select2 (si se usa)
-                 // Asegúrate que los IDs de los selects son correctos
-                $('#category, #region, #ad_type, #sellerType, #date_car, #fuel_car, #realiza_salidas, select[name^="idioma_"], select[name^="nivel_idioma_"]').select2({
-                     minimumResultsForSearch: Infinity, // Ocultar búsqueda si no es necesaria
-                     width: 'resolve' // Ajustar ancho
+                 // Aplicar Select2 a los selects relevantes
+                 $('#category, #region, #ad_type, #sellerType, #realiza_salidas').select2({
+                     minimumResultsForSearch: 10, // Ocultar búsqueda si hay pocas opciones
+                     width: '100%' // Ajustar ancho
+                 });
+                 // Selects de hora y año podrían no necesitar Select2 si son simples
+                 // $('select[name^="horario_dia"], #date_car, #fuel_car').select2({ width: 'style' }); // Ejemplo si quieres aplicarlo
+                 
+                 // Selects de idioma
+                  $('select[name^="idioma_"], select[name^="nivel_idioma_"]').select2({
+                     minimumResultsForSearch: 5,
+                     width: 'resolve' // Ajusta ancho automáticamente
                  });
 
-                 // Inicializar Sortable para las fotos (asegúrate que el selector es correcto)
-                 $('.photos_list.sortable').sortable({
-                     helper: "clone",
-                     items: ".photo_box", // Elementos que se pueden ordenar
-                     placeholder: "photo_box_placeholder", // Clase para el placeholder
-                     forcePlaceholderSize: true,
-                     // forceHelperSize: true, // Puede causar problemas visuales a veces
-                     // grid: [10, 10], // Rejilla opcional
-                     tolerance: "pointer",
-                     update: function(event, ui) {
-                         // Opcional: Puedes hacer algo cuando se reordena, como re-numerar IDs si es necesario
+
+                // Inicializar Sortable (si jQuery UI está cargado)
+                 if ($.ui && $.ui.sortable) {
+                     $('.sortable').sortable({
+                         placeholder: "ui-state-highlight",
+                         forcePlaceholderSize: true,
+                         items: '> .photo_box:not(.empty_slot)', // Solo permitir ordenar las imágenes existentes
+                         update: function( event, ui ) {
+                             // Actualizar los índices de los inputs de rotación tras reordenar
+                             $('.sortable .photo_box').each(function(index) {
+                                 var rotationInput = $(this).find('input[id^="rotation-"]');
+                                 if (rotationInput.length) {
+                                      // Necesitamos extraer el ID original del data-attribute para mantener la correspondencia
+                                     var originalId = $(this).data('photo-id');
+                                     if(originalId) {
+                                        rotationInput.attr('name', 'optImgage[' + (originalId - 1) + '][rotation]');
+                                         // Actualizar el input de nombre también si su índice depende del orden
+                                         // var nameInput = $(this).find('input[name="photo_name[]"]');
+                                         // nameInput.attr('name', 'photo_name['+index+']'); // Esto podría no ser necesario si el backend usa el valor
+                                     }
+                                 }
+                             });
+                         }
+                     }).disableSelection();
+                 }
+
+                 // --- Contador de Caracteres ---
+                function updateCounter(inputId, counterId, min, max) {
+                     var input = document.getElementById(inputId);
+                     var counter = document.getElementById(counterId);
+                     if (input && counter) {
+                         var len = input.value.length;
+                         counter.textContent = len;
+                          // Opcional: Cambiar color si está fuera de rango
+                         if (len < min || len > max) {
+                             input.style.borderColor = 'red';
+                         } else {
+                              input.style.borderColor = ''; // O color original
+                         }
                      }
-                 }).disableSelection(); // Evitar selección de texto al arrastrar
+                 }
 
-                // Añadir validación JS si es necesario (ej: longitud de título/descripción)
-                 $('#tit').on('input', function() {
-                     $('#nro-car-tit').text($(this).val().length);
-                 });
-                 $('#text').on('input', function() {
-                     $('#nro-car-text').text($(this).val().length);
-                 });
+                $('#tit').on('input', function() { updateCounter('tit', 'nro-car-tit', 10, 50); });
+                 $('#text').on('input', function() { updateCounter('text', 'nro-car-text', 30, 1200); });
+                 // Llamar una vez al cargar
+                updateCounter('tit', 'nro-car-tit', 10, 50);
+                updateCounter('text', 'nro-car-text', 30, 1200);
 
-                 // Re-inicializar cualquier otra funcionalidad JS del script 'post.js' original
-                 // que sea relevante aquí, adaptándola si es necesario.
-                 // Por ejemplo, la lógica para cargar ciudades basada en región (si se vuelve a usar select de ciudad).
+                // --- Validación simple en submit (opcional, complementa HTML5) ---
+                 $('#new_item_post').on('submit', function(e) {
+                     var isValid = true;
+                     $('.error_msg').hide(); // Ocultar errores previos
 
-                 // Validación antes de enviar (ejemplo básico)
-                 $('#edit_item_post').on('submit', function(e) {
-                     let isValid = true;
-                     let errorMsg = '';
-
-                    // Validar categoría
-                    if ($('#category').val() == '' || $('#category').val() == '0') {
-                        isValid = false;
-                        $('#error_category').show();
-                    } else {
-                        $('#error_category').hide();
-                    }
-                    // Validar región
-                     if ($('#region').val() == '' || $('#region').val() == '0') {
-                         isValid = false;
-                         $('#error_region').show();
-                     } else {
-                        $('#error_region').hide();
-                     }
-
-                     // Validar título
-                     const titleLen = $('#tit').val().trim().length;
-                     if (titleLen < 10 || titleLen > 50) {
-                         isValid = false;
-                         $('#error_tit').show();
-                     } else {
-                         $('#error_tit').hide();
-                     }
-                    // Validar descripción
-                     const textLen = $('#text').val().trim().length;
-                     if (textLen < 100 || textLen > 500) {
+                     // Check Título
+                     var titulo = $('#tit').val();
+                     if (titulo.length < 10 || titulo.length > 50) {
+                          $('#error_tit').show();
                           isValid = false;
-                          $('#error_text').show();
-                     } else {
-                          $('#error_text').hide();
-                     }
-                    // Validar teléfono
-                     const phone = $('#phone').val().trim();
-                      if (!/^[0-9]{9,15}$/.test(phone)) {
-                          isValid = false;
-                          $('#error_phone').show();
-                      } else {
-                          $('#error_phone').hide();
                       }
-
-                     // Validar servicios (al menos uno)
-                     if ($('input[name="servicios[]"]:checked').length === 0) {
-                         isValid = false;
-                         $('#error_servicios').show().text('Debes seleccionar al menos un servicio.');
-                     } else {
-                         $('#error_servicios').hide();
-                     }
-
-                    // Validar horario (al menos un día disponible?) - Más complejo, requiere revisar estado de botones/selects
-                     let horarioOk = false;
-                     $('.dia-horario').each(function() {
-                         if ($(this).find('.btn-dia-estado').hasClass('disponible')) {
-                             horarioOk = true;
-                             return false; // Salir del bucle each
-                         }
-                     });
-                     if (!horarioOk) {
+                      // Check Descripción
+                     var desc = $('#text').val();
+                     if (desc.length < 30 || desc.length > 1200) {
+                          $('#error_text').show();
                           isValid = false;
-                          $('#error_horario').show().text('Debes marcar al menos un día como disponible.');
-                     } else {
-                          $('#error_horario').hide();
-                     }
-
-                     // Validar fotos (al menos una foto subida o existente)
-                    // Contar inputs photo_name[] con valor no vacío + inputs userImage[] con archivo seleccionado
-                     let photoCount = $('input[name="photo_name[]"][value!=""]').length;
-                     $('input[name="userImage[]"]').each(function() {
-                         if (this.files && this.files.length > 0) {
-                             photoCount++;
-                         }
-                     });
-                     if (photoCount === 0) {
+                      }
+                     // Check Teléfono (simple)
+                     var telefono = $('#phone').val();
+                      if (!/^[0-9\s\+\-]{7,20}$/.test(telefono)) {
+                         $('#error_phone').show();
                          isValid = false;
-                         $('#error_photo').show().text('Debes tener al menos una foto.');
-                     } else {
-                         $('#error_photo').hide();
+                     }
+                     // Check si hay al menos una foto (contando existentes no borradas y nuevas)
+                     var existingPhotos = $('.sortable .photo_box:not(.empty_slot):not(.marked-for-deletion)').length;
+                     var newPhotos = $('.sortable .photo_box.empty_slot input[type="file"]').filter(function() { return this.files.length > 0; }).length;
+                     if (existingPhotos + newPhotos === 0) {
+                         $('#error_photo').text('Debes tener al menos una foto en el anuncio.').show();
+                         isValid = false;
                      }
 
 
                      if (!isValid) {
-                         e.preventDefault(); // Detener envío
+                         e.preventDefault(); // Detener envío si no es válido
                          alert('Por favor, corrige los errores marcados en el formulario.');
-                         // Opcional: scroll al primer error
-                         // $('html, body').animate({ scrollTop: $('.error_msg:visible').first().offset().top - 100 }, 500);
                      }
-                     // Si es válido, el formulario se enviará.
                  });
 
-            });
+            }); // Fin document ready
         </script>
+        
+        <style> /* Estilos básicos para elementos añadidos */
+            .grupo-checkboxes label { margin-right: 15px; }
+            .horario-semanal-editor .dia-horario-edit { display: flex; align-items: center; gap: 10px; flex-wrap: wrap;}
+            .horario-semanal-editor .dia-horario-edit label { flex-shrink: 0; }
+            .horario-semanal-editor .horas-dia-edit { display: inline-flex; gap: 5px; align-items: center;}
+            .horario-semanal-editor .horas-dia-edit select { padding: 2px 5px; font-size: 0.9em; }
+            .idiomas-container .par-idioma { margin-bottom: 8px; }
+             .idiomas-container .par-idioma select { margin-right: 5px; padding: 4px 6px;}
+            .photo_box.marked-for-deletion { border: 2px dashed red; }
+            .photo_box .removeImg { position: absolute; top: 2px; right: 2px; background: rgba(255,0,0,0.7); color: white; border-radius: 50%; width: 20px; height: 20px; text-align: center; line-height: 20px; cursor: pointer; z-index: 10; }
+             .photo_box .removeImg:hover { background: red; }
+             .photo_box.empty_slot .upload-placeholder { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: #aaa; cursor: pointer;}
+             .photo_box.empty_slot .photoFile { position: absolute; top:0; left:0; width:100%; height:100%; opacity: 0; cursor: pointer; z-index: 5;}
+             .photo_box .img-preview { object-fit: cover; width: 100%; height: 100%; }
+             .ui-state-highlight { height: 100px; width: 100px; background-color: #f0f0f0; border: 1px dashed #ccc; float: left; margin: 5px; } /* Placeholder para sortable */
+        </style>
 
 <?php
     } else {
         // No se encontró el anuncio con ese ID
-        echo "<div class='error_msg'>Error: Anuncio no encontrado.</div>";
-        echo "<script>setTimeout(function() { window.history.go(-1); }, 2000);</script>"; // Volver atrás
+        echo "<div class='error_msg'>Error: Anuncio no encontrado o ID inválido.</div>";
+        echo "<script>window.history.go(-1);</script>"; // Volver atrás
     }
 } else {
-    // No se proporcionó el parámetro 'a' (ID del anuncio)
-    echo "<div class='error_msg'>Error: ID de anuncio no especificado.</div>";
-     echo "<script>setTimeout(function() { window.history.go(-1); }, 2000);</script>"; // Volver atrás
+     // No se proporcionó 'a' (ID del anuncio) en la URL
+     echo "<div class='error_msg'>Error: No se especificó el anuncio a editar.</div>";
+    echo "<script>window.history.go(-1);</script>"; // Volver atrás
 }
 ?>
