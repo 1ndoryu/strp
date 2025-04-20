@@ -946,6 +946,11 @@ p.titulotercerdiv {
     gap: 15px;
 }
 
+div#etapa-tipo-usuario {
+    flex-direction: column;
+    background: white;
+}
+
 table.comparar-caracteristicas-tabla {
     padding: 40px;
     padding-top: 0px;
