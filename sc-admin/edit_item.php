@@ -437,15 +437,35 @@ if (isset($_GET['a'])) {
                             <div class="col_rgt">
                                 <div class="grupo-checkboxes" id="servicios-container">
                                     <?php
-                                    // Lista de servicios posibles (debería venir de la BD o config)
-                                    $possible_services = ["Masaje relajante", "Masaje deportivo", "Masaje podal", "Masaje antiestrés", "Masaje linfático", "Masaje shiatsu", "Masaje descontracturante", "Masaje ayurvédico", "Masaje circulatorio", "Masaje tailandés"]; // Ejemplo
-                                    foreach ($possible_services as $service_name) {
-                                        $service_value = strtolower(str_replace(' ', '_', $service_name)); // Generar valor consistente
-                                        $checked = (in_array($service_value, $ad_servicios)) ? 'checked' : '';
-                                        echo '<label class="frm-checkbox">';
-                                        echo '<input type="checkbox" name="servicios[]" value="' . htmlspecialchars($service_value) . '" ' . $checked . '> ';
-                                        echo htmlspecialchars($service_name);
-                                        echo '</label>';
+                                    // 1. Consultar TODOS los servicios disponibles desde la base de datos
+                                    // Asumiendo que selectSQL está disponible
+                                    $db_all_services = selectSQL("sc_services", array(), "ord ASC");
+
+                                    // 2. $ad_servicios ya contiene los 'value' de los servicios guardados para ESTE anuncio.
+                                    //    Fue decodificado del JSON ($ad['ad']['servicios']) más arriba en el script.
+                                    //    Nos aseguramos de que sea un array por si acaso.
+                                    if (!is_array($ad_servicios)) $ad_servicios = [];
+
+                                    // 3. Verificar si la consulta devolvió resultados
+                                    if ($db_all_services && count($db_all_services) > 0) {
+                                        // 4. Iterar sobre TODOS los servicios disponibles de la base de datos
+                                        foreach ($db_all_services as $db_servicio) {
+                                            // 5. Preparar los datos para el checkbox actual
+                                            $valor_servicio = $db_servicio['value']; // El valor único (ej: 'masaje_relajante')
+                                            $nombre_servicio = $db_servicio['name'];  // El nombre a mostrar (ej: 'Masaje relajante')
+
+                                            // 6. Comprobar si este servicio está en la lista de los guardados ($ad_servicios)
+                                            $checked = in_array($valor_servicio, $ad_servicios) ? 'checked' : '';
+
+                                            // 7. Imprimir el HTML del checkbox
+                                            echo '<label class="frm-checkbox">';
+                                            echo    '<input type="checkbox" name="servicios[]" value="' . htmlspecialchars($valor_servicio) . '" ' . $checked . '>';
+                                            echo    ' ' . htmlspecialchars($nombre_servicio); // Muestra el nombre legible
+                                            echo '</label>';
+                                        }
+                                    } else {
+                                        // Opcional: Mensaje si no hay servicios definidos en la BD
+                                        echo '<p>No hay servicios definidos en el sistema.</p>';
                                     }
                                     ?>
                                 </div>
