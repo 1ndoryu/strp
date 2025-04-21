@@ -710,9 +710,10 @@ button#btn-mostrar-horario {
     /* display: none; */ /* Se gestiona con la clase .oculto desde JS */
 }
 
+
 /* Estilo opcional para campos con error (requiere JS para añadir la clase) */
 /*
-.frm-campo.error,
+.frm-campo.error, a
 .frm-select.error,
 .frm-textarea.error {
     border-color: var(--color-error);
