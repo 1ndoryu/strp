@@ -32,7 +32,7 @@
 }
 .titulo-etapa-tipo-usuario {
     color: #ff339a;
-    font-size: 19px;
+    font-size: 20px;
     margin-bottom: 20px;
 }
 
@@ -93,7 +93,7 @@ a:hover {
     padding: 7px;
     color: white;
     margin-top: 20px;
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 600;
 }
 
@@ -181,7 +181,7 @@ div#etapa-plan {
     padding: var(--espaciado-pequeno) var(--espaciado-base);
     border: 1px solid var(--color-borde);
     border-radius: var(--radio-borde);
-    font-size: 15px;
+    font-size: 16px;
     transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
@@ -290,13 +290,13 @@ label.opcion-checkbox.opcion-extra {
 .opcion-contenido strong {
     display: block;
     color: var(--color-texto);
-    font-size: 16px;
+    font-size: 17px;
     text-transform: uppercase;
 }
 
 .opcion-contenido span {
     display: block;
-    font-size: 14px;
+    font-size: 15px;
     color: var(--color-texto-secundario);
     margin-top: -5px;
 }
@@ -304,7 +304,7 @@ label.opcion-checkbox.opcion-extra {
 .precio-y-tiempo p {
     margin: 0;
     font-weight: 700;
-    font-size: 18px;
+    font-size: 19px;
     /* width: 50px; */
     white-space: nowrap;
     line-height: 34px;
@@ -331,7 +331,7 @@ input[type='radio'] {
     font-weight: bold;
     color: var(--color-exito);
     margin-top: var(--espaciado-pequeno);
-    font-size: 34px !important;
+    font-size: 35px !important;
 }
 
 /* Checkboxes normales (no en lista de opciones) */
@@ -362,13 +362,13 @@ input[type='radio'] {
 
 /* --- Ayuda y Contadores --- */
 .ayuda-texto {
-    font-size: 12px;
+    font-size: 13px;
     color: var(--color-texto-secundario);
     margin-top: var(--espaciado-pequeno);
     margin-bottom: var(--espaciado-pequeno);
 }
 .contador-caracteres {
-    font-size: 12px;
+    font-size: 13px;
     color: var(--color-texto-secundario);
     text-align: right;
     margin-top: var(--espaciado-pequeno);
@@ -433,7 +433,7 @@ button.btn-preview-action.btn-change-foto {
 
 label.frm-checkbox {
     font-weight: 700;
-    font-size: 13px;
+    font-size: 14px;
 }
 
 input#whatsapp_si {
@@ -455,7 +455,7 @@ span.etiqueta-whatsapp {
     margin-bottom: 10px;
     /* font-weight: bold; */
     color: var(--color-texto-secundario);
-    font-size: 16px;
+    font-size: 17px;
     font-weight: 600;
     margin-top: -34px;
 }
@@ -575,7 +575,7 @@ span.nombre-dia {
     border-radius: 50%;
     width: 20px;
     height: 20px;
-    font-size: 12px;
+    font-size: 13px;
     line-height: 20px;
     text-align: center;
     cursor: pointer;
@@ -633,7 +633,7 @@ span.nombre-dia {
 button#btn-mostrar-horario {
     color: black;
     font-weight: 400;
-    font-size: 14px;
+    font-size: 15px;
     background: unset;
     border: 1px solid #d3d3d3;
 }
@@ -684,7 +684,7 @@ button#btn-mostrar-horario {
     /* background-color: var(--color-primario); */
     color: black;
     font-weight: 400;
-    font-size: 14px;
+    font-size: 15px;
     background: unset;
     border: 1px solid #d3d3d3;
 }
@@ -692,7 +692,7 @@ button#btn-mostrar-horario {
 .btn-anterior {
     color: black;
     font-weight: 400;
-    font-size: 14px;
+    font-size: 15px;
     background: unset;
     border: 1px solid #d3d3d3;
 }
@@ -706,7 +706,7 @@ button#btn-mostrar-horario {
 /* ======================================== */
 .error-msg {
     color: var(--color-error);
-    font-size: 12px;
+    font-size: 13px;
     margin-top: var(--espaciado-pequeno);
     /* display: none; */ /* Se gestiona con la clase .oculto desde JS */
 }
@@ -752,7 +752,7 @@ button#btn-mostrar-horario {
 .ayuda-post-item {
     display: inline-block;
     margin: 0 var(--espaciado-pequeno);
-    font-size: 0.9em;
+    font-size: 1em;
 }
 .terminos-finales {
     margin-top: var(--espaciado-grande);
@@ -974,7 +974,7 @@ button#btn-mostrar-horario {
 }
 
 p.titulosegundodiv {
-    font-size: 16px;
+    font-size: 17px;
 }
 
 p.descripcionsegundodiv {
@@ -1004,7 +1004,7 @@ th {
     font-weight: 700;
     top: -15px;
     right: 10px;
-    font-size: 13px;
+    font-size: 14px;
 }
 
 button.btn-seleccionar-plan {
