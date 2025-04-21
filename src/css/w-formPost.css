@@ -414,6 +414,7 @@ select#select-posicion-foto {
     align-items: center;
     gap: 10px;
     position: relative;
+    min-width: 120px;
 }
 
 button.btn-preview-action.btn-change-foto {
