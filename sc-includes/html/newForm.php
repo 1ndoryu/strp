@@ -996,7 +996,6 @@ function newForm()
                             // tooltipElement.style.position = 'absolute'; // Opcional: Forzarlo aquí si no estás seguro del CSS
                         }
 
-/*************  ✨ Windsurf Command 🌟  *************/
                         clockIcons.forEach(icon => {
                             icon.addEventListener('mouseenter', (event) => {
                                 const dias = event.target.getAttribute('data-dias');
@@ -1007,9 +1006,13 @@ function newForm()
                                     return;
                                 }
 
-                                // 1. Contenido
-                                tooltipElement.textContent = `El servicio est <span class="salto-linea"> </span><br>con una clase <span class="salto-linea"> </span>activa durante ${dias} días`;
-                                tooltipElement.textContent = `El servicio estará activo durante ${dias} días`;
+                                // --- MODIFICACIÓN AQUÍ ---
+                                // 1. Contenido (Usando innerHTML para permitir HTML)
+                                //    - Se envuelve "El servicio estará" en un span con la clase "el-servicio-estara"
+                                //    - Se añade un <br> después del span para el salto de línea
+                                tooltipElement.innerHTML = `<span class="el-servicio-estara">El servicio estará</span><br>activo durante ${dias} días`;
+                                // --- FIN DE LA MODIFICACIÓN ---
+
 
                                 // 2. Hacer visible para medir (temporalmente en 0,0 o donde estuviera)
                                 tooltipElement.style.top = '0px'; // Poner en un sitio temporal para medir
@@ -1018,7 +1021,6 @@ function newForm()
                                 tooltipElement.style.opacity = '0'; // Mantener invisible
 
                                 // --- Forzar Reflow (puede ayudar a obtener medidas correctas) ---
-                                // Leer una propiedad que fuerce al navegador a recalcular el layout
                                 void tooltipElement.offsetWidth;
                                 // --------------------------------------------------------------
 
@@ -1056,10 +1058,8 @@ function newForm()
 
                                 // 4. Calcular posición ideal (encima y centrado)
                                 let idealTop = scrollY + iconRect.top - tooltipRect.height - spacing;
-                                // --- CÁLCULO CENTRAL HORIZONTAL ---
                                 let iconCenter = scrollX + iconRect.left + (iconRect.width / 2);
                                 let idealLeft = iconCenter - (tooltipRect.width / 2);
-                                // ---------------------------------
 
                                 console.log('Calculado:', {
                                     idealTop,
@@ -1077,7 +1077,7 @@ function newForm()
                                     console.log('Ajuste: Derecha fuera ->', finalLeft); // LOG
                                 }
 
-                                // 6. Ajustar Vertical (misma lógica que antes)
+                                // 6. Ajustar Vertical
                                 let finalTop = idealTop;
                                 const tooltipFitsAbove = (iconRect.top >= tooltipRect.height + spacing);
                                 if (finalTop < scrollY + edgeSpacing || !tooltipFitsAbove) {
@@ -1087,7 +1087,6 @@ function newForm()
                                             finalTop = scrollY + edgeSpacing;
                                             console.log('Ajuste: Arriba fuera Y no cabe abajo -> Pegar Arriba', finalTop); // LOG
                                         } else {
-                                            // Se mantiene idealTop aunque no quepa perfectamente arriba
                                             console.log('Ajuste: No cabe arriba (por espacio) Y no cabe abajo -> Mantener Ideal Arriba', finalTop); // LOG
                                         }
                                     } else {
@@ -1096,8 +1095,10 @@ function newForm()
                                     }
                                 }
                                 if (finalTop + tooltipRect.height > scrollY + viewportHeight - edgeSpacing) {
-                                    finalTop = scrollY + viewportHeight - tooltipRect.height - edgeSpacing;
-                                    console.log('Ajuste: Abajo fuera -> Pegar Abajo', finalTop); // LOG
+                                    if (finalTop > scrollY + viewportHeight - edgeSpacing - tooltipRect.height) { // Solo ajustar si realmente se sale por abajo
+                                        finalTop = scrollY + viewportHeight - tooltipRect.height - edgeSpacing;
+                                        console.log('Ajuste: Abajo fuera -> Pegar Abajo', finalTop); // LOG
+                                    }
                                 }
 
 
@@ -1114,11 +1115,15 @@ function newForm()
 
                             icon.addEventListener('mouseleave', () => {
                                 tooltipElement.style.opacity = '0';
-                                tooltipElement.style.display = 'none';
+                                // Retrasar ligeramente el 'display: none' para que la transición de opacidad funcione
+                                setTimeout(() => {
+                                    if (tooltipElement.style.opacity === '0') { // Doble check por si el usuario vuelve a entrar rápido
+                                        tooltipElement.style.display = 'none';
+                                    }
+                                }, 300); // Ajusta este tiempo si tienes una transición CSS más larga/corta
                             });
                         });
 
-/*******  5a090ca8-19b4-4073-8519-63c82379f5dc  *******/
                     });
                 </script>
                 <!-- ========= FIN: JavaScript para el Tooltip ========= -->
