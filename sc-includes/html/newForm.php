@@ -193,7 +193,7 @@ function newForm()
         <div id="etapa-plan" class="etapa <?php echo checkSession() ? 'activa' : 'oculto'; ?>">
             <div class="text-carita">
                 <h2 class="titulo-etapa-plan">Elige un Plan</h2>
-                <?php echo $GLOBALS['sonrisa_uno'] ?>
+                <?php echo $GLOBALS['sonrisa_dos'] ?>
             </div>
             <div class="lista-opciones grupo-radios-plan">
 
