@@ -363,6 +363,7 @@
                 const idioma1Seleccionado = idioma1Select?.value !== '';
                 const idioma2Seleccionado = idioma2Select?.value !== '';
                 const alMenosUnIdioma = idioma1Seleccionado || idioma2Seleccionado;
+                const grupoIdiomasDiv = form.querySelector('.grupo-idiomas');
 
                 if (!validarCampo(grupoIdiomasDiv, '#error-idiomas', alMenosUnIdioma, 'Debes seleccionar al menos un idioma.')) {
                     esValido = false;
