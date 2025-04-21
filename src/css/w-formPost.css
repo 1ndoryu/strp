@@ -226,6 +226,7 @@ div#etapa-plan {
 .opcion-checkbox.opcion-extra svg {
     height: 36px;
     width: 36px;
+    min-width: 30px;
 }
 
 .opcion-radio,
@@ -381,6 +382,7 @@ input[type='radio'] {
     text-align: center;
     border-radius: var(--radio-borde);
     margin-bottom: var(--espaciado-base);
+    overflow-x: auto;
 }
 .boton-subir {
     cursor: pointer;
@@ -1198,6 +1200,55 @@ p.numero-etapa {
     margin: -1px; /* Evita posible espacio extra */
 }
 
+@media (max-width: 768px) {
+    .primer-div-plan {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .planes-primer-div {
+        width: 100%;
+    }
+
+    .planes-segundo-div {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: -webkit-center;
+        gap: 15px;
+    }
+
+    .inputfalsodiv {
+        display: none;
+    }
+
+    .inputfalso button {
+        border-radius: 5px;
+    }
+
+    table.comparar-caracteristicas-tabla {
+        padding: 0px;
+        font-size: 11px;
+    }
+
+    .precio-y-tiempo {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .opcion-contenido span {
+        font-size: 12px;
+    }
+}
+@media (max-width: 900px) {
+    .divisor-anuncio-principal {
+        min-width: unset;
+        max-width: 100%;
+    }
+}
 /* --- Estilos Específicos para Móvil (Pantalla Completa) --- */
 @media (max-width: 768px) {
     /* Ajusta este breakpoint si es necesario */
