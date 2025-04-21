@@ -420,23 +420,29 @@ label.frm-checkbox {
     font-size: 13px;
 }
 
-#select-posicion-foto {
-    /* Estilos iniciales para ocultarlo y posicionarlo */
+/* Estilo base para el select oculto (ya lo tienes con position: absolute) */
+#select-posicion-foto.oculto {
     display: none;
-    /* position: absolute; ya está inline pero puedes moverlo aquí */
-    /* z-index: 10; ya está inline */
-    /* Añade aquí estilos de apariencia: padding, border, background, etc. */
-    min-width: 120px; /* Ejemplo */
-    background-color: white;
-    border: 1px solid #ccc;
-    padding: 5px;
-    margin-top: 5px; /* Espacio desde el botón */
+    /* Asegúrate de que otros estilos no interfieran, como opacity: 0 */
+    opacity: 1;
+    visibility: hidden; /* Mejor que display: none a veces */
 }
+
+/* Estilo para mostrar el select */
 #select-posicion-foto.visible {
-    display: block;
+    display: block; /* O inline-block, etc., según tu layout */
+    visibility: visible;
+    opacity: 1;
 }
-.foto-subida-item {
-    position: relative; /* Necesario para posicionar el select relativo al item si lo deseas */
+
+/* Opcional: un poco de estilo para el select */
+#select-posicion-foto {
+    border: 1px solid #ccc;
+    background-color: white;
+    padding: 5px;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    min-width: 60px; /* Ajusta según necesites */
 }
 
 svg#uuid-67eca691-fad9-4dbb-8a42-6bf39e0830b8 {

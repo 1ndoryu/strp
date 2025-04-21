@@ -71,7 +71,6 @@
     let selectPosicion = null;
     let etapaActualIndex = 0;
 
-
     function inicializar() {
         selectPosicion = document.getElementById('select-posicion-foto');
 
@@ -84,7 +83,7 @@
         });
         agregarListeners();
         actualizarContadores();
-        agregarListenersNuevos(); 
+        agregarListenersNuevos();
 
         actualizarMarcadoVisualRadios(tipoUsuarioRadios);
         actualizarMarcadoVisualPlan();
@@ -819,7 +818,6 @@
 
         return div;
     }
-    
 
     // >>> NUEVO: Función para manejar click en la imagen para cambiarla <<<
     function triggerChangeFotoFromImage(event) {
@@ -839,65 +837,84 @@
 
     // >>> NUEVO: Función para mostrar/ocultar y posicionar el select <<<
     function togglePositionSelect(event) {
-        const button = event.currentTarget;
+        const button = event.currentTarget; // El botón que disparó el evento
         const filename = button.dataset.filename;
-        if (!selectPosicion || !filename) return;
+        if (!selectPosicion || !filename) {
+            console.error('Error: No se encontró el select o el filename del botón.');
+            return;
+        }
+
+        // Si el select ya está visible y es para este botón, lo ocultamos
+        if (selectPosicion.classList.contains('visible') && selectPosicion.dataset.currentFilename === filename) {
+            selectPosicion.classList.remove('visible');
+            selectPosicion.classList.add('oculto'); // Usa tu clase para ocultar
+            delete selectPosicion.dataset.currentFilename;
+            document.removeEventListener('click', hideSelectOnClickOutside, true); // Limpiar listener
+            return;
+        }
 
         // Guardar el filename en el select para saber qué imagen mover luego
-        selectPosicion.dataset.filename = filename;
+        selectPosicion.dataset.currentFilename = filename;
 
-        // Calcular posición (ejemplo básico: debajo del botón)
+        // Calcular posición (ejemplo: debajo del botón)
         const btnRect = button.getBoundingClientRect();
-        const containerRect = listaFotosContainer.getBoundingClientRect(); // O el contenedor relativo
+        // Usamos el viewport y scroll para calcular la posición absoluta
+        const topPos = window.scrollY + btnRect.bottom + 5; // 5px de espacio
+        const leftPos = window.scrollX + btnRect.left;
 
-        // Ajusta estas coordenadas según tu layout y CSS
-        selectPosicion.style.top = `${btnRect.bottom - containerRect.top + window.scrollY}px`;
-        selectPosicion.style.left = `${btnRect.left - containerRect.left + window.scrollX}px`;
+        selectPosicion.style.top = `${topPos}px`;
+        selectPosicion.style.left = `${leftPos}px`;
 
-        // Obtener índice actual para preseleccionar (opcional pero útil)
+        // Obtener índice actual para preseleccionar (basado en el DOM)
         const allPreviews = Array.from(listaFotosContainer.querySelectorAll('.foto-subida-item'));
         const currentIndex = allPreviews.findIndex(item => item.dataset.filename === filename);
         if (currentIndex !== -1) {
             // Los índices son 0, 1, 2... los valores del select son 1, 2, 3
             selectPosicion.value = (currentIndex + 1).toString();
+        } else {
+            selectPosicion.value = '1'; // Default si no se encuentra
         }
 
-        // Mostrar/ocultar
-        selectPosicion.classList.toggle('visible'); // Usa tu clase para mostrar/ocultar
+        // Mostrar
+        selectPosicion.classList.add('visible');
+        selectPosicion.classList.remove('oculto'); // Quita la clase de ocultar
 
-        // Ocultar si se hace clic fuera
-        if (selectPosicion.classList.contains('visible')) {
-            // Pequeño delay para evitar que el mismo click que abre, cierre.
-            setTimeout(() => {
-                document.addEventListener('click', hideSelectOnClickOutside, {once: true});
-            }, 0);
-        }
+        // Ocultar si se hace clic fuera (con delay para evitar cierre inmediato)
+        setTimeout(() => {
+            document.addEventListener('click', hideSelectOnClickOutside, {once: true, capture: true});
+        }, 0);
     }
 
     // >>> NUEVO: Helper para ocultar el select si se hace click fuera <<<
     function hideSelectOnClickOutside(event) {
-        if (selectPosicion && !selectPosicion.contains(event.target) && !event.target.classList.contains('btn-toggle-position-select')) {
+        // Si el click fue fuera del select Y no fue en un botón de toggle
+        if (selectPosicion && !selectPosicion.contains(event.target) && !event.target.closest('.btn-toggle-position-select')) {
             selectPosicion.classList.remove('visible');
-            delete selectPosicion.dataset.filename; // Limpiar filename guardado
+            selectPosicion.classList.add('oculto');
+            delete selectPosicion.dataset.currentFilename; // Limpiar filename guardado
         } else if (selectPosicion && selectPosicion.classList.contains('visible')) {
-            // Si se hizo clic dentro del select o en otro botón, volver a añadir el listener
-            // para el *próximo* click fuera.
-            setTimeout(() => {
-                document.addEventListener('click', hideSelectOnClickOutside, {once: true});
-            }, 0);
+            // Si se hizo clic dentro o en otro botón, necesitamos volver a poner el listener para el *próximo* click fuera.
+            // Pero como usamos {once: true}, se elimina solo. Si el usuario hace clic en otro botón,
+            // la función togglePositionSelect se encargará de reposicionar y volver a añadir el listener.
+            // Si hace clic dentro del select, no hacemos nada y el listener {once: true} se habrá consumido.
+            // Considera NO usar {once: true} y quitarlo explícitamente si se cierra el select o se selecciona algo.
+            // Por ahora, el comportamiento de {once: true} debería ser suficiente.
         }
+        // No necesitamos volver a añadirlo aquí si usamos {once: true}
     }
 
     // >>> NUEVO: Función para manejar el cambio en el select de posición <<<
     function handlePositionChange(event) {
         const select = event.currentTarget;
-        const filename = select.dataset.filename;
+        const filename = select.dataset.currentFilename; // Usamos el filename guardado
         const newPositionIndex = parseInt(select.value, 10) - 1; // value es 1, 2, 3 -> index 0, 1, 2
 
-        if (filename === undefined || isNaN(newPositionIndex) || newPositionIndex < 0 || newPositionIndex >= 3) {
+        if (filename === undefined || isNaN(newPositionIndex) || newPositionIndex < 0) {
             console.error('Error al obtener datos para mover la imagen desde el select.');
             select.classList.remove('visible');
-            delete select.dataset.filename;
+            select.classList.add('oculto');
+            delete select.dataset.currentFilename;
+            document.removeEventListener('click', hideSelectOnClickOutside, true); // Limpiar listener
             return;
         }
 
@@ -907,53 +924,71 @@
         if (!currentPreviewItem || !currentHiddenInput) {
             console.error(`No se encontró el preview o input oculto para ${filename}`);
             select.classList.remove('visible');
-            delete select.dataset.filename;
+            select.classList.add('oculto');
+            delete select.dataset.currentFilename;
+            document.removeEventListener('click', hideSelectOnClickOutside, true); // Limpiar listener
             return;
         }
 
-        // Obtener todos los items actuales (previews e inputs)
-        const allPreviews = Array.from(listaFotosContainer.querySelectorAll('.foto-subida-item'));
-        const allHiddenInputs = Array.from(hiddenPhotoInputsContainer.querySelectorAll('input[name="photo_name[]"]'));
+        // Obtener todos los items actuales (previews e inputs) como nodos
+        const allPreviewsNodes = listaFotosContainer.querySelectorAll('.foto-subida-item');
+        const allHiddenInputsNodes = hiddenPhotoInputsContainer.querySelectorAll('input[name="photo_name[]"]');
 
         // Encontrar el preview/input que está actualmente en la posición de destino (si existe)
-        const targetPreviewSibling = allPreviews[newPositionIndex];
-        const targetInputSibling = allHiddenInputs[newPositionIndex];
+        // Asegurarse de que el índice no sea mayor que el número de elementos
+        const targetIndex = Math.min(newPositionIndex, allPreviewsNodes.length); // No puede ser mayor que el tamaño actual
+
+        const targetPreviewSibling = allPreviewsNodes[targetIndex];
+        const targetInputSibling = allHiddenInputsNodes[targetIndex];
 
         // Mover el elemento
         // 1. Mover Preview
+        // Si el destino existe y no es el propio elemento (evitar mover sobre sí mismo)
         if (targetPreviewSibling && targetPreviewSibling !== currentPreviewItem) {
-            // Si hay un elemento en la posición destino, insertar ANTES de él
             listaFotosContainer.insertBefore(currentPreviewItem, targetPreviewSibling);
-        } else if (!targetPreviewSibling) {
-            // Si no hay elemento (o estamos moviendo al final), simplemente añadir al final
-            listaFotosContainer.appendChild(currentPreviewItem);
-            // Nota: Si mueves el último a una posición anterior, insertBefore se encarga.
-            // Este append asegura que si mueves a una posición más allá del final actual, quede al final.
         }
+        // Si el destino no existe (estamos moviendo al final) Y el elemento no es ya el último
+        else if (!targetPreviewSibling && currentPreviewItem !== listaFotosContainer.lastElementChild) {
+            listaFotosContainer.appendChild(currentPreviewItem);
+        }
+        // Si no se cumplen las condiciones, no es necesario mover (ya está ahí o es el único elemento).
+
         // 2. Mover Input Oculto (de forma similar)
         if (targetInputSibling && targetInputSibling !== currentHiddenInput) {
             hiddenPhotoInputsContainer.insertBefore(currentHiddenInput, targetInputSibling);
-        } else if (!targetInputSibling) {
+        } else if (!targetInputSibling && currentHiddenInput !== hiddenPhotoInputsContainer.lastElementChild) {
             hiddenPhotoInputsContainer.appendChild(currentHiddenInput);
         }
 
         // Ocultar el select y limpiar
         select.classList.remove('visible');
-        delete select.dataset.filename;
+        select.classList.add('oculto');
+        delete select.dataset.currentFilename;
+        document.removeEventListener('click', hideSelectOnClickOutside, true); // Limpiar listener
 
-        // Actualizar estado de botones (especialmente si moviste el primero o último)
-        updateArrowButtonStates(); // Asegúrate que esta función sigue existiendo y funciona con 3 elementos max.
+        // Actualizar estado de botones (¡Importante!)
+        // Usa tu función existente si la tienes, sino asegúrate de que los botones de flecha se habiliten/deshabiliten correctamente.
+        if (typeof updateArrowButtonStates === 'function') {
+            updateArrowButtonStates(); // Llama a tu función si existe
+        } else {
+            console.warn('Función updateArrowButtonStates no encontrada. El estado de los botones de flecha puede no actualizarse.');
+        }
+        // Validar el campo de fotos por si acaso
+        validarCampo(listaFotosContainer, '#error-fotos', true, '');
     }
 
-    // >>> NUEVO: Añadir listeners (preferiblemente en la función inicializar o agregarListeners) <<<
+    // >>> MODIFICADO/NUEVO: Añadir listeners <<<
     function agregarListenersNuevos() {
-        // Listener DELEGADO para los botones de mover/seleccionar posición
+        // Listener DELEGADO para los botones de toggle del select
         if (listaFotosContainer) {
             listaFotosContainer.addEventListener('click', function (event) {
+                // Busca el botón más cercano al elemento clickeado que tenga la clase
                 const toggleButton = event.target.closest('.btn-toggle-position-select');
                 if (toggleButton) {
-                    event.preventDefault(); // Prevenir cualquier acción default del botón
-                    togglePositionSelect({currentTarget: toggleButton}); // Llama a la función que muestra el select
+                    event.preventDefault(); // Prevenir cualquier acción default
+                    event.stopPropagation(); // Detener la propagación para evitar que hideSelectOnClickOutside se active inmediatamente
+                    // Pasamos el botón encontrado a la función
+                    togglePositionSelect({currentTarget: toggleButton});
                 }
             });
         }
@@ -961,9 +996,35 @@
         // Listener para el cambio en el select de posición
         if (selectPosicion) {
             selectPosicion.addEventListener('change', handlePositionChange);
+        } else {
+            console.error("El elemento select #select-posicion-foto no se encontró al añadir el listener 'change'.");
+        }
+        // --- Listener para el botón de rotar (si no estaba ya en otro sitio) ---
+        // Es mejor mantenerlo delegado también si es posible
+        if (listaFotosContainer) {
+            listaFotosContainer.addEventListener('click', function (event) {
+                const rotateButton = event.target.closest('.btn-rotate-foto');
+                if (rotateButton) {
+                    event.preventDefault();
+                    handleRotateFotoClick({currentTarget: rotateButton}); // Llama a tu handler existente
+                }
+
+                // Delegar también el click en la imagen para cambiarla
+                const imgElement = event.target.closest('img[data-filename]');
+                if (imgElement && imgElement.closest('.foto-subida-item')) {
+                    // Asegura que sea una img de preview
+                    triggerChangeFotoFromImage({currentTarget: imgElement}); // Llama a tu handler
+                }
+
+                // Delegar el botón de eliminar
+                const deleteButton = event.target.closest('.btn-delete-foto');
+                if (deleteButton) {
+                    event.preventDefault();
+                    eliminarFoto({currentTarget: deleteButton});
+                }
+            });
         }
     }
-
     // aqui necesito que cuando este a 90 grados y 270 la imagen tenga max-width: 80px;, eso es todo
     function handleRotateFotoClick(event) {
         const button = event.currentTarget;

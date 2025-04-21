@@ -553,7 +553,6 @@ function newForm()
 
                             </div>
                             <div id="subida-fotos-contenedor">
-                                <!-- ... tu contenido existente como #lista-fotos-subidas ... -->
 
                                 <select id="select-posicion-foto" class="oculto" style="position: absolute; z-index: 10;">
                                     <option value="1">1 - Principal</option>
