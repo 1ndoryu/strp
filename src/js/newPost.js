@@ -1067,21 +1067,7 @@
 
     // >>> REEMPLAZA agregarListenersNuevos con ESTA versión <<<
     function agregarListenersNuevos() {
-        console.log('Ejecutando agregarListenersNuevos (Listener Delegado PARCIAL)...'); // Nota cambiada
-
-        // --- Listener de Diagnóstico Temporal ---
-        if (listaFotosContainer) {
-            console.log('AÑADIENDO LISTENER DE DIAGNÓSTICO GENERAL a listaFotosContainer (fase de captura)');
-            listaFotosContainer.addEventListener(
-                'click',
-                function (event) {
-                    console.log(`DIAGNÓSTICO GENERAL - Click detectado! Target:`, event.target);
-                    // No añadir event.stopPropagation() aquí
-                },
-                true
-            ); // <--- El 'true' activa la fase de captura (se ejecuta antes)
-        }
-        // --- Fin Listener de Diagnóstico Temporal ---
+        console.log('Ejecutando agregarListenersNuevos...'); // Mensaje actualizado
 
         // Listener para el cambio en el select de posición (sigue igual)
         if (selectPosicion) {
@@ -1091,7 +1077,59 @@
         } else {
             console.error('Error crítico: selectPosicion no está definido al añadir listener change.');
         }
-    }
+
+        // --- INICIO: Añadir Listener Delegado para Clic en Imagen ---
+        if (listaFotosContainer) {
+            console.log('Añadiendo listener delegado a listaFotosContainer para clicks en IMG.');
+
+            // Remover listener previo si existe (buena práctica para evitar duplicados)
+            // Nota: Necesitaríamos una referencia a la función del listener si quisiéramos removerla
+            //       específicamente. Por simplicidad, asumimos que esto se llama una sola vez
+            //       o que la duplicación no es un problema grave aquí.
+            //       Si fuera necesario, se definiría la función callback fuera y se usaría
+            //       listaFotosContainer.removeEventListener('click', nombreFuncionCallback);
+
+            listaFotosContainer.addEventListener('click', function (event) {
+                // 1. Verificar si el elemento clickeado es una imagen (IMG)
+                const targetElement = event.target;
+                if (targetElement.tagName === 'IMG') {
+                    // 2. Verificar si esa imagen está dentro de un item de foto subida
+                    const previewItem = targetElement.closest('.foto-subida-item');
+                    if (previewItem && !previewItem.classList.contains('loading')) {
+                        // 3. Verificar si la imagen tiene el data-filename necesario
+                        const filename = targetElement.dataset.filename;
+                        if (filename) {
+                            console.log(`Clic detectado en imagen con filename: ${filename}. Llamando a triggerChangeFotoFromImage.`);
+                            // 4. Llamar a la función existente que maneja el cambio
+                            //    Pasamos el evento simulado con currentTarget siendo la imagen
+                            triggerChangeFotoFromImage({currentTarget: targetElement});
+                        } else {
+                            console.warn('Imagen clickeada no tiene data-filename.');
+                        }
+                    }
+                }
+                // Nota: No detenemos la propagación (event.stopPropagation()) aquí
+                // a menos que sea estrictamente necesario, para permitir que otros
+                // listeners (si los hubiera en elementos padres) funcionen.
+            });
+        } else {
+            console.error('Error: listaFotosContainer no encontrado al añadir listener para IMG.');
+        }
+        // --- FIN: Añadir Listener Delegado para Clic en Imagen ---
+
+        // --- Listener de Diagnóstico Temporal (lo mantenemos si quieres) ---
+        // if (listaFotosContainer) {
+        //     console.log('AÑADIENDO LISTENER DE DIAGNÓSTICO GENERAL a listaFotosContainer (fase de captura)');
+        //     listaFotosContainer.addEventListener(
+        //         'click',
+        //         function (event) {
+        //             console.log(`DIAGNÓSTICO GENERAL - Click detectado! Target:`, event.target);
+        //         },
+        //         true
+        //     );
+        // }
+        // --- Fin Listener de Diagnóstico Temporal ---
+    } // >>> FIN DE LA FUNCIÓN MODIFICADA <<<
 
     // >>> FIN DE LA FUNCIÓN PARA REEMPLAZAR <<<
 
