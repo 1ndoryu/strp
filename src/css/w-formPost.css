@@ -921,10 +921,11 @@ button#btn-mostrar-horario {
     font-style: italic;
 }
 
-.lista-opciones.grupo-radios-plan {
+.lista-opciones.grupo-radios {
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 10px;
 }
 
 .planes-primer-div p {
