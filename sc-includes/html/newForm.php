@@ -684,7 +684,7 @@ function newForm()
                                     }
                                     ?>
                                 </select>
-                                <select name="nivel_idioma_1" class="frm-campo frm-select">
+                                <select name="nivel_idioma_1" id="nivel_idioma_1" class="frm-campo frm-select">
                                     <option value="">Nivel</option>
                                     <option value="basico">Básico</option>
                                     <option value="intermedio">Intermedio</option>
@@ -693,7 +693,7 @@ function newForm()
                                 </select>
                             </div>
                             <div class="par-idioma">
-                                <select name="idioma_2" id="idioma_2" class="frm-campo frm-select">
+                                <select name="nivel_idioma_2" id="nivel_idioma_2" class="frm-campo frm-select">
                                     <option value="">Idioma 2</option>
                                     <?php foreach ($idiomas_lista as $code => $name) {
                                         echo '<option value="' . htmlspecialchars($code) . '" ' . ($selected_lang2 == $code ? 'selected' : '') . '>' . htmlspecialchars($name) . '</option>';

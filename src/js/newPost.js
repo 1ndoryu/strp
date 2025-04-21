@@ -9,6 +9,11 @@
         return;
     }
 
+    const idioma1Select = document.getElementById('idioma_1');
+    const nivelIdioma1Select = document.getElementById('nivel_idioma_1'); // <-- Necesario
+    const idioma2Select = document.getElementById('idioma_2');
+    const nivelIdioma2Select = document.getElementById('nivel_idioma_2');
+
     const etapas = Array.from(form.querySelectorAll('.etapa'));
     const btnSiguiente = form.querySelectorAll('.btn-siguiente');
     const btnAnterior = form.querySelectorAll('.btn-anterior');
@@ -50,8 +55,6 @@
     // const horarioCheckboxes = form.querySelectorAll('.check-dia input[type="checkbox"]'); // Comentado o eliminado
     const telefonoInput = form.querySelector('#telefono');
     const whatsappCheckbox = form.querySelector('input[name="whatsapp"]');
-    const idioma1Select = form.querySelector('#idioma_1');
-    const idioma2Select = form.querySelector('#idioma_2');
     const salidasSelect = form.querySelector('#realiza_salidas');
     const emailInput = form.querySelector('#email');
     const terminosCheckbox = form.querySelector('#terminos');
