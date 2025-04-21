@@ -705,7 +705,7 @@ button#btn-mostrar-horario {
 /* ======================================== */
 .error-msg {
     color: var(--color-error);
-    font-size: 0.85em;
+    font-size: 12px;
     margin-top: var(--espaciado-pequeno);
     /* display: none; */ /* Se gestiona con la clase .oculto desde JS */
 }
