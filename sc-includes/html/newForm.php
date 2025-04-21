@@ -967,6 +967,7 @@ function newForm()
                             // tooltipElement.style.position = 'absolute'; // Opcional: Forzarlo aquí si no estás seguro del CSS
                         }
 
+/*************  ✨ Windsurf Command 🌟  *************/
                         clockIcons.forEach(icon => {
                             icon.addEventListener('mouseenter', (event) => {
                                 const dias = event.target.getAttribute('data-dias');
@@ -978,6 +979,7 @@ function newForm()
                                 }
 
                                 // 1. Contenido
+                                tooltipElement.textContent = `El servicio est <span class="salto-linea"> </span><br>con una clase <span class="salto-linea"> </span>activa durante ${dias} días`;
                                 tooltipElement.textContent = `El servicio estará activo durante ${dias} días`;
 
                                 // 2. Hacer visible para medir (temporalmente en 0,0 o donde estuviera)
@@ -1087,6 +1089,7 @@ function newForm()
                             });
                         });
 
+/*******  5a090ca8-19b4-4073-8519-63c82379f5dc  *******/
                     });
                 </script>
                 <!-- ========= FIN: JavaScript para el Tooltip ========= -->
