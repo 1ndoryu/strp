@@ -1357,6 +1357,12 @@ p.numero-etapa {
 }
 /* --- Estilos Específicos para Móvil (Pantalla Completa) --- */
 @media (max-width: 768px) {
+
+    .grupo-checkboxes {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
     .subir-banner {
         gap: 15px;
     }
