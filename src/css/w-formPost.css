@@ -420,6 +420,25 @@ label.frm-checkbox {
     font-size: 13px;
 }
 
+#select-posicion-foto {
+    /* Estilos iniciales para ocultarlo y posicionarlo */
+    display: none;
+    /* position: absolute; ya está inline pero puedes moverlo aquí */
+    /* z-index: 10; ya está inline */
+    /* Añade aquí estilos de apariencia: padding, border, background, etc. */
+    min-width: 120px; /* Ejemplo */
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 5px;
+    margin-top: 5px; /* Espacio desde el botón */
+}
+#select-posicion-foto.visible {
+    display: block;
+}
+.foto-subida-item {
+    position: relative; /* Necesario para posicionar el select relativo al item si lo deseas */
+}
+
 svg#uuid-67eca691-fad9-4dbb-8a42-6bf39e0830b8 {
     height: 24px;
     width: 24px;
