@@ -710,7 +710,6 @@ button#btn-mostrar-horario {
     /* display: none; */ /* Se gestiona con la clase .oculto desde JS */
 }
 
-
 /* Estilo opcional para campos con error (requiere JS para añadir la clase) */
 /*
 .frm-campo.error, a
@@ -1372,6 +1371,10 @@ p.numero-etapa {
         animation: slideInUp 0.3s ease forwards;
     }
 
+    .icono-clock {
+        order: -1;
+    }
+
     .custom-select-header {
         background-color: #f8f8f8; /* Un fondo para el header */
         padding: 15px;
@@ -1411,7 +1414,7 @@ p.numero-etapa {
 }
 
 span.el-servicio-estara {
-    FONT-WEIGHT: 700;
+    font-weight: 700;
 }
 
 .clock-tooltip {
@@ -1580,3 +1583,20 @@ select.frm-campo.frm-select.corto {
     margin-top: 0px;
     display: block;
 }
+
+/*
+
+.foto-placeholder svg {
+    height: 24px;
+}
+.foto-placeholder {
+    width: 160px;
+    border: 2px solid;
+    border-radius: 5px;
+    display: flex
+;
+    align-items: center;
+    justify-content: center;
+}
+
+*/
