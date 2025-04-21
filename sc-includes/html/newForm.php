@@ -797,7 +797,8 @@ function newForm()
                             <?php echo $GLOBALS['sonrisa_uno']; ?>
                             <div class="opcion-contenido">
                                 <strong>Premium</strong>
-                                <span>Los anuncios se mostraran de manera aleatorea en la parte superior de la pagina.</span>
+                                <!-- Corregido: mostrarán, aleatoria, página -->
+                                <span>Los anuncios se mostrarán de manera aleatoria en la parte superior de la página.</span>
                             </div>
                             <div class="precio-y-tiempo">
                                 <p>35 €</p>
@@ -811,7 +812,11 @@ function newForm()
                         <label class="opcion-checkbox opcion-extra">
                             <input type="checkbox" name="extras[]" value="premium_mini" <?php echo in_array('premium_mini', $selected_extras) ? 'checked' : ''; ?>>
                             <?php echo $GLOBALS['sonrisa_uno']; ?>
-                            <div class="opcion-contenido"><strong>Premium Mini</strong><span>Los anuncios se mostraran de manera aleatorea abajo de los anuncios premiun.</span></div>
+                            <div class="opcion-contenido">
+                                <strong>Premium Mini</strong>
+                                <!-- Corregido: mostrarán, aleatoria, premium -->
+                                <span>Los anuncios se mostrarán de manera aleatoria abajo de los anuncios premium.</span>
+                            </div>
                             <div class="precio-y-tiempo">
                                 <p>30 €</p>
                                 <!-- Cambiado 'dias' por 'data-dias' y solo el número -->
@@ -824,7 +829,11 @@ function newForm()
                         <label class="opcion-checkbox opcion-extra">
                             <input type="checkbox" name="extras[]" value="destacado" <?php echo in_array('destacado', $selected_extras) ? 'checked' : ''; ?>>
                             <?php echo $GLOBALS['sonrisa_uno']; ?>
-                            <div class="opcion-contenido"><strong>Destacado</strong><span>Los anuncios se mostraran de manera aleatorea, posiciones de manera aleatorea.</span></div>
+                            <div class="opcion-contenido">
+                                <strong>Destacado</strong>
+                                <!-- Corregido: mostrarán, aleatoria, aleatoria -->
+                                <span>Los anuncios se mostrarán de manera aleatoria, posiciones de manera aleatoria.</span>
+                            </div>
                             <div class="precio-y-tiempo">
                                 <p>27 €</p>
                                 <!-- Cambiado 'dias' por 'data-dias' y solo el número -->
@@ -837,7 +846,11 @@ function newForm()
                         <label class="opcion-checkbox opcion-extra">
                             <input type="checkbox" name="extras[]" value="autosubida" <?php echo in_array('autosubida', $selected_extras) ? 'checked' : ''; ?>>
                             <?php echo $GLOBALS['sonrisa_uno']; ?>
-                            <div class="opcion-contenido"><strong>Autosubida</strong><span>Los anuncios se mostaran de manera aleatorea abajo de los anuncios destacados.</span></div>
+                            <div class="opcion-contenido">
+                                <strong>Autosubida</strong>
+                                <!-- Corregido: mostrarán, aleatoria -->
+                                <span>Los anuncios se mostrarán de manera aleatoria abajo de los anuncios destacados.</span>
+                            </div>
                             <div class="precio-y-tiempo">
                                 <p>25 €</p>
                                 <!-- Cambiado 'dias' por 'data-dias' y solo el número -->
@@ -850,7 +863,11 @@ function newForm()
                         <label class="opcion-checkbox opcion-extra">
                             <input type="checkbox" name="extras[]" value="banner_superior" <?php echo in_array('banner_superior', $selected_extras) ? 'checked' : ''; ?>>
                             <?php echo $GLOBALS['sonrisa_uno']; ?>
-                            <div class="opcion-contenido"><strong>Banner Superior</strong><span>Los banners se mostraran de manera aleatorea en la parte superior de la pagina.</span></div>
+                            <div class="opcion-contenido">
+                                <strong>Banner Superior</strong>
+                                <!-- Corregido: mostrarán, aleatoria, página -->
+                                <span>Los banners se mostrarán de manera aleatoria en la parte superior de la página.</span>
+                            </div>
                             <div class="precio-y-tiempo">
                                 <p>50 €</p>
                                 <!-- Cambiado 'dias' por 'data-dias' y solo el número -->
@@ -863,7 +880,11 @@ function newForm()
                         <label class="opcion-checkbox opcion-extra">
                             <input type="checkbox" name="extras[]" value="banner_lateral" <?php echo in_array('banner_lateral', $selected_extras) ? 'checked' : ''; ?>>
                             <?php echo $GLOBALS['sonrisa_uno']; ?>
-                            <div class="opcion-contenido"><strong>Banner Lateral</strong><span>Los banners se mostraran de manera aleatorea en la parte lateral de la pagina.</span></div>
+                            <div class="opcion-contenido">
+                                <strong>Banner Lateral</strong>
+                                <!-- Corregido: mostrarán, aleatoria, página -->
+                                <span>Los banners se mostrarán de manera aleatoria en la parte lateral de la página.</span>
+                            </div>
                             <div class="precio-y-tiempo">
                                 <p>50 €</p>
                                 <!-- Cambiado 'dias' por 'data-dias' y solo el número -->
@@ -881,7 +902,11 @@ function newForm()
                             <input type="radio" name="plan_seleccionado" value="gratis" checked>
 
                             <?php echo $GLOBALS['sonrisa_dos']; ?>
-                            <div class="opcion-contenido"><strong>Gratis</strong><span>Realiza tu publicación sin costo alguno.</span></div>
+                            <div class="opcion-contenido">
+                                <strong>Gratis</strong>
+                                <!-- Corregido: publicación -->
+                                <span>Realiza tu publicación sin costo alguno.</span>
+                            </div>
                             <div class="precio-y-tiempo">
                                 <p class="gratuito">Gratuito</p>
                                 <!-- Cambiado 'dias' por 'data-dias' y solo el número -->
@@ -894,12 +919,15 @@ function newForm()
 
                     <!-- ========= INICIO: Sección de Fechas Añadida ========= -->
                     <div class="info-fechas-anuncio" style="margin-top: 15px;margin-bottom: 15px;padding: 10px;padding-top: 25px;border: 1px solid #eee;text-align: center;">
+                        <!-- Corregido: creación -->
                         <p><strong>Fecha de creación:</strong> <?php echo $fecha_creacion; ?></p>
+                        <!-- Corregido: expiración -->
                         <p><strong>Fecha de expiración:</strong> <?php echo $fecha_expiracion; ?></p>
                     </div>
                     <!-- ========= FIN: Sección de Fechas Añadida ========= -->
 
                     <div class="frm-grupo">
+                        <!-- Corregido: términos -->
                         <div class="error-msg oculto" id="error-terminos">Debes aceptar los términos y condiciones.</div>
                     </div>
 
@@ -912,6 +940,7 @@ function newForm()
                             }
                             ?>
                             <input name="notifications" type="checkbox" id="notifications" value="1" <?php echo $notifications_checked ? 'checked' : ''; ?> />
+                            <!-- Corregido: través -->
                             Quiero recibir notificaciones por email cuando alguien contacte a través de mi anuncio.
                         </label>
                     </div>
