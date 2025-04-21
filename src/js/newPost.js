@@ -702,103 +702,76 @@
         const div = document.createElement('div');
         div.classList.add('foto-subida-item');
         div.dataset.filename = filename;
-        div.innerHTML = htmlContent;
-
+        div.innerHTML = htmlContent; // Asume que el HTML base tiene la img y el div .photos_options o similar
+    
         const hiddenInPreview = div.querySelector('input[name="photo_name[]"]');
         hiddenInPreview?.remove();
-
+    
         const actionsDiv = document.createElement('div');
         actionsDiv.classList.add('preview-actions');
-
-        // --- Botón Mover Izquierda (SIN listener directo aquí) ---
+    
+        // --- Botón Mover Izquierda ---
         const moveLeftBtn = document.createElement('button');
         moveLeftBtn.type = 'button';
-        moveLeftBtn.classList.add('btn-preview-action', 'btn-move-left', 'btn-toggle-position-select'); // Clases importantes
+        moveLeftBtn.classList.add('btn-preview-action', 'btn-move-left', 'btn-toggle-position-select'); // Clases
         moveLeftBtn.title = 'Elegir posición';
         moveLeftBtn.setAttribute('aria-label', `Elegir posición para foto ${filename}`);
-        moveLeftBtn.dataset.filename = filename;
+        moveLeftBtn.dataset.filename = filename; // Dataset
         moveLeftBtn.innerHTML = `
             <svg data-testid="geist-icon" height="12" stroke-linejoin="round" style="color:currentColor; pointer-events: none;" viewBox="0 0 16 16" width="12" aria-hidden="true">
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M6.46966 13.7803L6.99999 14.3107L8.06065 13.25L7.53032 12.7197L3.56065 8.75001H14.25H15V7.25001H14.25H3.56065L7.53032 3.28034L8.06065 2.75001L6.99999 1.68935L6.46966 2.21968L1.39644 7.2929C1.00592 7.68342 1.00592 8.31659 1.39644 8.70711L6.46966 13.7803Z" fill="currentColor"></path>
-            </svg>`;
+            </svg>`; // pointer-events: none
         actionsDiv.appendChild(moveLeftBtn);
-        console.log(`DEBUG: Botón Izquierda añadido para ${filename}. ¿Existe?`, !!actionsDiv.querySelector('.btn-move-left')); // Log de verificación
-
-        // --- Botón Mover Derecha (SIN listener directo aquí) ---
+        // ¡SIN listener directo aquí!
+    
+        // --- Botón Mover Derecha ---
         const moveRightBtn = document.createElement('button');
         moveRightBtn.type = 'button';
-        moveRightBtn.classList.add('btn-preview-action', 'btn-move-right', 'btn-toggle-position-select'); // Clases importantes
+        moveRightBtn.classList.add('btn-preview-action', 'btn-move-right', 'btn-toggle-position-select'); // Clases
         moveRightBtn.title = 'Elegir posición';
         moveRightBtn.setAttribute('aria-label', `Elegir posición para foto ${filename}`);
-        moveRightBtn.dataset.filename = filename;
+        moveRightBtn.dataset.filename = filename; // Dataset
         moveRightBtn.innerHTML = `
             <svg data-testid="geist-icon" height="12" stroke-linejoin="round" style="color:currentColor; pointer-events: none;" viewBox="0 0 16 16" width="12" aria-hidden="true">
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M9.53033 2.21968L9 1.68935L7.93934 2.75001L8.46967 3.28034L12.4393 7.25001H1.75H1V8.75001H1.75H12.4393L8.46967 12.7197L7.93934 13.25L9 14.3107L9.53033 13.7803L14.6036 8.70711C14.9941 8.31659 14.9941 7.68342 14.6036 7.2929L9.53033 2.21968Z" fill="currentColor"></path>
-            </svg>`;
+            </svg>`; // pointer-events: none
         actionsDiv.appendChild(moveRightBtn);
-        console.log(`DEBUG: Botón Derecha añadido para ${filename}. ¿Existe?`, !!actionsDiv.querySelector('.btn-move-right')); // Log de verificación
-
-        // --- Otros botones (Rotar, Eliminar) ---
-        // Añadimos listeners directos a estos porque sabemos que funcionan así
+         // ¡SIN listener directo aquí!
+    
+    
+        // --- Otros botones (Rotar, Eliminar, Cambiar) ---
+        // Puedes mantener listeners directos aquí o quitarlos y que la delegación los maneje
         const rotateBtn = document.createElement('button');
         rotateBtn.type = 'button';
         rotateBtn.classList.add('btn-preview-action', 'btn-rotate-foto');
         rotateBtn.title = 'Rotar foto 90°';
-        rotateBtn.setAttribute('aria-label', `Rotar la foto ${filename} 90 grados`);
         rotateBtn.dataset.filename = filename;
         rotateBtn.innerHTML = `
-            <svg data-testid="geist-icon" height="12" stroke-linejoin="round" style="color:currentColor; pointer-events: none;" viewBox="0 0 16 16" width="12"><path fill-rule="evenodd" clip-rule="evenodd" d="M8.00002 1.25C5.33749 1.25 3.02334 2.73677 1.84047 4.92183L1.48342 5.58138L2.80253 6.29548L3.15958 5.63592C4.09084 3.91566 5.90986 2.75 8.00002 2.75C10.4897 2.75 12.5941 4.40488 13.2713 6.67462H11.8243H11.0743V8.17462H11.8243H15.2489C15.6631 8.17462 15.9989 7.83883 15.9989 7.42462V4V3.25H14.4989V4V5.64468C13.4653 3.06882 10.9456 1.25 8.00002 1.25ZM1.50122 10.8555V12.5V13.25H0.0012207V12.5V9.07538C0.0012207 8.66117 0.337007 8.32538 0.751221 8.32538H4.17584H4.92584V9.82538H4.17584H2.72876C3.40596 12.0951 5.51032 13.75 8.00002 13.75C10.0799 13.75 11.8912 12.5958 12.8266 10.8895L13.1871 10.2318L14.5025 10.9529L14.142 11.6105C12.9539 13.7779 10.6494 15.25 8.00002 15.25C5.05453 15.25 2.53485 13.4313 1.50122 10.8555Z" fill="currentColor"></path></svg>`;
-        rotateBtn.addEventListener('click', handleRotateFotoClick); // Listener directo
+        <svg data-testid="geist-icon" height="12" stroke-linejoin="round" style="color:currentColor; pointer-events: none;" viewBox="0 0 16 16" width="12"><path fill-rule="evenodd" clip-rule="evenodd" d="M8.00002 1.25C5.33749 1.25 3.02334 2.73677 1.84047 4.92183L1.48342 5.58138L2.80253 6.29548L3.15958 5.63592C4.09084 3.91566 5.90986 2.75 8.00002 2.75C10.4897 2.75 12.5941 4.40488 13.2713 6.67462H11.8243H11.0743V8.17462H11.8243H15.2489C15.6631 8.17462 15.9989 7.83883 15.9989 7.42462V4V3.25H14.4989V4V5.64468C13.4653 3.06882 10.9456 1.25 8.00002 1.25ZM1.50122 10.8555V12.5V13.25H0.0012207V12.5V9.07538C0.0012207 8.66117 0.337007 8.32538 0.751221 8.32538H4.17584H4.92584V9.82538H4.17584H2.72876C3.40596 12.0951 5.51032 13.75 8.00002 13.75C10.0799 13.75 11.8912 12.5958 12.8266 10.8895L13.1871 10.2318L14.5025 10.9529L14.142 11.6105C12.9539 13.7779 10.6494 15.25 8.00002 15.25C5.05453 15.25 2.53485 13.4313 1.50122 10.8555Z" fill="currentColor"></path></svg>`;
+        // rotateBtn.addEventListener('click', handleRotateFotoClick); // OPCIONAL: Quitar si quieres que lo maneje la delegación
         actionsDiv.appendChild(rotateBtn);
-
+    
         const deleteBtn = document.createElement('button');
         deleteBtn.type = 'button';
         deleteBtn.classList.add('btn-preview-action', 'btn-delete-foto');
         deleteBtn.title = 'Eliminar foto';
-        deleteBtn.setAttribute('aria-label', `Eliminar la foto ${filename}`);
         deleteBtn.dataset.filename = filename;
         deleteBtn.innerHTML = `
             <svg data-testid="geist-icon" height="12" stroke-linejoin="round" viewBox="0 0 16 16" width="12" style="color: currentcolor; pointer-events: none;" aria-hidden="true">
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M12.4697 13.5303L13 14.0607L14.0607 13L13.5303 12.4697L9.06065 7.99999L13.5303 3.53032L14.0607 2.99999L13 1.93933L12.4697 2.46966L7.99999 6.93933L3.53032 2.46966L2.99999 1.93933L1.93933 2.99999L2.46966 3.53032L6.93933 7.99999L2.46966 12.4697L1.93933 13L2.99999 14.0607L3.53032 13.5303L7.99999 9.06065L12.4697 13.5303Z" fill="currentColor"></path>
             </svg>`;
-        deleteBtn.addEventListener('click', eliminarFoto); // Listener directo
+        // deleteBtn.addEventListener('click', eliminarFoto); // OPCIONAL: Quitar si quieres que lo maneje la delegación
         actionsDiv.appendChild(deleteBtn);
-
-        // Botón de cambio (invisible, se activa por imagen)
+    
         const changeBtn = document.createElement('button');
-        // ... (código para changeBtn como antes, sin listener) ...
+        // ... (igual que antes, oculto, sin listener aquí) ...
         changeBtn.type = 'button';
         changeBtn.classList.add('btn-preview-action', 'btn-change-foto');
-        changeBtn.style.display = 'none'; // Ocultarlo visualmente
+        changeBtn.style.display = 'none';
         actionsDiv.appendChild(changeBtn);
-
-        // ***** NUEVO LISTENER en actionsDiv *****
-        actionsDiv.addEventListener('click', function (event) {
-            const clickedElement = event.target;
-            console.log('Listener actionsDiv: Click detectado. Target:', clickedElement);
-
-            // Intentamos encontrar el botón de flecha MÁS CERCANO al elemento clickeado
-            const targetButton = clickedElement.closest('.btn-toggle-position-select');
-
-            console.log('Listener actionsDiv: Botón encontrado con closest(".btn-toggle-position-select"):', targetButton);
-
-            if (targetButton && targetButton.classList.contains('btn-toggle-position-select')) {
-                console.log('Listener actionsDiv: ¡Botón de flecha detectado! Filename:', targetButton.dataset.filename);
-                console.log('Listener actionsDiv: Clases:', targetButton.classList);
-                event.preventDefault(); // Prevenir comportamiento por defecto
-                event.stopPropagation(); // Detener aquí para evitar otros listeners si los hubiera
-                // Llamar a la función que muestra el select, pasando el botón correcto
-                togglePositionSelect({currentTarget: targetButton});
-            } else {
-                console.log('Listener actionsDiv: El click no fue en un botón de flecha o no se encontró.');
-                // Nota: Los clicks en rotar/eliminar/imagen serán manejados por sus listeners directos
-                // y no deberían llegar aquí si esos listeners usan stopPropagation(),
-                // o si llegan, este 'else' simplemente no hará nada.
-            }
-        });
-        // ***** FIN NUEVO LISTENER *****
-
-        // --- Adjuntar Contenedor de Acciones al DOM ---
+    
+    
+        // --- Adjuntar Contenedor ---
         const optionsContainer = div.querySelector('.photos_options');
         if (optionsContainer) {
             optionsContainer.innerHTML = '';
@@ -811,18 +784,16 @@
                 div.appendChild(actionsDiv);
             }
         }
-
+    
         // --- Listener en la imagen ---
         const imgElement = div.querySelector('img');
         if (imgElement) {
             imgElement.dataset.filename = filename;
             imgElement.style.cursor = 'pointer';
             imgElement.title = 'Haz clic para cambiar esta imagen';
-            imgElement.addEventListener('click', triggerChangeFotoFromImage); // Listener directo
-        } else {
-            console.warn(`No se encontró <img> en ${filename}`);
+            // imgElement.addEventListener('click', triggerChangeFotoFromImage); // OPCIONAL: Quitar si quieres que lo maneje la delegación
         }
-
+    
         return div;
     }
 
@@ -1073,25 +1044,91 @@
         console.log('--- handlePositionChange FIN (Éxito o intento completado) ---');
     }
 
-    // >>> REEMPLAZAR ESTA FUNCIÓN COMPLETA <<<
+    // >>> REEMPLAZA agregarListenersNuevos con ESTA versión <<<
     function agregarListenersNuevos() {
-        console.log('Ejecutando agregarListenersNuevos (Solo para listener del select)...');
-        // Listener para el cambio en el select de posición (IMPORTANTE MANTENER)
+        console.log('Ejecutando agregarListenersNuevos (Listener Delegado ÚNICO)...');
+
+        // Asegúrate de que el listener se añade solo una vez
+        // (Podríamos añadir una bandera si sospechamos que se llama múltiples veces, pero por ahora asumamos que no)
+
+        if (listaFotosContainer) {
+            console.log('Añadiendo listener de click DELEGADO a listaFotosContainer.');
+
+            // Quitar listener previo si existiera (por si acaso)
+            // Nota: necesitaríamos guardar la referencia a la función si hacemos esto bien,
+            // pero para depurar, un addEventListener simple suele bastar si inicializar() solo corre una vez.
+
+            listaFotosContainer.addEventListener('click', function (event) {
+                const clickedElement = event.target;
+                console.log(`\n--- Click Delegado Detectado ---`);
+                console.log(`Target directo:`, clickedElement);
+
+                // 1. Intenta encontrar el ANCESTRO <button> más cercano
+                const closestButton = clickedElement.closest('button');
+                console.log(`Botón ancestro encontrado con closest('button'):`, closestButton);
+
+                // 2. Si encontramos un botón, examinamos sus clases
+                if (closestButton) {
+                    console.log(`Clases del botón encontrado:`, closestButton.classList);
+                    console.log(`Dataset del botón encontrado:`, closestButton.dataset);
+
+                    // 3. Comprobamos EXPLÍCITAMENTE las clases que nos interesan
+                    const hasToggleClass = closestButton.classList.contains('btn-toggle-position-select');
+                    const hasRotateClass = closestButton.classList.contains('btn-rotate-foto');
+                    const hasDeleteClass = closestButton.classList.contains('btn-delete-foto');
+                    const hasChangeClass = closestButton.classList.contains('btn-change-foto'); // Aunque esté oculto
+
+                    console.log(`Check de Clases: .btn-toggle-position-select? ${hasToggleClass}`);
+                    console.log(`Check de Clases: .btn-rotate-foto? ${hasRotateClass}`);
+                    console.log(`Check de Clases: .btn-delete-foto? ${hasDeleteClass}`);
+                    console.log(`Check de Clases: .btn-change-foto? ${hasChangeClass}`);
+
+                    // 4. Decidimos qué hacer BASADO en las clases encontradas
+                    if (hasToggleClass) {
+                        console.log('ACCIÓN: Es un botón de Toggle Posición. Llamando a togglePositionSelect...');
+                        event.preventDefault();
+                        event.stopPropagation(); // Detenemos aquí si lo manejamos
+                        togglePositionSelect({currentTarget: closestButton}); // Pasamos el botón encontrado
+                    } else if (hasRotateClass) {
+                        console.log('ACCIÓN: Es un botón de Rotar. Llamando a handleRotateFotoClick...');
+                        event.preventDefault();
+                        // stopPropagation() aquí es opcional, ya que el listener directo en él ya lo hace
+                        handleRotateFotoClick({currentTarget: closestButton});
+                    } else if (hasDeleteClass) {
+                        console.log('ACCIÓN: Es un botón de Eliminar. Llamando a eliminarFoto...');
+                        event.preventDefault();
+                        // stopPropagation() aquí es opcional
+                        eliminarFoto({currentTarget: closestButton});
+                    } else if (hasChangeClass) {
+                        console.log('ACCIÓN: Es el botón de Cambiar (oculto). No hacemos nada aquí (se activa por imagen).');
+                        // No hacer nada
+                    } else {
+                        console.log('ACCIÓN: Botón encontrado, pero sin clase de acción conocida.');
+                    }
+                } else {
+                    // Quizás el click fue en la imagen?
+                    const closestImage = clickedElement.closest('img[data-filename]');
+                    if (closestImage && closestImage.closest('.foto-subida-item')) {
+                        console.log('ACCIÓN: Click en Imagen detectado. Llamando a triggerChangeFotoFromImage...');
+                        triggerChangeFotoFromImage({currentTarget: closestImage});
+                    } else {
+                        console.log('ACCIÓN: Click no fue en un botón ni en una imagen de preview válida.');
+                    }
+                }
+                console.log(`--- Fin Procesamiento Click Delegado ---`);
+            });
+        } else {
+            console.error('Error crítico: listaFotosContainer no está definido.');
+        }
+
+        // Listener para el cambio en el select de posición (sigue igual)
         if (selectPosicion) {
             console.log('Añadiendo listener "change" a selectPosicion.');
-            // Quitar listener previo por si acaso se llama múltiples veces
-            selectPosicion.removeEventListener('change', handlePositionChange);
+            selectPosicion.removeEventListener('change', handlePositionChange); // Prevenir duplicados
             selectPosicion.addEventListener('change', handlePositionChange);
         } else {
             console.error('Error crítico: selectPosicion no está definido.');
         }
-
-        // YA NO necesitamos el listener delegado en listaFotosContainer aquí
-        /*
-        if (listaFotosContainer) {
-            // ... listener delegado eliminado ...
-        }
-        */
     }
 
     // >>> FIN DE LA FUNCIÓN PARA REEMPLAZAR <<<
