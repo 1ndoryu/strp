@@ -1561,3 +1561,9 @@ select.frm-campo.frm-select.corto {
     height: 15px;
     width: 15px;
 }
+
+.opcion-extra input[type='checkbox'] {
+    margin-right: -4px;
+    /* display: none; */
+    margin-top: 0px;
+}
