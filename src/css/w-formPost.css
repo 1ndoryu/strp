@@ -240,6 +240,12 @@ div#etapa-plan {
     background-color: #f0f8ff;
 }
 
+.lista-opciones.grupo-radios-plan {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
 label.opcion-checkbox.opcion-extra {
     display: flex !important;
     gap: 20px;
