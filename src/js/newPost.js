@@ -712,45 +712,55 @@
         const actionsDiv = document.createElement('div');
         actionsDiv.classList.add('preview-actions');
 
-        // --- Botón Mover Izquierda (Existente) ---
+        // --- Botón Mover Izquierda (con TEST DIRECTO) ---
         const moveLeftBtn = document.createElement('button');
         moveLeftBtn.type = 'button';
-        // >>> CAMBIO 1: Añade clase para identificarlo para el select <<<
         moveLeftBtn.classList.add('btn-preview-action', 'btn-move-left', 'btn-toggle-position-select');
-        moveLeftBtn.title = 'Elegir posición'; // Cambia el title si quieres
+        moveLeftBtn.title = 'Elegir posición';
         moveLeftBtn.setAttribute('aria-label', `Elegir posición para foto ${filename}`);
         moveLeftBtn.dataset.filename = filename;
         moveLeftBtn.innerHTML = `
             <svg data-testid="geist-icon" height="12" stroke-linejoin="round" style="color:currentColor" viewBox="0 0 16 16" width="12" aria-hidden="true">
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M6.46966 13.7803L6.99999 14.3107L8.06065 13.25L7.53032 12.7197L3.56065 8.75001H14.25H15V7.25001H14.25H3.56065L7.53032 3.28034L8.06065 2.75001L6.99999 1.68935L6.46966 2.21968L1.39644 7.2929C1.00592 7.68342 1.00592 8.31659 1.39644 8.70711L6.46966 13.7803Z" fill="currentColor"></path>
             </svg>`;
-        // >>> CAMBIO 1: Quita el listener original de mover <<<
-        // moveLeftBtn.addEventListener('click', handleMoveFotoClick); // COMENTADO o ELIMINADO
-        actionsDiv.appendChild(moveLeftBtn); // Se mantiene el botón visualmente
+        actionsDiv.appendChild(moveLeftBtn); // Añadir al contenedor de acciones
 
-        // --- Botón Mover Derecha ---
+        // ***** INICIO TEST DIRECTO *****
+        moveLeftBtn.addEventListener('click', function (event) {
+            console.warn(`¡TEST DIRECTO - Click en moveLeftBtn detectado! (filename: ${filename})`);
+            // NO usar stopPropagation aquí para permitir que (idealmente) llegue al listener delegado
+            // event.stopPropagation();
+        });
+        // ***** FIN TEST DIRECTO *****
+
+        // --- Botón Mover Derecha (con TEST DIRECTO) ---
         const moveRightBtn = document.createElement('button');
         moveRightBtn.type = 'button';
-        // >>> CAMBIO 1: Añade clase para identificarlo para el select <<<
         moveRightBtn.classList.add('btn-preview-action', 'btn-move-right', 'btn-toggle-position-select');
-        moveRightBtn.title = 'Elegir posición'; // Cambia el title si quieres
+        moveRightBtn.title = 'Elegir posición';
         moveRightBtn.setAttribute('aria-label', `Elegir posición para foto ${filename}`);
         moveRightBtn.dataset.filename = filename;
         moveRightBtn.innerHTML = `
             <svg data-testid="geist-icon" height="12" stroke-linejoin="round" style="color:currentColor" viewBox="0 0 16 16" width="12" aria-hidden="true">
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M9.53033 2.21968L9 1.68935L7.93934 2.75001L8.46967 3.28034L12.4393 7.25001H1.75H1V8.75001H1.75H12.4393L8.46967 12.7197L7.93934 13.25L9 14.3107L9.53033 13.7803L14.6036 8.70711C14.9941 8.31659 14.9941 7.68342 14.6036 7.2929L9.53033 2.21968Z" fill="currentColor"></path>
             </svg>`;
-        // >>> CAMBIO 1: Quita el listener original de mover <<<
-        // moveRightBtn.addEventListener('click', handleMoveFotoClick); // COMENTADO o ELIMINADO
-        actionsDiv.appendChild(moveRightBtn); // Se mantiene el botón visualmente
+        actionsDiv.appendChild(moveRightBtn); // Añadir al contenedor de acciones
 
-        // --- Botón Cambiar Foto (Existente) ---
+        // ***** INICIO TEST DIRECTO *****
+        moveRightBtn.addEventListener('click', function (event) {
+            console.warn(`¡TEST DIRECTO - Click en moveRightBtn detectado! (filename: ${filename})`);
+            // NO usar stopPropagation aquí para permitir que (idealmente) llegue al listener delegado
+            // event.stopPropagation();
+        });
+        // ***** FIN TEST DIRECTO *****
+
+        // --- Botón Cambiar Foto (Existente, sin listener directo aquí, se maneja por delegación o click en imagen) ---
         const changeBtn = document.createElement('button');
         changeBtn.type = 'button';
-        changeBtn.classList.add('btn-preview-action', 'btn-change-foto');
-        changeBtn.title = 'Cambiar foto';
+        changeBtn.classList.add('btn-preview-action', 'btn-change-foto'); // Clase por si se necesita seleccionar
+        changeBtn.title = 'Cambiar foto (o haz clic en la imagen)';
         changeBtn.setAttribute('aria-label', `Cambiar la foto ${filename}`);
-        changeBtn.dataset.filename = filename;
+        changeBtn.dataset.filename = filename; // El filename es necesario para el listener de la imagen
         changeBtn.innerHTML = `
             <?xml version="1.0" encoding="UTF-8"?>
             <svg id="uuid-67eca691-fad9-4dbb-8a42-6bf39e0830b8" data-name="Capa 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28">
@@ -759,24 +769,23 @@
             <g><path class="uuid-94213a7e-b161-4609-ad8f-10b2f930d26d" d="m20.8,5.01l-.38-.37-.38.37-7.18,7.09c-.5.49-.78,1.16-.78,1.86v1.76h1.78c.71,0,1.38-.28,1.88-.77l7.18-7.09.38-.37-.38-.37-2.13-2.1Zm-1.75,2.47l1.38-1.36,1.38,1.36-1.38,1.36-1.38-1.36Zm-.75.74l-4.68,4.62c-.3.3-.47.7-.47,1.11v.71h.71c.42,0,.83-.17,1.13-.46l4.68-4.62-1.38-1.36Z"/>
             <polygon class="uuid-7cc435b7-ba6c-40a3-af33-f3f74dcd5e16" points="21.12 21.37 6.54 21.37 6.54 7.74 13.11 7.74 13.11 8.65 7.46 8.65 7.46 20.46 20.21 20.46 20.21 12.11 21.12 12.11 21.12 21.37"/></g>
             </svg>`;
-        // >>> CAMBIO 2: Quita el listener del botón de cambiar <<<
-        // changeBtn.addEventListener('click', handleChangeFotoClick); // COMENTADO o ELIMINADO
-        actionsDiv.appendChild(changeBtn); // Se mantiene el botón visualmente
+        // Nota: No añadimos listener de click aquí; se activa al hacer clic en la imagen.
+        actionsDiv.appendChild(changeBtn);
 
-        // --- ***NUEVO: Botón Rotar Foto*** ---
+        // --- Botón Rotar Foto (con listener directo funcional) ---
         const rotateBtn = document.createElement('button');
         rotateBtn.type = 'button';
-        rotateBtn.classList.add('btn-preview-action', 'btn-rotate-foto'); // Clase específica
+        rotateBtn.classList.add('btn-preview-action', 'btn-rotate-foto');
         rotateBtn.title = 'Rotar foto 90°';
         rotateBtn.setAttribute('aria-label', `Rotar la foto ${filename} 90 grados`);
         rotateBtn.dataset.filename = filename;
-        // Usamos el icono SVG proporcionado por el usuario
         rotateBtn.innerHTML = `
             <svg data-testid="geist-icon" height="12" stroke-linejoin="round" style="color:currentColor" viewBox="0 0 16 16" width="12"><path fill-rule="evenodd" clip-rule="evenodd" d="M8.00002 1.25C5.33749 1.25 3.02334 2.73677 1.84047 4.92183L1.48342 5.58138L2.80253 6.29548L3.15958 5.63592C4.09084 3.91566 5.90986 2.75 8.00002 2.75C10.4897 2.75 12.5941 4.40488 13.2713 6.67462H11.8243H11.0743V8.17462H11.8243H15.2489C15.6631 8.17462 15.9989 7.83883 15.9989 7.42462V4V3.25H14.4989V4V5.64468C13.4653 3.06882 10.9456 1.25 8.00002 1.25ZM1.50122 10.8555V12.5V13.25H0.0012207V12.5V9.07538C0.0012207 8.66117 0.337007 8.32538 0.751221 8.32538H4.17584H4.92584V9.82538H4.17584H2.72876C3.40596 12.0951 5.51032 13.75 8.00002 13.75C10.0799 13.75 11.8912 12.5958 12.8266 10.8895L13.1871 10.2318L14.5025 10.9529L14.142 11.6105C12.9539 13.7779 10.6494 15.25 8.00002 15.25C5.05453 15.25 2.53485 13.4313 1.50122 10.8555Z" fill="currentColor"></path></svg>`;
-        rotateBtn.addEventListener('click', handleRotateFotoClick); // ¡Nuevo handler!
+        // Añadimos el listener que sí funciona directamente aquí
+        rotateBtn.addEventListener('click', handleRotateFotoClick);
         actionsDiv.appendChild(rotateBtn);
 
-        // --- Botón Eliminar Foto (Existente) ---
+        // --- Botón Eliminar Foto (con listener directo funcional) ---
         const deleteBtn = document.createElement('button');
         deleteBtn.type = 'button';
         deleteBtn.classList.add('btn-preview-action', 'btn-delete-foto');
@@ -787,36 +796,43 @@
             <svg data-testid="geist-icon" height="12" stroke-linejoin="round" viewBox="0 0 16 16" width="12" style="color: currentcolor;" aria-hidden="true">
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M12.4697 13.5303L13 14.0607L14.0607 13L13.5303 12.4697L9.06065 7.99999L13.5303 3.53032L14.0607 2.99999L13 1.93933L12.4697 2.46966L7.99999 6.93933L3.53032 2.46966L2.99999 1.93933L1.93933 2.99999L2.46966 3.53032L6.93933 7.99999L2.46966 12.4697L1.93933 13L2.99999 14.0607L3.53032 13.5303L7.99999 9.06065L12.4697 13.5303Z" fill="currentColor"></path>
             </svg>`;
+        // Añadimos el listener que sí funciona directamente aquí
         deleteBtn.addEventListener('click', eliminarFoto);
         actionsDiv.appendChild(deleteBtn);
 
         // --- Adjuntar Contenedor de Acciones ---
+        // Busca el contenedor específico '.photos_options' o adjunta después de la imagen
         const optionsContainer = div.querySelector('.photos_options');
         if (optionsContainer) {
-            optionsContainer.innerHTML = '';
+            optionsContainer.innerHTML = ''; // Limpiar por si acaso
             optionsContainer.appendChild(actionsDiv);
         } else {
+            // Si no existe '.photos_options', intenta insertar después de la imagen
             const img = div.querySelector('img');
             if (img && img.parentNode) {
+                console.log('Contenedor .photos_options no encontrado, insertando actionsDiv después de la imagen.');
+                // Inserta el div de acciones como hermano siguiente de la imagen
                 img.parentNode.insertBefore(actionsDiv, img.nextSibling);
             } else {
+                // Fallback: añadir al final del div principal del preview
+                console.warn('No se encontró .photos_options ni img para insertar actionsDiv. Añadiendo al final del preview.');
                 div.appendChild(actionsDiv);
             }
         }
 
-        // >>> CAMBIO 2: Añade listener a la imagen <<<
+        // --- Listener en la imagen para cambiarla ---
         const imgElement = div.querySelector('img');
         if (imgElement) {
             imgElement.dataset.filename = filename; // Guardamos filename en la imagen
             imgElement.style.cursor = 'pointer'; // Indicador visual
             imgElement.title = 'Haz clic para cambiar esta imagen'; // Tooltip
-            imgElement.addEventListener('click', triggerChangeFotoFromImage); // Nuevo handler
+            // Añadimos el listener que sí funciona directamente aquí
+            imgElement.addEventListener('click', triggerChangeFotoFromImage);
         } else {
-            console.warn('No se encontró <img> dentro del preview para añadir listener de cambio.');
+            console.warn(`No se encontró <img> dentro del preview con filename ${filename} para añadir listener de cambio.`);
         }
-        // <<< FIN CAMBIO 2 >>>
 
-        return div;
+        return div; // Devuelve el elemento preview completo
     }
 
     // >>> NUEVO: Función para manejar click en la imagen para cambiarla <<<
@@ -843,20 +859,20 @@
         console.log('Botón presionado:', button); // LOG 5: ¿Qué botón es?
         console.log('Filename obtenido del dataset:', filename); // LOG 6: ¿Obtiene el filename?
         console.log('Referencia a selectPosicion:', selectPosicion); // LOG 7: ¿Está definido el select?
-    
+
         // Validación inicial robusta
         if (!selectPosicion || typeof filename === 'undefined' || filename === null || filename === '') {
-            console.error("Error en togglePositionSelect: Falta selectPosicion o filename es inválido/no encontrado en el dataset del botón."); // LOG 8: ¿Falla la validación inicial?
+            console.error('Error en togglePositionSelect: Falta selectPosicion o filename es inválido/no encontrado en el dataset del botón.'); // LOG 8: ¿Falla la validación inicial?
             console.error(`Detalles: selectPosicion=${selectPosicion}, filename=${filename}`);
-             console.log('--- togglePositionSelect FIN (Error inicial) ---');
+            console.log('--- togglePositionSelect FIN (Error inicial) ---');
             return;
         }
-    
+
         // Comprobar si ya está visible y si es para este botón específico
         const isVisible = selectPosicion.classList.contains('visible');
         const isForThisButton = selectPosicion.dataset.currentFilename === filename;
         console.log(`Estado actual: visible=${isVisible}, filenameGuardado=${selectPosicion.dataset.currentFilename}, filenameActual=${filename}, ¿Visible para este botón?=${isVisible && isForThisButton}`); // LOG 9
-    
+
         // Si está visible Y es para el mismo botón, lo ocultamos (toggle)
         if (isVisible && isForThisButton) {
             console.log('Ocultando select (ya estaba visible para este botón).'); // LOG 10
@@ -867,13 +883,13 @@
             console.log('--- togglePositionSelect FIN (Ocultando) ---');
             return;
         }
-    
+
         // --- Si llegamos aquí, vamos a mostrarlo (o reposicionarlo) ---
-    
+
         // Guardar filename AHORA, antes de hacer cualquier otra cosa
         console.log(`Guardando filename '${filename}' en dataset (selectPosicion.dataset.currentFilename)`); // LOG 11: ¡Este es crucial!
         selectPosicion.dataset.currentFilename = filename; // <<< IMPORTANTE
-    
+
         // Calcular posición (con manejo de error básico)
         try {
             const btnRect = button.getBoundingClientRect();
@@ -887,36 +903,36 @@
             selectPosicion.style.left = `${leftPos}px`;
             selectPosicion.style.zIndex = '100'; // Asegurar que esté por encima
         } catch (e) {
-             console.error("Error calculando posición del select:", e);
-             // Considera si detener la ejecución aquí si la posición falla
-             console.log('--- togglePositionSelect FIN (Error calculando posición) ---');
-             return; // Salir si no se puede posicionar
+            console.error('Error calculando posición del select:', e);
+            // Considera si detener la ejecución aquí si la posición falla
+            console.log('--- togglePositionSelect FIN (Error calculando posición) ---');
+            return; // Salir si no se puede posicionar
         }
-    
+
         // Preseleccionar valor basado en el orden actual en el DOM
         const allPreviews = Array.from(listaFotosContainer.querySelectorAll('.foto-subida-item:not(.loading)')); // Excluir placeholders de carga
         const currentIndex = allPreviews.findIndex(item => item.dataset.filename === filename);
         // Si no se encuentra, o es el primero, el índice es 0 -> valor 1
         // Si es el segundo, índice 1 -> valor 2, etc.
-        const valueToSelect = currentIndex !== -1 ? (currentIndex + 1).toString() : "1";
+        const valueToSelect = currentIndex !== -1 ? (currentIndex + 1).toString() : '1';
         console.log('Índice actual en DOM:', currentIndex, 'Valor a seleccionar en select:', valueToSelect); // LOG 13
         selectPosicion.value = valueToSelect;
-    
+
         // Mostrar (quitar oculto, añadir visible)
         console.log('Intentando mostrar: Quitando clase "oculto", añadiendo clase "visible"'); // LOG 14
         selectPosicion.classList.remove('oculto');
         selectPosicion.classList.add('visible');
         // *** VERIFICA EN EL INSPECTOR DEL NAVEGADOR SI LAS CLASES CAMBIAN Y SI EL ELEMENTO APARECE VISUALMENTE ***
-    
+
         // Añadir listener para ocultar al hacer clic fuera
         // Quitar primero cualquier listener previo para evitar duplicados
         document.removeEventListener('click', hideSelectOnClickOutside, true);
         console.log('Añadiendo listener hideSelectOnClickOutside (con once: true, capture: true)'); // LOG 15
         // Usamos setTimeout para que el listener se añada después de que el evento de click actual termine
         setTimeout(() => {
-            document.addEventListener('click', hideSelectOnClickOutside, { once: true, capture: true });
+            document.addEventListener('click', hideSelectOnClickOutside, {once: true, capture: true});
         }, 0);
-    
+
         console.log('--- togglePositionSelect FIN (Mostrando/Reposicionando) ---');
     }
     // >>> NUEVO: Helper para ocultar el select si se hace click fuera <<<
