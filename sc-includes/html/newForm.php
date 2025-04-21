@@ -876,6 +876,7 @@ function newForm()
 
                     <div class="frm-grupo opcion-gratis-extra">
                         <label class="opcion-checkbox opcion-extra">
+                            <input type="checkbox" name="extras[]" value="gratis" <?php echo in_array('gratis', $selected_extras) ? 'checked' : ''; ?>>
 
                             <input type="radio" name="plan_seleccionado" value="gratis" checked>
 

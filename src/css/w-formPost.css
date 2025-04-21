@@ -1572,4 +1572,5 @@ select.frm-campo.frm-select.corto {
     margin-right: -4px;
     /* display: none; */
     margin-top: 0px;
+    display: block;
 }
