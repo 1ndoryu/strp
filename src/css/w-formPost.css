@@ -1355,6 +1355,9 @@ p.numero-etapa {
 }
 /* --- Estilos Específicos para Móvil (Pantalla Completa) --- */
 @media (max-width: 768px) {
+    .subir-banner {
+        gap: 15px;
+    }
     /* Ajusta este breakpoint si es necesario */
     .custom-select-wrapper.open .custom-select-dropdown {
         position: fixed; /* Fija a la ventana */
@@ -1601,3 +1604,16 @@ select.frm-campo.frm-select.corto {
 }
 
 */
+
+.subir-banner div {
+    cursor: pointer;
+    display: flex;
+    align-content: center;
+    gap: 15px;
+}
+.subir-banner {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 70px;
+}
