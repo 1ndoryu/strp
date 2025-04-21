@@ -1410,6 +1410,10 @@ p.numero-etapa {
     /* Indica que se puede interactuar */
 }
 
+span.el-servicio-estara {
+    FONT-WEIGHT: 700;
+}
+
 .clock-tooltip {
     display: none;
     position: absolute;
@@ -1418,7 +1422,7 @@ p.numero-etapa {
     background-color: #ffffff;
     color: #1b1b1b;
     padding: 5px 10px;
-    height: 30px;
+    height: 56px;
     border-radius: 4px;
     font-size: 14px;
     white-space: nowrap;
@@ -1426,6 +1430,7 @@ p.numero-etapa {
     opacity: 0;
     transition: opacity 0.3s ease;
     pointer-events: none;
+    text-align: center;
 }
 
 /* Opcional: Pequeño triángulo/flecha para el tooltip */
