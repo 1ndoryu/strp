@@ -216,9 +216,9 @@ div#etapa-plan {
 }
 
 .opcion-checkbox.opcion-extra svg {
-    height: 36px;
-    width: 36px;
-    min-width: 30px;
+    height: 30px;
+    width: 30px;
+    min-width: 28px;
 }
 
 .opcion-radio,
@@ -231,7 +231,6 @@ div#etapa-plan {
     transition: border-color 0.2s ease, background-color 0.2s ease;
     width: 100%;
     position: relative;
-    max-width: 278px;
 }
 
 .opcion-radio:hover,
@@ -286,6 +285,7 @@ label.opcion-checkbox.opcion-extra {
     display: block;
     color: var(--color-texto);
     font-size: 16px;
+    text-transform: uppercase;
 }
 
 .opcion-contenido span {
@@ -425,8 +425,32 @@ button.btn-preview-action.btn-change-foto {
 }
 
 label.frm-checkbox {
-    FONT-WEIGHT: 700;
+    font-weight: 700;
     font-size: 13px;
+}
+
+input#whatsapp_si {
+    display: block;
+}
+
+input#whatsapp_no {
+    display: block;
+}
+
+.grupo-whatsapp-radio .frm-radio {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+span.etiqueta-whatsapp {
+    display: block;
+    margin-bottom: 10px;
+    /* font-weight: bold; */
+    color: var(--color-texto-secundario);
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: -34px;
 }
 
 /* Estilo base para el select oculto (ya lo tienes con position: absolute) */
@@ -500,7 +524,7 @@ button.btn-dia-estado.disponible {
     font-weight: 600;
     border: 2px solid #4e8059;
     background-color: #8ade8f;
-    height: 92px;
+    height: 79px;
     width: 140px;
 }
 
@@ -572,7 +596,7 @@ span.nombre-dia {
 .horas-dia {
     display: flex;
     align-items: center;
-    gap: var(--espaciado-pequeno);
+    gap: 2px;
     flex-grow: 1;
 }
 .horas-dia label {
@@ -1514,7 +1538,7 @@ p.textoayudafal,
 
 select.frm-campo.frm-select.corto {
     border-radius: 0px;
-    height: 42px;
+    height: 38px;
 }
 
 .inputhorahorario {
@@ -1525,7 +1549,7 @@ select.frm-campo.frm-select.corto {
 
 .iconohorario {
     background: #3166cc;
-    height: 42px;
+    height: 38px;
     width: 50px;
     display: flex;
     align-items: center;

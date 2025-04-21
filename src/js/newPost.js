@@ -401,10 +401,6 @@
                 break;
 
             case 'etapa-extras':
-                if (!validarCampo(terminosCheckbox, '#error-terminos', terminosCheckbox?.checked, 'Debes aceptar los términos y condiciones.')) {
-                    esValido = false;
-                    inputsInvalidos.push(terminosCheckbox);
-                }
                 break;
         }
 

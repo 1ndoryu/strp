@@ -620,7 +620,7 @@ function newForm()
                             <input type="tel" name="phone" id="telefono" class="frm-campo" required pattern="[0-9]{9,15}" placeholder="Ej.: 612345678" value="<?php echo htmlspecialchars($form_data['phone'] ?? ($_SESSION['data']['phone'] ?? '')); ?>">
 
                             <!-- INICIO: Cambio de Checkbox a Radio Buttons para WhatsApp -->
-                            <div class="grupo-whatsapp-radio" style="margin-left: 15px; display: flex; align-items: center; gap: 15px;">
+                            <div class="grupo-whatsapp-radio" style="margin-left: 15px;display: flex;align-items: center;gap: 15px;flex-direction: column;">
                                 <span class="etiqueta-whatsapp">¿Tienes WhatsApp?</span>
                                 <div style="display: flex; gap: 10px;">
                                     <label class="frm-radio">
@@ -656,9 +656,28 @@ function newForm()
                             ?>
                             <div class="par-idioma">
                                 <select name="idioma_1" id="idioma_1" class="frm-campo frm-select">
-                                    <option value="">-- Idioma 1 --</option>
+                                    <option value="">Idioma 1 </option>
                                     <?php // TODO: Cargar lista de idiomas COMPLETA como en el form antiguo
-                                    $idiomas_lista = ['es' => 'Español', 'en' => 'Inglés', 'fr' => 'Francés', 'de' => 'Alemán', 'pt' => 'Portugués', 'it' => 'Italiano']; // Ejemplo
+                                    $idiomas_lista = [
+                                        'es' => 'Español',
+                                        'en' => 'Inglés',
+                                        'fr' => 'Francés',
+                                        'de' => 'Alemán',
+                                        'pt' => 'Portugués',
+                                        'it' => 'Italiano',
+                                        'ru' => 'Ruso',
+                                        'zh' => 'Chino',
+                                        'ja' => 'Japonés',
+                                        'ko' => 'Coreano',
+                                        'ar' => 'Árabe',
+                                        'hi' => 'Hindi',
+                                        'bn' => 'Bengalí',
+                                        'pa' => 'Panyabí',
+                                        'sw' => 'Swahili',
+                                        'tr' => 'Turco',
+                                        'pl' => 'Polaco',
+                                        'nl' => 'Neerlandés'
+                                    ];
                                     foreach ($idiomas_lista as $code => $name) {
                                         // Usar el valor del campo oculto mapeado para seleccionar
                                         echo '<option value="' . htmlspecialchars($code) . '" ' . ($selected_lang1 == $code ? 'selected' : '') . '>' . htmlspecialchars($name) . '</option>';
@@ -666,7 +685,7 @@ function newForm()
                                     ?>
                                 </select>
                                 <select name="nivel_idioma_1" class="frm-campo frm-select">
-                                    <option value="">-- Nivel --</option>
+                                    <option value="">Nivel</option>
                                     <option value="basico">Básico</option>
                                     <option value="intermedio">Intermedio</option>
                                     <option value="avanzado">Avanzado</option>
@@ -675,13 +694,13 @@ function newForm()
                             </div>
                             <div class="par-idioma">
                                 <select name="idioma_2" id="idioma_2" class="frm-campo frm-select">
-                                    <option value="">-- Idioma 2 --</option>
+                                    <option value="">Idioma 2</option>
                                     <?php foreach ($idiomas_lista as $code => $name) {
                                         echo '<option value="' . htmlspecialchars($code) . '" ' . ($selected_lang2 == $code ? 'selected' : '') . '>' . htmlspecialchars($name) . '</option>';
                                     } ?>
                                 </select>
                                 <select name="nivel_idioma_2" class="frm-campo frm-select">
-                                    <option value="">-- Nivel --</option>
+                                    <option value="">Nivel</option>
                                     <option value="basico">Básico</option>
                                     <option value="intermedio">Intermedio</option>
                                     <option value="avanzado">Avanzado</option>
@@ -707,7 +726,6 @@ function newForm()
                             <label for="email" class="frm-etiqueta">Tu email de contacto *</label>
                             <!-- MAPEO: name="email" esperado por backend -->
                             <input type="email" name="email" id="email" class="frm-campo" required placeholder="Necesario para gestionar tu anuncio" value="<?php echo htmlspecialchars($form_data['email'] ?? ''); ?>">
-                            <div class="ayuda-texto">Si ya tienes cuenta, usa el mismo email. Si no, crearemos una cuenta para ti.</div>
                             <div class="error-msg oculto" id="error-email">Introduce un email válido.</div>
                         </div>
                     <?php else: ?>
@@ -778,7 +796,7 @@ function newForm()
                             <?php echo $GLOBALS['sonrisa_uno']; ?>
                             <div class="opcion-contenido">
                                 <strong>Premium</strong>
-                                <span>Tu anuncio aparecerá aleatoriamente en las posiciones superiores.</span>
+                                <span>Los anuncios se mostraran de manera aleatorea en la parte superior de la pagina.</span>
                             </div>
                             <div class="precio-y-tiempo">
                                 <p>35 €</p>
@@ -792,7 +810,7 @@ function newForm()
                         <label class="opcion-checkbox opcion-extra">
                             <input type="checkbox" name="extras[]" value="premium_mini" <?php echo in_array('premium_mini', $selected_extras) ? 'checked' : ''; ?>>
                             <?php echo $GLOBALS['sonrisa_uno']; ?>
-                            <div class="opcion-contenido"><strong>Premium Mini</strong><span>Tu anuncio aparecerá aleatoriamente bajo los Premium.</span></div>
+                            <div class="opcion-contenido"><strong>Premium Mini</strong><span>Los anuncios se mostraran de manera aleatorea abajo de los anuncios premiun.</span></div>
                             <div class="precio-y-tiempo">
                                 <p>30 €</p>
                                 <!-- Cambiado 'dias' por 'data-dias' y solo el número -->
@@ -805,7 +823,7 @@ function newForm()
                         <label class="opcion-checkbox opcion-extra">
                             <input type="checkbox" name="extras[]" value="destacado" <?php echo in_array('destacado', $selected_extras) ? 'checked' : ''; ?>>
                             <?php echo $GLOBALS['sonrisa_uno']; ?>
-                            <div class="opcion-contenido"><strong>Destacado</strong><span>Tu anuncio aparecerá aleatoriamente con un diseño destacado.</span></div>
+                            <div class="opcion-contenido"><strong>Destacado</strong><span>Los anuncios se mostraran de manera aleatorea, posiciones de manera aleatorea.</span></div>
                             <div class="precio-y-tiempo">
                                 <p>27 €</p>
                                 <!-- Cambiado 'dias' por 'data-dias' y solo el número -->
@@ -818,7 +836,7 @@ function newForm()
                         <label class="opcion-checkbox opcion-extra">
                             <input type="checkbox" name="extras[]" value="autosubida" <?php echo in_array('autosubida', $selected_extras) ? 'checked' : ''; ?>>
                             <?php echo $GLOBALS['sonrisa_uno']; ?>
-                            <div class="opcion-contenido"><strong>Autosubida</strong><span>Tu anuncio subirá posiciones automáticamente (debajo de Destacados).</span></div>
+                            <div class="opcion-contenido"><strong>Autosubida</strong><span>Los anuncios se mostaran de manera aleatorea abajo de los anuncios destacados.</span></div>
                             <div class="precio-y-tiempo">
                                 <p>25 €</p>
                                 <!-- Cambiado 'dias' por 'data-dias' y solo el número -->
@@ -831,7 +849,7 @@ function newForm()
                         <label class="opcion-checkbox opcion-extra">
                             <input type="checkbox" name="extras[]" value="banner_superior" <?php echo in_array('banner_superior', $selected_extras) ? 'checked' : ''; ?>>
                             <?php echo $GLOBALS['sonrisa_uno']; ?>
-                            <div class="opcion-contenido"><strong>Banner Superior</strong><span>Muestra tu banner aleatoriamente en la cabecera de la página.</span></div>
+                            <div class="opcion-contenido"><strong>Banner Superior</strong><span>Los banners se mostraran de manera aleatorea en la parte superior de la pagina.</span></div>
                             <div class="precio-y-tiempo">
                                 <p>50 €</p>
                                 <!-- Cambiado 'dias' por 'data-dias' y solo el número -->
@@ -844,7 +862,7 @@ function newForm()
                         <label class="opcion-checkbox opcion-extra">
                             <input type="checkbox" name="extras[]" value="banner_lateral" <?php echo in_array('banner_lateral', $selected_extras) ? 'checked' : ''; ?>>
                             <?php echo $GLOBALS['sonrisa_uno']; ?>
-                            <div class="opcion-contenido"><strong>Banner Lateral</strong><span>Muestra tu banner aleatoriamente en la barra lateral.</span></div>
+                            <div class="opcion-contenido"><strong>Banner Lateral</strong><span>Los banners se mostraran de manera aleatorea en la parte lateral de la pagina.</span></div>
                             <div class="precio-y-tiempo">
                                 <p>50 €</p>
                                 <!-- Cambiado 'dias' por 'data-dias' y solo el número -->
@@ -880,10 +898,6 @@ function newForm()
                     <!-- ========= FIN: Sección de Fechas Añadida ========= -->
 
                     <div class="frm-grupo">
-                        <label class="frm-checkbox">
-                            <input name="terminos" type="checkbox" id="terminos" value="1" required <?php echo (isset($form_data['terminos']) && $form_data['terminos'] == '1') ? 'checked' : ''; ?> />
-                            He leído y acepto los términos y condiciones.</a>
-                        </label>
                         <div class="error-msg oculto" id="error-terminos">Debes aceptar los términos y condiciones.</div>
                     </div>
 
