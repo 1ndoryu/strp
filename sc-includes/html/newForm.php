@@ -647,7 +647,7 @@ function newForm()
                     </div>
 
                     <div class="frm-grupo">
-                        <label class="frm-etiqueta">Idiomas que Hablas (Opcional)</label>
+                        <label class="frm-etiqueta">Idiomas que Hablas *</label>
                         <!-- JS necesario: Los selects idioma_1 e idioma_2 deben usarse para rellenar los campos ocultos hidden_lang_1 y hidden_lang_2 -->
                         <div class="grupo-idiomas">
                             <?php
@@ -707,6 +707,7 @@ function newForm()
                                     <option value="nativo">Nativo</option>
                                 </select>
                             </div>
+                            <div id="error-idiomas" class="error-msg oculto"></div>
                         </div>
                     </div>
 

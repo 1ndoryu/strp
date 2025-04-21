@@ -360,6 +360,25 @@
                     inputsInvalidos.push(fotosInput);
                 }
 
+                const idioma1Seleccionado = idioma1Select?.value !== '';
+                const idioma2Seleccionado = idioma2Select?.value !== '';
+                const alMenosUnIdioma = idioma1Seleccionado || idioma2Seleccionado;
+
+                if (!validarCampo(grupoIdiomasDiv, '#error-idiomas', alMenosUnIdioma, 'Debes seleccionar al menos un idioma.')) {
+                    esValido = false;
+                    inputsInvalidos.push(idioma1Select || grupoIdiomasDiv); // Enfocar el primer select o el grupo
+                }
+
+                // --- Validación Opcional de Nivel si se selecciona Idioma ---
+                if (idioma1Seleccionado && !validarCampo(nivelIdioma1Select, '#error-idiomas', nivelIdioma1Select?.value !== '', 'Debes seleccionar el nivel para el Idioma 1.')) {
+                    // Nota: Usamos el mismo div de error, pero podrías tener divs separados si prefieres
+                    esValido = false;
+                    if (!inputsInvalidos.includes(nivelIdioma1Select)) {
+                        inputsInvalidos.push(nivelIdioma1Select);
+                    }
+                }
+                // --- Fin Validación Opcional de Nivel ---
+
                 // --- Validación del Horario (NUEVA LÓGICA) ---
                 const horarioGuardadoEtapa = localStorage.getItem(HORARIO_STORAGE_KEY);
                 const horarioRequeridoEtapa = true; // Define si el horario es siempre obligatorio en esta etapa
