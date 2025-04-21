@@ -982,11 +982,13 @@ p.descripcionsegundodiv {
 }
 
 td {
-    font-size: 15px;
+    padding-bottom: 10px;
+    text-align: center;
 }
 
 th {
     font-size: 16px;
+    text-align: center;
 }
 
 .contenido-planes-segundo-div {
