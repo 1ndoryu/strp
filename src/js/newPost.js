@@ -1050,70 +1050,19 @@
     function agregarListenersNuevos() {
         console.log('Ejecutando agregarListenersNuevos (Listener Delegado PARCIAL)...'); // Nota cambiada
 
+        // --- Listener de Diagnóstico Temporal ---
         if (listaFotosContainer) {
-            console.log('Añadiendo listener de click DELEGADO a listaFotosContainer.');
-
-            listaFotosContainer.addEventListener('click', function (event) {
-                const clickedElement = event.target;
-                console.log(`\n--- Click Delegado PARCIAL Detectado ---`); // Nota cambiada
-                console.log(`Target directo:`, clickedElement);
-
-                const closestButton = clickedElement.closest('button');
-                console.log(`Botón ancestro encontrado con closest('button'):`, closestButton);
-
-                if (closestButton) {
-                    console.log(`Clases del botón encontrado:`, closestButton.classList);
-                    console.log(`Dataset del botón encontrado:`, closestButton.dataset);
-
-                    // *** CAMBIO CLAVE: Ignorar la clase de toggle aquí ***
-                    // const hasToggleClass = closestButton.classList.contains('btn-toggle-position-select');
-                    // ******************************************************
-                    const hasRotateClass = closestButton.classList.contains('btn-rotate-foto');
-                    const hasDeleteClass = closestButton.classList.contains('btn-delete-foto');
-                    const hasChangeClass = closestButton.classList.contains('btn-change-foto');
-
-                    // console.log(`Check de Clases: .btn-toggle-position-select? ${hasToggleClass}`); // Comentado
-                    console.log(`Check de Clases: .btn-rotate-foto? ${hasRotateClass}`);
-                    console.log(`Check de Clases: .btn-delete-foto? ${hasDeleteClass}`);
-                    console.log(`Check de Clases: .btn-change-foto? ${hasChangeClass}`);
-
-                    // *** CAMBIO CLAVE: Eliminar el bloque if para hasToggleClass ***
-                    /*
-                    if (hasToggleClass) {
-                        // ESTE BLOQUE YA NO SE USA, SE MANEJA DIRECTAMENTE
-                        console.log('ACCIÓN: Botón Toggle (IGNORADO por delegado)');
-                    } else */
-                    // **************************************************************
-                    if (hasRotateClass) {
-                        // Ahora es el primer chequeo relevante
-                        console.log('ACCIÓN (Delegado): Es un botón de Rotar. Llamando a handleRotateFotoClick...');
-                        event.preventDefault();
-                        handleRotateFotoClick({currentTarget: closestButton});
-                    } else if (hasDeleteClass) {
-                        console.log('ACCIÓN (Delegado): Es un botón de Eliminar. Llamando a eliminarFoto...');
-                        event.preventDefault();
-                        eliminarFoto({currentTarget: closestButton});
-                    } else if (hasChangeClass) {
-                        console.log('ACCIÓN (Delegado): Es el botón de Cambiar (oculto). No hacemos nada aquí directamente.');
-                    } else {
-                        console.log('ACCIÓN (Delegado): Botón encontrado, pero sin clase de acción conocida (o era toggle).');
-                    }
-                } else {
-                    // Manejo del click en la imagen (sigue igual)
-                    const closestImage = clickedElement.closest('img[data-filename]');
-                    if (closestImage && closestImage.closest('.foto-subida-item')) {
-                        console.log('ACCIÓN (Delegado): Click en Imagen detectado. Llamando a triggerChangeFotoFromImage...');
-                        event.preventDefault();
-                        triggerChangeFotoFromImage({currentTarget: closestImage});
-                    } else {
-                        console.log('ACCIÓN (Delegado): Click no fue en un botón de acción conocido (rotar/eliminar) ni en una imagen de preview válida.');
-                    }
-                }
-                console.log(`--- Fin Procesamiento Click Delegado PARCIAL ---`); // Nota cambiada
-            });
-        } else {
-            console.error('Error crítico: listaFotosContainer no está definido al añadir listener delegado.');
+            console.log('AÑADIENDO LISTENER DE DIAGNÓSTICO GENERAL a listaFotosContainer (fase de captura)');
+            listaFotosContainer.addEventListener(
+                'click',
+                function (event) {
+                    console.log(`DIAGNÓSTICO GENERAL - Click detectado! Target:`, event.target);
+                    // No añadir event.stopPropagation() aquí
+                },
+                true
+            ); // <--- El 'true' activa la fase de captura (se ejecuta antes)
         }
+        // --- Fin Listener de Diagnóstico Temporal ---
 
         // Listener para el cambio en el select de posición (sigue igual)
         if (selectPosicion) {

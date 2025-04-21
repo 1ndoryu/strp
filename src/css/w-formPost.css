@@ -376,7 +376,16 @@ input[type='radio'] {
     border-radius: var(--radio-borde);
     margin-bottom: var(--espaciado-base);
     overflow-x: auto;
+    position: relative;
 }
+
+select#select-posicion-foto {
+    bottom: 10px !important;
+    top: unset !important;
+    left: unset !important;
+    right: 10px;
+}
+
 .boton-subir {
     cursor: pointer;
     color: var(--color-primario);
@@ -435,13 +444,21 @@ label.frm-checkbox {
     opacity: 1;
 }
 
+button.btn-preview-action.btn-move-left.btn-toggle-position-select {
+    padding: 0px;
+    margin-right: -5px;
+}
+
+button.btn-preview-action.btn-move-right.btn-toggle-position-select {
+    padding: 0px;
+}
+
 /* Opcional: un poco de estilo para el select */
 #select-posicion-foto {
     border: 1px solid #ccc;
     background-color: white;
     padding: 5px;
     border-radius: 4px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     min-width: 60px; /* Ajusta según necesites */
 }
 
