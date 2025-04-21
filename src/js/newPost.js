@@ -68,9 +68,13 @@
     const hiddenLang2 = form.querySelector('#hidden_lang_2');
     const hiddenPhotoInputsContainer = form.querySelector('#hidden-photo-inputs');
 
+    let selectPosicion = null;
     let etapaActualIndex = 0;
 
+
     function inicializar() {
+        selectPosicion = document.getElementById('select-posicion-foto');
+
         etapas.forEach((etapa, index) => {
             if (etapa.classList.contains('activa')) {
                 etapaActualIndex = index;
@@ -816,7 +820,6 @@
         return div;
     }
     
-    const selectPosicion = document.getElementById('select-posicion-foto');
 
     // >>> NUEVO: Función para manejar click en la imagen para cambiarla <<<
     function triggerChangeFotoFromImage(event) {
