@@ -49,7 +49,7 @@ function newForm()
                         <div class="opcion-contenido">
                             <strong>Masajista Particular</strong>
                             <div class="separador-opcion-perfil"></div>
-                            <span style="margin-bottom: 10px;">Crea tu perfil individual para ofrecer tus servicios.</span>
+
                             <div class="beneficio-tipo-usuario">
                                 <?php echo $GLOBALS['check']; ?>
                                 <span class="beneficio-value">1 perfil individual</span>
@@ -75,14 +75,13 @@ function newForm()
                                 <span class="beneficio-value">Mucho más</span>
                             </div>
                         </div>
-                        <div class="boton-selecionar-perfil" id="Masajista">Registrarse</div>
+                        <div class="boton-selecionar-perfil" id="Masajista">REGISTRARSE</div>
                     </label>
                     <label class="opcion-radio">
                         <input type="radio" name="tipo_usuario" value="2" <?php echo (isset($form_data['seller_type']) && $form_data['seller_type'] == '2') ? 'checked' : ''; ?>>
                         <div class="opcion-contenido">
                             <strong>Centro de Masajes</strong>
                             <div class="separador-opcion-perfil"></div>
-                            <span style="margin-bottom: 10px;">Gestiona varios perfiles de masajistas de tu centro.</span>
                             <div class="beneficio-tipo-usuario">
                                 <?php echo $GLOBALS['check']; ?>
                                 <span class="beneficio-value">Perfiles individuales</span>
@@ -108,14 +107,13 @@ function newForm()
                                 <span class="beneficio-value">Mucho más</span>
                             </div>
                         </div>
-                        <div class="boton-selecionar-perfil" id="Centro">Registrarse</div>
+                        <div class="boton-selecionar-perfil" id="Centro">REGISTRARSE</div>
                     </label>
                     <label class="opcion-radio">
                         <input type="radio" name="tipo_usuario" value="3" <?php echo (isset($form_data['seller_type']) && $form_data['seller_type'] == '3') ? 'checked' : ''; ?>>
                         <div class="opcion-contenido">
                             <strong>Publicista</strong>
                             <div class="separador-opcion-perfil"></div>
-                            <span style="margin-bottom: 10px;">Promociona productos o servicios relacionados.</span>
                             <div class="opcion-contenido">
                                 <div class="beneficio-tipo-usuario">
                                     <?php echo $GLOBALS['check']; ?>
@@ -143,14 +141,13 @@ function newForm()
                                 </div>
                             </div>
                         </div>
-                        <div class="boton-selecionar-perfil" id="Publicista">Registrarse</div>
+                        <div class="boton-selecionar-perfil" id="Publicista">REGISTRARSE</div>
                     </label>
                     <label class="opcion-radio">
                         <input type="radio" name="tipo_usuario" value="visitante" <?php echo (isset($form_data['seller_type']) && !in_array($form_data['seller_type'], ['1', '2', '3'])) ? 'checked' : ''; ?>>
                         <div class="opcion-contenido">
                             <strong>Visitante</strong>
                             <div class="separador-opcion-perfil"></div>
-                            <span style="margin-bottom: 10px;">Guarda perfiles favoritos y contacta fácilmente. (No publica anuncios)</span>
                             <div class="opcion-contenido">
                                 <div class="beneficio-tipo-usuario">
                                     <?php echo $GLOBALS['check']; ?>
@@ -174,7 +171,7 @@ function newForm()
                                 </div>
                             </div>
                         </div>
-                        <div class="boton-selecionar-perfil" id="Visitante">Registrarse</div>
+                        <div class="boton-selecionar-perfil" id="Visitante">REGISTRARSE</div>
                     </label>
                 </div>
                 <div class="error-msg oculto" id="error-tipo-usuario">Debes seleccionar un tipo de usuario.</div>
@@ -194,7 +191,10 @@ function newForm()
 
         <!-- ======================= ETAPA 1: ELECCIÓN DE PLAN ======================= -->
         <div id="etapa-plan" class="etapa <?php echo checkSession() ? 'activa' : 'oculto'; ?>">
-            <h2 class="titulo-etapa-plan">Elige un Plan</h2>
+            <div class="text-carita">
+                <h2 class="titulo-etapa-plan">Elige un Plan</h2>
+                <?php echo $GLOBALS['sonrisa_uno'] ?>
+            </div>
             <div class="lista-opciones grupo-radios-plan">
 
                 <!-- Inputs de Radio (pueden estar ocultos con CSS si se prefiere) -->
@@ -233,7 +233,7 @@ function newForm()
                     <div class="planes-segundo-div plan-selectable <?php echo (isset($form_data['plan']) && $form_data['plan'] == 'gratis') || !isset($form_data['plan']) ? 'marcado' : ''; ?>" data-plan-value="gratis">
                         <div class="contenido-planes-segundo-div">
                             <p class="titulosegundodiv">Plan gratuito</p>
-                            <p class="descripcionsegundodiv">Prueba gratis por 30 días</p>
+                            <p class="descripcionsegundodiv">Acceso gratis por 30 días</p>
                         </div>
                         <button type="button" class="btn-seleccionar-plan">Seleccionar</button>
                     </div>
@@ -438,9 +438,9 @@ function newForm()
                             <label for="descripcion" class="frm-etiqueta">Descripción</label>
                             <label for="descripcion" class="frm-etiqueta">Acerca de mí *</label>
                             <!-- MAPEO: name="text" esperado por backend -->
-                            <textarea name="text" id="descripcion" class="frm-campo frm-textarea" rows="6" required minlength="100" maxlength="500" placeholder="Describe tus servicios, experiencia, ambiente, etc."><?php echo htmlspecialchars($form_data['text'] ?? ''); ?></textarea>
-                            <div class="contador-caracteres">Caracteres: <span id="cont-desc">0</span> (mín. 100 / máx. 500)</div>
-                            <div class="error-msg oculto" id="error-descripcion">La descripción es obligatoria (entre 100 y 500 caracteres).</div>
+                            <textarea name="text" id="descripcion" class="frm-campo frm-textarea" rows="6" required minlength="100" maxlength="300" placeholder="Describe tus servicios, experiencia, ambiente, etc."><?php echo htmlspecialchars($form_data['text'] ?? ''); ?></textarea>
+                            <div class="contador-caracteres">Caracteres: <span id="cont-desc">0</span> (mín. 100 / máx. 300)</div>
+                            <div class="error-msg oculto" id="error-descripcion">La descripción es obligatoria (entre 100 y 300 caracteres).</div>
                             <div class="error-msg oculto" id="error-desc-palabras">La descripción contiene palabras no permitidas.</div>
                         </div>
 
@@ -551,6 +551,15 @@ function newForm()
                             </div>
                             <div id="lista-fotos-subidas" class="lista-fotos sortable">
 
+                            </div>
+                            <div id="subida-fotos-contenedor">
+                                <!-- ... tu contenido existente como #lista-fotos-subidas ... -->
+
+                                <select id="select-posicion-foto" class="oculto" style="position: absolute; z-index: 10;">
+                                    <option value="1">1 - Principal</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                </select>
                             </div>
 
                         </div>
