@@ -1082,30 +1082,48 @@
         console.log('--- handlePositionChange FIN (Éxito o intento completado) ---');
     }
 
-    // >>> MODIFICADO/NUEVO: Añadir listeners <<<
+    // >>> REEMPLAZAR ESTA FUNCIÓN COMPLETA <<<
     function agregarListenersNuevos() {
         console.log('Ejecutando agregarListenersNuevos...'); // Log inicial
 
-        // Listener DELEGADO para los botones de toggle del select y otras acciones
         if (listaFotosContainer) {
             console.log('Añadiendo listener de click a listaFotosContainer.');
             listaFotosContainer.addEventListener('click', function (event) {
-                console.log('Click detectado en listaFotosContainer. Target:', event.target); // LOG 1: ¿Se dispara el listener?
+                const clickedElement = event.target; // Elemento específico clickeado
+                console.log('Click detectado en listaFotosContainer. Target:', clickedElement); // LOG 1
 
-                // Botón para abrir/cerrar el select de posición
-                const toggleButton = event.target.closest('.btn-toggle-position-select');
-                console.log('Intento de encontrar .btn-toggle-position-select:', toggleButton); // LOG 2: ¿Encuentra el botón?
+                // --- INICIO: DEBUG SVG/PATH CLICKS ---
+                // Si el click fue DENTRO de un SVG o PATH, examinemos su botón padre
+                if (clickedElement.tagName === 'svg' || clickedElement.tagName === 'path') {
+                    // Intenta encontrar el botón ancestro más cercano
+                    const parentButton = clickedElement.closest('button');
+                    console.log('DEBUG: Clicked SVG/Path. Parent button found by closest("button"):', parentButton);
+                    if (parentButton) {
+                        // Si encontramos un botón padre, muestra sus clases y dataset
+                        console.log('DEBUG: Parent button classes:', parentButton.classList);
+                        console.log('DEBUG: Parent button dataset:', parentButton.dataset);
+                        // Comprueba específicamente si tiene la clase que buscamos
+                        console.log('DEBUG: Parent button tiene clase ".btn-toggle-position-select"?', parentButton.classList.contains('btn-toggle-position-select'));
+                    } else {
+                        console.log('DEBUG: Clicked SVG/Path, pero NO se encontró un <button> ancestro.');
+                    }
+                }
+                // --- FIN: DEBUG SVG/PATH CLICKS ---
+
+                // Ahora, intenta encontrar el botón de toggle usando closest DESDE el elemento clickeado
+                const toggleButton = clickedElement.closest('.btn-toggle-position-select');
+                console.log('Intento de encontrar .btn-toggle-position-select via closest desde target:', toggleButton); // LOG 2
                 if (toggleButton) {
-                    console.log('Botón .btn-toggle-position-select encontrado! Llamando a togglePositionSelect...'); // LOG 3: ¿Llama a la función?
-                    event.preventDefault(); // Evitar acción por defecto del botón
-                    event.stopPropagation(); // Importante para evitar cierre inmediato por hideSelectOnClickOutside
-                    togglePositionSelect({currentTarget: toggleButton}); // Pasar el botón encontrado
+                    console.log('Botón .btn-toggle-position-select encontrado! Llamando a togglePositionSelect...'); // LOG 3
+                    event.preventDefault();
+                    event.stopPropagation();
+                    togglePositionSelect({currentTarget: toggleButton});
                     return; // Salir si ya manejamos este botón
                 }
 
-                // Botón para rotar
-                const rotateButton = event.target.closest('.btn-rotate-foto');
-                console.log('Intento de encontrar .btn-rotate-foto:', rotateButton);
+                // Intenta encontrar el botón de rotar
+                const rotateButton = clickedElement.closest('.btn-rotate-foto');
+                // console.log('Intento de encontrar .btn-rotate-foto via closest:', rotateButton); // Log ya visto, opcional
                 if (rotateButton) {
                     console.log('Botón .btn-rotate-foto encontrado! Llamando a handleRotateFotoClick...');
                     event.preventDefault();
@@ -1113,20 +1131,18 @@
                     return; // Salir
                 }
 
-                // Click en la imagen para cambiarla (trigger)
-                const imgElement = event.target.closest('img[data-filename]');
-                console.log('Intento de encontrar img[data-filename]:', imgElement);
-                // Asegurarse de que es una imagen dentro de un item de preview válido
+                // Intenta encontrar la imagen
+                const imgElement = clickedElement.closest('img[data-filename]');
+                // console.log('Intento de encontrar img[data-filename] via closest:', imgElement); // Log opcional
                 if (imgElement && imgElement.closest('.foto-subida-item')) {
                     console.log('Imagen preview encontrada! Llamando a triggerChangeFotoFromImage...');
-                    // No necesitas preventDefault aquí normalmente
                     triggerChangeFotoFromImage({currentTarget: imgElement});
                     return; // Salir
                 }
 
-                // Botón para eliminar
-                const deleteButton = event.target.closest('.btn-delete-foto');
-                console.log('Intento de encontrar .btn-delete-foto:', deleteButton);
+                // Intenta encontrar el botón de eliminar
+                const deleteButton = clickedElement.closest('.btn-delete-foto');
+                // console.log('Intento de encontrar .btn-delete-foto via closest:', deleteButton); // Log opcional
                 if (deleteButton) {
                     console.log('Botón .btn-delete-foto encontrado! Llamando a eliminarFoto...');
                     event.preventDefault();
@@ -1134,13 +1150,13 @@
                     return; // Salir
                 }
 
-                console.log('Click en listaFotosContainer no coincidió con ningún botón/imagen de acción conocido.'); // Log si no se encuentra nada interactivo
+                console.log('Click en listaFotosContainer no coincidió con ningún botón/imagen de acción conocido.');
             });
         } else {
             console.error('Error crítico: listaFotosContainer no está definido al intentar añadir listeners delegados.');
         }
 
-        // Listener para el cambio en el select de posición (fuera de la delegación)
+        // Listener para el cambio en el select de posición (sin cambios aquí)
         if (selectPosicion) {
             console.log('Añadiendo listener "change" a selectPosicion.');
             selectPosicion.addEventListener('change', handlePositionChange);
@@ -1148,6 +1164,7 @@
             console.error("Error crítico: selectPosicion no está definido al añadir listener 'change'.");
         }
     }
+    // >>> FIN DE LA FUNCIÓN PARA REEMPLAZAR <<<
 
     // aqui necesito que cuando este a 90 grados y 270 la imagen tenga max-width: 80px;, eso es todo
     function handleRotateFotoClick(event) {
