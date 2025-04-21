@@ -1617,3 +1617,7 @@ select.frm-campo.frm-select.corto {
     align-items: center;
     gap: 70px;
 }
+
+#etapa-tipo-usuario .opcion-radio {
+    max-width: 278px;
+}

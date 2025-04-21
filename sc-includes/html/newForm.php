@@ -233,7 +233,7 @@ function newForm()
                     <div class="planes-segundo-div plan-selectable <?php echo (isset($form_data['plan']) && $form_data['plan'] == 'gratis') || !isset($form_data['plan']) ? 'marcado' : ''; ?>" data-plan-value="gratis">
                         <div class="contenido-planes-segundo-div">
                             <p class="titulosegundodiv">Plan gratuito</p>
-                            <p class="descripcionsegundodiv">Acceso gratis por 30 días</p>
+                            <p class="descripcionsegundodiv">Prueba gratuita por 30 días</p>
                         </div>
                         <button type="button" class="btn-seleccionar-plan">Seleccionar</button>
                     </div>
@@ -241,7 +241,7 @@ function newForm()
                     <div class="planes-segundo-div plan-selectable <?php echo (isset($form_data['plan']) && $form_data['plan'] == 'silver') ? 'marcado' : ''; ?>" data-plan-value="silver">
                         <div class="contenido-planes-segundo-div">
                             <p class="titulosegundodiv">Plan Silver</p>
-                            <p class="descripcionsegundodiv">Visibilidad mejorada por 60 días.</p>
+                            <p class="descripcionsegundodiv">Acceso por 60 días.</p>
                         </div>
                         <button type="button" class="btn-seleccionar-plan">Seleccionar</button>
                     </div>
@@ -249,7 +249,7 @@ function newForm()
                     <div class="planes-segundo-div plan-selectable <?php echo (isset($form_data['plan']) && $form_data['plan'] == 'gold') ? 'marcado' : ''; ?>" data-plan-value="gold">
                         <div class="contenido-planes-segundo-div">
                             <p class="titulosegundodiv">Plan Gold</p>
-                            <p class="descripcionsegundodiv">Máxima visibilidad por 90 días.</p>
+                            <p class="descripcionsegundodiv">Acceso por 90 días</p>
                         </div>
                         <button type="button" class="btn-seleccionar-plan">Seleccionar</button>
                     </div>
