@@ -26,10 +26,10 @@
 .lista-opciones.grupo-radios {
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     gap: 10px;
+    flex-wrap: wrap;
 }
-
 .titulo-etapa-tipo-usuario {
     color: #ff339a;
     font-size: 19px;
