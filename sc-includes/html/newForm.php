@@ -526,7 +526,6 @@ function newForm()
                         <h2 class="titulo-etapa">Detalles</h2>
                     </div>
 
-                    <!-- Sección de Fotos (sin cambios) -->
                     <div class="frm-grupo">
                         <label class="frm-etiqueta">Sube tus fotos (hasta <?= htmlspecialchars($DATAJSON['max_photos'] ?? 3) ?>)</label>
                         <div class="subida-fotos-contenedor">
@@ -555,6 +554,7 @@ function newForm()
                             </div>
                             <div id="subida-fotos-contenedor">
 
+
                                 <select id="select-posicion-foto" class="oculto" style="position: absolute; z-index: 10;">
                                     <option value="1">1 - Principal</option>
                                     <option value="2">2</option>
@@ -567,22 +567,26 @@ function newForm()
                         <div class="error_msg" id="error_photo_generic" style="<?php echo (isset($form_data['photo_name']) && count($form_data['photo_name']) == 0 && $error_insert) ? 'display:block;' : 'display:none;'; ?>">Sube al menos una foto para tu anuncio.</div>
                     </div>
 
-                    <!-- Sección Horario (sin cambios) -->
                     <div class="frm-grupo">
                         <label class="frm-etiqueta" id="btn-mostrar-horario">Administrar horario*</label>
+
                         <div class="ayuda-texto oculto" id="ayuda-horario">Marca los días que estás disponible y selecciona tu horario.</div>
-                        <div class="horario-semanal oculto" id="contenedor-horario">
+
+                        <div class="horario-semanal oculto" id="contenedor-horario"> <?php /* Añadido ID y clase oculto */ ?>
                             <?php
                             $dias = ['lunes' => 'Lunes', 'martes' => 'Martes', 'miercoles' => 'Miércoles', 'jueves' => 'Jueves', 'viernes' => 'Viernes', 'sabado' => 'Sábado', 'domingo' => 'Domingo'];
                             foreach ($dias as $key => $nombre) {
                             ?>
-                                <div class="dia-horario" id="horario-<?= $key ?>" data-dia="<?= $key ?>">
-                                    <span class="nombre-dia"><?= $nombre ?>:</span>
+                                <div class="dia-horario" id="horario-<?= $key ?>" data-dia="<?= $key ?>"> <?php /* Añadido data-dia */ ?>
+                                    <span class="nombre-dia"><?= $nombre ?>:</span> <?php /* Nombre del día */ ?>
+
+                                    <?php /* Botón de estado (Disponible/No disponible) */ ?>
                                     <button type="button" class="btn-dia-estado no-disponible" data-dia="<?= $key ?>">No disponible</button>
-                                    <div class="horas-dia oculto">
+
+                                    <div class="horas-dia oculto"> <?php /* Sigue oculto por defecto */ ?>
                                         <div class="inputhorahorario">
                                             <label class="iconohorario"><?php echo $GLOBALS['sol']; ?></label>
-                                            <select name="horario_dia[<?= $key ?>][inicio]" class="frm-campo frm-select corto" disabled>
+                                            <select name="horario_dia[<?= $key ?>][inicio]" class="frm-campo frm-select corto" disabled> <?php /* Añadido disabled inicial */ ?>
                                                 <?php for ($h = 0; $h < 24; $h++) {
                                                     $hora = sprintf('%02d', $h);
                                                     echo "<option value='{$hora}:00'>{$hora}:00</option><option value='{$hora}:30'>{$hora}:30</option>";
@@ -591,9 +595,10 @@ function newForm()
                                         </div>
                                         <div class="inputhorahorario">
                                             <label class="iconohorario"><?php echo $GLOBALS['luna']; ?></label>
-                                            <select name="horario_dia[<?= $key ?>][fin]" class="frm-campo frm-select corto" disabled>
+                                            <select name="horario_dia[<?= $key ?>][fin]" class="frm-campo frm-select corto" disabled> <?php /* Añadido disabled inicial */ ?>
                                                 <?php for ($h = 0; $h < 24; $h++) {
                                                     $hora = sprintf('%02d', $h);
+                                                    // Ajuste para que la hora final por defecto sea razonable (p.ej., 18:00)
                                                     $selected_fin = ($hora == 18) ? 'selected' : '';
                                                     echo "<option value='{$hora}:00' " . (($h == 18 && !$selected_fin) ? 'selected' : '') . ">{$hora}:00</option><option value='{$hora}:30' " . (($h == 18) ? 'selected' : '') . ">{$hora}:30</option>";
                                                 } ?>
@@ -604,43 +609,46 @@ function newForm()
                             <?php } ?>
                         </div>
                         <div class="error-msg oculto" id="error-horario">Debes marcar al menos un día como disponible y configurar su horario.</div>
+                        <!-- Mensaje de error si el backend falló por horario (mapeado) -->
                         <div class="error_msg" id="error_backend_horario" style="<?php echo (isset($form_data['dis'], $form_data['horario-inicio'], $form_data['horario-final']) && (!$form_data['dis'] || !$form_data['horario-inicio'] || !$form_data['horario-final']) && $error_insert) ? 'display:block;' : 'display:none;'; ?>">Error al procesar el horario. Asegúrate de marcar días y horas.</div>
                     </div>
 
-                    <!-- Sección Teléfono y WhatsApp MODIFICADA -->
                     <div class="frm-grupo">
                         <label for="telefono" class="frm-etiqueta">Teléfono de Contacto *</label>
                         <div class="grupo-telefono">
-                            <!-- Input de Teléfono (sin cambios) -->
+                            <!-- MAPEO: name="phone" esperado por backend -->
                             <input type="tel" name="phone" id="telefono" class="frm-campo" required pattern="[0-9]{9,15}" placeholder="Ej.: 612345678" value="<?php echo htmlspecialchars($form_data['phone'] ?? ($_SESSION['data']['phone'] ?? '')); ?>">
 
-                            <!-- Select de WhatsApp (REEMPLAZA el checkbox) -->
-                            <select name="whatsapp" id="whatsapp_select" class="frm-campo frm-select whatsapp-select"> <?php /* Añadidas clases para posible estilo */ ?>
-                                <?php
-                                // Determinar si WhatsApp estaba activo (valor 1) para preseleccionar
-                                $whatsapp_activo = 0; // Por defecto es 'No' (valor 0)
-                                // Comprueba si viene de un envío fallido ($form_data) O de los datos de sesión
-                                if (
-                                    (isset($form_data['whatsapp']) && $form_data['whatsapp'] == 1) ||
-                                    (!isset($form_data['whatsapp']) && isset($_SESSION['data']['whatsapp']) && $_SESSION['data']['whatsapp'] == 1)
-                                ) {
-                                    $whatsapp_activo = 1; // Cambiar a 'Sí' (valor 1) si se cumple la condición
-                                }
-                                ?>
-                                <!-- MAPEO: name="whatsapp" esperado por backend. value="1" para Sí, value="0" para No -->
-                                <option value="1" <?php echo ($whatsapp_activo == 1) ? 'selected' : ''; ?>>WhatsApp: Sí</option>
-                                <option value="0" <?php echo ($whatsapp_activo == 0) ? 'selected' : ''; ?>>WhatsApp: No</option>
-                            </select>
+                            <!-- INICIO: Cambio de Checkbox a Radio Buttons para WhatsApp -->
+                            <div class="grupo-whatsapp-radio" style="margin-left: 15px; display: flex; align-items: center; gap: 15px;">
+                                <span class="etiqueta-whatsapp">¿Tienes WhatsApp?</span>
+                                <div style="display: flex; gap: 10px;">
+                                    <label class="frm-radio">
+                                        <input type="radio" name="whatsapp" id="whatsapp_si" value="1"
+                                            <?php
+                                            // Marcar 'Sí' si whatsapp es 1 en datos del form o sesión
+                                            $check_si = (isset($form_data['whatsapp']) && $form_data['whatsapp'] == 1) || (!isset($form_data['whatsapp']) && isset($_SESSION['data']['whatsapp']) && $_SESSION['data']['whatsapp'] == 1);
+                                            echo $check_si ? 'checked' : '';
+                                            ?>> Sí
+                                    </label>
+                                    <label class="frm-radio">
+                                        <input type="radio" name="whatsapp" id="whatsapp_no" value="0"
+                                            <?php
+                                            // Marcar 'No' si 'Sí' no está marcado (es decir, si whatsapp es 0, no está definido, o es cualquier otro valor)
+                                            echo !$check_si ? 'checked' : '';
+                                            ?>> No
+                                    </label>
+                                </div>
+                            </div>
+                            <!-- FIN: Cambio de Checkbox a Radio Buttons para WhatsApp -->
+
                         </div>
                         <div class="error-msg oculto" id="error-telefono">Introduce un teléfono válido (solo números, 9-15 dígitos).</div>
-                        <!-- Podrías añadir un mensaje de error específico para WhatsApp si fuera necesario -->
-                        <!-- <div class="error-msg oculto" id="error-whatsapp">Selecciona si usas WhatsApp.</div> -->
                     </div>
 
-
-                    <!-- Sección Idiomas (sin cambios) -->
                     <div class="frm-grupo">
                         <label class="frm-etiqueta">Idiomas que Hablas (Opcional)</label>
+                        <!-- JS necesario: Los selects idioma_1 e idioma_2 deben usarse para rellenar los campos ocultos hidden_lang_1 y hidden_lang_2 -->
                         <div class="grupo-idiomas">
                             <?php
                             $selected_lang1 = $form_data['lang-1'] ?? null;
@@ -649,9 +657,10 @@ function newForm()
                             <div class="par-idioma">
                                 <select name="idioma_1" id="idioma_1" class="frm-campo frm-select">
                                     <option value="">-- Idioma 1 --</option>
-                                    <?php
+                                    <?php // TODO: Cargar lista de idiomas COMPLETA como en el form antiguo
                                     $idiomas_lista = ['es' => 'Español', 'en' => 'Inglés', 'fr' => 'Francés', 'de' => 'Alemán', 'pt' => 'Portugués', 'it' => 'Italiano']; // Ejemplo
                                     foreach ($idiomas_lista as $code => $name) {
+                                        // Usar el valor del campo oculto mapeado para seleccionar
                                         echo '<option value="' . htmlspecialchars($code) . '" ' . ($selected_lang1 == $code ? 'selected' : '') . '>' . htmlspecialchars($name) . '</option>';
                                     }
                                     ?>
@@ -682,9 +691,9 @@ function newForm()
                         </div>
                     </div>
 
-                    <!-- Sección Salidas (sin cambios) -->
                     <div class="frm-grupo">
                         <label for="realiza_salidas" class="frm-etiqueta">¿Realizas salidas a domicilio/hotel? *</label>
+                        <!-- MAPEO: name="out" esperado por backend -->
                         <select name="out" id="realiza_salidas" class="frm-campo frm-select" required>
                             <?php $selected_out = $form_data['out'] ?? '0'; ?>
                             <option value="0" <?php echo ($selected_out == '0') ? 'selected' : ''; ?>>No</option>
@@ -693,15 +702,16 @@ function newForm()
                         <div class="error-msg oculto" id="error-salidas">Debes indicar si realizas salidas.</div>
                     </div>
 
-                    <!-- Sección Email (sin cambios) -->
                     <?php if (!checkSession()): ?>
                         <div class="frm-grupo">
                             <label for="email" class="frm-etiqueta">Tu email de contacto *</label>
+                            <!-- MAPEO: name="email" esperado por backend -->
                             <input type="email" name="email" id="email" class="frm-campo" required placeholder="Necesario para gestionar tu anuncio" value="<?php echo htmlspecialchars($form_data['email'] ?? ''); ?>">
                             <div class="ayuda-texto">Si ya tienes cuenta, usa el mismo email. Si no, crearemos una cuenta para ti.</div>
                             <div class="error-msg oculto" id="error-email">Introduce un email válido.</div>
                         </div>
                     <?php else: ?>
+                        <!-- Si está logueado, el backend espera el email igualmente -->
                         <input type="hidden" name="email" value="<?php echo htmlspecialchars($_SESSION['data']['mail']); ?>">
                         <div class="frm-grupo">
                             <label class="frm-etiqueta">Email de contacto:</label>
@@ -709,11 +719,11 @@ function newForm()
                         </div>
                     <?php endif; ?>
 
-                    <!-- Navegación y Progreso (sin cambios) -->
                     <div class="navegacion-etapa">
                         <button type="button" class="frm-boton btn-anterior">Anterior</button>
                         <button type="button" class="frm-boton btn-siguiente">Siguiente</button>
                     </div>
+
                     <div class="progresos-etapa">
                         <div class="numero-etapa-progreso">
                             <p>1</p>
