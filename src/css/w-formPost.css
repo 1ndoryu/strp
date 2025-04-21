@@ -405,6 +405,21 @@ button.btn-preview-action.btn-change-foto {
     display: none;
 }
 
+.text-carita {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+.text-carita svg {
+    height: 30px;
+}
+
+label.frm-checkbox {
+    FONT-WEIGHT: 700;
+    font-size: 13px;
+}
+
 svg#uuid-67eca691-fad9-4dbb-8a42-6bf39e0830b8 {
     height: 24px;
     width: 24px;

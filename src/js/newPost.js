@@ -701,13 +701,15 @@
         div.dataset.filename = filename;
         div.innerHTML = htmlContent; // El HTML base que viene del servidor
 
+        // Limpiar input oculto si viene en el HTML (como en el original)
         const hiddenInPreview = div.querySelector('input[name="photo_name[]"]');
         hiddenInPreview?.remove();
 
+        // Contenedor para los botones de acción
         const actionsDiv = document.createElement('div');
         actionsDiv.classList.add('preview-actions');
 
-        // --- Botón Mover Izquierda ---
+        // --- Botón Mover Izquierda (Existente) ---
         const moveLeftBtn = document.createElement('button');
         moveLeftBtn.type = 'button';
         // >>> CAMBIO 1: Añade clase para identificarlo para el select <<<
@@ -739,13 +741,13 @@
         // moveRightBtn.addEventListener('click', handleMoveFotoClick); // COMENTADO o ELIMINADO
         actionsDiv.appendChild(moveRightBtn); // Se mantiene el botón visualmente
 
-        // --- Botón Cambiar Foto ---
+        // --- Botón Cambiar Foto (Existente) ---
         const changeBtn = document.createElement('button');
         changeBtn.type = 'button';
         changeBtn.classList.add('btn-preview-action', 'btn-change-foto');
         changeBtn.title = 'Cambiar foto';
         changeBtn.setAttribute('aria-label', `Cambiar la foto ${filename}`);
-        changeBtn.dataset.filename = filename; // Mantenemos el dataset por si acaso
+        changeBtn.dataset.filename = filename;
         changeBtn.innerHTML = `
             <?xml version="1.0" encoding="UTF-8"?>
             <svg id="uuid-67eca691-fad9-4dbb-8a42-6bf39e0830b8" data-name="Capa 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28">
@@ -758,16 +760,31 @@
         // changeBtn.addEventListener('click', handleChangeFotoClick); // COMENTADO o ELIMINADO
         actionsDiv.appendChild(changeBtn); // Se mantiene el botón visualmente
 
-        // --- Botón Rotar Foto (Existente) ---
+        // --- ***NUEVO: Botón Rotar Foto*** ---
         const rotateBtn = document.createElement('button');
-        // ... (código del botón rotar sin cambios) ...
-        rotateBtn.addEventListener('click', handleRotateFotoClick); // Mantenemos su listener
+        rotateBtn.type = 'button';
+        rotateBtn.classList.add('btn-preview-action', 'btn-rotate-foto'); // Clase específica
+        rotateBtn.title = 'Rotar foto 90°';
+        rotateBtn.setAttribute('aria-label', `Rotar la foto ${filename} 90 grados`);
+        rotateBtn.dataset.filename = filename;
+        // Usamos el icono SVG proporcionado por el usuario
+        rotateBtn.innerHTML = `
+            <svg data-testid="geist-icon" height="12" stroke-linejoin="round" style="color:currentColor" viewBox="0 0 16 16" width="12"><path fill-rule="evenodd" clip-rule="evenodd" d="M8.00002 1.25C5.33749 1.25 3.02334 2.73677 1.84047 4.92183L1.48342 5.58138L2.80253 6.29548L3.15958 5.63592C4.09084 3.91566 5.90986 2.75 8.00002 2.75C10.4897 2.75 12.5941 4.40488 13.2713 6.67462H11.8243H11.0743V8.17462H11.8243H15.2489C15.6631 8.17462 15.9989 7.83883 15.9989 7.42462V4V3.25H14.4989V4V5.64468C13.4653 3.06882 10.9456 1.25 8.00002 1.25ZM1.50122 10.8555V12.5V13.25H0.0012207V12.5V9.07538C0.0012207 8.66117 0.337007 8.32538 0.751221 8.32538H4.17584H4.92584V9.82538H4.17584H2.72876C3.40596 12.0951 5.51032 13.75 8.00002 13.75C10.0799 13.75 11.8912 12.5958 12.8266 10.8895L13.1871 10.2318L14.5025 10.9529L14.142 11.6105C12.9539 13.7779 10.6494 15.25 8.00002 15.25C5.05453 15.25 2.53485 13.4313 1.50122 10.8555Z" fill="currentColor"></path></svg>`;
+        rotateBtn.addEventListener('click', handleRotateFotoClick); // ¡Nuevo handler!
         actionsDiv.appendChild(rotateBtn);
 
         // --- Botón Eliminar Foto (Existente) ---
         const deleteBtn = document.createElement('button');
-        // ... (código del botón eliminar sin cambios) ...
-        deleteBtn.addEventListener('click', eliminarFoto); // Mantenemos su listener
+        deleteBtn.type = 'button';
+        deleteBtn.classList.add('btn-preview-action', 'btn-delete-foto');
+        deleteBtn.title = 'Eliminar foto';
+        deleteBtn.setAttribute('aria-label', `Eliminar la foto ${filename}`);
+        deleteBtn.dataset.filename = filename;
+        deleteBtn.innerHTML = `
+            <svg data-testid="geist-icon" height="12" stroke-linejoin="round" viewBox="0 0 16 16" width="12" style="color: currentcolor;" aria-hidden="true">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M12.4697 13.5303L13 14.0607L14.0607 13L13.5303 12.4697L9.06065 7.99999L13.5303 3.53032L14.0607 2.99999L13 1.93933L12.4697 2.46966L7.99999 6.93933L3.53032 2.46966L2.99999 1.93933L1.93933 2.99999L2.46966 3.53032L6.93933 7.99999L2.46966 12.4697L1.93933 13L2.99999 14.0607L3.53032 13.5303L7.99999 9.06065L12.4697 13.5303Z" fill="currentColor"></path>
+            </svg>`;
+        deleteBtn.addEventListener('click', eliminarFoto);
         actionsDiv.appendChild(deleteBtn);
 
         // --- Adjuntar Contenedor de Acciones ---
@@ -798,7 +815,7 @@
 
         return div;
     }
-
+    
     const selectPosicion = document.getElementById('select-posicion-foto');
 
     // >>> NUEVO: Función para manejar click en la imagen para cambiarla <<<
