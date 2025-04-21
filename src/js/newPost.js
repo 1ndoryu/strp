@@ -9,6 +9,11 @@
         return;
     }
 
+    // >>> NUEVO: Constantes para placeholders <<<
+    const MAX_PHOTOS = 3; // Número máximo de imágenes permitidas
+    const SVG_PLACEHOLDER = `<?xml version="1.0" encoding="UTF-8"?> <svg id="uuid-0ca005e1-d9fe-4045-a665-2e60e21962d4" data-name="Capa 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 145.83 120.73"> <defs> <style> .uuid-4e0375d0-00b6-45fd-960c-a83a919e3c21 { fill: #383a39; } .uuid-e42eef17-cbac-4bbb-bccc-8dc7fa78a734 { fill: none; stroke: #383a39; stroke-miterlimit: 10; stroke-width: 4.33px; } </style> </defs> <polygon class="uuid-4e0375d0-00b6-45fd-960c-a83a919e3c21" points="19.95 103.93 45.95 72.93 62.9 88.43 87.95 55.93 125.88 103.93 19.95 103.93"/> <circle class="uuid-4e0375d0-00b6-45fd-960c-a83a919e3c21" cx="31.95" cy="34.93" r="12"/> <rect class="uuid-e42eef17-cbac-4bbb-bccc-8dc7fa78a734" x="2.17" y="2.17" width="141.5" height="116.4" rx="18.8" ry="18.8"/> </svg>`;
+    // <<< FIN NUEVO >>>
+
     const idioma1Select = document.getElementById('idioma_1');
     const nivelIdioma1Select = document.getElementById('nivel_idioma_1'); // <-- Necesario
     const idioma2Select = document.getElementById('idioma_2');
@@ -87,6 +92,7 @@
         agregarListeners();
         actualizarContadores();
         agregarListenersNuevos();
+        actualizarPlaceholders();
 
         actualizarMarcadoVisualRadios(tipoUsuarioRadios);
         actualizarMarcadoVisualPlan();
@@ -670,6 +676,8 @@
 
                     // Validar: limpiar error si se añadió la primera foto
                     validarCampo(listaFotosContainer, '#error-fotos', true, '');
+
+                    actualizarPlaceholders();
                 } else {
                     // --- ERROR: El servidor no devolvió un filename válido ---
                     mostrarErrorFotos(`Error procesando la respuesta del servidor para "${file.name}". Respuesta: ${html}`);
@@ -716,6 +724,36 @@
         `;
         return div;
     }
+
+    // >>> NUEVA FUNCIÓN: Para mostrar/ocultar placeholders <<<
+    function actualizarPlaceholders() {
+        if (!listaFotosContainer || !hiddenPhotoInputsContainer) {
+            console.error('Error: No se encontraron los contenedores de fotos para actualizar placeholders.');
+            return;
+        }
+
+        // 1. Eliminar TODOS los placeholders existentes primero
+        const existingPlaceholders = listaFotosContainer.querySelectorAll('.foto-placeholder');
+        existingPlaceholders.forEach(ph => ph.remove());
+
+        // 2. Contar cuántas fotos reales (previews) hay
+        //    Usamos los inputs ocultos como fuente fiable de la cantidad de fotos subidas
+        const currentPhotosCount = hiddenPhotoInputsContainer.querySelectorAll('input[name="photo_name[]"]').length;
+
+        // 3. Calcular cuántos placeholders se necesitan
+        const placeholdersNeeded = Math.max(0, MAX_PHOTOS - currentPhotosCount);
+
+        // 4. Crear y añadir los placeholders necesarios
+        for (let i = 0; i < placeholdersNeeded; i++) {
+            const placeholderDiv = document.createElement('div');
+            placeholderDiv.classList.add('foto-placeholder'); // Clase para identificar y estilizar
+            placeholderDiv.innerHTML = SVG_PLACEHOLDER; // Insertar el SVG
+            // Añadir el placeholder al final del contenedor de la lista
+            listaFotosContainer.appendChild(placeholderDiv);
+        }
+        console.log(`Placeholders actualizados: ${placeholdersNeeded} mostrados.`);
+    }
+    // <<< FIN NUEVA FUNCIÓN >>>
 
     function crearPreviewFoto(htmlContent, filename) {
         const div = document.createElement('div');
@@ -1065,71 +1103,103 @@
         console.log('--- handlePositionChange FIN (Éxito o intento completado) ---');
     }
 
-    // >>> REEMPLAZA agregarListenersNuevos con ESTA versión <<<
+    // >>> ESTA ES LA FUNCIÓN agregarListenersNuevos COMPLETA Y CORREGIDA <<<
     function agregarListenersNuevos() {
-        console.log('Ejecutando agregarListenersNuevos...'); // Mensaje actualizado
+        console.log('Ejecutando agregarListenersNuevos (CON LISTENERS DELEGADOS PARA ROTAR/ELIMINAR/IMG)...');
 
-        // Listener para el cambio en el select de posición (sigue igual)
+        // --- Listener para el cambio en el select de posición ---
+        // (Esta parte maneja el dropdown para mover fotos a una posición específica)
         if (selectPosicion) {
             console.log('Añadiendo listener "change" a selectPosicion.');
+            // Remover listener previo para evitar duplicados si esta función se llama más de una vez
             selectPosicion.removeEventListener('change', handlePositionChange);
             selectPosicion.addEventListener('change', handlePositionChange);
         } else {
-            console.error('Error crítico: selectPosicion no está definido al añadir listener change.');
+            console.error('Error crítico: selectPosicion (el dropdown de posición) no está definido al añadir listener change.');
         }
 
-        // --- INICIO: Añadir Listener Delegado para Clic en Imagen ---
+        // --- Listener Delegado ÚNICO para Clics dentro de listaFotosContainer ---
+        // (Este único listener manejará clics en imágenes, botón rotar, botón eliminar, etc.)
         if (listaFotosContainer) {
-            console.log('Añadiendo listener delegado a listaFotosContainer para clicks en IMG.');
+            console.log('Añadiendo/Asegurando listener delegado a listaFotosContainer para clicks en IMG, ROTATE, DELETE.');
 
-            // Remover listener previo si existe (buena práctica para evitar duplicados)
-            // Nota: Necesitaríamos una referencia a la función del listener si quisiéramos removerla
-            //       específicamente. Por simplicidad, asumimos que esto se llama una sola vez
-            //       o que la duplicación no es un problema grave aquí.
-            //       Si fuera necesario, se definiría la función callback fuera y se usaría
-            //       listaFotosContainer.removeEventListener('click', nombreFuncionCallback);
+            // NOTA: Idealmente, se añadiría este listener una sola vez.
+            // Si hay riesgo de llamarlo múltiples veces, deberías guardar una referencia
+            // a la función callback y usar removeEventListener antes de añadirlo de nuevo,
+            // o usar una bandera para saber si ya se añadió.
+            // Por simplicidad aquí, asumimos que se configura correctamente una vez.
 
             listaFotosContainer.addEventListener('click', function (event) {
-                // 1. Verificar si el elemento clickeado es una imagen (IMG)
-                const targetElement = event.target;
-                if (targetElement.tagName === 'IMG') {
-                    // 2. Verificar si esa imagen está dentro de un item de foto subida
-                    const previewItem = targetElement.closest('.foto-subida-item');
-                    if (previewItem && !previewItem.classList.contains('loading')) {
-                        // 3. Verificar si la imagen tiene el data-filename necesario
-                        const filename = targetElement.dataset.filename;
-                        if (filename) {
-                            console.log(`Clic detectado en imagen con filename: ${filename}. Llamando a triggerChangeFotoFromImage.`);
-                            // 4. Llamar a la función existente que maneja el cambio
-                            //    Pasamos el evento simulado con currentTarget siendo la imagen
-                            triggerChangeFotoFromImage({currentTarget: targetElement});
-                        } else {
-                            console.warn('Imagen clickeada no tiene data-filename.');
-                        }
+                // 'event.target' es el elemento exacto donde se hizo clic (puede ser un SVG, un SPAN, etc.)
+                const target = event.target;
+
+                console.log('Click delegado detectado en listaFotosContainer. Target:', target);
+
+                // --- 1. Comprobar si se hizo clic DENTRO del botón ROTAR ---
+                // Usamos closest() para encontrar el botón aunque se haya hecho clic en su icono SVG
+                const rotateButton = target.closest('.btn-rotate-foto');
+                if (rotateButton) {
+                    console.log('Delegated click: Botón ROTAR detectado.');
+                    event.preventDefault(); // Prevenir comportamiento por defecto si lo hubiera
+                    event.stopPropagation(); // Detener la propagación para no activar otros listeners (si los hubiera)
+                    // Llamamos a la función original, pasándole un objeto que simula
+                    // el 'currentTarget' que esperaría si el listener estuviera directo en el botón.
+                    handleRotateFotoClick({currentTarget: rotateButton});
+                    return; // Acción realizada, no necesitamos seguir comprobando otros elementos
+                }
+
+                // --- 2. Comprobar si se hizo clic DENTRO del botón ELIMINAR ---
+                const deleteButton = target.closest('.btn-delete-foto');
+                if (deleteButton) {
+                    console.log('Delegated click: Botón ELIMINAR detectado.');
+                    event.preventDefault();
+                    event.stopPropagation();
+                    // Llamamos a la función de eliminar, simulando el evento
+                    eliminarFoto({currentTarget: deleteButton});
+                    return; // Acción realizada
+                }
+
+                // --- 3. Comprobar si se hizo clic en una IMAGEN (para cambiarla) ---
+                // (Esta lógica ya estaba, la mantenemos y aseguramos que funciona con la delegación)
+                if (target.tagName === 'IMG') {
+                    const previewItem = target.closest('.foto-subida-item');
+                    // Asegurarse que es una imagen de un preview real (no loading, no placeholder) y tiene filename
+                    if (previewItem && !previewItem.classList.contains('loading') && !previewItem.classList.contains('foto-placeholder') && target.dataset.filename) {
+                        console.log(`Delegated click: Imagen con filename ${target.dataset.filename} detectada para cambio.`);
+                        event.preventDefault(); // Podría ser útil si la imagen estuviera dentro de un enlace
+                        event.stopPropagation();
+                        // Llamamos a la función que dispara el input de archivo para reemplazar
+                        triggerChangeFotoFromImage({currentTarget: target}); // Pasamos la imagen como currentTarget
+                        return; // Acción realizada
+                    } else if (previewItem && previewItem.classList.contains('foto-placeholder')) {
+                        // El usuario hizo clic en un placeholder SVG
+                        console.log('Delegated click: Placeholder SVG clickeado.');
+                        // Podrías decidir abrir el selector de archivos aquí si quieres esa funcionalidad
+                        // fotosInput.click();
+                        return; // Acción (o inacción intencionada) realizada
                     }
                 }
-                // Nota: No detenemos la propagación (event.stopPropagation()) aquí
-                // a menos que sea estrictamente necesario, para permitir que otros
-                // listeners (si los hubiera en elementos padres) funcionen.
-            });
-        } else {
-            console.error('Error: listaFotosContainer no encontrado al añadir listener para IMG.');
-        }
-        // --- FIN: Añadir Listener Delegado para Clic en Imagen ---
 
-        // --- Listener de Diagnóstico Temporal (lo mantenemos si quieres) ---
-        // if (listaFotosContainer) {
-        //     console.log('AÑADIENDO LISTENER DE DIAGNÓSTICO GENERAL a listaFotosContainer (fase de captura)');
-        //     listaFotosContainer.addEventListener(
-        //         'click',
-        //         function (event) {
-        //             console.log(`DIAGNÓSTICO GENERAL - Click detectado! Target:`, event.target);
-        //         },
-        //         true
-        //     );
-        // }
-        // --- Fin Listener de Diagnóstico Temporal ---
-    } // >>> FIN DE LA FUNCIÓN MODIFICADA <<<
+                // --- 4. (Opcional) Comprobar clic en botón 'Cambiar' si se hiciera visible ---
+                // (Este botón está oculto por defecto en tu código, pero por si acaso)
+                const changeButton = target.closest('.btn-change-foto');
+                if (changeButton && changeButton.style.display !== 'none') {
+                    console.log('Delegated click: Botón CAMBIAR (visible) detectado.');
+                    event.preventDefault();
+                    event.stopPropagation();
+                    handleChangeFotoClick({currentTarget: changeButton});
+                    return; // Acción realizada
+                }
+
+                // Si el clic no fue en ninguno de los elementos interactivos que nos interesan,
+                // el código llega hasta aquí y simplemente no hace nada, permitiendo el comportamiento normal.
+                console.log('Delegated click: El clic no coincidió con IMG, Rotar, Eliminar o Cambiar interactivos.');
+            }); // Fin del addEventListener 'click' en listaFotosContainer
+        } else {
+            console.error('Error crítico: listaFotosContainer (el contenedor de previews) no encontrado al intentar añadir listener delegado.');
+        }
+        // --- FIN: Listener Delegado ÚNICO ---
+    } // >>> FIN DE LA FUNCIÓN agregarListenersNuevos <<<
 
     // >>> FIN DE LA FUNCIÓN PARA REEMPLAZAR <<<
 
@@ -1285,6 +1355,8 @@
             console.error('No se encontró el filename en el botón de eliminar.');
             return;
         }
+
+        actualizarPlaceholders();
 
         console.log(`Intentando eliminar: ${filename}`);
 
