@@ -832,7 +832,7 @@ function newForm()
                             <div class="opcion-contenido">
                                 <strong>Destacado</strong>
                                 <!-- Corregido: mostrarán, aleatoria, aleatoria -->
-                                <span>Los anuncios se mostrarán de manera aleatoria, posiciones de manera aleatoria.</span>
+                                <span>Los anuncios se mostrarán de manera aleatoria.</span>
                             </div>
                             <div class="precio-y-tiempo">
                                 <p>27 €</p>
