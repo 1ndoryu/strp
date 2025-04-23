@@ -30,6 +30,7 @@
     gap: 10px;
     flex-wrap: wrap;
 }
+
 .titulo-etapa-tipo-usuario {
     color: #ff339a;
     font-size: 20px;
@@ -582,9 +583,13 @@ span.nombre-dia {
 }
 
 /* --- Horario Semanal --- */
+
 .horario-semanal {
     /* Contenedor general */
 }
+
+/* Container's schedules */
+
 .dia-horario {
     display: flex;
     align-items: center;
@@ -704,6 +709,7 @@ button#btn-mostrar-horario {
 /* ======================================== */
 /*           MENSAJES DE ERROR             */
 /* ======================================== */
+
 .error-msg {
     color: var(--color-error);
     font-size: 13px;
@@ -1628,4 +1634,8 @@ select.frm-campo.frm-select.corto {
 
 #etapa-tipo-usuario .opcion-radio {
     max-width: 278px;
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
