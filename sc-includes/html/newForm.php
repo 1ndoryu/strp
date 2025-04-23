@@ -446,6 +446,7 @@ function newForm()
 
                         <div class="frm-grupo">
                             <label class="frm-etiqueta">Servicios *</label>
+                            <p>Selecciona de 1 hasta 12 servicios.</p>
 
                             <div class="grupo-checkboxes">
                                 <?php
