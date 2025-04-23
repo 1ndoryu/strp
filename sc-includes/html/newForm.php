@@ -323,7 +323,7 @@ function newForm()
                         <div class="frm-grupo">
                             <label for="nombre" class="frm-etiqueta">Crea un nombre para tu perfil</label>
                             <!-- MAPEO: name="name" esperado por backend -->
-                            <input type="text" placeholder="Ejemplo: Ana" name="name" id="nombre" class="frm-campo" required maxlength="50" value="<?php echo htmlspecialchars($form_data['name'] ?? ($_SESSION['data']['name'] ?? '')); ?>">
+                            <input type="text" name="name" id="nombre" class="frm-campo" required maxlength="50" value="<?php echo htmlspecialchars($form_data['name'] ?? ($_SESSION['data']['name'] ?? '')); ?>">
                             <div class="error-msg oculto" id="error-nombre">El nombre es obligatorio.</div>
                         </div>
 
@@ -334,14 +334,14 @@ function newForm()
                             <div class="custom-select-wrapper" id="custom-categoria-wrapper">
                                 <!-- Botón que simula el select (trigger) -->
                                 <button type="button" class="frm-campo custom-select-trigger" aria-haspopup="listbox" aria-expanded="false" data-select-id="categoria">
-                                    <span class="custom-select-value">+ Categoría</span> <!-- Texto inicial del placeholder -->
+                                    <span class="custom-select-value">+ Categoría</span>
                                     <span class="custom-select-arrow">▾</span>
                                 </button>
 
                                 <!-- Dropdown/Modal personalizado (inicialmente oculto) -->
                                 <div class="custom-select-dropdown" role="listbox" hidden>
                                     <div class="custom-select-header">
-                                        <input type="search" class="custom-select-search" placeholder="Buscar categoría..." aria-label="Buscar categoría">
+                                        <input type="search" class="custom-select-search" aria-label="Buscar categoría">
                                         <button type="button" class="custom-select-close" aria-label="Cerrar selector">×</button>
                                     </div>
                                     <ul class="custom-select-options">
@@ -397,7 +397,7 @@ function newForm()
                                 <!-- Dropdown/Modal personalizado (inicialmente oculto) -->
                                 <div class="custom-select-dropdown" role="listbox" hidden>
                                     <div class="custom-select-header">
-                                        <input type="search" class="custom-select-search" placeholder="Buscar provincia..." aria-label="Buscar provincia">
+                                        <input type="search" class="custom-select-search" aria-label="Buscar provincia">
                                         <button type="button" class="custom-select-close" aria-label="Cerrar selector">×</button>
                                     </div>
                                     <ul class="custom-select-options">
@@ -428,7 +428,7 @@ function newForm()
                         <div class="frm-grupo">
                             <label for="titulo_anuncio" class="frm-etiqueta">Título del Anuncio *</label>
                             <!-- MAPEO: name="tit" esperado por backend -->
-                            <input type="text" name="tit" id="titulo_anuncio" class="frm-campo" required minlength="10" maxlength="50" placeholder="Ej.: Masajista Profesional en Madrid Centro" value="<?php echo htmlspecialchars($form_data['tit'] ?? ''); ?>">
+                            <input type="text" name="tit" id="titulo_anuncio" class="frm-campo" required minlength="10" maxlength="50" value="<?php echo htmlspecialchars($form_data['tit'] ?? ''); ?>">
                             <div class="contador-caracteres">Caracteres: <span id="cont-titulo">0</span> (mín. 10 / máx. 50)</div>
                             <div class="error-msg oculto" id="error-titulo">El título es obligatorio (entre 10 y 50 caracteres).</div>
                             <div class="error-msg oculto" id="error-titulo-palabras">El título contiene palabras no permitidas.</div>
@@ -438,7 +438,7 @@ function newForm()
                             <label for="descripcion" class="frm-etiqueta">Descripción</label>
                             <label for="descripcion" class="frm-etiqueta">Acerca de mí *</label>
                             <!-- MAPEO: name="text" esperado por backend -->
-                            <textarea name="text" id="descripcion" class="frm-campo frm-textarea" rows="6" required minlength="100" maxlength="300" placeholder="Describe tus servicios, experiencia, ambiente, etc."><?php echo htmlspecialchars($form_data['text'] ?? ''); ?></textarea>
+                            <textarea name="text" id="descripcion" class="frm-campo frm-textarea" rows="6" required minlength="100" maxlength="300"><?php echo htmlspecialchars($form_data['text'] ?? ''); ?></textarea>
                             <div class="contador-caracteres">Caracteres: <span id="cont-desc">0</span> (mín. 100 / máx. 300)</div>
                             <div class="error-msg oculto" id="error-descripcion">La descripción es obligatoria (entre 100 y 300 caracteres).</div>
                             <div class="error-msg oculto" id="error-desc-palabras">La descripción contiene palabras no permitidas.</div>
@@ -617,7 +617,7 @@ function newForm()
                         <label for="telefono" class="frm-etiqueta">Teléfono de Contacto *</label>
                         <div class="grupo-telefono">
                             <!-- MAPEO: name="phone" esperado por backend -->
-                            <input type="tel" name="phone" id="telefono" class="frm-campo" required pattern="[0-9]{9,15}" placeholder="Ej.: 612345678" value="<?php echo htmlspecialchars($form_data['phone'] ?? ($_SESSION['data']['phone'] ?? '')); ?>">
+                            <input type="tel" name="phone" id="telefono" class="frm-campo" required pattern="[0-9]{9,15}" value="<?php echo htmlspecialchars($form_data['phone'] ?? ($_SESSION['data']['phone'] ?? '')); ?>">
 
                             <!-- INICIO: Cambio de Checkbox a Radio Buttons para WhatsApp -->
                             <div class="grupo-whatsapp-radio" style="margin-left: 15px;display: flex;align-items: center;gap: 15px;flex-direction: column;">
@@ -726,7 +726,7 @@ function newForm()
                         <div class="frm-grupo">
                             <label for="email" class="frm-etiqueta">Tu email de contacto *</label>
                             <!-- MAPEO: name="email" esperado por backend -->
-                            <input type="email" name="email" id="email" class="frm-campo" required placeholder="Necesario para gestionar tu anuncio" value="<?php echo htmlspecialchars($form_data['email'] ?? ''); ?>">
+                            <input type="email" name="email" id="email" class="frm-campo" required value="<?php echo htmlspecialchars($form_data['email'] ?? ''); ?>">
                             <div class="error-msg oculto" id="error-email">Introduce un email válido.</div>
                         </div>
                     <?php else: ?>

@@ -130,12 +130,9 @@ echo $query;
 
 if(!VERBOSE)
 {
-
-    // Ejecuta la consulta
     try {
-        if($bd_target->multi_query($query)){
+        if ($bd_target->multi_query($query)){
             do {
-                // Verificar si hubo un error en alguna de las consultas
                 if ($bd_target->error) {
                     echo "Error en consulta: " . $bd_target->error . "<br>";
                 }
