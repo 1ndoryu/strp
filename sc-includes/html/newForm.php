@@ -425,7 +425,7 @@ function newForm()
 
                     <fieldset class="frm-seccion">
 
-                        <div class="frm-grupo">
+                        <div>
                             <label for="titulo_anuncio" class="frm-etiqueta">Título del Anuncio *</label>
                             <!-- MAPEO: name="tit" esperado por backend -->
                             <input type="text" name="tit" id="titulo_anuncio" class="frm-campo" required minlength="10" maxlength="50" value="<?php echo htmlspecialchars($form_data['tit'] ?? ''); ?>">
