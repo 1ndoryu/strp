@@ -1634,7 +1634,7 @@ select.frm-campo.frm-select.corto {
 
 #etapa-tipo-usuario .opcion-radio {
     max-width: 278px;
-    min-height: 300px;
+    min-height: 310px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
