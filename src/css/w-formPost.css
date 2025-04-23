@@ -282,8 +282,8 @@ label.opcion-checkbox.opcion-extra {
 }
 
 .imagen-anuncio img {
-    max-width: 250px;
-    max-height: 100%;
+    width: 250px;
+    max-height: 100vh;
     object-fit: cover;
     aspect-ratio: 1 / 7;
 }
