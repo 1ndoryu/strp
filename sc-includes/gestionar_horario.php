@@ -49,7 +49,6 @@ svgs1();
 
     body {
         font-family: Poppins;
-        background: #202020;
     }
 
     :root {
@@ -518,7 +517,7 @@ svgs1();
         font-weight: 600;
         border: 2px solid #4E8059;
         background-color: #8ade8f;
-        height: 79px;
+        height: 92px;
         min-width: 140px;
         cursor: pointer;
     }
@@ -529,13 +528,18 @@ svgs1();
         font-weight: 600;
         border: 2px solid #7a1c44;
         background-color: #de5962;
-        height: 79px;
+        height: 92px;
         width: 140px;
         cursor: pointer;
     }
 
+    span.nombre-dia {
+        width: 140px;
+        padding: 40px;
+    }
+
     button#btn-guardar-horario {
-        color: #ffffff;
+        color: black;
         font-weight: 400;
         font-size: 14px;
         background: unset;
@@ -609,7 +613,7 @@ svgs1();
         align-items: center;
         gap: var(--espaciado-base);
         padding: var(--espaciado-pequeno) 0;
-        border-bottom: 1px dotted #050505;
+        border-bottom: 1px dotted var(--color-borde);
     }
 
     .dia-horario:last-child {
@@ -1546,7 +1550,7 @@ svgs1();
 
     .iconohorario {
         background: #3166cc;
-        height: 38px;
+        height: 42px;
         width: 50px;
         display: flex;
         align-items: center;
@@ -1561,16 +1565,7 @@ svgs1();
     .inputhorahorario input.frm-campo.corto {
         border-radius: 0px;
         width: 100px;
-        height: 38px;
-        color: white;
-        background: #181818;
-    }
-
-    span.nombre-dia {
-        width: 145px;
-        padding: 30px 40px;
-        min-width: 145px;
-        color: #fdfdfd;
+        height: 42px;
     }
 </style>
 
