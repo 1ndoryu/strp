@@ -550,9 +550,11 @@ function newForm()
                                 </p>
                                 <input type="file" id="campo-subir-foto" multiple accept="image/jpeg, image/png" style="/* display: none; */ position:absolute; opacity: 0; top:0; left:0; bottom:0; right:0; cursor:pointer;">
                             </div>
+                            <!--- Mapeo de las imagenes -->
                             <div id="lista-fotos-subidas" class="lista-fotos sortable">
 
                             </div>
+                            
                             <div id="subida-fotos-contenedor">
 
 

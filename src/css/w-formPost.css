@@ -124,7 +124,6 @@ a:hover {
     display: none;
     padding: var(--espaciado-base);
     border-radius: var(--radio-borde);
-    margin-bottom: var(--espaciado-mediano);
     background-color: #f6f6f6;
     display: flex;
     justify-content: flex-start;
@@ -401,11 +400,18 @@ select#select-posicion-foto {
 .boton-subir:hover {
     background-color: #f0f8ff;
 }
+
 .lista-fotos {
     margin-top: var(--espaciado-base);
     display: flex;
     gap: 10px;
     flex-direction: row;
+}
+
+@media (max-width: 768px) {
+    .lista-fotos {
+        flex-wrap: wrap;
+    }
 }
 
 .foto-subida-item {
@@ -498,11 +504,23 @@ svg#uuid-67eca691-fad9-4dbb-8a42-6bf39e0830b8 {
     width: 24px;
 }
 
+
 .foto-subida-item img {
-    max-width: 200px;
-    max-height: 200px;
+    width: 15px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
     aspect-ratio: 4 / 6;
-    object-fit: contain;
+}
+
+@media (max-width: 768px) {
+    .foto-subida-item img {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 8px;
+        aspect-ratio: 4 / 6;
+    }
 }
 
 .foto-subida-item .removeImg {
