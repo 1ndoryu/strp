@@ -937,7 +937,7 @@ function newForm()
                             <input type="radio" name="plan_seleccionado" value="gratis" checked>
                             <?php echo $GLOBALS['sonrisa_dos']; ?>
                             <div class="opcion-contenido">
-                                <strong>Gratis</strong>
+                                <strong>Básico</strong>
                                 <!-- Corregido: publicación -->
                                 <span>Realiza tu publicación sin costo alguno.</span>
                             </div>
