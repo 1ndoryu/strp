@@ -42,11 +42,10 @@
     const diaEstadoBotones = form.querySelectorAll('.btn-dia-estado'); // Selector para los NUEVOS botones
 
     // Obtener los divs que contienen los iconos de relojes para para la propagación
-    const clockIcons = document.querySelectorAll('.precio-y-tiempo');
+    const clockIcons = document.querySelectorAll('.opcion-checkbox .icono-clock');
 
-    clockIcons.forEach(function(icon) {
+    clockIcons.forEach((icon) => {
         icon.addEventListener('click', (e) => {
-            console.log(e)
             e.stopPropagation();
         });
     });
