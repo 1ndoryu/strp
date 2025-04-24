@@ -46,6 +46,7 @@
 
     clockIcons.forEach(function(icon) {
         icon.addEventListener('click', (e) => {
+            console.log(e)
             e.stopPropagation();
         });
     });
