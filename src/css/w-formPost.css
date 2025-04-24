@@ -256,6 +256,16 @@ label.opcion-checkbox-no-name.opcion-extra {
     display: flex !important;
     gap: 20px;
     align-items: center;
+    border: 1px solid var(--color-borde);
+}
+
+label.opcion-checkbox-no-name.opcion-extra:hover {
+    border-color: var(--color-primario);
+    background-color: #f0f8ff;
+}
+
+label.opcion-checkbox-no-name.opcion-extra span {
+    font-size: 15px;
 }
 
 label.opcion-checkbox-no-name.opcion-extra svg {
