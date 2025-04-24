@@ -259,6 +259,8 @@ label.opcion-checkbox-no-name.opcion-extra {
     border: 1px solid var(--color-borde);
     padding: var(--espaciado-base);
     cursor: pointer;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+    border-radius: var(--radio-borde);
 }
 
 label.opcion-checkbox-no-name.opcion-extra:hover {
@@ -1711,3 +1713,12 @@ select.frm-campo.frm-select.corto {
     border-bottom: 2.2px solid #e7e7e7;
     transform: translateY(-3px);
 }
+
+/* Estilos del input para subir el banner con URL */
+
+.url-banner {
+    display: none;
+}
+
+/* Estilos del input para subir el banner con URL */
+
