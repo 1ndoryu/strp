@@ -940,7 +940,7 @@ function newForm()
                             <input type="checkbox" name="extras[]" value="gratis" <?php echo in_array('gratis', $selected_extras) ? 'checked' : ''; ?>>
                             <input type="radio" name="plan_seleccionado" value="gratis" checked>
                             <?php echo $GLOBALS['sonrisa_dos']; ?>
-                            <div class="opcion-contenido">
+                            <div class="opcion-contenido-extra">
                                 <!-- Corregido: publicación -->
                                 <span>Realiza tu publicación sin costo alguno.</span>
                             </div>

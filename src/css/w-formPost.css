@@ -301,6 +301,16 @@ label.opcion-checkbox.opcion-extra {
     margin-top: -5px;
 }
 
+.opcion-contenido-extra span {
+    display: block;
+    font-size: 15px;
+    color: var(--color-texto-secundario);
+    margin-top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .precio-y-tiempo p {
     margin: 0;
     font-weight: 700;
