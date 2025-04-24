@@ -806,7 +806,7 @@ function newForm()
                             <div class="precio-y-tiempo">
                                 <p>35 €</p>
                                 <!-- Cambiado 'dias' por 'data-dias' y solo el número -->
-                                <div class="icono-clock" data-dias="30">
+                                <div class="icono-clock" data-dias="30" id>
                                     <?php echo $GLOBALS['clock']; ?>
                                 </div>
                             </div>
@@ -928,11 +928,13 @@ function newForm()
                     </div>
 
                     <div class="frm-grupo opcion-gratis-extra">
+                        <div class="plan-titulo">
+                            <p class="tipo-plan">Plan</p>
+                            <span class="divisor-tipo-plan"></span>
+                        </div>
                         <label class="opcion-checkbox opcion-extra">
                             <input type="checkbox" name="extras[]" value="gratis" <?php echo in_array('gratis', $selected_extras) ? 'checked' : ''; ?>>
-
                             <input type="radio" name="plan_seleccionado" value="gratis" checked>
-
                             <?php echo $GLOBALS['sonrisa_dos']; ?>
                             <div class="opcion-contenido">
                                 <strong>Gratis</strong>
@@ -1002,8 +1004,6 @@ function newForm()
                 <!-- ========= INICIO: Tooltip HTML (solo uno, se reutiliza) ========= -->
                 <div id="clock-tooltip" class="clock-tooltip"></div>
                 <!-- ========= FIN: Tooltip HTML ========= -->
-
-
                 <!-- ========= INICIO: JavaScript para el Tooltip ========= -->
                 <!-- Nota: Idealmente, mover esto a tu archivo JS principal y ejecutarlo cuando el DOM esté listo -->
 

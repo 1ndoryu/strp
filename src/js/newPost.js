@@ -41,6 +41,15 @@
     const ayudaTextoHorario = document.getElementById('ayuda-horario');
     const diaEstadoBotones = form.querySelectorAll('.btn-dia-estado'); // Selector para los NUEVOS botones
 
+    // Obtener los divs que contienen los iconos de relojes para para la propagación
+    const clockIcons = document.querySelectorAll('.precio-y-tiempo');
+
+    clockIcons.forEach(function(icon) {
+        icon.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+    });
+
     const horarioFeedbackDiv = document.createElement('div');
     horarioFeedbackDiv.id = 'horario-feedback';
     horarioFeedbackDiv.style.marginTop = '10px'; // Espacio

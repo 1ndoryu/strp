@@ -1658,3 +1658,22 @@ select.frm-campo.frm-select.corto {
     flex-direction: column;
     justify-content: space-between;
 }
+
+.plan-titulo {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: .8rem;
+}
+
+.tipo-plan {
+    font-size: 1.5rem;
+    font-weight: bolder;
+    margin-bottom: .5rem;
+}
+
+.divisor-tipo-plan {
+    width: 85%;
+    border-bottom: 2.2px solid #e7e7e7;
+    transform: translateY(-3px);
+}
