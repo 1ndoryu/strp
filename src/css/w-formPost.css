@@ -258,6 +258,12 @@ label.opcion-checkbox-no-name.opcion-extra {
     align-items: center;
 }
 
+label.opcion-checkbox-no-name.opcion-extra svg {
+    height: 30px;
+    width: 30px;
+    min-width: 28px;
+}
+
 .precio-y-tiempo {
     margin-left: auto;
     display: flex;
