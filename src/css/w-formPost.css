@@ -257,6 +257,8 @@ label.opcion-checkbox-no-name.opcion-extra {
     gap: 20px;
     align-items: center;
     border: 1px solid var(--color-borde);
+    padding: var(--espaciado-base);
+    cursor: pointer;
 }
 
 label.opcion-checkbox-no-name.opcion-extra:hover {
