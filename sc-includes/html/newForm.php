@@ -936,11 +936,12 @@ function newForm()
                             <p class="tipo-plan">Plan</p>
                             <span class="divisor-tipo-plan"></span>
                         </div>
-                        <label class="opcion-checkbox opcion-extra">
+
+                        <label class="opcion-checkbox-no-name opcion-extra">
                             <input type="checkbox" name="extras[]" value="gratis" <?php echo in_array('gratis', $selected_extras) ? 'checked' : ''; ?>>
                             <input type="radio" name="plan_seleccionado" value="gratis" checked>
                             <?php echo $GLOBALS['sonrisa_dos']; ?>
-                            <div class="opcion-contenido-extra">
+                            <div>
                                 <!-- Corregido: publicación -->
                                 <span>Realiza tu publicación sin costo alguno.</span>
                             </div>

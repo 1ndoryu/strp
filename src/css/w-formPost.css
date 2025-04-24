@@ -252,6 +252,12 @@ label.opcion-checkbox.opcion-extra {
     align-items: flex-start;
 }
 
+label.opcion-checkbox-no-name.opcion-extra {
+    display: flex !important;
+    gap: 20px;
+    align-items: center;
+}
+
 .precio-y-tiempo {
     margin-left: auto;
     display: flex;
