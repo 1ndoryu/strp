@@ -453,6 +453,10 @@ select#select-posicion-foto {
         align-items: center;
         justify-content: center;
     }
+
+    .subir-banner {
+        flex-wrap: wrap;
+    }
 }
 
 .foto-subida-item {
