@@ -78,6 +78,12 @@ a:hover {
     padding: 2px;
 }
 
+.beneficio-tipo-usuario span {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-texto-secundario);
+}
+
 .separador-opcion-perfil {
     border-bottom: 2px solid #ff339a;
     margin-top: -5px;
@@ -1592,12 +1598,10 @@ p.textoayudafal,
 
 .foto-subida-item.rotating {
     opacity: 0.7;
-    /* Podrías añadir un overlay con un spinner aquí si quieres */
-    position: relative; /* Necesario si usas un spinner absoluto */
+    position: relative;
     cursor: progress;
 }
 
-/* Ejemplo básico de spinner (necesitarías ajustar estilos) */
 .foto-subida-item.rotating::after {
     content: '';
     display: block;
