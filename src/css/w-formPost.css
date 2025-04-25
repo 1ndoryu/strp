@@ -1713,5 +1713,10 @@ select.frm-campo.frm-select.corto {
     display: none;
 }
 
+.url-banner.active {
+    display: block;
+}
+
+
 /* Estilos del input para subir el banner con URL */
 

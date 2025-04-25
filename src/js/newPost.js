@@ -15,7 +15,7 @@
     // <<< FIN NUEVO >>>
 
     const idioma1Select = document.getElementById('idioma_1');
-    const nivelIdioma1Select = document.getElementById('nivel_idioma_1'); // <-- Necesario
+    const nivelIdioma1Select = document.getElementById('nivel_idioma_1');
     const idioma2Select = document.getElementById('idioma_2');
     const nivelIdioma2Select = document.getElementById('nivel_idioma_2');
 
@@ -40,6 +40,20 @@
     const contenedorHorario = document.getElementById('contenedor-horario');
     const ayudaTextoHorario = document.getElementById('ayuda-horario');
     const diaEstadoBotones = form.querySelectorAll('.btn-dia-estado'); // Selector para los NUEVOS botones
+
+    // obtener el input y el contenedor para mostrar el input
+    const contenedorInput = document.getElementById('input-url')
+    const inputUrl = document.getElementById('url-banner')
+
+    contenedorInput.addEventListener('click', () => {
+        if (inputUrl.classList.contains('active')) {
+            inputUrl.classList.remove('active')
+            return
+        }
+
+        inputUrl.classList.toggle('active')
+    }
+
 
     // Obtener los divs que contienen los iconos de relojes para para la propagación
     const clockIcons = document.querySelectorAll('.opcion-checkbox .icono-clock');
