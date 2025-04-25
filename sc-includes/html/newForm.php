@@ -623,9 +623,9 @@ function newForm()
                             <input type="tel" name="phone" id="telefono" class="frm-campo" required pattern="[0-9]{9,15}" value="<?php echo htmlspecialchars($form_data['phone'] ?? ($_SESSION['data']['phone'] ?? '')); ?>">
 
                             <!-- INICIO: Cambio de Checkbox a Radio Buttons para WhatsApp -->
-                            <div class="grupo-whatsapp-radio" style="margin-left: 15px;display: flex;align-items: center;gap: 15px;flex-direction: column;">
+                            <div class="grupo-whatsapp-radio" style="margin-left: 15px;display: flex;align-items: center;flex-direction: column;">
                                 <p class="etiqueta-whatsapp">¿Tienes WhatsApp?</p>
-                                <div style="display: flex;">
+                                <div style="display: flex; gap: 15px;">
                                     <label class="frm-radio">
                                         <input type="radio" name="whatsapp" id="whatsapp_si" value="1"
                                             <?php
