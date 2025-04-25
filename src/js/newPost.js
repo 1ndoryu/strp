@@ -52,8 +52,7 @@
         }
 
         inputUrl.classList.toggle('active')
-    }
-
+    })
 
     // Obtener los divs que contienen los iconos de relojes para para la propagación
     const clockIcons = document.querySelectorAll('.opcion-checkbox .icono-clock');
