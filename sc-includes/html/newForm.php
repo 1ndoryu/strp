@@ -550,22 +550,20 @@ function newForm()
                                 </p>
                                 <input type="file" id="campo-subir-foto" multiple accept="image/jpeg, image/png" style="/* display: none; */ position:absolute; opacity: 0; top:0; left:0; bottom:0; right:0; cursor:pointer;">
                             </div>
+
                             <!--- Mapeo de las imagenes -->
                             <div id="lista-fotos-subidas" class="lista-fotos sortable">
-
                             </div>
                             
                             <div id="subida-fotos-contenedor">
-
-
                                 <select id="select-posicion-foto" class="oculto" style="position: absolute; z-index: 10;">
                                     <option value="1">1 - Principal</option>
                                     <option value="2">2</option>
                                     <option value="3">3</option>
                                 </select>
                             </div>
-
                         </div>
+                        
                         <div class="error-msg oculto" id="error-fotos">Debes subir al menos una foto. La primera que subas será la principal.</div>
                         <div class="error_msg" id="error_photo_generic" style="<?php echo (isset($form_data['photo_name']) && count($form_data['photo_name']) == 0 && $error_insert) ? 'display:block;' : 'display:none;'; ?>">Sube al menos una foto para tu anuncio.</div>
                     </div>
