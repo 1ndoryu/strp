@@ -624,8 +624,8 @@ function newForm()
 
                             <!-- INICIO: Cambio de Checkbox a Radio Buttons para WhatsApp -->
                             <div class="grupo-whatsapp-radio" style="margin-left: 15px;display: flex;align-items: center;gap: 15px;flex-direction: column;">
-                                <span class="etiqueta-whatsapp">¿Tienes WhatsApp?</span>
-                                <div style="display: flex; gap: 10px;">
+                                <p class="etiqueta-whatsapp">¿Tienes WhatsApp?</p>
+                                <div style="display: flex;">
                                     <label class="frm-radio">
                                         <input type="radio" name="whatsapp" id="whatsapp_si" value="1"
                                             <?php

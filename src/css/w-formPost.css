@@ -494,14 +494,12 @@ input#whatsapp_no {
     align-items: center;
 }
 
-span.etiqueta-whatsapp {
+p.etiqueta-whatsapp {
     display: block;
     margin-bottom: 10px;
-    /* font-weight: bold; */
     color: var(--color-texto-secundario);
     font-size: 17px;
-    font-weight: 600;
-    margin-top: -34px;
+    font-weight: 500;
 }
 
 /* Estilo base para el select oculto (ya lo tienes con position: absolute) */
