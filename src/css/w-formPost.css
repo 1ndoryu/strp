@@ -1720,6 +1720,10 @@ select.frm-campo.frm-select.corto {
     border-radius: --var(--radio-borde);
 }
 
+.loading {
+    display: none !important;
+}
+
 
 /* Estilos del input para subir el banner con URL */
 
