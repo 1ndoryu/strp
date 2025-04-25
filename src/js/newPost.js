@@ -44,6 +44,18 @@
     // obtener el input y el contenedor para mostrar el input
     const contenedorInput = document.getElementById('input-url')
     const inputUrl = document.getElementById('url-banner')
+    const inputUrlLateral = document.getElementById('input-url-banner-lateral')
+    const contenedorInputLateral = document.getElementById('url-banner-lateral')
+
+
+    contenedorInputLateral.addEventListener('click', () => {
+        if (inputUrlLateral.classList.contains('active')) {
+            inputUrlLateral.classList.remove('active')
+            return
+        }
+
+        inputUrlLateral.classList.toggle('active')
+    })
 
     contenedorInput.addEventListener('click', () => {
         if (inputUrl.classList.contains('active')) {
