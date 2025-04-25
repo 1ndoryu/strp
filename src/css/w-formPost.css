@@ -456,7 +456,7 @@ select#select-posicion-foto {
 
     .subir-banner {
         flex-wrap: wrap;
-        gap: 20px;
+        gap: 20px !important;
     }
 }
 
