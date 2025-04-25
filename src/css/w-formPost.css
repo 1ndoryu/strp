@@ -78,11 +78,7 @@ a:hover {
     padding: 2px;
 }
 
-.beneficio-tipo-usuario span {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--color-texto-secundario);
-}
+
 
 .separador-opcion-perfil {
     border-bottom: 2px solid #ff339a;
@@ -1410,10 +1406,6 @@ p.numero-etapa {
     .precio-y-tiempo {
         display: flex;
         flex-direction: column;
-    }
-
-    .opcion-contenido span {
-        font-size: 12px;
     }
 }
 @media (max-width: 900px) {
