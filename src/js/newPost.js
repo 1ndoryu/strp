@@ -766,7 +766,6 @@
         return div;
     }
 
-    // >>> NUEVA FUNCIÓN: Para mostrar/ocultar placeholders <<<
     function actualizarPlaceholders() {
         if (!listaFotosContainer || !hiddenPhotoInputsContainer) {
             console.error('Error: No se encontraron los contenedores de fotos para actualizar placeholders.');
@@ -794,7 +793,6 @@
         }
         console.log(`Placeholders actualizados: ${placeholdersNeeded} mostrados.`);
     }
-    // <<< FIN NUEVA FUNCIÓN >>>
 
     function crearPreviewFoto(htmlContent, filename) {
         const div = document.createElement('div');
@@ -913,7 +911,6 @@
         return div;
     }
 
-    // >>> NUEVO: Función para manejar click en la imagen para cambiarla <<<
     function triggerChangeFotoFromImage(event) {
         const imgElement = event.currentTarget;
         const filenameToReplace = imgElement.dataset.filename;
@@ -1239,12 +1236,9 @@
         } else {
             console.error('Error crítico: listaFotosContainer (el contenedor de previews) no encontrado al intentar añadir listener delegado.');
         }
-        // --- FIN: Listener Delegado ÚNICO ---
-    } // >>> FIN DE LA FUNCIÓN agregarListenersNuevos <<<
+    
+    } 
 
-    // >>> FIN DE LA FUNCIÓN PARA REEMPLAZAR <<<
-
-    // aqui necesito que cuando este a 90 grados y 270 la imagen tenga max-width: 80px;, eso es todo
     function handleRotateFotoClick(event) {
         const button = event.currentTarget;
         const filename = button.dataset.filename; // Lo mantenemos por si acaso, aunque no se use para llamar al servidor
@@ -1285,11 +1279,13 @@
         if (newRotation === 90 || newRotation === 270) {
             // Si la rotación es 90 o 270 (orientación vertical), aplicamos max-width
             imgElement.style.maxWidth = '80px';
+            imgElement.style.maxHeight = '120px';
             console.log(`Aplicado max-width: 80px a ${filename} (Rotación: ${newRotation})`);
         } else {
             // Si la rotación es 0 o 180 (orientación horizontal), quitamos el max-width
             // Establecer a '' elimina el estilo inline específico de max-width
             imgElement.style.maxWidth = '';
+            imgElement.style.maxHeight = '';
             console.log(`Quitado max-width de ${filename} (Rotación: ${newRotation})`);
         }
         // --- FIN: Lógica para aplicar max-width ---
