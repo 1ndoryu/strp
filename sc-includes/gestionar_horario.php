@@ -515,8 +515,7 @@ svgs1();
         border: unset;
         padding: 10px;
         font-weight: 600;
-        border: 2px solid #4E8059;
-        background-color: #8ade8f;
+        background-color: #f1a1cb;
         height: 80px;
         min-width: 140px;
         cursor: pointer;
@@ -526,7 +525,7 @@ svgs1();
         border: unset;
         padding: 10px;
         font-weight: 600;
-        border: 2px solid #7a1c44;
+
         background-color: #de5962;
         height: 80px;
         width: 140px;
