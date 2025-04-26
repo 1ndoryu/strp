@@ -308,7 +308,7 @@ function newForm()
         <div id="etapa-perfil" class="etapa oculto">
             <div class="divisor-anuncio-principal">
 
-                <div class="imagen-anuncio">
+                <div class="imagen-anuncio etapa-perfil-imagen">
                     <img src="<?php echo getConfParam('SITE_URL') ?>src/photos/20250412/form-imagen.jpg" alt="">
                 </div>
 
@@ -517,7 +517,7 @@ function newForm()
         <!-- ======================= ETAPA 3: ETAPA ANUNCIO ======================= -->
         <div id="etapa-anuncio" class="etapa oculto">
             <div class="divisor-anuncio-principal">
-                <div class="imagen-anuncio">
+                <div class="imagen-anuncio etapa-anuncio-imagen">
                     <img src="<?php echo getConfParam('SITE_URL') ?>src/photos/20250412/form-imagen.jpg" alt="">
                 </div>
                 <div class="divisor-anuncio">
@@ -765,7 +765,7 @@ function newForm()
         <div id="etapa-extras" class="etapa oculto">
             <div class="divisor-anuncio-principal">
 
-                <div class="imagen-anuncio">
+                <div class="imagen-anuncio imagen-etapa-extra">
                     <img src="<?php echo getConfParam('SITE_URL') ?>src/photos/20250412/form-imagen.jpg" alt="">
                 </div>
 
