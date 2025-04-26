@@ -444,8 +444,6 @@ select#select-posicion-foto {
     flex-direction: row;
 }
 
-
-
 .foto-subida-item {
     display: flex;
     flex-direction: column;
@@ -1727,6 +1725,10 @@ select.frm-campo.frm-select.corto {
     max-height: 1040px;
 }
 
+.foto-placeholder {
+    display: none;
+}
+
 @media (max-width: 768px) {
     .lista-fotos {
         flex-wrap: wrap;
@@ -1734,6 +1736,10 @@ select.frm-campo.frm-select.corto {
         align-items: center;
         justify-content: center;
         flex-direction: column;
+    }
+
+    label.frm-checkbox {
+        margin: 0;
     }
 
     div#boton-subir-foto {
@@ -1757,8 +1763,19 @@ select.frm-campo.frm-select.corto {
         font-size: 11px;
     }
 
+    .grupo-whatsapp-radio {
+        margin-left: 0px !important;
+    }
+
     .inputfalso button {
         display: none;
+    }
+
+    .inputfalsodiv {
+        width: 112px;
+        font-size: 11px;
+        border-right: 1px solid #929292;
+        border-radius: 5px;
     }
 
     .subir-banner {

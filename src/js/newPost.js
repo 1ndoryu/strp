@@ -42,37 +42,43 @@
     const diaEstadoBotones = form.querySelectorAll('.btn-dia-estado'); // Selector para los NUEVOS botones
 
     // obtener el input y el contenedor para mostrar el input
-    const contenedorInput = document.getElementById('input-url')
-    const inputUrl = document.getElementById('url-banner')
-    const inputUrlLateral = document.getElementById('input-url-banner-lateral')
-    const contenedorInputLateral = document.getElementById('url-banner-lateral')
-
+    const contenedorInput = document.getElementById('input-url');
+    const inputUrl = document.getElementById('url-banner');
+    const inputUrlLateral = document.getElementById('input-url-banner-lateral');
+    const contenedorInputLateral = document.getElementById('url-banner-lateral');
 
     contenedorInputLateral.addEventListener('click', () => {
         if (inputUrlLateral.classList.contains('active')) {
-            inputUrlLateral.classList.remove('active')
-            return
+            inputUrlLateral.classList.remove('active');
+            return;
         }
 
-        inputUrlLateral.classList.toggle('active')
-    })
+        inputUrlLateral.classList.toggle('active');
+    });
 
     contenedorInput.addEventListener('click', () => {
         if (inputUrl.classList.contains('active')) {
-            inputUrl.classList.remove('active')
-            return
+            inputUrl.classList.remove('active');
+            return;
         }
 
-        inputUrl.classList.toggle('active')
-    })
+        inputUrl.classList.toggle('active');
+    });
 
     // Obtener los divs que contienen los iconos de relojes para para la propagación
-    const clockIcons = document.querySelectorAll('.opcion-checkbox .icono-clock');
+    const checkboxLabels = document.querySelectorAll('label.opcion-checkbox');
 
-    clockIcons.forEach((icon) => {
-        icon.addEventListener('click', (e) => {
-            console.log("no propagación del icono de reloj");
-            e.stopPropagation();
+    checkboxLabels.forEach(label => {
+        label.addEventListener('click', e => {
+            // Comprueba si el elemento donde se hizo clic (e.target)
+            // o uno de sus padres es el .icono-clock
+            if (e.target.closest('.icono-clock')) {
+                // Si es el icono, previene la acción por defecto de la etiqueta (marcar/desmarcar el input)
+                e.preventDefault();
+                console.log('Click en icono-clock, prevenido toggle de checkbox.');
+                // Aquí puedes añadir lógica si quieres hacer algo más al clicar el icono (como mostrar el tooltip manualmente si fuera necesario)
+            }
+            // Si no se hizo clic en el icono, la etiqueta funciona normalmente.
         });
     });
 
