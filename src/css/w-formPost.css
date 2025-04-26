@@ -420,7 +420,6 @@ input[type='radio'] {
     position: relative;
 }
 
-
 .boton-subir {
     cursor: pointer;
     color: var(--color-primario);
@@ -1777,4 +1776,11 @@ select.frm-campo.frm-select.corto {
         flex-wrap: wrap;
         gap: 20px !important;
     }
+}
+
+#select-posicion-foto {
+    font-weight: 700 !important;
+}
+#select-posicion-foto option {
+    font-weight: 700 !important;
 }
