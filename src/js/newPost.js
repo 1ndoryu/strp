@@ -65,6 +65,7 @@
         inputUrl.classList.toggle('active');
     });
 
+    /*
     // Obtener los divs que contienen los iconos de relojes para para la propagación
     const checkboxLabels = document.querySelectorAll('label.opcion-checkbox');
 
@@ -81,6 +82,59 @@
             // Si no se hizo clic en el icono, la etiqueta funciona normalmente.
         });
     });
+    */
+
+    function setupClockIconListeners() {
+        const clockIcons = document.querySelectorAll('label.opcion-checkbox .icono-clock');
+        console.log(`Encontrados ${clockIcons.length} iconos de reloj.`); // Debug
+
+        clockIcons.forEach(icon => {
+            // 1. Listener para TOQUES (Pantallas Táctiles)
+            icon.addEventListener(
+                'touchend',
+                e => {
+                    console.log('Evento TOUCHEND detectado en icono-clock.'); // Debug
+                    // Previene la acción por defecto (activar la etiqueta/checkbox)
+                    e.preventDefault();
+                    // Detiene la propagación para que el evento no llegue a la etiqueta
+                    e.stopPropagation();
+
+                    // --- INICIO: Lógica para mostrar el Tooltip ---
+                    // AQUÍ deberías poner el código que muestra el tooltip asociado a este 'icon'.
+                    // Por ejemplo, si usas una librería o un atributo data-tooltip:
+                    // const tooltipText = icon.getAttribute('data-tooltip') || icon.title;
+                    // if (tooltipText) {
+                    //    // Llama a tu función para mostrar el tooltip
+                    //    // showMyTooltip(icon, tooltipText);
+                    //    console.log(`TOOLTIP (TOUCH): Mostraría tooltip para este icono.`);
+                    // }
+                    alert('Mostrando tooltip (simulado desde touch)... El checkbox NO debería cambiar.'); // ¡¡¡QUITA ESTE ALERT!!! Es solo para prueba.
+                    // --- FIN: Lógica para mostrar el Tooltip ---
+                },
+                {passive: false}
+            ); // MUY IMPORTANTE: passive:false para que preventDefault funcione
+
+            // 2. Listener para CLICS (Escritorio, Accesibilidad)
+            icon.addEventListener('click', e => {
+                console.log('Evento CLICK detectado en icono-clock.'); // Debug
+                // Previene la acción por defecto
+                e.preventDefault();
+                // Detiene la propagación
+                e.stopPropagation();
+
+                // --- INICIO: Lógica para mostrar el Tooltip ---
+                // Puede ser la misma lógica que en touchend, o adaptada si es necesario.
+                // showMyTooltip(icon, icon.getAttribute('data-tooltip') || icon.title);
+                // console.log(`TOOLTIP (CLICK): Mostraría tooltip para este icono.`);
+                alert('Mostrando tooltip (simulado desde click)... El checkbox NO debería cambiar.'); // ¡¡¡QUITA ESTE ALERT!!! Es solo para prueba.
+                // --- FIN: Lógica para mostrar el Tooltip ---
+            });
+        });
+    }
+    // >>> FIN NUEVA FUNCIÓN <<<
+
+
+
 
     const horarioFeedbackDiv = document.createElement('div');
     horarioFeedbackDiv.id = 'horario-feedback';
@@ -134,6 +188,7 @@
         actualizarContadores();
         agregarListenersNuevos();
         actualizarPlaceholders();
+        setupClockIconListeners();
 
         actualizarMarcadoVisualRadios(tipoUsuarioRadios);
         actualizarMarcadoVisualPlan();
@@ -1236,8 +1291,7 @@
         } else {
             console.error('Error crítico: listaFotosContainer (el contenedor de previews) no encontrado al intentar añadir listener delegado.');
         }
-    
-    } 
+    }
 
     function handleRotateFotoClick(event) {
         const button = event.currentTarget;
