@@ -444,45 +444,7 @@ select#select-posicion-foto {
     flex-direction: row;
 }
 
-@media (max-width: 768px) {
-    .lista-fotos {
-        flex-wrap: wrap;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-    }
 
-    div#boton-subir-foto {
-        padding: 0px;
-        gap: 10px;
-        display: flex;
-        flex-direction: column;
-    }
-
-    svg#uuid-a38627c9-109d-413f-b7ed-005836ef688e {
-        max-width: 38px;
-    }
-
-    .divisor-anuncio {
-        max-width: 700px;
-        width: 100%;
-    }
-
-    .inputfalsodiv {
-        width: 112px;
-        font-size: 11px;
-    }
-
-    .inputfalso button {
-        display: none;
-    }
-
-    .subir-banner {
-        flex-wrap: wrap;
-        gap: 20px !important;
-    }
-}
 
 .foto-subida-item {
     display: flex;
@@ -1763,4 +1725,44 @@ select.frm-campo.frm-select.corto {
 
 .imagen-anuncio.etapa-anuncio-imagen img {
     max-height: 1040px;
+}
+
+@media (max-width: 768px) {
+    .lista-fotos {
+        flex-wrap: wrap;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+    }
+
+    div#boton-subir-foto {
+        padding: 0px;
+        gap: 10px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    svg#uuid-a38627c9-109d-413f-b7ed-005836ef688e {
+        max-width: 38px;
+    }
+
+    .divisor-anuncio {
+        max-width: 700px;
+        width: 100%;
+    }
+
+    .inputfalsodiv {
+        width: 112px;
+        font-size: 11px;
+    }
+
+    .inputfalso button {
+        display: none;
+    }
+
+    .subir-banner {
+        flex-wrap: wrap;
+        gap: 20px !important;
+    }
 }
