@@ -1570,6 +1570,9 @@ svgs1();
 </style>
 
 <body>
+
+    <button type="button" id="btn-guardar-horario" class="boton-guardar">Guardar Horario y Cerrar</button>
+    <div id="mensaje-estado" class="mensaje-estado oculto"></div>
     <div class="contenedor-principal">
         <div class="horario-semanal" id="contenedor-horario">
             <?php
@@ -1611,9 +1614,9 @@ svgs1();
         </div>
     </div>
 
-    <div id="mensaje-estado" class="mensaje-estado oculto"></div>
 
-    <button type="button" id="btn-guardar-horario" class="boton-guardar">Guardar Horario y Cerrar</button>
+
+
 
     </div>
 
