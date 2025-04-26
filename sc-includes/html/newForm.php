@@ -1020,149 +1020,193 @@ function newForm()
 
                         const tooltipElement = document.getElementById('clock-tooltip');
                         const clockIcons = document.querySelectorAll('.icono-clock');
+                        let touchTooltipActiveFor = null; // Guarda la referencia al icono que activó el tooltip por toque
+                        let hideTimeout = null; // Para gestionar el retraso al ocultar con fade-out
 
                         if (!tooltipElement) {
                             console.error('Elemento tooltip (#clock-tooltip) no encontrado.');
                             return;
                         }
 
-                        // Mover al body (si es necesario y seguro hacerlo)
+                        // Mover tooltip al body para mejor posicionamiento absoluto/fixed
                         if (tooltipElement.parentNode !== document.body) {
                             document.body.appendChild(tooltipElement);
-                            console.warn('Tooltip movido al final del <body>.');
-                            // ¡IMPORTANTE! Asegúrate de que el CSS para #clock-tooltip incluye:
-                            // position: absolute; /* o fixed */
-                            // box-sizing: border-box; /* Buena práctica */
-                            // tooltipElement.style.position = 'absolute'; // Opcional: Forzarlo aquí si no estás seguro del CSS
+                            console.warn('Tooltip movido al final del <body>. Asegúrate que CSS tiene position:absolute/fixed.');
+                            // Forzar posición si no estás seguro del CSS (opcional pero recomendado)
+                            tooltipElement.style.position = 'absolute';
+                            tooltipElement.style.boxSizing = 'border-box';
+                            tooltipElement.style.zIndex = '1000'; // Asegurar que esté por encima
+                            tooltipElement.style.display = 'none'; // Empezar oculto
+                            tooltipElement.style.opacity = '0'; // Empezar invisible
+                            tooltipElement.style.transition = 'opacity 0.3s ease'; // Añadir transición si no está en CSS
                         }
 
-                        clockIcons.forEach(icon => {
-                            icon.addEventListener('mouseenter', (event) => {
-                                const dias = event.target.getAttribute('data-dias');
-                                if (!dias) {
-                                    console.warn('El icono no tiene el atributo data-dias:', event.target);
-                                    tooltipElement.style.display = 'none';
-                                    tooltipElement.style.opacity = '0';
-                                    return;
-                                }
+                        // --- FUNCIÓN PARA MOSTRAR Y POSICIONAR EL TOOLTIP ---
+                        function showTooltip(targetIcon) {
+                            clearTimeout(hideTimeout); // Cancela cualquier ocultación pendiente
 
-                                // --- MODIFICACIÓN AQUÍ ---
-                                // 1. Contenido (Usando innerHTML para permitir HTML)
-                                //    - Se envuelve "El servicio estará" en un span con la clase "el-servicio-estara"
-                                //    - Se añade un <br> después del span para el salto de línea
-                                tooltipElement.innerHTML = `<span class="el-servicio-estara">El servicio estará</span><br>activo durante ${dias} días`;
-                                // --- FIN DE LA MODIFICACIÓN ---
+                            const dias = targetIcon.getAttribute('data-dias');
+                            if (!dias) {
+                                console.warn('El icono no tiene el atributo data-dias:', targetIcon);
+                                hideTooltip(true); // Ocultar inmediatamente si no hay datos
+                                return false; // Indicar fallo
+                            }
 
+                            // 1. Contenido
+                            tooltipElement.innerHTML = `<span class="el-servicio-estara">El servicio estará</span><br>activo durante ${dias} días`;
 
-                                // 2. Hacer visible para medir (temporalmente en 0,0 o donde estuviera)
-                                tooltipElement.style.top = '0px'; // Poner en un sitio temporal para medir
-                                tooltipElement.style.left = '0px';
-                                tooltipElement.style.display = 'block';
-                                tooltipElement.style.opacity = '0'; // Mantener invisible
+                            // 2. Hacer visible temporalmente para medir (sin mostrar aún)
+                            tooltipElement.style.visibility = 'hidden'; // Usa visibility para medir sin afectar layout
+                            tooltipElement.style.display = 'block';
+                            tooltipElement.style.opacity = '0';
+                            tooltipElement.style.top = '0px';
+                            tooltipElement.style.left = '0px';
 
-                                // --- Forzar Reflow (puede ayudar a obtener medidas correctas) ---
-                                void tooltipElement.offsetWidth;
-                                // --------------------------------------------------------------
+                            // 3. Obtener dimensiones
+                            const iconRect = targetIcon.getBoundingClientRect();
+                            // Forzar reflow antes de medir el tooltip puede ser necesario
+                            void tooltipElement.offsetWidth;
+                            const tooltipRect = tooltipElement.getBoundingClientRect();
 
-                                // 3. Obtener dimensiones
-                                const iconRect = event.target.getBoundingClientRect();
-                                const tooltipRect = tooltipElement.getBoundingClientRect(); // Medir DESPUÉS de display:block y reflow
+                            // --- Constantes y Límites ---
+                            const spacing = 10;
+                            const edgeSpacing = 5;
+                            const viewportWidth = window.innerWidth;
+                            const viewportHeight = window.innerHeight;
+                            const scrollX = window.scrollX;
+                            const scrollY = window.scrollY;
 
-                                // --- Constantes ---
-                                const spacing = 10;
-                                const edgeSpacing = 5;
+                            // 4. Calcular posición ideal (encima y centrado)
+                            let idealTop = scrollY + iconRect.top - tooltipRect.height - spacing;
+                            let iconCenter = scrollX + iconRect.left + (iconRect.width / 2);
+                            let idealLeft = iconCenter - (tooltipRect.width / 2);
 
-                                // --- Límites Viewport ---
-                                const viewportWidth = window.innerWidth;
-                                const viewportHeight = window.innerHeight;
-                                const scrollX = window.scrollX;
-                                const scrollY = window.scrollY;
+                            // 5. Ajustar Horizontal
+                            let finalLeft = idealLeft;
+                            if (finalLeft < scrollX + edgeSpacing) {
+                                finalLeft = scrollX + edgeSpacing;
+                            } else if (finalLeft + tooltipRect.width > scrollX + viewportWidth - edgeSpacing) {
+                                finalLeft = scrollX + viewportWidth - tooltipRect.width - edgeSpacing;
+                            }
 
-                                // --- LOGS PARA DEPURACIÓN ---
-                                console.log('--- Tooltip Hover ---');
-                                console.log('Icon Rect:', {
-                                    top: iconRect.top,
-                                    left: iconRect.left,
-                                    width: iconRect.width,
-                                    height: iconRect.height
-                                });
-                                console.log('Tooltip Rect (medido):', {
-                                    width: tooltipRect.width,
-                                    height: tooltipRect.height
-                                });
-                                console.log('Scroll:', {
-                                    X: scrollX,
-                                    Y: scrollY
-                                });
-                                // ---------------------------
+                            // 6. Ajustar Vertical (Intentar arriba, si no cabe, intentar abajo)
+                            let finalTop = idealTop;
+                            const tooltipFitsAbove = (iconRect.top >= tooltipRect.height + spacing);
 
-                                // 4. Calcular posición ideal (encima y centrado)
-                                let idealTop = scrollY + iconRect.top - tooltipRect.height - spacing;
-                                let iconCenter = scrollX + iconRect.left + (iconRect.width / 2);
-                                let idealLeft = iconCenter - (tooltipRect.width / 2);
-
-                                console.log('Calculado:', {
-                                    idealTop,
-                                    idealLeft,
-                                    iconCenter
-                                }); // LOG
-
-                                // 5. Ajustar Horizontal
-                                let finalLeft = idealLeft;
-                                if (finalLeft < scrollX + edgeSpacing) {
-                                    finalLeft = scrollX + edgeSpacing;
-                                    console.log('Ajuste: Izquierda fuera ->', finalLeft); // LOG
-                                } else if (finalLeft + tooltipRect.width > scrollX + viewportWidth - edgeSpacing) {
-                                    finalLeft = scrollX + viewportWidth - tooltipRect.width - edgeSpacing;
-                                    console.log('Ajuste: Derecha fuera ->', finalLeft); // LOG
-                                }
-
-                                // 6. Ajustar Vertical
-                                let finalTop = idealTop;
-                                const tooltipFitsAbove = (iconRect.top >= tooltipRect.height + spacing);
-                                if (finalTop < scrollY + edgeSpacing || !tooltipFitsAbove) {
-                                    let topBelow = scrollY + iconRect.bottom + spacing;
-                                    if (topBelow + tooltipRect.height > scrollY + viewportHeight - edgeSpacing) {
-                                        if (finalTop < scrollY + edgeSpacing) {
-                                            finalTop = scrollY + edgeSpacing;
-                                            console.log('Ajuste: Arriba fuera Y no cabe abajo -> Pegar Arriba', finalTop); // LOG
-                                        } else {
-                                            console.log('Ajuste: No cabe arriba (por espacio) Y no cabe abajo -> Mantener Ideal Arriba', finalTop); // LOG
-                                        }
-                                    } else {
-                                        finalTop = topBelow;
-                                        console.log('Ajuste: Arriba fuera o sin espacio -> Poner Abajo', finalTop); // LOG
-                                    }
-                                }
-                                if (finalTop + tooltipRect.height > scrollY + viewportHeight - edgeSpacing) {
-                                    if (finalTop > scrollY + viewportHeight - edgeSpacing - tooltipRect.height) { // Solo ajustar si realmente se sale por abajo
+                            if (finalTop < scrollY + edgeSpacing || !tooltipFitsAbove) { // Si se sale por arriba o no hay espacio
+                                let topBelow = scrollY + iconRect.bottom + spacing;
+                                // Comprobar si cabe abajo
+                                if (topBelow + tooltipRect.height <= scrollY + viewportHeight - edgeSpacing) {
+                                    finalTop = topBelow; // Poner abajo
+                                } else {
+                                    // No cabe ni arriba ni abajo cómodamente. ¿Qué hacer?
+                                    // Opción 1: Pegarlo al borde superior si se salía por arriba
+                                    if (finalTop < scrollY + edgeSpacing) finalTop = scrollY + edgeSpacing;
+                                    // Opción 2: Si se salía por abajo (incluso al intentar ponerlo abajo), pegarlo al borde inferior
+                                    if (finalTop + tooltipRect.height > scrollY + viewportHeight - edgeSpacing) {
                                         finalTop = scrollY + viewportHeight - tooltipRect.height - edgeSpacing;
-                                        console.log('Ajuste: Abajo fuera -> Pegar Abajo', finalTop); // LOG
                                     }
+                                    // Si no se salía por arriba originalmente pero no cabía, se queda en idealTop (intentando arriba)
                                 }
+                            }
 
+                            // 7. Aplicar estilos finales y mostrar
+                            tooltipElement.style.top = `${finalTop}px`;
+                            tooltipElement.style.left = `${finalLeft}px`;
+                            tooltipElement.style.visibility = 'visible'; // Hacer visible de nuevo
+                            tooltipElement.style.opacity = '1'; // Empezar fade-in
 
-                                // 7. Aplicar estilos finales
-                                console.log('Final Pos:', {
-                                    top: finalTop,
-                                    left: finalLeft
-                                }); // LOG
-                                tooltipElement.style.top = `${finalTop}px`;
-                                tooltipElement.style.left = `${finalLeft}px`;
-                                tooltipElement.style.opacity = '1';
+                            console.log(`Tooltip shown for icon. Touch active: ${touchTooltipActiveFor !== null}`);
+                            return true; // Indicar éxito
+                        }
 
+                        // --- FUNCIÓN PARA OCULTAR EL TOOLTIP ---
+                        function hideTooltip(immediately = false) {
+                            clearTimeout(hideTimeout); // Limpia timeout anterior si existe
+                            tooltipElement.style.opacity = '0';
+
+                            if (immediately) {
+                                tooltipElement.style.display = 'none';
+                                touchTooltipActiveFor = null; // Resetea el estado táctil si se oculta inmediatamente
+                                console.log('Tooltip hidden immediately.');
+                            } else {
+                                // Ocultar con retardo para permitir transición de opacidad
+                                hideTimeout = setTimeout(() => {
+                                    // Solo ocultar si sigue con opacidad 0 (evita problemas si se vuelve a mostrar rápido)
+                                    if (tooltipElement.style.opacity === '0') {
+                                        tooltipElement.style.display = 'none';
+                                        console.log('Tooltip hidden after delay.');
+                                    }
+                                    // No reseteamos touchTooltipActiveFor aquí, se hace al ocultar o al hacer click fuera
+                                }, 300); // Ajusta este tiempo (en ms) a tu transición CSS
+                            }
+                        }
+
+                        // --- ASIGNAR LISTENERS A LOS ICONOS ---
+                        clockIcons.forEach(icon => {
+
+                            // 1. Hover para Escritorio
+                            icon.addEventListener('mouseenter', (event) => {
+                                // Solo mostrar con hover si no hay un tooltip activo por toque
+                                if (!touchTooltipActiveFor) {
+                                    showTooltip(event.target);
+                                }
                             });
 
                             icon.addEventListener('mouseleave', () => {
-                                tooltipElement.style.opacity = '0';
-                                // Retrasar ligeramente el 'display: none' para que la transición de opacidad funcione
-                                setTimeout(() => {
-                                    if (tooltipElement.style.opacity === '0') { // Doble check por si el usuario vuelve a entrar rápido
-                                        tooltipElement.style.display = 'none';
+                                // Solo ocultar con hover si no hay un tooltip activo por toque
+                                if (!touchTooltipActiveFor) {
+                                    hideTooltip();
+                                }
+                            });
+
+                            // 2. Click/Tap para Táctil (y click en escritorio si se prefiere)
+                            icon.addEventListener('click', (event) => {
+                                event.preventDefault(); // Previene activar el label/checkbox
+                                event.stopPropagation(); // Detiene la propagación al label
+
+                                const currentIcon = event.currentTarget; // Usar currentTarget es más seguro
+
+                                // Si el tooltip está visible Y fue activado por este mismo icono -> ocultarlo
+                                if (tooltipElement.style.display === 'block' && touchTooltipActiveFor === currentIcon) {
+                                    hideTooltip(true); // Ocultar inmediatamente al tocar de nuevo
+                                    touchTooltipActiveFor = null;
+                                }
+                                // Si no, intentar mostrarlo (o cambiarlo si ya había otro por toque)
+                                else {
+                                    if (showTooltip(currentIcon)) {
+                                        touchTooltipActiveFor = currentIcon; // Marcar este icono como el que activó el tooltip por toque
+                                    } else {
+                                        // Si showTooltip falló (ej: no data-dias), asegurarse que no quede marcado
+                                        touchTooltipActiveFor = null;
+                                        hideTooltip(true); // Ocultar por si acaso
                                     }
-                                }, 300); // Ajusta este tiempo si tienes una transición CSS más larga/corta
+                                }
                             });
                         });
+
+                        // --- LISTENER GLOBAL PARA CERRAR TOOLTIP AL TOCAR FUERA (SOLO SI ESTÁ ACTIVO POR TOQUE) ---
+                        document.addEventListener('click', (event) => {
+                            // Si el tooltip está activo por un toque Y el click NO fue en el icono activo NI dentro del tooltip
+                            if (touchTooltipActiveFor &&
+                                !touchTooltipActiveFor.contains(event.target) &&
+                                !tooltipElement.contains(event.target)) {
+                                hideTooltip(true); // Ocultar inmediatamente
+                                touchTooltipActiveFor = null; // Desmarcar estado táctil
+                            }
+                        });
+                        // Podrías añadir 'touchstart' también si 'click' no es suficientemente responsivo en algunos dispositivos
+                        /*
+                        document.addEventListener('touchstart', (event) => {
+                            if (touchTooltipActiveFor &&
+                                !touchTooltipActiveFor.contains(event.target) &&
+                                !tooltipElement.contains(event.target))
+                            {
+                                hideTooltip(true);
+                                touchTooltipActiveFor = null;
+                            }
+                        }, { passive: true }); // passive: true es bueno para rendimiento en touchstart si no usas preventDefault
+                        */
 
                     });
                 </script>
