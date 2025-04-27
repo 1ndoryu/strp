@@ -1748,6 +1748,7 @@
 
             // Actualizar el select original
             originalSelect.value = newValue;
+            console.log(`Opción seleccionada: ${newText}.`);
 
             // Disparar evento 'change' en el select original (IMPORTANTE para validación)
             originalSelect.dispatchEvent(new Event('change', {bubbles: true}));
