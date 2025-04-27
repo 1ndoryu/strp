@@ -86,9 +86,6 @@
 
     // >>> FIN NUEVA FUNCIÓN <<<
 
-
-
-
     const horarioFeedbackDiv = document.createElement('div');
     horarioFeedbackDiv.id = 'horario-feedback';
     horarioFeedbackDiv.style.marginTop = '10px'; // Espacio
@@ -346,7 +343,7 @@
     }
 
     function cambiarEtapa(nuevoIndex) {
-        if (nuevoIndex >= 0 && nuevoIndex < etapas.length) {
+        if (nuevoIndex >= 0 && nuevoIndex < etapas.length) {  
             etapas[etapaActualIndex].classList.remove('activa');
             etapas[etapaActualIndex].classList.add('oculto');
             etapaActualIndex = nuevoIndex;

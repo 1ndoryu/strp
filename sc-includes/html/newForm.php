@@ -478,6 +478,7 @@ function newForm()
                                         // 6. Comprobar si este servicio estaba seleccionado previamente
                                         // Compara el 'value' del servicio de la BD con los 'values' guardados en $selected_services
                                         $checked = in_array($valor_servicio, $selected_services) ? 'checked' : '';
+                                        console_log($checked);
 
                                         // 7. Imprimir el HTML del checkbox
                                         echo '<label class="frm-checkbox">';
