@@ -1700,6 +1700,8 @@
                 const placeholderOption = originalSelect.querySelector('option[value=""]');
                 valueDisplay.textContent = placeholderOption ? placeholderOption.textContent : 'Seleccionar...';
             }
+
+            console.log(allOptionsData)
         }
 
         // 2. Abrir/Cerrar el Dropdown
