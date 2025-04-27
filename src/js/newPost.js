@@ -1675,7 +1675,9 @@
                 if (option.selected) {
                     li.classList.add('selected');
                     li.setAttribute('aria-selected', 'true');
-                    selectedText = option.textContent; // Guardar texto seleccionado
+                    selectedText = option.textContent;
+                    // Depuración temporal.
+                    console.log(`Opción seleccionada: ${selectedText}.`);
                 } else {
                     li.setAttribute('aria-selected', 'false');
                 }
