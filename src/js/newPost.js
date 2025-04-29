@@ -47,12 +47,6 @@
     const inputUrlLateral = document.getElementById('input-url-banner-lateral');
     const contenedorInputLateral = document.getElementById('url-banner-lateral');
 
-    // probablemente hay una mejor manera de hacer esto, pero casi no he tocado php puro y duro ahorita
-    const checkboxes = document.querySelectorAll('.sc_services');
-    checkboxes.forEach(cb => {
-        cb.style.display = 'none'; // Ocultar los checkboxes originales
-    })
-
     contenedorInputLateral.addEventListener('click', () => {
         if (inputUrlLateral.classList.contains('active')) {
             inputUrlLateral.classList.remove('active');
@@ -1777,6 +1771,12 @@
             // Devolver el foco al trigger (buena práctica de accesibilidad)
             trigger.focus();
         }
+
+         // probablemente hay una mejor manera de hacer esto, pero casi no he tocado php puro y duro ahorita
+        const checkboxes = document.querySelectorAll('.sc_services');
+        checkboxes.forEach(cb => {
+            console.log(cb)
+        })
 
         // 4. Funcionalidad de Búsqueda/Filtrado
         function filterOptions() {
