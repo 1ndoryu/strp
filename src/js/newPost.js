@@ -1775,7 +1775,9 @@
          // probablemente hay una mejor manera de hacer esto, pero casi no he tocado php puro y duro ahorita
         const checkboxes = document.querySelectorAll('.sc_services');
         checkboxes.forEach(cb => {
-            console.log(cb)
+            if (categoriaSelect.value !== cb.dataset.value) {
+                cb.style.display = 'none';
+            }
         })
 
         // 4. Funcionalidad de Búsqueda/Filtrado
