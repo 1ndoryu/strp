@@ -1,10 +1,22 @@
 <?php
 // Cargar módulos necesarios (si aplica)
-loadModule("filter"); // Asumiendo que podría ser necesario o parte del boilerplate
+// loadModule("filter"); // Asumiendo que podría ser necesario o parte del boilerplate
 
 // Variables para mensajes de éxito/error
 $error_div = false;
 $exito_div = false;
+
+// --- OBTENER CATEGORÍAS ---
+// Obtenemos todas las categorías disponibles para los desplegables
+$categories = selectSQL("sc_category", array(), "name ASC");
+// Creamos un mapa ID => Nombre para facilitar la visualización en la lista
+$category_map = array();
+if ($categories && count($categories) > 0) {
+    foreach ($categories as $cat) {
+        $category_map[$cat['ID_cat']] = $cat['name'];
+    }
+}
+
 
 // --- MANEJO DE ACCIONES POST/GET ---
 
@@ -37,16 +49,26 @@ if (isset($_POST['add_service'])) {
     $name = $_POST['new_service_name'] ?? '';
     $value = $_POST['new_service_value'] ?? ''; // El 'value' se introduce manualmente
     $ord = isset($_POST['new_service_ord']) && is_numeric($_POST['new_service_ord']) ? (int)$_POST['new_service_ord'] : 0;
+    // Obtener el ID de la categoría seleccionada
+    $category_id = isset($_POST['new_service_category']) && is_numeric($_POST['new_service_category']) ? (int)$_POST['new_service_category'] : null;
 
-    if (!empty($name) && !empty($value)) {
+    // Validar campos obligatorios (Nombre, Valor). Categoría podría ser opcional (NULL) o requerida.
+    // Asumiremos que la categoría es REQUERIDA por ahora. Ajustar si puede ser NULL.
+    if (!empty($name) && !empty($value) && $category_id !== null) {
         insertSQL("sc_services", $a = array(
             'name' => $name,
             'value' => $value, // Guardamos el valor introducido
-            'ord' => $ord
+            'ord' => $ord,
+            'category' => $category_id // Guardamos el ID de la categoría
         ));
         $exito_div = "Servicio creado correctamente."; // Placeholder: NUEVO_LANG_STRING['manage_services.service_created']
     } else {
-        $error_div = "El nombre y el valor del servicio son obligatorios."; // Placeholder: NUEVO_LANG_STRING['manage_services.add_error_required']
+        $missing_fields = [];
+        if (empty($name)) $missing_fields[] = "Nombre";
+        if (empty($value)) $missing_fields[] = "Valor";
+        if ($category_id === null) $missing_fields[] = "Categoría"; // Asumiendo requerida
+        $error_div = "Los siguientes campos son obligatorios: " . implode(', ', $missing_fields) . ".";
+        // Placeholder: NUEVO_LANG_STRING['manage_services.add_error_required_fields']
     }
 }
 
@@ -56,16 +78,33 @@ if (isset($_POST['edit_service']) && isset($_GET['edit']) && is_numeric($_GET['e
     $name = $_POST['mod_service_name'] ?? '';
     $value = $_POST['mod_service_value'] ?? '';
     $ord = isset($_POST['mod_service_ord']) && is_numeric($_POST['mod_service_ord']) ? (int)$_POST['mod_service_ord'] : 0;
+    // Obtener el ID de la categoría seleccionada
+    $category_id = isset($_POST['mod_service_category']) && is_numeric($_POST['mod_service_category']) ? (int)$_POST['mod_service_category'] : null;
 
-    if (!empty($name) && !empty($value)) {
+    // Asumiremos que la categoría es REQUERIDA por ahora. Ajustar si puede ser NULL.
+    if (!empty($name) && !empty($value) && $category_id !== null) {
         updateSQL("sc_services", $a = array(
             'name' => $name,
             'value' => $value,
-            'ord' => $ord
+            'ord' => $ord,
+            'category' => $category_id // Actualizamos el ID de la categoría
         ), $s = array('ID_service' => $id_service_to_edit));
         $exito_div = "Servicio actualizado correctamente."; // Placeholder: NUEVO_LANG_STRING['manage_services.service_edited']
+        // Importante: Forzar recarga de datos si continuamos mostrando el form de edición
+        // $mod = selectSQL("sc_services", $b = array('ID_service' => $id_service_to_edit));
+        // Esto es para que si el guardado fue exitoso y seguimos en la página de edición,
+        // se muestren los datos recién guardados (especialmente la categoría).
+        // Sin embargo, a menudo es mejor redirigir a la lista después de guardar.
+        // Si no rediriges, descomenta la línea de arriba o actualiza $mod[0] directamente.
+        // Por simplicidad, asumimos que la página se recarga o se vuelve a la lista.
+
     } else {
-         $error_div = "El nombre y el valor del servicio son obligatorios."; // Placeholder: NUEVO_LANG_STRING['manage_services.edit_error_required']
+         $missing_fields = [];
+         if (empty($name)) $missing_fields[] = "Nombre";
+         if (empty($value)) $missing_fields[] = "Valor";
+         if ($category_id === null) $missing_fields[] = "Categoría"; // Asumiendo requerida
+         $error_div = "Los siguientes campos son obligatorios: " . implode(', ', $missing_fields) . ".";
+         // Placeholder: NUEVO_LANG_STRING['manage_services.edit_error_required_fields']
     }
 }
 
@@ -74,10 +113,12 @@ if (isset($_POST['edit_service']) && isset($_GET['edit']) && is_numeric($_GET['e
 // Si estamos editando un servicio específico
 if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
     $service_id = (int)$_GET['edit'];
+    // Volvemos a seleccionar por si hubo un error en el POST anterior y necesitamos mostrar los datos originales
     $mod = selectSQL("sc_services", $b = array('ID_service' => $service_id));
 
     // Verificar si el servicio existe
     if ($mod && count($mod) > 0) {
+        $current_service = $mod[0]; // Más fácil de leer
         ?>
         <h2>Editar Servicio</h2> <!-- Placeholder: NUEVO_LANG_STRING['manage_services.title_edit'] -->
         <?php if ($exito_div !== FALSE) { ?>
@@ -91,15 +132,32 @@ if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
             <input type="hidden" name="edit_service" value="1"> <!-- Flag para identificar el POST de edición -->
 
             <label>Nombre del Servicio</label> <!-- Placeholder: NUEVO_LANG_STRING['manage_services.name'] -->
-            <input name="mod_service_name" type="text" value="<?= htmlspecialchars($mod[0]['name']); ?>">
+            <input name="mod_service_name" type="text" value="<?= htmlspecialchars($current_service['name']); ?>" required>
             <div class="clear"></div>
 
             <label>Valor (clave interna)</label> <!-- Placeholder: NUEVO_LANG_STRING['manage_services.value'] -->
-            <input name="mod_service_value" type="text" value="<?= htmlspecialchars($mod[0]['value']); ?>" placeholder="Ej: masaje_relajante">
+            <input name="mod_service_value" type="text" value="<?= htmlspecialchars($current_service['value']); ?>" placeholder="Ej: masaje_relajante" required>
+            <div class="clear"></div>
+
+            <label>Categoría</label> <!-- Placeholder: NUEVO_LANG_STRING['manage_services.category'] -->
+            <select name="mod_service_category" required>
+                <option value="">-- Seleccionar Categoría --</option>
+                <?php
+                if ($categories && count($categories) > 0) {
+                    foreach ($categories as $category) {
+                        // Marcar la categoría actual como seleccionada
+                        $selected = ($category['ID_cat'] == $current_service['category']) ? 'selected' : '';
+                        echo '<option value="' . htmlspecialchars($category['ID_cat']) . '" ' . $selected . '>' . htmlspecialchars($category['name']) . '</option>';
+                    }
+                } else {
+                     echo '<option value="" disabled>No hay categorías disponibles</option>'; // Placeholder: NUEVO_LANG_STRING['manage_services.no_categories']
+                }
+                ?>
+            </select>
             <div class="clear"></div>
 
             <label>Orden</label> <!-- Placeholder: NUEVO_LANG_STRING['manage_services.order'] -->
-            <input name="mod_service_ord" type="number" value="<?= htmlspecialchars($mod[0]['ord']); ?>" placeholder="0">
+            <input name="mod_service_ord" type="number" value="<?= htmlspecialchars($current_service['ord']); ?>" placeholder="0">
             <div class="clear"></div>
 
             <input name="Modificar" type="submit" value="Guardar Cambios"> <!-- Placeholder: NUEVO_LANG_STRING['manage_services.button_save'] -->
@@ -122,6 +180,7 @@ else {
     <h2>Gestionar Servicios Anuncio</h2> <!-- Placeholder: NUEVO_LANG_STRING['manage_services.title_h1'] -->
 
     <!-- Formulario para añadir nuevo servicio -->
+    <h3>Añadir Nuevo Servicio</h3> <!-- Placeholder: NUEVO_LANG_STRING['manage_services.add_title'] -->
     <form action="index.php?id=manage_services_anuncio" method="post" class="param_form white_form">
          <input type="hidden" name="add_service" value="1"> <!-- Flag para identificar el POST de añadir -->
 
@@ -131,6 +190,21 @@ else {
 
         <label>Valor (clave interna)</label> <!-- Placeholder: NUEVO_LANG_STRING['manage_services.add_value'] -->
         <input name="new_service_value" type="text" placeholder="Ej: masaje_relajante" required>
+        <div class="clear"></div>
+
+        <label>Categoría</label> <!-- Placeholder: NUEVO_LANG_STRING['manage_services.category'] -->
+        <select name="new_service_category" required>
+             <option value="">-- Seleccionar Categoría --</option>
+             <?php
+             if ($categories && count($categories) > 0) {
+                 foreach ($categories as $category) {
+                     echo '<option value="' . htmlspecialchars($category['ID_cat']) . '">' . htmlspecialchars($category['name']) . '</option>';
+                 }
+             } else {
+                 echo '<option value="" disabled>No hay categorías disponibles</option>'; // Placeholder: NUEVO_LANG_STRING['manage_services.no_categories']
+             }
+             ?>
+        </select>
         <div class="clear"></div>
 
         <label>Orden (Opcional)</label> <!-- Placeholder: NUEVO_LANG_STRING['manage_services.add_order'] -->
@@ -152,12 +226,18 @@ else {
     <!-- Lista de servicios existentes -->
     <h3>Servicios Existentes</h3> <!-- Placeholder: NUEVO_LANG_STRING['manage_services.existing_list'] -->
     <ul class="list_categories" id="serviceList"> <!-- Cambiado ID a serviceList para el JS -->
-        <?php if (count($services) > 0) {
-            for ($i = 0; $i < count($services); $i++) { ?>
+        <?php if ($services && count($services) > 0) { // Añadido check $services &&
+            for ($i = 0; $i < count($services); $i++) {
+                // Buscar el nombre de la categoría usando el mapa creado al principio
+                $category_name = isset($category_map[$services[$i]['category']])
+                                 ? htmlspecialchars($category_map[$services[$i]['category']])
+                                 : '<em>Sin categoría</em>'; // Placeholder: NUEVO_LANG_STRING['manage_services.no_category_assigned']
+            ?>
                 <li data-id="<?= $services[$i]['ID_service']; ?>" draggable="true">
                     <span class="col_left">
-                        <img draggable="false" src="<?= Images::getImage('drag_indicator.svg', Images::IMG); ?>" alt="Mover" style="cursor: grab; margin-right: 10px;"> <!-- Asumiendo que Images::getImage funciona -->
-                        <b><?= htmlspecialchars($services[$i]['name']); ?></b> (Valor: <?= htmlspecialchars($services[$i]['value']); ?> | Orden: <?= htmlspecialchars($services[$i]['ord']); ?>)
+                        <img draggable="false" src="<?= getConfParam('SITE_URL'); ?>sc-admin/res/images/drag_indicator.svg" alt="Mover" style="cursor: grab; margin-right: 10px;"> <!-- Asumiendo ruta y función getConfParam -->
+                        <b><?= htmlspecialchars($services[$i]['name']); ?></b>
+                        (Valor: <?= htmlspecialchars($services[$i]['value']); ?> | Cat: <?= $category_name; ?> | Orden: <?= htmlspecialchars($services[$i]['ord']); ?>)
                     </span>
                     <span class="col_right">
                         <a href="index.php?id=manage_services_anuncio&edit=<?= $services[$i]['ID_service']; ?>">Editar</a> <!-- Placeholder: NUEVO_LANG_STRING['manage_services.edit'] -->
@@ -171,7 +251,7 @@ else {
     </ul>
 
     <!-- Botón y formulario para guardar el orden -->
-    <?php if (count($services) > 1) { // Solo mostrar si hay más de un servicio para ordenar ?>
+    <?php if ($services && count($services) > 1) { // Añadido check $services && ?>
         <div class="text-center" style="margin-top: 20px;">
             <button id="save_order" class="btn btn-primary">Guardar Orden</button> <!-- Placeholder: NUEVO_LANG_STRING['manage_services.button_save_order'] -->
         </div>
@@ -186,5 +266,6 @@ else {
 
 // Incluir el JavaScript para drag & drop (el mismo que para categorías)
 // Asegúrate de que este JS pueda manejar el ID #serviceList o ajústalo si es necesario.
+// Asumimos que getConfParam('SITE_URL') devuelve la URL base correcta.
 ?>
 <script type="text/javascript" src="<?= getConfParam('SITE_URL'); ?>sc-admin/res/manage_categories.js"></script>
