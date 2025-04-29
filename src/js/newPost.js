@@ -1755,6 +1755,7 @@
 
             // Actualizar el select original
             originalSelect.value = newValue;
+            console.log(`Valor seleccionado: ${newValue}.`);
             console.log(`Opción seleccionada: ${newText}.`);
 
             // Disparar evento 'change' en el select original (IMPORTANTE para validación)
