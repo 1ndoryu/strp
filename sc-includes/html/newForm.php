@@ -474,6 +474,7 @@ function newForm()
                                         // 5. Preparar los datos para el checkbox
                                         $valor_servicio = $db_servicio['value']; // El valor único (ej: 'masaje_relajante')
                                         $nombre_servicio = $db_servicio['name'];  // El nombre a mostrar (ej: 'Masaje relajante')
+                                        $id_categoria = $db_servicio['category']; // ID de la categoría, la cual se creo anteriormente
 
                                         // 6. Comprobar si este servicio estaba seleccionado previamente
                                         // Compara el 'value' del servicio de la BD con los 'values' guardados en $selected_services
@@ -481,7 +482,7 @@ function newForm()
                                         console_log($checked);
 
                                         // 7. Imprimir el HTML del checkbox
-                                        echo '<label class="frm-checkbox sc_services">';
+                                        echo '<label class="frm-checkbox sc_services" data-value="' . htmlspecialchars($id_categoria) . '">';
                                         echo    '<input type="checkbox" name="servicios[]" value="' . htmlspecialchars($valor_servicio) . '" ' . $checked . '>';
                                         echo    ' ' . htmlspecialchars($nombre_servicio); // Muestra el nombre legible
                                         echo '</label>';
