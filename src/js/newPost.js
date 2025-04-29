@@ -1664,7 +1664,7 @@
             let selectedText = '';
 
             originalOptions.forEach(option => {
-                if (option.value === '') return; // Omitir la opción placeholder
+                if (option.value === '') return;
 
                 const li = document.createElement('li');
                 li.textContent = option.textContent;
@@ -1682,7 +1682,7 @@
                     li.setAttribute('aria-selected', 'false');
                 }
 
-                optionsList.appendChild(li);
+                optionsList.appendChild(li); 
                 allOptionsData.push({value: option.value, text: option.textContent.toLowerCase(), element: li});
 
                 // Añadir listener a cada opción creada
@@ -1886,6 +1886,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             setupCustomSelect('custom-provincia-wrapper');
             setupCustomSelect('custom-categoria-wrapper');
+            // this function is going to be used to call back the function who render the custom select in the form 
         });
     } else {
         setupCustomSelect('custom-provincia-wrapper');
