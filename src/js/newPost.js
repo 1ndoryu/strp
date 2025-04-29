@@ -1741,6 +1741,12 @@
             }
         }
 
+        // En principio no necesito mostrar los todos para poder filtrarlos por el id de su cat
+        const checkboxes = document.querySelectorAll('.sc_services');
+        checkboxes.forEach(cb => {
+            cb.style.display = 'none'
+        })
+
         // 3. Manejar Selección de Opción
         function handleOptionSelect(event) {
             const selectedLi = event.currentTarget; // El LI que recibió el evento
@@ -1749,6 +1755,13 @@
 
             // Actualizar el select original
             originalSelect.value = newValue;
+
+            checkboxes.forEach(cb => {
+                if (cb.dataset.value === newValue) {
+                    cb.style.display = 'block';
+                }
+            })
+            
             console.log(`Valor seleccionado: ${newValue}.`);
             console.log(`Opción seleccionada: ${newText}.`);
 
@@ -1773,12 +1786,6 @@
         }
 
          // probablemente hay una mejor manera de hacer esto, pero casi no he tocado php puro y duro ahorita
-        const checkboxes = document.querySelectorAll('.sc_services');
-        checkboxes.forEach(cb => {
-            if (categoriaSelect.value !== cb.dataset.value) {
-                cb.style.display = 'none';
-            }
-        })
 
         // 4. Funcionalidad de Búsqueda/Filtrado
         function filterOptions() {
