@@ -1760,6 +1760,10 @@
                 if (cb.dataset.value === newValue) {
                     cb.style.display = 'block';
                 }
+
+                if (cb.dataset.value !== newValue) {
+                    cb.style.display = 'none';
+                }
             })
             
             console.log(`Valor seleccionado: ${newValue}.`);
