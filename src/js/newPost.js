@@ -47,6 +47,10 @@
     const inputUrlLateral = document.getElementById('input-url-banner-lateral');
     const contenedorInputLateral = document.getElementById('url-banner-lateral');
 
+    const checkboxes = document.querySelectorAll('.sc_services');
+    console.log(checkboxes)
+
+
     contenedorInputLateral.addEventListener('click', () => {
         if (inputUrlLateral.classList.contains('active')) {
             inputUrlLateral.classList.remove('active');
@@ -89,9 +93,10 @@
     const horarioFeedbackDiv = document.createElement('div');
     horarioFeedbackDiv.id = 'horario-feedback';
     horarioFeedbackDiv.style.marginTop = '10px'; // Espacio
-    if (contenedorHorario) {
+    if (contenedorHorario) { 
         contenedorHorario.parentNode.insertBefore(horarioFeedbackDiv, contenedorHorario.nextSibling);
     }
+
     // NUEVO: Un div para errores específicos del horario no configurado en el submit final
     const horarioSubmitErrorDiv = document.createElement('div');
     horarioSubmitErrorDiv.id = 'error-horario-submit';

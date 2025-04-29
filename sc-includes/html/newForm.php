@@ -481,7 +481,7 @@ function newForm()
                                         console_log($checked);
 
                                         // 7. Imprimir el HTML del checkbox
-                                        echo '<label class="frm-checkbox">';
+                                        echo '<label class="frm-checkbox sc_services">';
                                         echo    '<input type="checkbox" name="servicios[]" value="' . htmlspecialchars($valor_servicio) . '" ' . $checked . '>';
                                         echo    ' ' . htmlspecialchars($nombre_servicio); // Muestra el nombre legible
                                         echo '</label>';
