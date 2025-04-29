@@ -47,9 +47,11 @@
     const inputUrlLateral = document.getElementById('input-url-banner-lateral');
     const contenedorInputLateral = document.getElementById('url-banner-lateral');
 
+    // probablemente hay una mejor manera de hacer esto, pero casi no he tocado php puro y duro ahorita
     const checkboxes = document.querySelectorAll('.sc_services');
-    console.log(checkboxes)
-
+    checkboxes.forEach(cb => {
+        cb.style.display = 'none'; // Ocultar los checkboxes originales
+    })
 
     contenedorInputLateral.addEventListener('click', () => {
         if (inputUrlLateral.classList.contains('active')) {
