@@ -9,6 +9,7 @@ $exito_div = false;
 
 // --- OBTENER CATEGORÍAS (Necesario para los formularios) ---
 $categories = selectSQL("sc_category", array(), "name ASC"); // Obtener todas las categorías ordenadas por nombre
+// **NOTA:** Si ves categorías duplicadas en los <select>, revisa tu tabla `sc_category` por nombres repetidos.
 $category_map = []; // Crear un mapa ID => Nombre para facilitar la visualización en la lista
 if ($categories) {
     foreach ($categories as $cat) {
@@ -47,32 +48,27 @@ if (isset($_POST['add_service'])) {
     $name = $_POST['new_service_name'] ?? '';
     $value = $_POST['new_service_value'] ?? '';
     $ord = isset($_POST['new_service_ord']) && is_numeric($_POST['new_service_ord']) ? (int)$_POST['new_service_ord'] : 0;
-    // --- NUEVO: Capturar ID de categoría ---
-    $category_id = isset($_POST['new_service_category']) && is_numeric($_POST['new_service_category']) ? (int)$_POST['new_service_category'] : null; // Puede ser NULL si no se selecciona
+    $category_id = isset($_POST['new_service_category']) && is_numeric($_POST['new_service_category']) ? (int)$_POST['new_service_category'] : null;
 
-    // --- VALIDACIÓN: Asegurarse que la categoría sea obligatoria si es necesario ---
-    // Descomenta la siguiente línea si la categoría es obligatoria
-    // if (!empty($name) && !empty($value) && $category_id !== null) {
-    if (!empty($name) && !empty($value)) { // Manteniendo la validación original, pero añadiendo la categoría al insert
+    if (!empty($name) && !empty($value)) {
         $data_to_insert = array(
             'name' => $name,
             'value' => $value,
             'ord' => $ord
-            // --- NUEVO: Añadir categoría al array de inserción ---
-            // Si category_id es null, se insertará NULL en la BD (si la columna lo permite)
         );
          if ($category_id !== null) {
              $data_to_insert['category'] = $category_id;
+         } else {
+             // Asegurarse de que se inserta NULL explícitamente si la columna lo permite
+             // y no se seleccionó categoría. Si la columna no permite NULL y no se
+             // seleccionó categoría, esto podría dar un error SQL dependiendo de la config.
+             $data_to_insert['category'] = null;
          }
 
         insertSQL("sc_services", $data_to_insert);
         $exito_div = "Servicio creado correctamente.";
     } else {
-        // Ajusta el mensaje de error si la categoría es obligatoria
         $error_div = "El nombre y el valor del servicio son obligatorios.";
-        // if ($category_id === null) { // Si la categoría es obligatoria y no se seleccionó
-        //     $error_div = "El nombre, valor y categoría del servicio son obligatorios.";
-        // }
     }
 }
 
@@ -82,33 +78,20 @@ if (isset($_POST['edit_service']) && isset($_GET['edit']) && is_numeric($_GET['e
     $name = $_POST['mod_service_name'] ?? '';
     $value = $_POST['mod_service_value'] ?? '';
     $ord = isset($_POST['mod_service_ord']) && is_numeric($_POST['mod_service_ord']) ? (int)$_POST['mod_service_ord'] : 0;
-    // --- NUEVO: Capturar ID de categoría ---
-    $category_id = isset($_POST['mod_service_category']) && is_numeric($_POST['mod_service_category']) ? (int)$_POST['mod_service_category'] : null;
+    $category_id = isset($_POST['mod_service_category']) && $_POST['mod_service_category'] !== '' ? (int)$_POST['mod_service_category'] : null; // Se convierte a null si se envía vacío ""
 
-    // --- VALIDACIÓN: Asegurarse que la categoría sea obligatoria si es necesario ---
-    // Descomenta la siguiente línea si la categoría es obligatoria
-    // if (!empty($name) && !empty($value) && $category_id !== null) {
-    if (!empty($name) && !empty($value)) { // Manteniendo la validación original
+    if (!empty($name) && !empty($value)) {
          $data_to_update = array(
             'name' => $name,
             'value' => $value,
-            'ord' => $ord
-            // --- NUEVO: Añadir categoría al array de actualización ---
-            // Si es null, actualiza a NULL, si es un ID válido, actualiza con el ID
+            'ord' => $ord,
+            'category' => $category_id // Asignar directamente el ID o NULL
         );
-        // Solo añadimos la categoría si se seleccionó una (o se dejó en "Sin categoría", que daría null)
-        // Esto permite quitar una categoría asignada previamente si se elige "Sin categoría".
-         $data_to_update['category'] = $category_id;
-
 
         updateSQL("sc_services", $data_to_update , $s = array('ID_service' => $id_service_to_edit));
         $exito_div = "Servicio actualizado correctamente.";
     } else {
-         // Ajusta el mensaje de error si la categoría es obligatoria
          $error_div = "El nombre y el valor del servicio son obligatorios.";
-         // if ($category_id === null) { // Si la categoría es obligatoria y no se seleccionó
-         //    $error_div = "El nombre, valor y categoría del servicio son obligatorios.";
-         // }
     }
 }
 
@@ -119,9 +102,8 @@ if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
     $service_id = (int)$_GET['edit'];
     $mod = selectSQL("sc_services", $b = array('ID_service' => $service_id));
 
-    // Verificar si el servicio existe
     if ($mod && count($mod) > 0) {
-        $current_service = $mod[0]; // Datos del servicio actual
+        $current_service = $mod[0];
         ?>
         <h2>Editar Servicio</h2>
         <?php if ($exito_div !== FALSE) { ?>
@@ -146,28 +128,27 @@ if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
             <input name="mod_service_ord" type="number" value="<?= htmlspecialchars($current_service['ord']); ?>" placeholder="0">
             <div class="clear"></div>
 
-            <!-- === NUEVO: Selector de Categoría === -->
             <label>Categoría</label>
             <select name="mod_service_category">
-                <option value="">-- Sin categoría --</option> <!-- Opción para desasignar categoría -->
+                <option value="">-- Sin categoría --</option> <!-- Importante: value="" -->
                 <?php
                 if ($categories) {
                     foreach ($categories as $category) {
-                        $selected = ($current_service['category'] == $category['ID_cat']) ? 'selected' : ''; // Preseleccionar la actual
-                        echo "<option value=\"".htmlspecialchars($category['ID_cat'])."\" $selected>".htmlspecialchars($category['name'])."</option>";
+                        // Asegurarse de comparar con el mismo tipo (string vs int puede fallar con == si uno es 0 o null)
+                        $is_selected = ($current_service['category'] !== null && $current_service['category'] == $category['ID_cat']);
+                        $selected_attr = $is_selected ? 'selected' : '';
+                        echo "<option value=\"".htmlspecialchars($category['ID_cat'])."\" $selected_attr>".htmlspecialchars($category['name'])."</option>";
                     }
                 }
                 ?>
             </select>
             <div class="clear"></div>
-            <!-- === FIN NUEVO === -->
 
             <input name="Modificar" type="submit" value="Guardar Cambios">
         </form>
         <a href="index.php?id=manage_services_anuncio" class="back">« Volver a la lista de servicios</a>
         <?php
     } else {
-        // Servicio no encontrado
         echo "<h2>Error</h2>";
         echo "<div class='info_error'>Servicio no encontrado.</div>";
         echo '<a href="index.php?id=manage_services_anuncio" class="back">« Volver a la lista de servicios</a>';
@@ -175,7 +156,6 @@ if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
 }
 // Si estamos en la vista principal (listar y añadir)
 else {
-    // Obtener todos los servicios ordenados
     $services = selectSQL("sc_services", array(), "ord ASC");
     ?>
     <h2>Gestionar Servicios Anuncio</h2>
@@ -196,10 +176,9 @@ else {
         <input name="new_service_ord" type="number" placeholder="0">
         <div class="clear"></div>
 
-        <!-- === NUEVO: Selector de Categoría === -->
         <label>Categoría</label>
          <select name="new_service_category">
-            <option value="">-- Sin categoría --</option> <!-- Opción por defecto o para no asignar -->
+            <option value="">-- Sin categoría --</option> <!-- Importante: value="" -->
              <?php
              if ($categories) {
                  foreach ($categories as $category) {
@@ -211,8 +190,6 @@ else {
              ?>
          </select>
         <div class="clear"></div>
-        <!-- === FIN NUEVO === -->
-
 
         <input name="add" type="submit" value="Añadir Servicio">
     </form>
@@ -228,22 +205,22 @@ else {
 
     <!-- Lista de servicios existentes -->
     <h3>Servicios Existentes</h3>
-    <ul class="list_categories" id="serviceList"> <!-- ID 'serviceList' para el JS -->
+    <ul class="list_categories" id="serviceList">
         <?php if (count($services) > 0) {
             for ($i = 0; $i < count($services); $i++) {
-                // --- NUEVO: Obtener nombre de categoría desde el mapa ---
-                $category_name = 'Sin categoría'; // Valor por defecto
-                if (isset($services[$i]['category']) && isset($category_map[$services[$i]['category']])) {
+                $category_name = 'Sin categoría';
+                if (isset($services[$i]['category']) && $services[$i]['category'] !== null && isset($category_map[$services[$i]['category']])) {
                     $category_name = htmlspecialchars($category_map[$services[$i]['category']]);
                 }
                 ?>
                 <li data-id="<?= $services[$i]['ID_service']; ?>" draggable="true">
                     <span class="col_left">
-                        <img draggable="false" src="<?= getConfParam('SITE_URL'); ?>sc-admin/res/img/drag_indicator.svg" alt="Mover" style="cursor: grab; margin-right: 10px;"> <!-- Ajusta la ruta si es necesario -->
+                        <!-- === IMAGEN ACTUALIZADA === -->
+                        <img draggable="false" src="https://41121521.servicio-online.net/src/images/drag_indicator.svg" alt="" style="cursor: grab; margin-right: 10px; vertical-align: middle;">
+                        <!-- === FIN IMAGEN === -->
                         <b><?= htmlspecialchars($services[$i]['name']); ?></b>
                         (Valor: <?= htmlspecialchars($services[$i]['value']); ?> |
                          Orden: <?= htmlspecialchars($services[$i]['ord']); ?> |
-                         <!-- NUEVO: Mostrar nombre de categoría -->
                          Cat: <?= $category_name; ?>)
                     </span>
                     <span class="col_right">
@@ -271,7 +248,5 @@ else {
 <?php
 } // Fin del else (vista principal)
 
-// Incluir el JavaScript para drag & drop
-// Asumiendo que el JS 'manage_categories.js' funciona correctamente con el id 'serviceList'
 ?>
 <script type="text/javascript" src="<?= getConfParam('SITE_URL'); ?>sc-admin/res/manage_categories.js"></script>
