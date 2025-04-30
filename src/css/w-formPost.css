@@ -1789,3 +1789,8 @@ select.frm-campo.frm-select.corto {
     height: 1270px;
     max-height: unset;
 }
+
+div#error-descripcion {
+    margin-top: -19px;
+    max-width: 461px;
+}
