@@ -751,7 +751,9 @@ button#btn-mostrar-horario {
     color: var(--color-error);
     font-size: 13px;
     margin-top: var(--espaciado-pequeno);
-    /* display: none; */ /* Se gestiona con la clase .oculto desde JS */
+    /* display: none; */
+    text-align: start;
+    margin-right: auto;
 }
 
 /* Estilo opcional para campos con error (requiere JS para añadir la clase) */
@@ -1788,4 +1790,11 @@ select.frm-campo.frm-select.corto {
 .imagen-anuncio.imagen-etapa-extra img {
     height: 1270px;
     max-height: unset;
+}
+
+.flex-mensajes-error {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+    flex-wrap: wrap;
 }
