@@ -425,9 +425,12 @@ function newForm()
                             <label for="titulo_anuncio" class="frm-etiqueta">Título del Anuncio *</label>
                             <!-- MAPEO: name="tit" esperado por backend -->
                             <input type="text" name="tit" id="titulo_anuncio" class="frm-campo" required minlength="10" maxlength="50" value="<?php echo htmlspecialchars($form_data['tit'] ?? ''); ?>">
-                            <div class="contador-caracteres">Caracteres: <span id="cont-titulo">0</span> (mín. 10 / máx. 50)</div>
-                            <div class="error-msg oculto" id="error-titulo">El título es obligatorio (entre 10 y 50 caracteres).</div>
-                            <div class="error-msg oculto" id="error-titulo-palabras">El título contiene palabras no permitidas.</div>
+                            <div class="flex-mensajes-error">
+                                <div class="contador-caracteres">Caracteres: <span id="cont-titulo">0</span> (mín. 10 / máx. 50)</div>
+                                <div class="error-msg oculto" id="error-titulo">El título es obligatorio (entre 10 y 50 caracteres).
+                                </div>
+                                <div class="error-msg oculto" id="error-titulo-palabras">El título contiene palabras no permitidas.</div>
+                            </div>
                         </div>
 
                         <div class="frm-grupo">
