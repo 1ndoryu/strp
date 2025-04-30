@@ -359,29 +359,39 @@ function newForm()
                             <select name="category" id="categoria" class="frm-select visually-hidden" required>
                                 <option value="">+ Categoría</option>
                                 <?php
-
-                                $parent = selectSQL("sc_category", $where = array('parent_cat' => -1), "ord ASC");
+                                $parent = selectSQL("sc_category", array('parent_cat' => -1), "ord ASC");
                                 $selected_cat = $form_data['category'] ?? null;
+
                                 foreach ($parent as $p) {
-                                    $child = selectSQL("sc_category", $where = array('parent_cat' => $p['ID_cat']), "name ASC");
-                                    if (count($child) > 0) { // Solo procesar si hay hijos
-                                        $options_html = ''; // Para acumular opciones normales
-                                        $otros_html_grp = ''; // Para acumular opciones 'Otros'
+                                    // Opcion 1: Mostrar el padre como una opción normal (si es seleccionable)
+                                    // $selected_p = ($selected_cat == $p['ID_cat']) ? 'selected' : '';
+                                    // echo '<option value="' . $p['ID_cat'] . '" ' . $selected_p . '>' . htmlspecialchars($p['name']) . '</option>';
+
+                                    // Opcion 2: Usar el padre como un <optgroup>
+                                    echo '<optgroup label="' . htmlspecialchars($p['name']) . '">'; // Abrir optgroup
+
+                                    $child = selectSQL("sc_category", array('parent_cat' => $p['ID_cat']), "name ASC");
+                                    if (count($child) > 0) {
+                                        $options_html = '';
+                                        $otros_html_grp = '';
                                         foreach ($child as $c) {
                                             $selected = ($selected_cat == $c['ID_cat']) ? 'selected' : '';
                                             $option_tag = '<option value="' . $c['ID_cat'] . '" ' . $selected . '>' . htmlspecialchars($c['name']) . '</option>';
 
-                                            if ((strpos($c['name'], 'Otros') !== false) || (strpos($c['name'], 'Otras') !== false)) {
-                                                $otros_html_grp .= $option_tag; // Acumular 'Otros'
+                                            // Lógica para "Otros" (sin cambios)
+                                            if ((stripos($c['name'], 'Otros') !== false) || (stripos($c['name'], 'Otras') !== false)) { // Usar stripos para ser case-insensitive
+                                                $otros_html_grp .= $option_tag;
                                             } else {
-                                                $options_html .= $option_tag; // Acumular normales
+                                                $options_html .= $option_tag;
                                             }
                                         }
-                                        // Imprimir normales primero, luego 'Otros'
-                                        echo $options_html;
-                                        echo $otros_html_grp;
-                                        // No se imprime </optgroup> porque no se abrió uno
+                                        echo $options_html; // Normales primero
+                                        echo $otros_html_grp; // 'Otros' después
+                                    } else {
+                                        // Opcional: Mostrar un mensaje si un padre (optgroup) no tiene hijos
+                                        // echo '<option disabled>-- Sin subcategorías --</option>';
                                     }
+                                    echo '</optgroup>'; // Cerrar optgroup
                                 }
                                 ?>
                             </select>
