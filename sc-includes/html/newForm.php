@@ -438,9 +438,11 @@ function newForm()
                             <label for="descripcion" class="frm-etiqueta">Acerca de mí *</label>
                             <!-- MAPEO: name="text" esperado por backend -->
                             <textarea name="text" id="descripcion" class="frm-campo frm-textarea" rows="6" required minlength="100" maxlength="300"><?php echo htmlspecialchars($form_data['text'] ?? ''); ?></textarea>
-                            <div class="contador-caracteres">Caracteres: <span id="cont-desc">0</span> (mín. 100 / máx. 300)</div>
-                            <div class="error-msg oculto" id="error-descripcion">La descripción es obligatoria (entre 100 y 300 caracteres).</div>
-                            <div class="error-msg oculto" id="error-desc-palabras">La descripción contiene palabras no permitidas.</div>
+                            <div class="flex-mensajes-error">
+                                <div class="contador-caracteres">Caracteres: <span id="cont-desc">0</span> (mín. 100 / máx. 300)</div>
+                                <div class="error-msg oculto" id="error-descripcion">La descripción es obligatoria (entre 100 y 300 caracteres).</div>
+                                <div class="error-msg oculto" id="error-desc-palabras">La descripción contiene palabras no permitidas.</div>
+                            </div>
                         </div>
 
                         <div class="frm-grupo">
