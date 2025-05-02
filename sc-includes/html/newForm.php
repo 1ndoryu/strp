@@ -360,19 +360,28 @@ function newForm()
                                 <option value="">+ Categoría</option>
                                 <?php
 
-                                // 1. Seleccionar SOLO las categorías padre (parent_cat = -1)
-                                $parent_categories = selectSQL("sc_category", array('parent_cat' => -1), "ord ASC"); // Ordenar por la columna 'ord'
-
-                                // 2. Obtener el valor seleccionado previamente, si existe (para marcarlo como selected)
+                                $parent = selectSQL("sc_category", $where = array('parent_cat' => -1), "ord ASC");
                                 $selected_cat = $form_data['category'] ?? null;
+                                foreach ($parent as $p) {
+                                    $child = selectSQL("sc_category", $where = array('parent_cat' => $p['ID_cat']), "name ASC");
+                                    if (count($child) > 0) { // Solo procesar si hay hijos
+                                        $options_html = ''; // Para acumular opciones normales
+                                        $otros_html_grp = ''; // Para acumular opciones 'Otros'
+                                        foreach ($child as $c) {
+                                            $selected = ($selected_cat == $c['ID_cat']) ? 'selected' : '';
+                                            $option_tag = '<option value="' . $c['ID_cat'] . '" ' . $selected . '>' . htmlspecialchars($c['name']) . '</option>';
 
-                                // 3. Iterar sobre las categorías padre encontradas
-                                foreach ($parent_categories as $p_cat) {
-                                    // 4. Comprobar si esta categoría padre es la que estaba seleccionada
-                                    $selected = ($selected_cat == $p_cat['ID_cat']) ? 'selected' : '';
-
-                                    // 5. Imprimir la etiqueta <option> para esta categoría padre
-                                    echo '<option value="' . htmlspecialchars($p_cat['ID_cat']) . '" ' . $selected . '>' . htmlspecialchars($p_cat['name']) . '</option>';
+                                            if ((strpos($c['name'], 'Otros') !== false) || (strpos($c['name'], 'Otras') !== false)) {
+                                                $otros_html_grp .= $option_tag; // Acumular 'Otros'
+                                            } else {
+                                                $options_html .= $option_tag; // Acumular normales
+                                            }
+                                        }
+                                        // Imprimir normales primero, luego 'Otros'
+                                        echo $options_html;
+                                        echo $otros_html_grp;
+                                        // No se imprime </optgroup> porque no se abrió uno
+                                    }
                                 }
                                 ?>
                             </select>
