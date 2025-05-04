@@ -1797,4 +1797,5 @@ select.frm-campo.frm-select.corto {
     flex-direction: row-reverse;
     justify-content: space-between;
     flex-wrap: wrap;
+    margin-bottom: 10px;
 }

@@ -437,25 +437,22 @@
     function validarCampo(elemento, errorSelector, condition, message) {
         const errorMsgElement = form.querySelector(errorSelector);
         if (!errorMsgElement) {
-
             return condition;
         }
 
         let campoVisual = elemento;
-        let campoOriginal = null; 
+        let campoOriginal = null;
 
         if (elemento && elemento.classList.contains('custom-select-wrapper')) {
-            campoVisual = elemento.querySelector('.custom-select-trigger'); 
+            campoVisual = elemento.querySelector('.custom-select-trigger');
             const originalSelectId = campoVisual?.dataset.selectId;
             if (originalSelectId) {
                 campoOriginal = document.getElementById(originalSelectId);
             }
-        }
-
-        else if (elemento && !(elemento.nodeName === 'INPUT' || elemento.nodeName === 'SELECT' || elemento.nodeName === 'TEXTAREA')) {
-            campoOriginal = elemento.querySelector('input, select, textarea'); 
+        } else if (elemento && !(elemento.nodeName === 'INPUT' || elemento.nodeName === 'SELECT' || elemento.nodeName === 'TEXTAREA')) {
+            campoOriginal = elemento.querySelector('input, select, textarea');
         } else {
-            campoOriginal = elemento; 
+            campoOriginal = elemento;
         }
 
         if (!condition) {
@@ -473,7 +470,7 @@
     function limpiarErroresEtapa(etapa) {
         etapa.querySelectorAll('.error-msg').forEach(msg => msg.classList.add('oculto'));
         etapa.querySelectorAll('.invalido').forEach(el => el.classList.remove('invalido'));
-        
+
         etapa.querySelectorAll('.custom-select-trigger.invalido').forEach(el => el.classList.remove('invalido'));
     }
 
@@ -916,103 +913,203 @@
         }
     }
 
+    /**
+     * Maneja el cambio de posición seleccionado en el dropdown.
+     * Mueve tanto el elemento de previsualización como su input oculto correspondiente
+     * a la nueva posición en el DOM.
+     *
+     * @param {Event} event El evento 'change' disparado por el elemento select.
+     */
     function handlePositionChange(event) {
         console.log('--- handlePositionChange INICIO ---');
-        const select = event.currentTarget;
+        const select = event.currentTarget; // El <select> que disparó el evento
         console.log('Select que disparó el evento:', select);
-        const selectedValue = select.value;
+        const selectedValue = select.value; // Valor de la <option> seleccionada (e.g., "1", "2", "3")
         console.log('Valor seleccionado:', selectedValue);
-        const filename = select.dataset.currentFilename;
+        const filename = select.dataset.currentFilename; // Filename guardado en el select al mostrarlo
         console.log('Filename recuperado del dataset (select.dataset.currentFilename):', filename);
 
-        let newPositionIndex = NaN;
+        let newPositionIndex = NaN; // Índice de destino basado en 0
         if (selectedValue) {
             const parsedValue = parseInt(selectedValue, 10);
             if (!isNaN(parsedValue)) {
-                newPositionIndex = parsedValue - 1;
+                newPositionIndex = parsedValue - 1; // Convertir valor 1-based del select a índice 0-based
             }
         }
         console.log('Filename parseado:', filename);
-        console.log('Índice nuevo parseado:', newPositionIndex);
+        console.log('Índice nuevo parseado (0-based):', newPositionIndex);
 
+        // Validación básica de los datos necesarios
         if (typeof filename === 'undefined' || filename === null || filename === '' || isNaN(newPositionIndex) || newPositionIndex < 0) {
             console.error('Error en handlePositionChange: Datos inválidos para mover la imagen.');
             console.error(`Detalles: filename='${filename}', selectedValue='${selectedValue}', newPositionIndex=${newPositionIndex}`);
+            // Ocultar el select en caso de error
             select.classList.remove('visible');
             select.classList.add('oculto');
             delete select.dataset.currentFilename;
-            document.removeEventListener('click', hideSelectOnClickOutside, true);
+            // El listener 'hideSelectOnClickOutside' con {once: true} se debería quitar solo
             console.log('--- handlePositionChange FIN (Error de validación de datos) ---');
             return;
         }
 
         console.log(`Intentando mover filename '${filename}' al índice ${newPositionIndex}`);
 
+        // Asegurarse de que los contenedores existen
+        if (!listaFotosContainer || !hiddenPhotoInputsContainer) {
+            console.error('Error crítico: listaFotosContainer o hiddenPhotoInputsContainer no están definidos/disponibles.');
+            select.classList.remove('visible');
+            select.classList.add('oculto');
+            delete select.dataset.currentFilename;
+            console.log('--- handlePositionChange FIN (Error: Contenedores no encontrados) ---');
+            return;
+        }
+
+        // Encontrar los elementos DOM a mover (el div de preview y el input hidden)
         const currentPreviewItem = listaFotosContainer.querySelector(`.foto-subida-item[data-filename="${filename}"]`);
         const currentHiddenInput = hiddenPhotoInputsContainer.querySelector(`input[name="photo_name[]"][value="${filename}"]`);
 
+        // Verificar que ambos elementos fueron encontrados
         if (!currentPreviewItem) {
             console.error(`Error crítico: No se encontró el PREVIEW item para filename '${filename}'. No se puede mover.`);
             select.classList.remove('visible');
             select.classList.add('oculto');
             delete select.dataset.currentFilename;
-            document.removeEventListener('click', hideSelectOnClickOutside, true);
             console.log('--- handlePositionChange FIN (Error: Preview no encontrado) ---');
             return;
         }
         if (!currentHiddenInput) {
+            // Este error es grave, indica inconsistencia entre previews y datos ocultos
             console.error(`Error crítico: No se encontró el INPUT OCULTO para filename '${filename}'. La consistencia de datos se perderá si continuamos.`);
             select.classList.remove('visible');
             select.classList.add('oculto');
             delete select.dataset.currentFilename;
-            document.removeEventListener('click', hideSelectOnClickOutside, true);
             console.log('--- handlePositionChange FIN (Error: Input oculto no encontrado) ---');
             return;
         }
         console.log('Elementos a mover encontrados:', {preview: currentPreviewItem, input: currentHiddenInput});
 
-        const allPreviewsNodes = listaFotosContainer.querySelectorAll('.foto-subida-item:not(.loading)');
-        const allHiddenInputsNodes = hiddenPhotoInputsContainer.querySelectorAll('input[name="photo_name[]"]');
+        // Obtener listas actualizadas de nodos (convertir a Array para usar findIndex)
+        const allPreviewsNodes = Array.from(listaFotosContainer.querySelectorAll('.foto-subida-item:not(.loading)'));
+        const allHiddenInputsNodes = Array.from(hiddenPhotoInputsContainer.querySelectorAll('input[name="photo_name[]"]'));
         console.log(`Nodos actuales: ${allPreviewsNodes.length} previews, ${allHiddenInputsNodes.length} inputs.`);
 
-        const targetPreviewSibling = allPreviewsNodes[newPositionIndex] || null;
-        const targetInputSibling = allHiddenInputsNodes[newPositionIndex] || null;
-        console.log('Nodos de referencia (se insertará ANTES de estos, o al final si son null):', {previewSibling: targetPreviewSibling, inputSibling: targetInputSibling});
+        // --- INICIO DE LA LÓGICA CORREGIDA ---
 
+        // 1. Encontrar el índice actual (0-based) del elemento que se está moviendo
+        const currentIndex = allPreviewsNodes.findIndex(node => node === currentPreviewItem);
+        if (currentIndex === -1) {
+            // Esto no debería ocurrir si currentPreviewItem fue encontrado antes, pero es una buena verificación
+            console.error(`Error crítico: No se pudo encontrar el índice actual del preview para ${filename} en la lista de nodos.`);
+            select.classList.remove('visible');
+            select.classList.add('oculto');
+            delete select.dataset.currentFilename;
+            console.log('--- handlePositionChange FIN (Error: Índice actual no encontrado) ---');
+            return;
+        }
+        console.log(`Índice actual del elemento ${filename}: ${currentIndex}`);
+
+        // Verificar si el índice de destino es válido
+        if (newPositionIndex < 0 || newPositionIndex >= allPreviewsNodes.length) {
+            // Permitimos mover al final explícitamente, pero no índices inválidos
+            if (newPositionIndex === allPreviewsNodes.length) {
+                // Mover al final es válido si newPositionIndex es igual al número de elementos
+                console.log('Se moverá al final de la lista.');
+            } else {
+                console.error(`Error: Índice de destino (${newPositionIndex}) fuera de los límites [0, ${allPreviewsNodes.length - 1}]`);
+                select.classList.remove('visible');
+                select.classList.add('oculto');
+                delete select.dataset.currentFilename;
+                console.log('--- handlePositionChange FIN (Error: Índice de destino inválido) ---');
+                return;
+            }
+        }
+
+        // Si el elemento ya está en la posición deseada, no hacer nada
+        if (currentIndex === newPositionIndex) {
+            console.log(`El elemento ${filename} ya está en la posición ${newPositionIndex}. No se requiere movimiento.`);
+            select.classList.remove('visible');
+            select.classList.add('oculto');
+            delete select.dataset.currentFilename;
+            console.log('--- handlePositionChange FIN (Sin cambios) ---');
+            return;
+        }
+
+        // 2. Determinar el nodo de referencia para `insertBefore`
+        // `insertBefore(nodoAInsertar, nodoDeReferencia)`: Inserta nodoAInsertar ANTES de nodoDeReferencia.
+        // Si nodoDeReferencia es `null`, nodoAInsertar se añade al final.
+        let targetPreviewSibling = null;
+        let targetInputSibling = null;
+
+        // Lógica Clave:
+        // Si movemos hacia ATRÁS (currentIndex > newPositionIndex), queremos insertar ANTES del elemento que está AHORA en newPositionIndex.
+        // Si movemos hacia ADELANTE (currentIndex < newPositionIndex), queremos insertar ANTES del elemento que está AHORA en newPositionIndex + 1.
+
+        if (currentIndex < newPositionIndex) {
+            // Moviendo hacia ADELANTE
+            console.log(`Moviendo hacia adelante (de ${currentIndex} a ${newPositionIndex}).`);
+            // El nodo de referencia es el que está en la posición SIGUIENTE al destino final.
+            targetPreviewSibling = allPreviewsNodes[newPositionIndex + 1] || null; // Si newPositionIndex es el último, esto será null (correcto para añadir al final)
+            targetInputSibling = allHiddenInputsNodes[newPositionIndex + 1] || null;
+            const targetRefFilename = targetPreviewSibling ? targetPreviewSibling.dataset.filename : 'final';
+            console.log(`Referencia ajustada: Se insertará ANTES de ${targetRefFilename} (índice actual ${newPositionIndex + 1})`);
+        } else {
+            // Moviendo hacia ATRÁS
+            console.log(`Moviendo hacia atrás (de ${currentIndex} a ${newPositionIndex}).`);
+            // El nodo de referencia es el que está ACTUALMENTE en la posición de destino.
+            targetPreviewSibling = allPreviewsNodes[newPositionIndex];
+            targetInputSibling = allHiddenInputsNodes[newPositionIndex];
+            const targetRefFilename = targetPreviewSibling ? targetPreviewSibling.dataset.filename : 'N/A (referencia no debería ser null aquí)';
+            console.log(`Referencia: Se insertará ANTES de ${targetRefFilename} (índice actual ${newPositionIndex})`);
+        }
+
+        console.log('Nodos de referencia final calculados (se insertará ANTES de estos, o al final si son null):', {
+            previewSibling: targetPreviewSibling, // Puede ser un nodo o null
+            inputSibling: targetInputSibling // Puede ser un nodo o null
+        });
+
+        // --- FIN DE LA LÓGICA CORREGIDA ---
+
+        // 3. Realizar el movimiento en el DOM
         try {
-            console.log(`Moviendo preview ${filename} antes de ${targetPreviewSibling ? targetPreviewSibling.dataset.filename : 'final'}`);
-            listaFotosContainer.insertBefore(currentPreviewItem, targetPreviewSibling);
+            // Mover el elemento de previsualización
+            const previewTargetInfo = targetPreviewSibling ? `el preview ${targetPreviewSibling.dataset.filename}` : 'final del contenedor de previews';
+            console.log(`Moviendo preview ${filename} antes de ${previewTargetInfo}`);
+            listaFotosContainer.insertBefore(currentPreviewItem, targetPreviewSibling); // insertBefore maneja null como appendChild
 
-            console.log(`Moviendo input ${filename} antes de ${targetInputSibling ? targetInputSibling.value : 'final'}`);
-            hiddenPhotoInputsContainer.insertBefore(currentHiddenInput, targetInputSibling);
+            // Mover el input oculto correspondiente para mantener la consistencia
+            const inputTargetInfo = targetInputSibling ? `el input ${targetInputSibling.value}` : 'final del contenedor de inputs';
+            console.log(`Moviendo input ${filename} antes de ${inputTargetInfo}`);
+            hiddenPhotoInputsContainer.insertBefore(currentHiddenInput, targetInputSibling); // insertBefore maneja null como appendChild
 
             console.log('Movimiento DOM completado.');
         } catch (e) {
             console.error('Error durante el movimiento DOM:', e);
+            // Intentar restaurar estado visual del select si falla el movimiento
             select.classList.remove('visible');
             select.classList.add('oculto');
             delete select.dataset.currentFilename;
-            document.removeEventListener('click', hideSelectOnClickOutside, true);
-            alert('Ocurrió un error al intentar mover la foto. Por favor, recarga la página.');
+            alert('Ocurrió un error al intentar mover la foto. Por favor, recarga la página e inténtalo de nuevo.');
             console.log('--- handlePositionChange FIN (Error durante movimiento DOM) ---');
-            return;
+            return; // Detener ejecución
         }
 
-        console.log('Movimiento intentado. Ocultando select y limpiando dataset.');
+        // 4. Limpieza y actualizaciones post-movimiento
+        console.log('Movimiento realizado con éxito. Ocultando select y limpiando dataset.');
         select.classList.remove('visible');
         select.classList.add('oculto');
-        delete select.dataset.currentFilename;
-        document.removeEventListener('click', hideSelectOnClickOutside, true);
+        delete select.dataset.currentFilename; // Limpiar el filename del select
 
+        // Actualizar el estado de los botones de flecha (si la función existe)
         if (typeof updateArrowButtonStates === 'function') {
             console.log('Llamando a updateArrowButtonStates...');
             updateArrowButtonStates();
         } else {
-            console.warn('Función updateArrowButtonStates no encontrada. Estado visual de flechas no actualizado.');
+            console.warn('Función updateArrowButtonStates no encontrada. El estado visual de las flechas puede no ser correcto.');
         }
 
+        // Limpiar cualquier error de validación previo en el campo de fotos
         validarCampo(listaFotosContainer, '#error-fotos', true, '');
-        console.log('--- handlePositionChange FIN (Éxito o intento completado) ---');
+        console.log('--- handlePositionChange FIN (Éxito) ---');
     }
 
     function agregarListenersNuevos() {
