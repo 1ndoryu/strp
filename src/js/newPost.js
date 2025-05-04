@@ -2,89 +2,61 @@
     'use strict';
 
     const HORARIO_STORAGE_KEY = 'userPendingSchedule';
+    const MAX_PHOTOS = 3;
+    const SVG_PLACEHOLDER = `<?xml version="1.0" encoding="UTF-8"?> <svg id="uuid-0ca005e1-d9fe-4045-a665-2e60e21962d4" data-name="Capa 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 145.83 120.73"> <defs> <style> .uuid-4e0375d0-00b6-45fd-960c-a83a919e3c21 { fill: #383a39; } .uuid-e42eef17-cbac-4bbb-bccc-8dc7fa78a734 { fill: none; stroke: #383a39; stroke-miterlimit: 10; stroke-width: 4.33px; } </style> </defs> <polygon class="uuid-4e0375d0-00b6-45fd-960c-a83a919e3c21" points="19.95 103.93 45.95 72.93 62.9 88.43 87.95 55.93 125.88 103.93 19.95 103.93"/> <circle class="uuid-4e0375d0-00b6-45fd-960c-a83a919e3c21" cx="31.95" cy="34.93" r="12"/> <rect class="uuid-e42eef17-cbac-4bbb-bccc-8dc7fa78a734" x="2.17" y="2.17" width="141.5" height="116.4" rx="18.8" ry="18.8"/> </svg>`;
 
     const form = document.getElementById('form-nuevo-anuncio');
     if (!form) {
         return;
     }
 
-    const MAX_PHOTOS = 3;
-    const SVG_PLACEHOLDER = `<?xml version="1.0" encoding="UTF-8"?> <svg id="uuid-0ca005e1-d9fe-4045-a665-2e60e21962d4" data-name="Capa 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 145.83 120.73"> <defs> <style> .uuid-4e0375d0-00b6-45fd-960c-a83a919e3c21 { fill: #383a39; } .uuid-e42eef17-cbac-4bbb-bccc-8dc7fa78a734 { fill: none; stroke: #383a39; stroke-miterlimit: 10; stroke-width: 4.33px; } </style> </defs> <polygon class="uuid-4e0375d0-00b6-45fd-960c-a83a919e3c21" points="19.95 103.93 45.95 72.93 62.9 88.43 87.95 55.93 125.88 103.93 19.95 103.93"/> <circle class="uuid-4e0375d0-00b6-45fd-960c-a83a919e3c21" cx="31.95" cy="34.93" r="12"/> <rect class="uuid-e42eef17-cbac-4bbb-bccc-8dc7fa78a734" x="2.17" y="2.17" width="141.5" height="116.4" rx="18.8" ry="18.8"/> </svg>`;
-
     const idioma1Select = document.getElementById('idioma_1');
     const nivelIdioma1Select = document.getElementById('nivel_idioma_1');
     const idioma2Select = document.getElementById('idioma_2');
     const nivelIdioma2Select = document.getElementById('nivel_idioma_2');
-
     const etapas = Array.from(form.querySelectorAll('.etapa'));
     const btnSiguiente = form.querySelectorAll('.btn-siguiente');
     const btnAnterior = form.querySelectorAll('.btn-anterior');
     const btnFinalizar = document.getElementById('btn-finalizar');
-
     const tipoUsuarioRadios = form.querySelectorAll('input[name="tipo_usuario"]');
     const planRadios = form.querySelectorAll('input[name="plan"]');
     const planSelectables = form.querySelectorAll('#etapa-plan .plan-selectable');
     const nombreInput = form.querySelector('#nombre');
+    const categoriaSelect = form.querySelector('#categoria');
     const provinciaSelect = form.querySelector('#provincia');
     const tituloInput = form.querySelector('#titulo_anuncio');
     const descripcionTextarea = form.querySelector('#descripcion');
     const serviciosCheckboxes = form.querySelectorAll('input[name="servicios[]"]');
     const fotosInput = form.querySelector('#campo-subir-foto');
     const listaFotosContainer = form.querySelector('#lista-fotos-subidas');
-
     const btnMostrarHorario = document.getElementById('btn-mostrar-horario');
     const contenedorHorario = document.getElementById('contenedor-horario');
     const ayudaTextoHorario = document.getElementById('ayuda-horario');
     const diaEstadoBotones = form.querySelectorAll('.btn-dia-estado');
-
     const contenedorInput = document.getElementById('input-url');
     const inputUrl = document.getElementById('url-banner');
     const inputUrlLateral = document.getElementById('input-url-banner-lateral');
     const contenedorInputLateral = document.getElementById('url-banner-lateral');
-
-    const categoriaSelect = form.querySelector('#categoria');
-    const serviciosCheckboxesContainer = form.querySelector('.grupo-checkboxes');
-
-    contenedorInputLateral.addEventListener('click', () => {
-        if (inputUrlLateral.classList.contains('active')) {
-            inputUrlLateral.classList.remove('active');
-            return;
-        }
-        inputUrlLateral.classList.toggle('active');
-    });
-
-    contenedorInput.addEventListener('click', () => {
-        if (inputUrl.classList.contains('active')) {
-            inputUrl.classList.remove('active');
-            return;
-        }
-        inputUrl.classList.toggle('active');
-    });
-
     const horarioFeedbackDiv = document.createElement('div');
     horarioFeedbackDiv.id = 'horario-feedback';
     horarioFeedbackDiv.style.marginTop = '10px';
     if (contenedorHorario) {
         contenedorHorario.parentNode.insertBefore(horarioFeedbackDiv, contenedorHorario.nextSibling);
     }
-
     const horarioSubmitErrorDiv = document.createElement('div');
     horarioSubmitErrorDiv.id = 'error-horario-submit';
     horarioSubmitErrorDiv.classList.add('error-msg', 'oculto');
     if (horarioFeedbackDiv) {
         horarioFeedbackDiv.parentNode.insertBefore(horarioSubmitErrorDiv, horarioFeedbackDiv.nextSibling);
     }
-
     const telefonoInput = form.querySelector('#telefono');
     const whatsappCheckbox = form.querySelector('input[name="whatsapp"]');
     const salidasSelect = form.querySelector('#realiza_salidas');
     const emailInput = form.querySelector('#email');
     const terminosCheckbox = form.querySelector('#terminos');
     const notificacionesCheckbox = form.querySelector('#notifications');
-
     const contTitulo = document.getElementById('cont-titulo');
     const contDesc = document.getElementById('cont-desc');
-
     const hiddenSellerType = form.querySelector('#hidden_seller_type');
     const hiddenDis = form.querySelector('#hidden_dis');
     const hiddenHorarioInicio = form.querySelector('#hidden_horario_inicio');
@@ -95,6 +67,26 @@
 
     let selectPosicion = null;
     let etapaActualIndex = 0;
+
+    if (contenedorInputLateral) {
+        contenedorInputLateral.addEventListener('click', () => {
+            if (inputUrlLateral.classList.contains('active')) {
+                inputUrlLateral.classList.remove('active');
+                return;
+            }
+            inputUrlLateral.classList.toggle('active');
+        });
+    }
+
+    if (contenedorInput) {
+        contenedorInput.addEventListener('click', () => {
+            if (inputUrl.classList.contains('active')) {
+                inputUrl.classList.remove('active');
+                return;
+            }
+            inputUrl.classList.toggle('active');
+        });
+    }
 
     function inicializar() {
         selectPosicion = document.getElementById('select-posicion-foto');
@@ -118,9 +110,7 @@
         if (btnMostrarHorario) {
             const btnClone = btnMostrarHorario.cloneNode(true);
             btnMostrarHorario.parentNode.replaceChild(btnClone, btnMostrarHorario);
-
             const newBtnMostrarHorario = document.getElementById('btn-mostrar-horario');
-
             if (newBtnMostrarHorario) {
                 newBtnMostrarHorario.addEventListener('click', abrirGestorHorario);
             } else {
@@ -132,10 +122,8 @@
 
     function abrirGestorHorario(event) {
         event.preventDefault();
-
         const urlGestor = 'sc-includes/gestionar_horario.php/';
         window.open(urlGestor, 'gestorHorarioTab', 'width=600,height=700,scrollbars=yes,resizable=yes');
-
         actualizarFeedbackHorario('gestionando');
     }
 
@@ -178,7 +166,9 @@
 
                     actualizarFeedbackHorario('cargado', {dias: diasSeleccionados.length, inicio: hiddenHorarioInicio.value, fin: hiddenHorarioFinal.value});
 
-                    validarCampo(contenedorHorario, '#error-horario', true, '');
+                    if (contenedorHorario) {
+                        validarCampo(contenedorHorario, '#error-horario', true, '');
+                    }
                     if (horarioSubmitErrorDiv) horarioSubmitErrorDiv.classList.add('oculto');
                 } else {
                     limpiarDatosHorarioOcultosYStorage(false);
@@ -338,13 +328,17 @@
                     esValido = false;
                     inputsInvalidos.push(nombreInput);
                 }
-                if (!validarCampo(categoriaSelect, '#error-categoria', categoriaSelect?.value, 'Debes seleccionar una categoría.')) {
+                // Use categoriaSelect.closest('.custom-select-wrapper') to target the visual element
+                const categoriaWrapper = document.getElementById('custom-categoria-wrapper');
+                if (!validarCampo(categoriaWrapper, '#error-categoria', categoriaSelect?.value, 'Debes seleccionar una categoría.')) {
                     esValido = false;
-                    inputsInvalidos.push(categoriaSelect);
+                    inputsInvalidos.push(categoriaWrapper?.querySelector('.custom-select-trigger')); // Focus trigger
                 }
-                if (!validarCampo(provinciaSelect, '#error-provincia', provinciaSelect?.value, 'Debes seleccionar una provincia.')) {
+                // Use provinciaSelect.closest('.custom-select-wrapper') for validation styling/focus
+                const provinciaWrapper = document.getElementById('custom-provincia-wrapper');
+                if (!validarCampo(provinciaWrapper, '#error-provincia', provinciaSelect?.value, 'Debes seleccionar una provincia.')) {
                     esValido = false;
-                    inputsInvalidos.push(provinciaSelect);
+                    inputsInvalidos.push(provinciaWrapper?.querySelector('.custom-select-trigger')); // Focus trigger
                 }
                 const tituloVal = tituloInput?.value.trim() || '';
                 if (!validarCampo(tituloInput, '#error-titulo', tituloVal && tituloVal.length >= 10 && tituloVal.length <= 50, `El título es obligatorio (entre 10 y 50 caracteres). Actual: ${tituloVal.length}`)) {
@@ -357,7 +351,7 @@
                     inputsInvalidos.push(descripcionTextarea);
                 }
                 const serviciosSeleccionados = form.querySelectorAll('input[name="servicios[]"]:checked').length;
-                if (!validarCampo(serviciosCheckboxes[0]?.closest('.grupo-checkboxes'), '#error-servicios', serviciosSeleccionados > 0, 'Debes seleccionar al menos un servicio.')) {
+                if (!validarCampo(serviciosCheckboxes[0]?.closest('.grupo-checkboxes'), '#error-servicios', serviciosSeleccionados > 0 && serviciosSeleccionados <= 12, 'Debes seleccionar de 1 a 12 servicios.')) {
                     esValido = false;
                     inputsInvalidos.push(serviciosCheckboxes[0]?.closest('.grupo-checkboxes'));
                 }
@@ -389,13 +383,11 @@
 
                 const horarioGuardadoEtapa = localStorage.getItem(HORARIO_STORAGE_KEY);
                 const horarioRequeridoEtapa = true;
-
                 const errorHorarioEtapaSelector = '#error-horario-etapa';
 
                 if (horarioRequeridoEtapa && !horarioGuardadoEtapa) {
                     if (!validarCampo(horarioFeedbackDiv, errorHorarioEtapaSelector, false, 'Debes configurar y guardar tu horario.')) {
                         esValido = false;
-
                         const currentBtnMostrarHorario = document.getElementById('btn-mostrar-horario');
                         inputsInvalidos.push(currentBtnMostrarHorario || horarioFeedbackDiv);
                     }
@@ -428,7 +420,14 @@
         if (!esValido && inputsInvalidos.length > 0) {
             const firstInvalid = inputsInvalidos[0];
             if (firstInvalid && typeof firstInvalid.focus === 'function') {
-                firstInvalid.focus();
+                // For custom selects, focus the trigger button instead of the hidden select
+                if (firstInvalid.classList.contains('custom-select-trigger')) {
+                    firstInvalid.focus();
+                } else if (firstInvalid.closest('.custom-select-wrapper')) {
+                    firstInvalid.closest('.custom-select-wrapper').querySelector('.custom-select-trigger')?.focus();
+                } else if (firstInvalid && typeof firstInvalid.focus === 'function') {
+                    firstInvalid.focus();
+                }
             }
         }
 
@@ -438,24 +437,35 @@
     function validarCampo(elemento, errorSelector, condition, message) {
         const errorMsgElement = form.querySelector(errorSelector);
         if (!errorMsgElement) {
+
             return condition;
         }
 
-        let campo = elemento;
-        if (elemento && !(elemento.nodeName === 'INPUT' || elemento.nodeName === 'SELECT' || elemento.nodeName === 'TEXTAREA')) {
-            campo = elemento.querySelector('input, select, textarea');
+        let campoVisual = elemento;
+        let campoOriginal = null; 
+
+        if (elemento && elemento.classList.contains('custom-select-wrapper')) {
+            campoVisual = elemento.querySelector('.custom-select-trigger'); 
+            const originalSelectId = campoVisual?.dataset.selectId;
+            if (originalSelectId) {
+                campoOriginal = document.getElementById(originalSelectId);
+            }
+        }
+
+        else if (elemento && !(elemento.nodeName === 'INPUT' || elemento.nodeName === 'SELECT' || elemento.nodeName === 'TEXTAREA')) {
+            campoOriginal = elemento.querySelector('input, select, textarea'); 
+        } else {
+            campoOriginal = elemento; 
         }
 
         if (!condition) {
             errorMsgElement.textContent = message;
             errorMsgElement.classList.remove('oculto');
-            elemento?.classList.add('invalido');
-            campo?.classList.add('invalido');
+            campoVisual?.classList.add('invalido');
             return false;
         } else {
             errorMsgElement.classList.add('oculto');
-            elemento?.classList.remove('invalido');
-            campo?.classList.remove('invalido');
+            campoVisual?.classList.remove('invalido');
             return true;
         }
     }
@@ -463,6 +473,8 @@
     function limpiarErroresEtapa(etapa) {
         etapa.querySelectorAll('.error-msg').forEach(msg => msg.classList.add('oculto'));
         etapa.querySelectorAll('.invalido').forEach(el => el.classList.remove('invalido'));
+        
+        etapa.querySelectorAll('.custom-select-trigger.invalido').forEach(el => el.classList.remove('invalido'));
     }
 
     function actualizarCamposOcultosEtapaActual() {
@@ -566,11 +578,11 @@
     }
 
     function validarArchivoFoto(file) {
-        const maxSize = 2 * 1024 * 1024;
-        const allowedTypes = ['image/jpeg', 'image/png'];
+        const maxSize = 2 * 1024 * 1024; // 2MB
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']; // Added GIF and WebP
 
         if (!allowedTypes.includes(file.type)) {
-            mostrarErrorFotos(`Archivo "${file.name}" no es JPG o PNG (tipo detectado: ${file.type || 'desconocido'}).`);
+            mostrarErrorFotos(`Archivo "${file.name}" no es JPG, PNG, GIF o WebP (tipo detectado: ${file.type || 'desconocido'}).`);
             return false;
         }
         if (file.size > maxSize) {
@@ -583,7 +595,9 @@
 
     function subirFotoAjax(file, inputElement) {
         const loadingIndicator = crearLoadingPreview(file.name);
-        listaFotosContainer.appendChild(loadingIndicator);
+        if (listaFotosContainer) {
+            listaFotosContainer.appendChild(loadingIndicator);
+        }
 
         const formData = new FormData();
         formData.append('userImage', file);
@@ -676,7 +690,6 @@
         tempDiv.innerHTML = html;
         const hiddenInput = tempDiv.querySelector('input[type="hidden"][name="photo_name[]"]');
         const filename = hiddenInput ? hiddenInput.value : null;
-
         return {filename: filename, previewHtml: html};
     }
 
@@ -732,18 +745,13 @@
         moveLeftBtn.title = 'Elegir posición';
         moveLeftBtn.setAttribute('aria-label', `Elegir posición para foto ${filename}`);
         moveLeftBtn.dataset.filename = filename;
-        moveLeftBtn.innerHTML = `
-            <svg data-testid="geist-icon" height="12" stroke-linejoin="round" style="color:currentColor; pointer-events: none;" viewBox="0 0 16 16" width="12" aria-hidden="true">
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M6.46966 13.7803L6.99999 14.3107L8.06065 13.25L7.53032 12.7197L3.56065 8.75001H14.25H15V7.25001H14.25H3.56065L7.53032 3.28034L8.06065 2.75001L6.99999 1.68935L6.46966 2.21968L1.39644 7.2929C1.00592 7.68342 1.00592 8.31659 1.39644 8.70711L6.46966 13.7803Z" fill="currentColor"></path>
-            </svg>`;
-
+        moveLeftBtn.innerHTML = `<svg data-testid="geist-icon" height="12" stroke-linejoin="round" style="color:currentColor; pointer-events: none;" viewBox="0 0 16 16" width="12" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M6.46966 13.7803L6.99999 14.3107L8.06065 13.25L7.53032 12.7197L3.56065 8.75001H14.25H15V7.25001H14.25H3.56065L7.53032 3.28034L8.06065 2.75001L6.99999 1.68935L6.46966 2.21968L1.39644 7.2929C1.00592 7.68342 1.00592 8.31659 1.39644 8.70711L6.46966 13.7803Z" fill="currentColor"></path></svg>`;
         moveLeftBtn.addEventListener('click', event => {
             console.log(`FORZADO: Click directo detectado en Botón Izquierda para ${filename}`);
             event.preventDefault();
             event.stopPropagation();
             togglePositionSelect(event);
         });
-
         actionsDiv.appendChild(moveLeftBtn);
 
         const moveRightBtn = document.createElement('button');
@@ -752,18 +760,13 @@
         moveRightBtn.title = 'Elegir posición';
         moveRightBtn.setAttribute('aria-label', `Elegir posición para foto ${filename}`);
         moveRightBtn.dataset.filename = filename;
-        moveRightBtn.innerHTML = `
-            <svg data-testid="geist-icon" height="12" stroke-linejoin="round" style="color:currentColor; pointer-events: none;" viewBox="0 0 16 16" width="12" aria-hidden="true">
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M9.53033 2.21968L9 1.68935L7.93934 2.75001L8.46967 3.28034L12.4393 7.25001H1.75H1V8.75001H1.75H12.4393L8.46967 12.7197L7.93934 13.25L9 14.3107L9.53033 13.7803L14.6036 8.70711C14.9941 8.31659 14.9941 7.68342 14.6036 7.2929L9.53033 2.21968Z" fill="currentColor"></path>
-            </svg>`;
-
+        moveRightBtn.innerHTML = `<svg data-testid="geist-icon" height="12" stroke-linejoin="round" style="color:currentColor; pointer-events: none;" viewBox="0 0 16 16" width="12" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M9.53033 2.21968L9 1.68935L7.93934 2.75001L8.46967 3.28034L12.4393 7.25001H1.75H1V8.75001H1.75H12.4393L8.46967 12.7197L7.93934 13.25L9 14.3107L9.53033 13.7803L14.6036 8.70711C14.9941 8.31659 14.9941 7.68342 14.6036 7.2929L9.53033 2.21968Z" fill="currentColor"></path></svg>`;
         moveRightBtn.addEventListener('click', event => {
             console.log(`FORZADO: Click directo detectado en Botón Derecha para ${filename}`);
             event.preventDefault();
             event.stopPropagation();
             togglePositionSelect(event);
         });
-
         actionsDiv.appendChild(moveRightBtn);
 
         const rotateBtn = document.createElement('button');
@@ -771,9 +774,7 @@
         rotateBtn.classList.add('btn-preview-action', 'btn-rotate-foto');
         rotateBtn.title = 'Rotar foto 90°';
         rotateBtn.dataset.filename = filename;
-        rotateBtn.innerHTML = `
-        <svg data-testid="geist-icon" height="12" stroke-linejoin="round" style="color:currentColor; pointer-events: none;" viewBox="0 0 16 16" width="12"><path fill-rule="evenodd" clip-rule="evenodd" d="M8.00002 1.25C5.33749 1.25 3.02334 2.73677 1.84047 4.92183L1.48342 5.58138L2.80253 6.29548L3.15958 5.63592C4.09084 3.91566 5.90986 2.75 8.00002 2.75C10.4897 2.75 12.5941 4.40488 13.2713 6.67462H11.8243H11.0743V8.17462H11.8243H15.2489C15.6631 8.17462 15.9989 7.83883 15.9989 7.42462V4V3.25H14.4989V4V5.64468C13.4653 3.06882 10.9456 1.25 8.00002 1.25ZM1.50122 10.8555V12.5V13.25H0.0012207V12.5V9.07538C0.0012207 8.66117 0.337007 8.32538 0.751221 8.32538H4.17584H4.92584V9.82538H4.17584H2.72876C3.40596 12.0951 5.51032 13.75 8.00002 13.75C10.0799 13.75 11.8912 12.5958 12.8266 10.8895L13.1871 10.2318L14.5025 10.9529L14.142 11.6105C12.9539 13.7779 10.6494 15.25 8.00002 15.25C5.05453 15.25 2.53485 13.4313 1.50122 10.8555Z" fill="currentColor"></path></svg>`;
-
+        rotateBtn.innerHTML = `<svg data-testid="geist-icon" height="12" stroke-linejoin="round" style="color:currentColor; pointer-events: none;" viewBox="0 0 16 16" width="12"><path fill-rule="evenodd" clip-rule="evenodd" d="M8.00002 1.25C5.33749 1.25 3.02334 2.73677 1.84047 4.92183L1.48342 5.58138L2.80253 6.29548L3.15958 5.63592C4.09084 3.91566 5.90986 2.75 8.00002 2.75C10.4897 2.75 12.5941 4.40488 13.2713 6.67462H11.8243H11.0743V8.17462H11.8243H15.2489C15.6631 8.17462 15.9989 7.83883 15.9989 7.42462V4V3.25H14.4989V4V5.64468C13.4653 3.06882 10.9456 1.25 8.00002 1.25ZM1.50122 10.8555V12.5V13.25H0.0012207V12.5V9.07538C0.0012207 8.66117 0.337007 8.32538 0.751221 8.32538H4.17584H4.92584V9.82538H4.17584H2.72876C3.40596 12.0951 5.51032 13.75 8.00002 13.75C10.0799 13.75 11.8912 12.5958 12.8266 10.8895L13.1871 10.2318L14.5025 10.9529L14.142 11.6105C12.9539 13.7779 10.6494 15.25 8.00002 15.25C5.05453 15.25 2.53485 13.4313 1.50122 10.8555Z" fill="currentColor"></path></svg>`;
         actionsDiv.appendChild(rotateBtn);
 
         const deleteBtn = document.createElement('button');
@@ -781,11 +782,7 @@
         deleteBtn.classList.add('btn-preview-action', 'btn-delete-foto');
         deleteBtn.title = 'Eliminar foto';
         deleteBtn.dataset.filename = filename;
-        deleteBtn.innerHTML = `
-            <svg data-testid="geist-icon" height="12" stroke-linejoin="round" viewBox="0 0 16 16" width="12" style="color: currentcolor; pointer-events: none;" aria-hidden="true">
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M12.4697 13.5303L13 14.0607L14.0607 13L13.5303 12.4697L9.06065 7.99999L13.5303 3.53032L14.0607 2.99999L13 1.93933L12.4697 2.46966L7.99999 6.93933L3.53032 2.46966L2.99999 1.93933L1.93933 2.99999L2.46966 3.53032L6.93933 7.99999L2.46966 12.4697L1.93933 13L2.99999 14.0607L3.53032 13.5303L7.99999 9.06065L12.4697 13.5303Z" fill="currentColor"></path>
-            </svg>`;
-
+        deleteBtn.innerHTML = `<svg data-testid="geist-icon" height="12" stroke-linejoin="round" viewBox="0 0 16 16" width="12" style="color: currentcolor; pointer-events: none;" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M12.4697 13.5303L13 14.0607L14.0607 13L13.5303 12.4697L9.06065 7.99999L13.5303 3.53032L14.0607 2.99999L13 1.93933L12.4697 2.46966L7.99999 6.93933L3.53032 2.46966L2.99999 1.93933L1.93933 2.99999L2.46966 3.53032L6.93933 7.99999L2.46966 12.4697L1.93933 13L2.99999 14.0607L3.53032 13.5303L7.99999 9.06065L12.4697 13.5303Z" fill="currentColor"></path></svg>`;
         actionsDiv.appendChild(deleteBtn);
 
         const changeBtn = document.createElement('button');
@@ -840,9 +837,7 @@
 
     function togglePositionSelect(event) {
         console.log('--- togglePositionSelect (FORZADO) INICIO ---');
-
         const button = event.currentTarget;
-
         const filename = button.dataset.filename;
         console.log('Botón presionado (currentTarget):', button);
         console.log('Filename obtenido del dataset:', filename);
@@ -915,7 +910,6 @@
             selectPosicion.classList.remove('visible');
             selectPosicion.classList.add('oculto');
             delete selectPosicion.dataset.currentFilename;
-
             console.log('Listener hideSelectOnClickOutside (once:true) consumido.');
         } else {
             console.log('hideSelectOnClickOutside: Click dentro del select o en un botón toggle (o select no visible). No se oculta. Listener (once:true) consumido.');
@@ -928,7 +922,6 @@
         console.log('Select que disparó el evento:', select);
         const selectedValue = select.value;
         console.log('Valor seleccionado:', selectedValue);
-
         const filename = select.dataset.currentFilename;
         console.log('Filename recuperado del dataset (select.dataset.currentFilename):', filename);
 
@@ -945,7 +938,6 @@
         if (typeof filename === 'undefined' || filename === null || filename === '' || isNaN(newPositionIndex) || newPositionIndex < 0) {
             console.error('Error en handlePositionChange: Datos inválidos para mover la imagen.');
             console.error(`Detalles: filename='${filename}', selectedValue='${selectedValue}', newPositionIndex=${newPositionIndex}`);
-
             select.classList.remove('visible');
             select.classList.add('oculto');
             delete select.dataset.currentFilename;
@@ -961,7 +953,6 @@
 
         if (!currentPreviewItem) {
             console.error(`Error crítico: No se encontró el PREVIEW item para filename '${filename}'. No se puede mover.`);
-
             select.classList.remove('visible');
             select.classList.add('oculto');
             delete select.dataset.currentFilename;
@@ -971,7 +962,6 @@
         }
         if (!currentHiddenInput) {
             console.error(`Error crítico: No se encontró el INPUT OCULTO para filename '${filename}'. La consistencia de datos se perderá si continuamos.`);
-
             select.classList.remove('visible');
             select.classList.add('oculto');
             delete select.dataset.currentFilename;
@@ -999,7 +989,6 @@
             console.log('Movimiento DOM completado.');
         } catch (e) {
             console.error('Error durante el movimiento DOM:', e);
-
             select.classList.remove('visible');
             select.classList.add('oculto');
             delete select.dataset.currentFilename;
@@ -1031,7 +1020,6 @@
 
         if (selectPosicion) {
             console.log('Añadiendo listener "change" a selectPosicion.');
-
             selectPosicion.removeEventListener('change', handlePositionChange);
             selectPosicion.addEventListener('change', handlePositionChange);
         } else {
@@ -1041,59 +1029,61 @@
         if (listaFotosContainer) {
             console.log('Añadiendo/Asegurando listener delegado a listaFotosContainer para clicks en IMG, ROTATE, DELETE.');
 
-            listaFotosContainer.addEventListener('click', function (event) {
-                const target = event.target;
+            // Add listener only once logic (example using a flag on the element)
+            if (!listaFotosContainer.dataset.delegatedListenerAdded) {
+                listaFotosContainer.addEventListener('click', function (event) {
+                    const target = event.target;
+                    console.log('Click delegado detectado en listaFotosContainer. Target:', target);
 
-                console.log('Click delegado detectado en listaFotosContainer. Target:', target);
-
-                const rotateButton = target.closest('.btn-rotate-foto');
-                if (rotateButton) {
-                    console.log('Delegated click: Botón ROTAR detectado.');
-                    event.preventDefault();
-                    event.stopPropagation();
-
-                    handleRotateFotoClick({currentTarget: rotateButton});
-                    return;
-                }
-
-                const deleteButton = target.closest('.btn-delete-foto');
-                if (deleteButton) {
-                    console.log('Delegated click: Botón ELIMINAR detectado.');
-                    event.preventDefault();
-                    event.stopPropagation();
-
-                    eliminarFoto({currentTarget: deleteButton});
-                    return;
-                }
-
-                if (target.tagName === 'IMG') {
-                    const previewItem = target.closest('.foto-subida-item');
-
-                    if (previewItem && !previewItem.classList.contains('loading') && !previewItem.classList.contains('foto-placeholder') && target.dataset.filename) {
-                        console.log(`Delegated click: Imagen con filename ${target.dataset.filename} detectada para cambio.`);
+                    const rotateButton = target.closest('.btn-rotate-foto');
+                    if (rotateButton) {
+                        console.log('Delegated click: Botón ROTAR detectado.');
                         event.preventDefault();
                         event.stopPropagation();
-
-                        triggerChangeFotoFromImage({currentTarget: target});
-                        return;
-                    } else if (previewItem && previewItem.classList.contains('foto-placeholder')) {
-                        console.log('Delegated click: Placeholder SVG clickeado.');
-
+                        handleRotateFotoClick({currentTarget: rotateButton});
                         return;
                     }
-                }
 
-                const changeButton = target.closest('.btn-change-foto');
-                if (changeButton && changeButton.style.display !== 'none') {
-                    console.log('Delegated click: Botón CAMBIAR (visible) detectado.');
-                    event.preventDefault();
-                    event.stopPropagation();
-                    handleChangeFotoClick({currentTarget: changeButton});
-                    return;
-                }
+                    const deleteButton = target.closest('.btn-delete-foto');
+                    if (deleteButton) {
+                        console.log('Delegated click: Botón ELIMINAR detectado.');
+                        event.preventDefault();
+                        event.stopPropagation();
+                        eliminarFoto({currentTarget: deleteButton});
+                        return;
+                    }
 
-                console.log('Delegated click: El clic no coincidió con IMG, Rotar, Eliminar o Cambiar interactivos.');
-            });
+                    if (target.tagName === 'IMG') {
+                        const previewItem = target.closest('.foto-subida-item');
+                        if (previewItem && !previewItem.classList.contains('loading') && !previewItem.classList.contains('foto-placeholder') && target.dataset.filename) {
+                            console.log(`Delegated click: Imagen con filename ${target.dataset.filename} detectada para cambio.`);
+                            event.preventDefault();
+                            event.stopPropagation();
+                            triggerChangeFotoFromImage({currentTarget: target});
+                            return;
+                        } else if (previewItem && previewItem.classList.contains('foto-placeholder')) {
+                            console.log('Delegated click: Placeholder SVG clickeado.');
+                            // fotosInput?.click(); // Optional: trigger file input on placeholder click
+                            return;
+                        }
+                    }
+
+                    const changeButton = target.closest('.btn-change-foto');
+                    if (changeButton && changeButton.style.display !== 'none') {
+                        console.log('Delegated click: Botón CAMBIAR (visible) detectado.');
+                        event.preventDefault();
+                        event.stopPropagation();
+                        handleChangeFotoClick({currentTarget: changeButton});
+                        return;
+                    }
+
+                    console.log('Delegated click: El clic no coincidió con IMG, Rotar, Eliminar o Cambiar interactivos.');
+                });
+                listaFotosContainer.dataset.delegatedListenerAdded = 'true'; // Mark as added
+                console.log('Listener delegado añadido a listaFotosContainer.');
+            } else {
+                console.log('Listener delegado ya existe en listaFotosContainer.');
+            }
         } else {
             console.error('Error crítico: listaFotosContainer (el contenedor de previews) no encontrado al intentar añadir listener delegado.');
         }
@@ -1104,7 +1094,6 @@
         const filename = button.dataset.filename;
         if (!filename) {
             console.error('Error Rotar (Visual): No se encontró filename en el botón.');
-
             return;
         }
 
@@ -1120,13 +1109,10 @@
         }
 
         let currentRotation = parseInt(imgElement.dataset.rotation || '0', 10);
-
         const newRotation = (currentRotation + 90) % 360;
 
         imgElement.style.transform = `rotate(${newRotation}deg)`;
-
         imgElement.style.transition = 'transform 0.3s ease';
-
         imgElement.dataset.rotation = newRotation;
 
         if (newRotation === 90 || newRotation === 270) {
@@ -1165,7 +1151,7 @@
             siblingPreviewItem = currentPreviewItem.nextElementSibling;
         }
 
-        if (siblingPreviewItem && siblingPreviewItem.classList.contains('foto-subida-item')) {
+        if (siblingPreviewItem && siblingPreviewItem.classList.contains('foto-subida-item') && !siblingPreviewItem.classList.contains('foto-placeholder')) {
             const siblingFilename = siblingPreviewItem.dataset.filename;
             siblingHiddenInput = hiddenPhotoInputsContainer.querySelector(`input[name="photo_name[]"][value="${siblingFilename}"]`);
 
@@ -1190,7 +1176,8 @@
     }
 
     function updateArrowButtonStates() {
-        const previewItems = listaFotosContainer.querySelectorAll('.foto-subida-item');
+        if (!listaFotosContainer) return;
+        const previewItems = listaFotosContainer.querySelectorAll('.foto-subida-item:not(.loading)');
         const itemCount = previewItems.length;
 
         previewItems.forEach((item, index) => {
@@ -1216,11 +1203,8 @@
         }
 
         console.log(`Iniciando reemplazo para: ${filenameToReplace}`);
-
         fotosInput.dataset.replacingFilename = filenameToReplace;
-
         fotosInput.value = null;
-
         fotosInput.click();
     }
 
@@ -1231,8 +1215,6 @@
             console.error('No se encontró el filename en el botón de eliminar.');
             return;
         }
-
-        actualizarPlaceholders();
 
         console.log(`Intentando eliminar: ${filename}`);
 
@@ -1251,6 +1233,8 @@
         } else {
             console.warn(`No se encontró el input oculto para [${filename}].`);
         }
+
+        actualizarPlaceholders(); // Update placeholders *after* removing elements
 
         const fotosRestantes = hiddenPhotoInputsContainer.querySelectorAll('input[name="photo_name[]"]').length;
         validarCampo(listaFotosContainer, '#error-fotos', fotosRestantes > 0, 'Debes subir al menos una foto.');
@@ -1284,13 +1268,12 @@
         cargarHorarioDesdeStorage();
 
         if (!validarFormularioCompleto()) {
-            alert('Por favor, revisa el formulario. Hay errores o campos incompletos en alguna de las etapas.');
-            irAPrimeraEtapaConError();
+            // Alert is shown within validarFormularioCompleto
+            // irAPrimeraEtapaConError(); // Already handled by validarFormularioCompleto
             return;
         }
 
         actualizarSellerTypeOculto();
-
         actualizarIdiomasOculto();
 
         console.log('Intentando añadir campos ocultos del horario detallado...');
@@ -1341,16 +1324,45 @@
             }
         } else {
             console.log('No se encontró horario detallado en localStorage para añadir campos ocultos.');
-
             form.querySelectorAll('input[name^="horario_dia["]').forEach(input => input.remove());
         }
 
+        // --- Add Rotation Data ---
+        const rotationData = {};
+        hiddenPhotoInputsContainer.querySelectorAll('input[name="photo_name[]"]').forEach(hiddenInput => {
+            const filename = hiddenInput.value;
+            const previewItem = listaFotosContainer.querySelector(`.foto-subida-item[data-filename="${filename}"]`);
+            const imgElement = previewItem?.querySelector('img');
+            const rotation = imgElement?.dataset.rotation || '0'; // Default to 0 if no rotation data
+            if (rotation !== '0') {
+                // Only send if rotation is not default
+                rotationData[filename] = rotation;
+            }
+        });
+
+        // Remove previous rotation input if exists
+        const oldRotationInput = form.querySelector('input[name="photo_rotations"]');
+        oldRotationInput?.remove();
+
+        // Add hidden input for rotations if there's data
+        if (Object.keys(rotationData).length > 0) {
+            const rotationInput = document.createElement('input');
+            rotationInput.type = 'hidden';
+            rotationInput.name = 'photo_rotations';
+            rotationInput.value = JSON.stringify(rotationData);
+            form.appendChild(rotationInput);
+            console.log('Rotation data added to form:', rotationInput.value);
+        }
+        // --- End Add Rotation Data ---
+
+        console.log('Submitting form...');
         form.submit();
     }
 
     function validarFormularioCompleto() {
         let todoValido = true;
         let primeraEtapaInvalida = -1;
+        let primeraEtapaInvalidaElement = null; // Store the element causing the first error
 
         for (let i = 0; i < etapas.length; i++) {
             const originalIndex = etapaActualIndex;
@@ -1358,9 +1370,14 @@
             const etapaValida = validarEtapaActual();
             etapaActualIndex = originalIndex;
 
-            if (!etapaValida && primeraEtapaInvalida === -1) {
-                primeraEtapaInvalida = i;
+            if (!etapaValida) {
                 todoValido = false;
+                if (primeraEtapaInvalida === -1) {
+                    primeraEtapaInvalida = i;
+                    // Find the first element marked as invalid or the first visible error message in this stage
+                    primeraEtapaInvalidaElement = etapas[i].querySelector('.invalido, .error-msg:not(.oculto)');
+                }
+                // Continue validating all stages to show all errors
             }
         }
 
@@ -1373,11 +1390,11 @@
                 horarioSubmitErrorDiv.classList.remove('oculto');
             }
             todoValido = false;
-
             if (primeraEtapaInvalida === -1) {
                 const etapaHorarioIndex = etapas.findIndex(etapa => etapa.querySelector('#btn-mostrar-horario'));
                 if (etapaHorarioIndex !== -1) {
                     primeraEtapaInvalida = etapaHorarioIndex;
+                    primeraEtapaInvalidaElement = horarioSubmitErrorDiv; // Point to the horario error div
                 }
             }
         } else {
@@ -1389,8 +1406,17 @@
             if (primeraEtapaInvalida !== -1) {
                 cambiarEtapa(primeraEtapaInvalida);
 
-                const primerErrorVisible = form.querySelector('.error-msg:not(.oculto), .invalido');
-                primerErrorVisible?.scrollIntoView({behavior: 'smooth', block: 'center'});
+                // Scroll to the first error element found
+                setTimeout(() => {
+                    // Use timeout to ensure stage change is rendered
+                    const elementToScroll = primeraEtapaInvalidaElement || form.querySelector('.error-msg:not(.oculto), .invalido');
+                    elementToScroll?.scrollIntoView({behavior: 'smooth', block: 'center'});
+                    // Attempt to focus the related input if possible
+                    const focusableElement = elementToScroll?.closest('.frm-grupo')?.querySelector('input, select, textarea, .custom-select-trigger') || elementToScroll;
+                    if (focusableElement && typeof focusableElement.focus === 'function') {
+                        focusableElement.focus({preventScroll: true}); // preventScroll avoids conflict with scrollIntoView
+                    }
+                }, 100); // Small delay
             }
             return false;
         }
@@ -1401,14 +1427,15 @@
     function irAPrimeraEtapaConError() {
         for (let i = 0; i < etapas.length; i++) {
             const etapa = etapas[i];
-            limpiarErroresEtapa(etapa);
+            // No limpiar errores aquí, ya que validarFormularioCompleto lo hace
             const originalIndex = etapaActualIndex;
             etapaActualIndex = i;
-            const esValida = validarEtapaActual();
+            const esValida = validarEtapaActual(); // Re-validate just to find the first invalid one
             etapaActualIndex = originalIndex;
 
             if (!esValida) {
                 cambiarEtapa(i);
+                // Scrolling and focus are handled in validarFormularioCompleto now
                 break;
             }
         }
@@ -1440,14 +1467,6 @@
         });
     }
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', inicializar);
-    } else {
-        inicializar();
-    }
-
-    /////////////////
-
     function setupCustomSelect(wrapperId) {
         const wrapper = document.getElementById(wrapperId);
         if (!wrapper) {
@@ -1463,6 +1482,7 @@
         const closeButton = wrapper.querySelector('.custom-select-close');
         const originalSelectId = trigger.getAttribute('data-select-id');
         const originalSelect = document.getElementById(originalSelectId);
+        const isCategoriaSelect = wrapperId === 'custom-categoria-wrapper'; // Flag for category select
 
         if (!trigger || !dropdown || !searchInput || !optionsList || !valueDisplay || !closeButton || !originalSelect) {
             console.error(`Missing elements within custom select wrapper #${wrapperId}`);
@@ -1476,6 +1496,7 @@
             allOptionsData = [];
             const originalOptions = originalSelect.querySelectorAll('option');
             let selectedText = '';
+            const currentOriginalValue = originalSelect.value; // Get current value before repopulating
 
             originalOptions.forEach(option => {
                 if (option.value === '') return;
@@ -1486,11 +1507,12 @@
                 li.setAttribute('role', 'option');
                 li.setAttribute('tabindex', '-1');
 
-                if (option.selected) {
+                // Restore selected state based on original select's current value
+                if (option.value === currentOriginalValue) {
                     li.classList.add('selected');
                     li.setAttribute('aria-selected', 'true');
                     selectedText = option.textContent;
-                    console.log(`Opción seleccionada: ${selectedText}.`);
+                    console.log(`Opción seleccionada (repopulate): ${selectedText}`);
                 } else {
                     li.setAttribute('aria-selected', 'false');
                 }
@@ -1501,6 +1523,7 @@
                 li.addEventListener('click', handleOptionSelect);
                 li.addEventListener('keydown', e => {
                     if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault(); // Prevent space from scrolling
                         handleOptionSelect(e);
                     }
                 });
@@ -1513,11 +1536,12 @@
                 valueDisplay.textContent = placeholderOption ? placeholderOption.textContent : 'Seleccionar...';
             }
 
-            console.log(allOptionsData);
+            console.log(`Options populated for ${wrapperId}`, allOptionsData);
         }
 
         function toggleDropdown(event, forceClose = false) {
-            if (event && dropdown.contains(event.target) && event.target !== closeButton) {
+            if (event && dropdown.contains(event.target) && event.target !== closeButton && event.target !== searchInput) {
+                // Allow clicks on search and close button, but not elsewhere inside dropdown
                 return;
             }
 
@@ -1528,13 +1552,22 @@
                 dropdown.hidden = true;
                 document.removeEventListener('click', handleClickOutside, true);
             } else {
+                // Close other open custom selects first
+                document.querySelectorAll('.custom-select-wrapper.open').forEach(openWrapper => {
+                    if (openWrapper !== wrapper) {
+                        const openTrigger = openWrapper.querySelector('.custom-select-trigger');
+                        const openDropdown = openWrapper.querySelector('.custom-select-dropdown');
+                        openWrapper.classList.remove('open');
+                        openTrigger?.setAttribute('aria-expanded', 'false');
+                        if (openDropdown) openDropdown.hidden = true;
+                    }
+                });
+
                 wrapper.classList.add('open');
                 trigger.setAttribute('aria-expanded', 'true');
                 dropdown.hidden = false;
-
                 setTimeout(() => {
                     document.addEventListener('click', handleClickOutside, true);
-
                     searchInput.focus();
                     scrollToSelected();
                 }, 0);
@@ -1547,11 +1580,6 @@
             }
         }
 
-        const checkboxes = document.querySelectorAll('.sc_services');
-        checkboxes.forEach(cb => {
-            cb.style.display = 'none';
-        });
-
         function handleOptionSelect(event) {
             const selectedLi = event.currentTarget;
             const newValue = selectedLi.dataset.value;
@@ -1559,18 +1587,32 @@
 
             originalSelect.value = newValue;
 
-            checkboxes.forEach(cb => {
-                if (cb.dataset.value === newValue) {
-                    cb.style.display = 'block';
-                }
+            console.log(`Valor seleccionado para ${originalSelectId}: ${newValue}`);
+            console.log(`Texto seleccionado: ${newText}`);
 
-                if (cb.dataset.value !== newValue) {
-                    cb.style.display = 'none';
-                }
-            });
-
-            console.log(`Valor seleccionado: ${newValue}.`);
-            console.log(`Opción seleccionada: ${newText}.`);
+            // --- Service Filtering Logic (ONLY for Categoria Select) ---
+            if (isCategoriaSelect) {
+                console.log(`Filtrando servicios para categoría ID: ${newValue}`);
+                const checkboxes = document.querySelectorAll('.sc_services'); // Re-query inside handler
+                let visibleCount = 0;
+                checkboxes.forEach(cb => {
+                    const cbCategory = cb.dataset.value; // category ID is in data-value
+                    const isVisible = cbCategory === newValue;
+                    cb.style.display = isVisible ? 'block' : 'none';
+                    // Uncheck checkboxes that become hidden
+                    if (!isVisible && cb.querySelector('input[type="checkbox"]')?.checked) {
+                        cb.querySelector('input[type="checkbox"]').checked = false;
+                        console.log(`Servicio ${cb.textContent.trim()} desmarcado por cambio de categoría.`);
+                    }
+                    if (isVisible) visibleCount++;
+                });
+                console.log(`${visibleCount} servicios visibles para categoría ${newValue}`);
+                // Re-validate services field after filtering
+                const serviciosContainer = form.querySelector('.grupo-checkboxes');
+                const serviciosSeleccionados = form.querySelectorAll('input[name="servicios[]"]:checked').length;
+                validarCampo(serviciosContainer, '#error-servicios', serviciosSeleccionados > 0 && serviciosSeleccionados <= 12, 'Debes seleccionar de 1 a 12 servicios.');
+            }
+            // --- End Service Filtering Logic ---
 
             originalSelect.dispatchEvent(new Event('change', {bubbles: true}));
 
@@ -1583,16 +1625,26 @@
             });
 
             toggleDropdown(null, true);
-
             trigger.focus();
+
+            // Re-validate the original select after change
+            validarCampo(wrapper, `#error-${originalSelectId}`, originalSelect.value !== '', `Debes seleccionar un valor.`);
         }
 
         function filterOptions() {
             const searchTerm = searchInput.value.toLowerCase().trim();
+            let firstVisibleOption = null;
             allOptionsData.forEach(optData => {
                 const isMatch = optData.text.includes(searchTerm);
                 optData.element.classList.toggle('filtered-out', !isMatch);
+                if (isMatch && !firstVisibleOption) {
+                    firstVisibleOption = optData.element;
+                }
             });
+            // Optional: Scroll to the first match after filtering
+            // if (firstVisibleOption) {
+            //     optionsList.scrollTop = firstVisibleOption.offsetTop - optionsList.offsetTop;
+            // }
         }
 
         function scrollToSelected() {
@@ -1602,33 +1654,50 @@
                     behavior: 'auto',
                     block: 'nearest'
                 };
-
                 setTimeout(() => {
-                    selectedOption.scrollIntoView(scrollOptions);
+                    if (!dropdown.hidden) {
+                        // Check if dropdown still open
+                        selectedOption.scrollIntoView(scrollOptions);
+                    }
                 }, 50);
             }
         }
 
         function handleKeyDown(event) {
             const isOpen = wrapper.classList.contains('open');
-            const currentFocus = document.activeElement;
 
-            if (event.key === 'Escape' && isOpen) {
-                toggleDropdown(null, true);
-                trigger.focus();
+            if (event.key === 'Escape') {
+                if (isOpen) {
+                    toggleDropdown(null, true);
+                    trigger.focus();
+                }
+                return; // Stop propagation even if closed
+            }
+
+            if (event.key === 'Tab' && isOpen) {
+                toggleDropdown(null, true); // Close on Tab out
+                // Allow default Tab behavior
                 return;
             }
 
-            if (!isOpen) return;
+            if (!isOpen) {
+                if (event.key === 'ArrowDown' || event.key === 'ArrowUp' || event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    toggleDropdown(); // Open with navigation keys or Enter/Space
+                }
+                return;
+            }
 
+            const currentFocus = document.activeElement;
             const focusableOptions = Array.from(optionsList.querySelectorAll('li:not(.filtered-out)'));
-            if (focusableOptions.length === 0) return;
+            if (focusableOptions.length === 0 && event.key !== 'ArrowUp') return; // No options to navigate (except up to search)
 
             let currentIndex = focusableOptions.findIndex(opt => opt === currentFocus);
 
             switch (event.key) {
                 case 'ArrowDown':
                     event.preventDefault();
+                    if (focusableOptions.length === 0) break;
                     if (currentFocus === searchInput || currentIndex === -1 || currentIndex === focusableOptions.length - 1) {
                         focusableOptions[0].focus();
                     } else {
@@ -1638,26 +1707,43 @@
                 case 'ArrowUp':
                     event.preventDefault();
                     if (currentFocus === searchInput) {
-                        focusableOptions[focusableOptions.length - 1].focus();
+                        // Optional: Cycle to last option
+                        // focusableOptions[focusableOptions.length - 1]?.focus();
                     } else if (currentIndex === -1 || currentIndex === 0) {
-                        searchInput.focus();
-                    } else {
+                        searchInput.focus(); // Go back to search input
+                    } else if (focusableOptions.length > 0) {
                         focusableOptions[currentIndex - 1].focus();
+                    } else {
+                        searchInput.focus(); // If no options, focus search
                     }
                     break;
                 case 'Home':
-                    event.preventDefault();
-                    focusableOptions[0]?.focus();
+                    if (focusableOptions.length > 0) {
+                        event.preventDefault();
+                        focusableOptions[0]?.focus();
+                    }
                     break;
                 case 'End':
-                    event.preventDefault();
-                    focusableOptions[focusableOptions.length - 1]?.focus();
+                    if (focusableOptions.length > 0) {
+                        event.preventDefault();
+                        focusableOptions[focusableOptions.length - 1]?.focus();
+                    }
                     break;
                 case 'Enter':
                 case ' ':
                     if (currentFocus && currentFocus.tagName === 'LI') {
                         event.preventDefault();
                         handleOptionSelect({currentTarget: currentFocus});
+                    } else if (currentFocus === searchInput && focusableOptions.length === 1) {
+                        // Optional: Auto-select if only one result after filtering and Enter pressed in search
+                        event.preventDefault();
+                        handleOptionSelect({currentTarget: focusableOptions[0]});
+                    }
+                    break;
+                default:
+                    // If typing letters/numbers when search input NOT focused, maybe focus it?
+                    if (currentFocus !== searchInput && event.key.length === 1 && !event.altKey && !event.ctrlKey && !event.metaKey) {
+                        // searchInput.focus(); // Let the input handler take care of it
                     }
                     break;
             }
@@ -1666,15 +1752,30 @@
         trigger.addEventListener('click', toggleDropdown);
         trigger.addEventListener('keydown', e => {
             if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
+                e.preventDefault(); // Prevent default space scroll / enter submit
                 toggleDropdown();
-            } else if (e.key === 'ArrowDown' && !wrapper.classList.contains('open')) {
+            } else if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') && !wrapper.classList.contains('open')) {
                 e.preventDefault();
                 toggleDropdown();
             }
         });
-        closeButton.addEventListener('click', () => toggleDropdown(null, true));
+        closeButton.addEventListener('click', e => {
+            e.stopPropagation(); // Prevent trigger click
+            toggleDropdown(null, true);
+            trigger.focus();
+        });
         searchInput.addEventListener('input', filterOptions);
+        searchInput.addEventListener('keydown', e => {
+            // Prevent ArrowUp/Down from navigating away from search if needed
+            if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                handleKeyDown(e); // Let the main handler manage focus movement
+            }
+            if (e.key === 'Escape') {
+                e.stopPropagation(); // Prevent wrapper's escape handler if needed
+                toggleDropdown(null, true);
+                trigger.focus();
+            }
+        });
         wrapper.addEventListener('keydown', handleKeyDown);
 
         populateOptions();
@@ -1686,17 +1787,59 @@
             }
         }
 
-        const observer = new MutationObserver(populateOptions);
-        observer.observe(originalSelect, {childList: true});
-    }
+        // Re-populate if original select changes (e.g., dynamic updates elsewhere)
+        const observer = new MutationObserver(mutations => {
+            console.log(`Mutation observed on #${originalSelectId}, repopulating options.`);
+            populateOptions();
+            // Also re-filter services if it's the category select and its value changed externally
+            if (isCategoriaSelect) {
+                handleOptionSelect({currentTarget: optionsList.querySelector(`li[data-value="${originalSelect.value}"]`) || optionsList.firstElementChild});
+            }
+        });
+        observer.observe(originalSelect, {childList: true, subtree: true}); // Observe options added/removed
+
+        // Observe changes to the 'value' attribute of the original select (might happen programmatically)
+        const valueObserver = new MutationObserver(mutations => {
+            mutations.forEach(mutation => {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'value') {
+                    console.log(`Value attribute changed on #${originalSelectId}, updating display.`);
+                    const newValue = originalSelect.value;
+                    const newOption = originalSelect.querySelector(`option[value="${newValue}"]`);
+                    const newText = newOption ? newOption.textContent : originalSelect.querySelector('option[value=""]') ? originalSelect.querySelector('option[value=""]').textContent : 'Seleccionar...';
+                    valueDisplay.textContent = newText;
+                    // Update selected state in custom dropdown
+                    allOptionsData.forEach(optData => {
+                        const isSelected = optData.value === newValue;
+                        optData.element.classList.toggle('selected', isSelected);
+                        optData.element.setAttribute('aria-selected', isSelected.toString());
+                    });
+                    // Re-filter services if category select's value changed externally
+                    if (isCategoriaSelect) {
+                        handleOptionSelect({currentTarget: optionsList.querySelector(`li[data-value="${newValue}"]`) || optionsList.firstElementChild});
+                    }
+                }
+            });
+        });
+        valueObserver.observe(originalSelect, {attributes: true});
+    } // End setupCustomSelect
 
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.sc_services').forEach(cb => {
+                cb.style.display = 'none';
+            });
             setupCustomSelect('custom-provincia-wrapper');
             setupCustomSelect('custom-categoria-wrapper');
+            // Call inicializar after setting up custom selects
+            inicializar();
         });
     } else {
+        document.querySelectorAll('.sc_services').forEach(cb => {
+            cb.style.display = 'none';
+        });
         setupCustomSelect('custom-provincia-wrapper');
         setupCustomSelect('custom-categoria-wrapper');
+        // Call inicializar after setting up custom selects
+        inicializar();
     }
 })();
