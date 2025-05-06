@@ -653,6 +653,7 @@ function newForm()
                                     <?php // TODO: Cargar lista de idiomas COMPLETA como en el form antiguo
                                     $idiomas_lista = [
                                         'es' => 'Español',
+                                        'ca' => 'Catalán',
                                         'en' => 'Inglés',
                                         'fr' => 'Francés',
                                         'de' => 'Alemán',
@@ -662,14 +663,14 @@ function newForm()
                                         'zh' => 'Chino',
                                         'ja' => 'Japonés',
                                         'ko' => 'Coreano',
-                                        'ar' => 'Árabe',
                                         'hi' => 'Hindi',
                                         'bn' => 'Bengalí',
                                         'pa' => 'Panyabí',
                                         'sw' => 'Swahili',
                                         'tr' => 'Turco',
                                         'pl' => 'Polaco',
-                                        'nl' => 'Neerlandés'
+                                        'nl' => 'Neerlandés',
+                                        'ot' => 'Otros'
                                     ];
                                     foreach ($idiomas_lista as $code => $name) {
                                         // Usar el valor del campo oculto mapeado para seleccionar
