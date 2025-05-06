@@ -1736,6 +1736,7 @@ select.frm-campo.frm-select.corto {
 
     label.frm-checkbox {
         margin: 0;
+        align-items: center;
     }
 
     div#boton-subir-foto {
