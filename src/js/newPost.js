@@ -1695,7 +1695,7 @@
                 checkboxes.forEach(cb => {
                     const cbCategory = cb.dataset.value; // category ID is in data-value
                     const isVisible = cbCategory === newValue;
-                    cb.style.display = isVisible ? 'block' : 'none';
+                    cb.style.display = isVisible ? 'flex' : 'none';
                     // Uncheck checkboxes that become hidden
                     if (!isVisible && cb.querySelector('input[type="checkbox"]')?.checked) {
                         cb.querySelector('input[type="checkbox"]').checked = false;
