@@ -388,7 +388,9 @@
 
     function irASiguienteEtapa(event) {
         event.preventDefault();
-        avanzarSiValido();
+        showErrorsOnValidate = true; // Activar la muestra de errores ANTES de validar
+        avanzarSiValido(); // avanzarSiValido llamará a validarEtapaActual, que usará la bandera
+        showErrorsOnValidate = false; // Desactivar la muestra de errores DESPUÉS del intento
     }
 
     function irAEtapaAnterior(event) {
@@ -545,34 +547,40 @@
 
     function validarCampo(elemento, errorSelector, condition, message) {
         const errorMsgElement = form.querySelector(errorSelector);
+        // Si el elemento de mensaje de error no existe, simplemente devuelve la condición.
+        // Esto es crucial para validaciones lógicas que no tienen un display de error directo
+        // (ej. la existencia del horario guardado, que se valida pero su "error" se maneja de forma específica).
         if (!errorMsgElement) {
             return condition;
         }
 
-        let campoVisual = elemento;
-        let campoOriginal = null;
+        let campoVisual = elemento; // El elemento DOM que recibirá el estilo de error (ej. input, o el trigger del custom select)
 
+        // Lógica para determinar el 'campoVisual' correcto (basado en tu código original)
         if (elemento && elemento.classList.contains('custom-select-wrapper')) {
             campoVisual = elemento.querySelector('.custom-select-trigger');
-            const originalSelectId = campoVisual?.dataset.selectId;
-            if (originalSelectId) {
-                campoOriginal = document.getElementById(originalSelectId);
-            }
-        } else if (elemento && !(elemento.nodeName === 'INPUT' || elemento.nodeName === 'SELECT' || elemento.nodeName === 'TEXTAREA')) {
-            campoOriginal = elemento.querySelector('input, select, textarea');
-        } else {
-            campoOriginal = elemento;
         }
+        // No se necesita la parte de 'campoOriginal' ya que no se usaba para aplicar estilos de error.
 
         if (!condition) {
-            errorMsgElement.textContent = message;
-            errorMsgElement.classList.remove('oculto');
-            campoVisual?.classList.add('invalido');
-            return false;
+            // Si la condición de validación NO se cumple
+            if (showErrorsOnValidate) {
+                // Y la bandera showErrorsOnValidate está activa (ej. al pulsar "Siguiente" o "Finalizar")
+                errorMsgElement.textContent = message;
+                errorMsgElement.classList.remove('oculto');
+                campoVisual?.classList.add('invalido'); // Añadir clase de error al elemento visual
+            }
+            // Si showErrorsOnValidate es false, no se muestra el error aquí,
+            // ni se añade la clase 'invalido'. El error podría estar ya visible
+            // de un intento anterior de "Siguiente", y esta lógica no lo limpiaría
+            // hasta que la 'condition' sea true.
+            return false; // La validación falló
         } else {
+            // Si la condición de validación SÍ se cumple
             errorMsgElement.classList.add('oculto');
-            campoVisual?.classList.remove('invalido');
-            return true;
+            errorMsgElement.textContent = ''; // Buena práctica: limpiar el texto del mensaje
+            campoVisual?.classList.remove('invalido'); // Quitar clase de error del elemento visual
+            return true; // La validación fue exitosa
         }
     }
 
@@ -1568,65 +1576,83 @@
     function validarFormularioCompleto() {
         let todoValido = true;
         let primeraEtapaInvalida = -1;
-        let primeraEtapaInvalidaElement = null; // Store the element causing the first error
+        let primeraEtapaInvalidaElement = null;
 
+        showErrorsOnValidate = true; // Activar para la validación de todas las etapas al finalizar
         for (let i = 0; i < etapas.length; i++) {
             const originalIndex = etapaActualIndex;
-            etapaActualIndex = i;
-            const etapaValida = validarEtapaActual();
-            etapaActualIndex = originalIndex;
+            etapaActualIndex = i; // Cambiar temporalmente a la etapa que se va a validar
+            const etapaValida = validarEtapaActual(); // Esta función llama a validarCampo internamente
+            etapaActualIndex = originalIndex; // Restaurar el índice de la etapa actual
 
             if (!etapaValida) {
                 todoValido = false;
                 if (primeraEtapaInvalida === -1) {
                     primeraEtapaInvalida = i;
-                    // Find the first element marked as invalid or the first visible error message in this stage
+                    // Intentar encontrar el primer elemento visual con error en la etapa inválida
                     primeraEtapaInvalidaElement = etapas[i].querySelector('.invalido, .error-msg:not(.oculto)');
                 }
-                // Continue validating all stages to show all errors
             }
         }
 
+        // Validación específica del horario al finalizar (basada en tu código original)
         const horarioGuardado = localStorage.getItem(HORARIO_STORAGE_KEY);
+        // Asumimos que el horario es siempre requerido al finalizar. Ajusta si es necesario.
         const horarioRequerido = true;
 
         if (horarioRequerido && !horarioGuardado) {
             if (horarioSubmitErrorDiv) {
+                // Este es un div de error específico para el horario en el submit
                 horarioSubmitErrorDiv.textContent = 'Es obligatorio configurar y guardar el horario antes de finalizar.';
                 horarioSubmitErrorDiv.classList.remove('oculto');
             }
             todoValido = false;
             if (primeraEtapaInvalida === -1) {
-                const etapaHorarioIndex = etapas.findIndex(etapa => etapa.querySelector('#btn-mostrar-horario'));
+                // Si no se encontró otra etapa inválida antes
+                // Encontrar la etapa que contiene el botón/control del horario
+                const etapaHorarioIndex = etapas.findIndex(etapa => etapa.querySelector('#btn-mostrar-horario') || etapa.contains(horarioFeedbackDiv));
                 if (etapaHorarioIndex !== -1) {
                     primeraEtapaInvalida = etapaHorarioIndex;
-                    primeraEtapaInvalidaElement = horarioSubmitErrorDiv; // Point to the horario error div
+                    primeraEtapaInvalidaElement = horarioSubmitErrorDiv; // Usar el div de error del horario como referencia
                 }
             }
         } else {
-            if (horarioSubmitErrorDiv) horarioSubmitErrorDiv.classList.add('oculto');
+            if (horarioSubmitErrorDiv) {
+                horarioSubmitErrorDiv.classList.add('oculto');
+            }
         }
+
+        showErrorsOnValidate = false; // Desactivar después de toda la validación
 
         if (!todoValido) {
             alert('Por favor, revisa el formulario. Hay errores o campos incompletos.');
             if (primeraEtapaInvalida !== -1) {
-                cambiarEtapa(primeraEtapaInvalida);
+                cambiarEtapa(primeraEtapaInvalida); // Ir a la primera etapa con error
 
-                // Scroll to the first error element found
+                // Scroll y foco al primer elemento con error (lógica de tu código original)
                 setTimeout(() => {
-                    // Use timeout to ensure stage change is rendered
-                    const elementToScroll = primeraEtapaInvalidaElement || form.querySelector('.error-msg:not(.oculto), .invalido');
+                    // Asegurarse de que el elemento a scrollear es el correcto
+                    let elementToScroll = primeraEtapaInvalidaElement;
+                    if (!elementToScroll && primeraEtapaInvalida !== -1) {
+                        // Fallback si el elemento específico no se capturó bien
+                        elementToScroll = etapas[primeraEtapaInvalida].querySelector('.invalido, .error-msg:not(.oculto)');
+                    }
+                    // Si aún no hay, un selector más general dentro del formulario
+                    if (!elementToScroll) {
+                        elementToScroll = form.querySelector('.error-msg:not(.oculto), .invalido');
+                    }
+
                     elementToScroll?.scrollIntoView({behavior: 'smooth', block: 'center'});
-                    // Attempt to focus the related input if possible
+
+                    // Intentar focar el campo interactivo más cercano o el propio elemento de error
                     const focusableElement = elementToScroll?.closest('.frm-grupo')?.querySelector('input, select, textarea, .custom-select-trigger') || elementToScroll;
                     if (focusableElement && typeof focusableElement.focus === 'function') {
-                        focusableElement.focus({preventScroll: true}); // preventScroll avoids conflict with scrollIntoView
+                        focusableElement.focus({preventScroll: true}); // preventScroll para no interferir con scrollIntoView
                     }
-                }, 100); // Small delay
+                }, 100); // Pequeño delay para asegurar que el cambio de etapa se renderice
             }
             return false;
         }
-
         return true;
     }
 
