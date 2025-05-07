@@ -1,6 +1,8 @@
 (function () {
     'use strict';
 
+    let showErrorsOnValidate = false;
+
     const HORARIO_STORAGE_KEY = 'userPendingSchedule';
     const MAX_PHOTOS = 3;
     const SVG_PLACEHOLDER = `<?xml version="1.0" encoding="UTF-8"?> <svg id="uuid-0ca005e1-d9fe-4045-a665-2e60e21962d4" data-name="Capa 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 145.83 120.73"> <defs> <style> .uuid-4e0375d0-00b6-45fd-960c-a83a919e3c21 { fill: #383a39; } .uuid-e42eef17-cbac-4bbb-bccc-8dc7fa78a734 { fill: none; stroke: #383a39; stroke-miterlimit: 10; stroke-width: 4.33px; } </style> </defs> <polygon class="uuid-4e0375d0-00b6-45fd-960c-a83a919e3c21" points="19.95 103.93 45.95 72.93 62.9 88.43 87.95 55.93 125.88 103.93 19.95 103.93"/> <circle class="uuid-4e0375d0-00b6-45fd-960c-a83a919e3c21" cx="31.95" cy="34.93" r="12"/> <rect class="uuid-e42eef17-cbac-4bbb-bccc-8dc7fa78a734" x="2.17" y="2.17" width="141.5" height="116.4" rx="18.8" ry="18.8"/> </svg>`;
