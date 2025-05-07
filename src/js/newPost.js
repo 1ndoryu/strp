@@ -547,42 +547,47 @@
         return esValido;
     }
 
+    // MODIFICACIÓN CORREGIDA: Actualizar la función validarCampo
     function validarCampo(elemento, errorSelector, condition, message) {
         const errorMsgElement = form.querySelector(errorSelector);
-        // Si el elemento de mensaje de error no existe, simplemente devuelve la condición.
-        // Esto es crucial para validaciones lógicas que no tienen un display de error directo
-        // (ej. la existencia del horario guardado, que se valida pero su "error" se maneja de forma específica).
         if (!errorMsgElement) {
             return condition;
         }
 
-        let campoVisual = elemento; // El elemento DOM que recibirá el estilo de error (ej. input, o el trigger del custom select)
-
-        // Lógica para determinar el 'campoVisual' correcto (basado en tu código original)
+        let campoVisual = elemento;
         if (elemento && elemento.classList.contains('custom-select-wrapper')) {
             campoVisual = elemento.querySelector('.custom-select-trigger');
         }
-        // No se necesita la parte de 'campoOriginal' ya que no se usaba para aplicar estilos de error.
+
+        // Siempre actualiza el contenido del mensaje de error,
+        // independientemente de showErrorsOnValidate.
+        // Esto permite que los contadores dinámicos (ej. "Actual: X") se actualicen.
+        if (message) {
+            // Solo actualiza si hay un mensaje que mostrar/actualizar
+            errorMsgElement.textContent = message;
+        }
 
         if (!condition) {
-            // Si la condición de validación NO se cumple
+            // Si la validación falla
             if (showErrorsOnValidate) {
-                // Y la bandera showErrorsOnValidate está activa (ej. al pulsar "Siguiente" o "Finalizar")
-                errorMsgElement.textContent = message;
+                // Y se deben mostrar errores, entonces hazlo visible y marca como inválido
                 errorMsgElement.classList.remove('oculto');
-                campoVisual?.classList.add('invalido'); // Añadir clase de error al elemento visual
+                campoVisual?.classList.add('invalido');
             }
-            // Si showErrorsOnValidate es false, no se muestra el error aquí,
-            // ni se añade la clase 'invalido'. El error podría estar ya visible
-            // de un intento anterior de "Siguiente", y esta lógica no lo limpiaría
-            // hasta que la 'condition' sea true.
-            return false; // La validación falló
+            // Si showErrorsOnValidate es false, el mensaje se actualizó,
+            // pero el error (clase 'oculto' y 'invalido') no se activa.
+            // Si ya estaba visible de un "Siguiente" anterior, permanecerá visible
+            // y actualizado hasta que la condición sea true.
+            return false;
         } else {
-            // Si la condición de validación SÍ se cumple
+            // Si la validación es exitosa
             errorMsgElement.classList.add('oculto');
-            errorMsgElement.textContent = ''; // Buena práctica: limpiar el texto del mensaje
-            campoVisual?.classList.remove('invalido'); // Quitar clase de error del elemento visual
-            return true; // La validación fue exitosa
+            // Opcional: podrías querer limpiar el textContent aquí también si el mensaje
+            // ya no es relevante, o dejarlo como está si prefieres que el último
+            // mensaje (ej. "Actual: 500") permanezca aunque oculto.
+            // errorMsgElement.textContent = ''; // Descomenta si quieres borrar el texto al ocultar
+            campoVisual?.classList.remove('invalido');
+            return true;
         }
     }
 
