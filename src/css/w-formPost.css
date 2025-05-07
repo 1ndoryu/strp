@@ -700,7 +700,6 @@ button#btn-mostrar-horario {
 .navegacion-etapa {
     display: flex;
     justify-content: space-between; /* Separa botones anterior/siguiente */
-    margin-top: var(--espaciado-mediano);
     padding-top: var(--espaciado-base);
 }
 
@@ -1722,7 +1721,7 @@ select.frm-campo.frm-select.corto {
 /* Estilos del input para subir el banner con URL */
 
 .imagen-anuncio.etapa-perfil-imagen img {
-    height: 1100px;
+    height: 1140px;
     max-height: unset;
 }
 
@@ -1734,6 +1733,11 @@ select.frm-campo.frm-select.corto {
     display: none;
 }
 
+@media (max-width: 560px) {
+    label.frm-checkbox.sc_services {
+        max-width: 100px;
+    }
+}
 @media (max-width: 768px) {
     .lista-fotos {
         flex-wrap: wrap;
@@ -1808,4 +1812,9 @@ select.frm-campo.frm-select.corto {
     justify-content: space-between;
     flex-wrap: wrap;
     margin-bottom: 10px;
+}
+
+
+label.opcion-checkbox-no-name.opcion-extra input {
+    display: none;
 }

@@ -230,17 +230,108 @@
         btnSiguiente.forEach(btn => btn.addEventListener('click', irASiguienteEtapa));
         btnAnterior.forEach(btn => btn.addEventListener('click', irAEtapaAnterior));
 
-        if (tituloInput && contTitulo) tituloInput.addEventListener('input', actualizarContadores);
-        if (descripcionTextarea && contDesc) descripcionTextarea.addEventListener('input', actualizarContadores);
-        if (fotosInput) fotosInput.addEventListener('change', manejarSeleccionFotos);
+        // NUEVOS LISTENERS PARA VALIDACIÓN EN TIEMPO REAL (Y AJUSTES A EXISTENTES)
 
-        window.addEventListener('focus', cargarHorarioDesdeStorage);
+        if (nombreInput) {
+            nombreInput.addEventListener('input', () => {
+                validarCampo(nombreInput, '#error-nombre', nombreInput.value.trim(), 'El nombre es obligatorio.');
+            });
+        }
 
-        form.addEventListener('submit', manejarEnvioFinal);
+        // Los custom selects (categoria, provincia) ya se validan en 'handleOptionSelect' dentro de 'setupCustomSelect'
+        // así que no necesitan un listener adicional aquí si 'validarCampo' se llama correctamente allí.
 
+        if (tituloInput && contTitulo) {
+            tituloInput.addEventListener('input', () => {
+                actualizarContadores();
+                const tituloVal = tituloInput.value.trim();
+                validarCampo(tituloInput, '#error-titulo', tituloVal && tituloVal.length >= 10 && tituloVal.length <= 50, `El título es obligatorio (entre 10 y 50 caracteres). Actual: ${tituloVal.length}`);
+            });
+        }
+
+        if (descripcionTextarea && contDesc) {
+            descripcionTextarea.addEventListener('input', () => {
+                actualizarContadores();
+                const descVal = descripcionTextarea.value.trim();
+                validarCampo(descripcionTextarea, '#error-descripcion', descVal && descVal.length >= 100 && descVal.length <= 500, `La descripción es obligatoria (entre 100 y 500 caracteres). Actual: ${descVal.length}`);
+            });
+        }
+
+        if (serviciosCheckboxes.length > 0) {
+            serviciosCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', () => {
+                    const serviciosSeleccionados = form.querySelectorAll('input[name="servicios[]"]:checked').length;
+                    validarCampo(serviciosCheckboxes[0]?.closest('.grupo-checkboxes'), '#error-servicios', serviciosSeleccionados > 0 && serviciosSeleccionados <= 12, 'Debes seleccionar de 1 a 12 servicios.');
+                });
+            });
+        }
+
+        if (fotosInput) {
+            fotosInput.addEventListener('change', manejarSeleccionFotos);
+            // La validación de fotos ('#error-fotos') se maneja dentro de subirFotoAjax y eliminarFoto.
+        }
+
+        // Para Idiomas: la validación es un poco más compleja ya que depende de varios campos.
+        // Crearemos una función helper para validar el grupo de idiomas.
+        const validarGrupoIdiomasConNiveles = () => {
+            const idioma1Seleccionado = idioma1Select?.value !== '';
+            const idioma2Seleccionado = idioma2Select?.value !== ''; // Asumiendo que existe idioma2Select
+            const alMenosUnIdioma = idioma1Seleccionado || idioma2Seleccionado;
+            const grupoIdiomasDiv = form.querySelector('.grupo-idiomas');
+
+            validarCampo(grupoIdiomasDiv, '#error-idiomas', alMenosUnIdioma, 'Debes seleccionar al menos un idioma.');
+
+            if (idioma1Seleccionado) {
+                validarCampo(nivelIdioma1Select, '#error-idiomas', nivelIdioma1Select?.value !== '', 'Debes seleccionar el nivel para el Idioma 1.');
+            } else {
+                // Si no hay idioma 1, el nivel 1 no es requerido, así que limpiamos su error específico si el error general de idiomas es por otra causa.
+                if (alMenosUnIdioma) validarCampo(nivelIdioma1Select, '#error-idiomas', true, ''); // Limpia solo si el error no es por falta de idioma
+            }
+            // Harías lo mismo para idioma2 y nivelIdioma2 si existieran en la validación
+            if (idioma2Select && nivelIdioma2Select) {
+                if (idioma2Seleccionado) {
+                    validarCampo(nivelIdioma2Select, '#error-idiomas', nivelIdioma2Select?.value !== '', 'Debes seleccionar el nivel para el Idioma 2.');
+                } else {
+                    if (alMenosUnIdioma) validarCampo(nivelIdioma2Select, '#error-idiomas', true, '');
+                }
+            }
+        };
+
+        if (idioma1Select) idioma1Select.addEventListener('change', validarGrupoIdiomasConNiveles);
+        if (nivelIdioma1Select) nivelIdioma1Select.addEventListener('change', validarGrupoIdiomasConNiveles);
+        if (idioma2Select) idioma2Select.addEventListener('change', validarGrupoIdiomasConNiveles);
+        if (nivelIdioma2Select) nivelIdioma2Select.addEventListener('change', validarGrupoIdiomasConNiveles);
+
+        // La validación del horario ('#error-horario-etapa') se actualiza con cargarHorarioDesdeStorage.
+
+        if (telefonoInput) {
+            telefonoInput.addEventListener('input', () => {
+                const telefonoVal = telefonoInput.value.replace(/\D/g, '');
+                validarCampo(telefonoInput, '#error-telefono', /^[0-9]{9,15}$/.test(telefonoVal), 'Introduce un teléfono válido (9-15 dígitos).');
+            });
+        }
+
+        if (salidasSelect) {
+            salidasSelect.addEventListener('change', () => {
+                validarCampo(salidasSelect, '#error-salidas', salidasSelect.value !== '', 'Debes indicar si realizas salidas.');
+            });
+        }
+
+        if (emailInput) {
+            emailInput.addEventListener('input', () => {
+                if (!emailInput.readOnly && !emailInput.closest('.frm-grupo').hidden) {
+                    validarCampo(emailInput, '#error-email', /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value), 'Introduce un email válido.');
+                }
+            });
+        }
+
+        // VALIDACIÓN PARA RADIOS Y PLANES
         tipoUsuarioRadios.forEach(radio => {
             radio.addEventListener('change', () => {
                 actualizarMarcadoVisualRadios(tipoUsuarioRadios);
+                const tipoUsuarioSeleccionado = form.querySelector('input[name="tipo_usuario"]:checked');
+                validarCampo(tipoUsuarioRadios[0]?.closest('.lista-opciones'), '#error-tipo-usuario', tipoUsuarioSeleccionado, 'Debes seleccionar un tipo de perfil.');
+
                 const etapaActual = etapas[etapaActualIndex];
                 if (etapaActual && etapaActual.id === 'etapa-tipo-usuario' && radio.checked) {
                     avanzarSiValido();
@@ -256,6 +347,10 @@
                     if (radioToSelect) {
                         radioToSelect.checked = true;
                         actualizarMarcadoVisualPlan();
+                        // Validar en tiempo real
+                        const planSeleccionado = form.querySelector('input[name="plan"]:checked');
+                        validarCampo(form.querySelector('#etapa-plan .segundo-div-plan'), '#error-plan', planSeleccionado, 'Debes seleccionar un plan.');
+
                         const etapaActual = etapas[etapaActualIndex];
                         if (etapaActual && etapaActual.id === 'etapa-plan') {
                             avanzarSiValido();
@@ -264,6 +359,20 @@
                 }
             });
         });
+        // Adicional para los radios de plan por si se cambian de otra forma (e.g. teclado)
+        planRadios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                actualizarMarcadoVisualPlan();
+                const planSeleccionado = form.querySelector('input[name="plan"]:checked');
+                validarCampo(form.querySelector('#etapa-plan .segundo-div-plan'), '#error-plan', planSeleccionado, 'Debes seleccionar un plan.');
+            });
+        });
+
+        // FIN DE NUEVOS LISTENERS
+
+        window.addEventListener('focus', cargarHorarioDesdeStorage);
+        form.addEventListener('submit', manejarEnvioFinal);
+        // ... (resto de los listeners originales que no fueron modificados arriba)
     }
 
     function avanzarSiValido() {
@@ -1707,7 +1816,14 @@
                 // Re-validate services field after filtering
                 const serviciosContainer = form.querySelector('.grupo-checkboxes');
                 const serviciosSeleccionados = form.querySelectorAll('input[name="servicios[]"]:checked').length;
-                validarCampo(serviciosContainer, '#error-servicios', serviciosSeleccionados > 0 && serviciosSeleccionados <= 12, 'Debes seleccionar de 1 a 12 servicios.');
+                const errorServiciosDiv = form.querySelector('#error-servicios');
+                if (errorServiciosDiv) {
+                    errorServiciosDiv.classList.add('oculto');
+                }
+                // Y si el contenedor tenía la clase 'invalido', también la quitamos
+                if (serviciosContainer) {
+                    serviciosContainer.classList.remove('invalido');
+                }
             }
             // --- End Service Filtering Logic ---
 
