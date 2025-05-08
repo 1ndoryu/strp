@@ -39,17 +39,51 @@
     const inputUrl = document.getElementById('url-banner');
     const inputUrlLateral = document.getElementById('input-url-banner-lateral');
     const contenedorInputLateral = document.getElementById('url-banner-lateral');
+
+    // Crear el div para el error específico del horario en la etapa (el que solicitaste)
+    const errorHorarioDosDiv = document.createElement('div');
+    errorHorarioDosDiv.id = 'error-horarioDos'; // ID solicitado
+    errorHorarioDosDiv.classList.add('error-msg', 'oculto');
+    errorHorarioDosDiv.textContent = 'Debes configurar el horario.'; // Texto fijo solicitado
+    
+    // Crear el div para el feedback dinámico del horario
     const horarioFeedbackDiv = document.createElement('div');
     horarioFeedbackDiv.id = 'horario-feedback';
     horarioFeedbackDiv.style.marginTop = '10px';
-    if (contenedorHorario) {
-        contenedorHorario.parentNode.insertBefore(horarioFeedbackDiv, contenedorHorario.nextSibling);
-    }
+    
+    // Crear el div para errores de horario en el SUBMIT FINAL del formulario
     const horarioSubmitErrorDiv = document.createElement('div');
     horarioSubmitErrorDiv.id = 'error-horario-submit';
     horarioSubmitErrorDiv.classList.add('error-msg', 'oculto');
-    if (horarioFeedbackDiv) {
-        horarioFeedbackDiv.parentNode.insertBefore(horarioSubmitErrorDiv, horarioFeedbackDiv.nextSibling);
+    
+    // Insertar los divs relacionados con el horario en el DOM
+    // El orden deseado es: (después de contenedorHorario) errorHorarioDosDiv, horarioFeedbackDiv, horarioSubmitErrorDiv
+    if (contenedorHorario && contenedorHorario.parentNode) {
+        let currentInsertionPoint = contenedorHorario; // Empezamos después del contenedorHorario
+    
+        // Insertar errorHorarioDosDiv después de currentInsertionPoint
+        currentInsertionPoint.insertAdjacentElement('afterend', errorHorarioDosDiv);
+        currentInsertionPoint = errorHorarioDosDiv; // Actualizar punto para la siguiente inserción
+    
+        // Insertar horarioFeedbackDiv después de currentInsertionPoint
+        currentInsertionPoint.insertAdjacentElement('afterend', horarioFeedbackDiv);
+        currentInsertionPoint = horarioFeedbackDiv; // Actualizar punto para la siguiente inserción
+    
+        // Insertar horarioSubmitErrorDiv después de currentInsertionPoint
+        currentInsertionPoint.insertAdjacentElement('afterend', horarioSubmitErrorDiv);
+    
+    } else {
+        // Fallback si contenedorHorario no se encuentra.
+        // Busca un contenedor adecuado dentro de la etapa de anuncio o el formulario.
+        const etapaAnuncioFieldset = form.querySelector('#etapa-anuncio #fieldset-anuncio-datos') || form.querySelector('#etapa-anuncio') || form;
+        if (etapaAnuncioFieldset) {
+            etapaAnuncioFieldset.appendChild(errorHorarioDosDiv);
+            etapaAnuncioFieldset.appendChild(horarioFeedbackDiv);
+            etapaAnuncioFieldset.appendChild(horarioSubmitErrorDiv);
+            console.warn("contenedorHorario no encontrado. Los elementos de feedback y error del horario se han añadido a un contenedor de fallback.");
+        } else {
+            console.error('CRÍTICO: No se pudo encontrar contenedorHorario ni un contenedor de fallback para insertar los mensajes de horario.');
+        }
     }
     const telefonoInput = form.querySelector('#telefono');
     const whatsappCheckbox = form.querySelector('input[name="whatsapp"]');
@@ -547,30 +581,40 @@
                     }
                 }
 
-
-                // --- VALIDACIÓN DE HORARIO AJUSTADA ---
+                // --- VALIDACIÓN DE HORARIO (AJUSTADA SEGÚN REQUERIMIENTO) ---
                 const existeHorarioEnStorageEtapa = !!localStorage.getItem(HORARIO_STORAGE_KEY);
-                const selectorErrorHorarioEtapa = '#error-horario-etapa'; // Asegúrate que este div exista o créalo.
+                // 'errorHorarioDosDiv' es la variable global del elemento DOM <div id="error-horarioDos">...</div>
 
+                let horarioValidoEnEstaEtapa = true;
                 if (!existeHorarioEnStorageEtapa) {
-                    // Si no hay nada guardado en localStorage
-                    if (!validarCampo(horarioFeedbackDiv, selectorErrorHorarioEtapa, false, 'Debes configurar y guardar tu horario para continuar.')) {
-                        esValido = false;
-                        const btnHorarioFeedback = horarioFeedbackDiv.querySelector('button'); // Primer botón del feedback
-                        inputsInvalidos.push(btnHorarioFeedback || horarioFeedbackDiv);
-                    }
+                    horarioValidoEnEstaEtapa = false;
+                    // Asegura que horarioFeedbackDiv muestre "Aún no has configurado tu horario."
+                    // y el botón "Configurar horario". Esta llamada es crucial.
+                    actualizarFeedbackHorario('no_configurado');
                 } else if (!horarioConfirmadoParaAvanzar) {
-                    // Si hay algo en localStorage, pero no ha sido "confirmado" en esta visita a la etapa
-                    if (!validarCampo(horarioFeedbackDiv, selectorErrorHorarioEtapa, false, 'Por favor, recarga o administra tu horario para confirmar y continuar.')) {
-                        esValido = false;
-                        const btnHorarioFeedback = horarioFeedbackDiv.querySelector('button'); // Primer botón del feedback
-                        inputsInvalidos.push(btnHorarioFeedback || horarioFeedbackDiv);
-                    }
-                } else {
-                    // Horario existe en localStorage Y ha sido confirmado para avanzar en esta etapa
-                    validarCampo(horarioFeedbackDiv, selectorErrorHorarioEtapa, true, ''); // Limpiar error si todo OK
+                    horarioValidoEnEstaEtapa = false;
+                    // Si hay horario en storage pero no está "confirmado" para avanzar,
+                    // el `horarioFeedbackDiv` ya debería mostrar "Horario cargado... Recargar para confirmar"
+                    // (establecido por `cargarHorarioDesdeStorage` o `actualizarFeedbackHorario('cargado')`).
+                    // No es estrictamente necesario llamar a actualizarFeedbackHorario aquí de nuevo
+                    // a menos que queramos forzar un estado particular.
                 }
-                // --- FIN VALIDACIÓN DE HORARIO AJUSTADA ---
+
+                if (!horarioValidoEnEstaEtapa) {
+                    esValido = false; // Marcar la etapa general como inválida
+                    if (errorHorarioDosDiv && showErrorsOnValidate) {
+                        // Mostrar el mensaje: <div class="error-msg" id="error-horarioDos">Debes configurar el horario.</div>
+                        errorHorarioDosDiv.classList.remove('oculto');
+                    }
+                    // Para scroll/focus, priorizar el mensaje de error, luego un botón en el feedback, luego el div de feedback.
+                    inputsInvalidos.push(errorHorarioDosDiv || horarioFeedbackDiv.querySelector('button') || horarioFeedbackDiv);
+                } else {
+                    // Horario OK para esta etapa
+                    if (errorHorarioDosDiv) {
+                        errorHorarioDosDiv.classList.add('oculto'); // Ocultar el mensaje de error específico
+                    }
+                }
+                // --- FIN VALIDACIÓN DE HORARIO ---
 
                 const telefonoVal = telefonoInput?.value.replace(/\D/g, '') || '';
                 if (!validarCampo(telefonoInput, '#error-telefono', /^[0-9]{9,15}$/.test(telefonoVal), 'Introduce un teléfono válido (9-15 dígitos).')) {
