@@ -565,21 +565,84 @@
                     inputsInvalidos.push(fotosInput);
                 }
 
-                const idioma1Seleccionado = idioma1Select?.value !== '';
-                const idioma2Seleccionado = idioma2Select?.value !== '';
-                const alMenosUnIdioma = idioma1Seleccionado || idioma2Seleccionado;
-                const grupoIdiomasDiv = form.querySelector('.grupo-idiomas');
+                // Este bloque reemplaza la validación de idiomas existente en 'etapa-anuncio'.
+                // Asume que las variables idioma1Select, nivelIdioma1Select, idioma2Select, nivelIdioma2Select
+                // han sido definidas correctamente al inicio de tu script IIFE usando getElementById.
 
-                if (!validarCampo(grupoIdiomasDiv, '#error-idiomas', alMenosUnIdioma, 'Debes seleccionar al menos un idioma.')) {
-                    esValido = false;
-                    inputsInvalidos.push(idioma1Select || grupoIdiomasDiv);
+                const idioma1Elegido = idioma1Select?.value !== '';
+                const nivelIdioma1Elegido = nivelIdioma1Select?.value !== '';
+                const parIdioma1Valido = idioma1Elegido && nivelIdioma1Elegido;
+
+                let idioma2Elegido = false;
+                let nivelIdioma2Elegido = false;
+                let parIdioma2Valido = false;
+
+                // Solo procesar el segundo par de idiomas si los elementos select correspondientes existen en el DOM.
+                if (idioma2Select && nivelIdioma2Select) {
+                    idioma2Elegido = idioma2Select.value !== '';
+                    nivelIdioma2Elegido = nivelIdioma2Select.value !== '';
+                    parIdioma2Valido = idioma2Elegido && nivelIdioma2Elegido;
                 }
 
-                if (idioma1Seleccionado && !validarCampo(nivelIdioma1Select, '#error-idiomas', nivelIdioma1Select?.value !== '', 'Debes seleccionar el nivel para el Idioma 1.')) {
-                    esValido = false;
-                    if (!inputsInvalidos.includes(nivelIdioma1Select)) {
-                        inputsInvalidos.push(nivelIdioma1Select);
+                const alMenosUnParValido = parIdioma1Valido || parIdioma2Valido;
+                const grupoIdiomasDiv = form.querySelector('.grupo-idiomas'); // Contenedor visual para los selects de idioma.
+                const errorIdiomasMsgElement = form.querySelector('#error-idiomas'); // Elemento para mostrar mensajes de error.
+
+                if (!alMenosUnParValido) {
+                    esValido = false; // Marcar la etapa actual como inválida debido a errores en la selección de idiomas.
+                    let errorEspecificoMostrado = false; // Flag para controlar qué mensaje de error se muestra.
+
+                    // Comprobar si falta el nivel para el Idioma 1 (si Idioma 1 fue elegido pero su nivel no).
+                    if (idioma1Elegido && !nivelIdioma1Elegido) {
+                        // La función validarCampo se encarga de mostrar el error si showErrorsOnValidate es true.
+                        // El tercer argumento (false) indica que la condición de validez no se cumple.
+                        // El mensaje de error se mostrará en el div #error-idiomas.
+                        validarCampo(nivelIdioma1Select, '#error-idiomas', false, 'Debes seleccionar el nivel para el Idioma 1.');
+                        if (inputsInvalidos && nivelIdioma1Select && !inputsInvalidos.includes(nivelIdioma1Select)) {
+                            inputsInvalidos.push(nivelIdioma1Select); // Añadir a la lista para posible foco.
+                        }
+                        errorEspecificoMostrado = true;
                     }
+
+                    // Comprobar si falta el nivel para el Idioma 2 (si Idioma 2 fue elegido pero su nivel no).
+                    // Esto se comprueba solo si existe el par de selects para el Idioma 2 y
+                    // si no se mostró ya un error específico para el Idioma 1 (para evitar sobrescribir mensajes).
+                    if (!errorEspecificoMostrado && idioma2Select && nivelIdioma2Select && idioma2Elegido && !nivelIdioma2Elegido) {
+                        validarCampo(nivelIdioma2Select, '#error-idiomas', false, 'Debes seleccionar el nivel para el Idioma 2.');
+                        if (inputsInvalidos && nivelIdioma2Select && !inputsInvalidos.includes(nivelIdioma2Select)) {
+                            inputsInvalidos.push(nivelIdioma2Select);
+                        }
+                        errorEspecificoMostrado = true;
+                    }
+
+                    // Si no se mostró ningún error específico de nivel faltante, mostrar el mensaje de error general.
+                    if (!errorEspecificoMostrado) {
+                        validarCampo(grupoIdiomasDiv, '#error-idiomas', false, 'Debes seleccionar al menos un idioma y su nivel.');
+                        // Para el foco, apuntar al primer selector de idioma o, si no existe, al grupo de idiomas.
+                        const primerElementoDeFocoIdiomas = idioma1Select || grupoIdiomasDiv;
+                        if (inputsInvalidos && primerElementoDeFocoIdiomas && !inputsInvalidos.includes(primerElementoDeFocoIdiomas)) {
+                            inputsInvalidos.push(primerElementoDeFocoIdiomas);
+                        }
+                    }
+
+                    // Adicionalmente, asegurar que el grupo de idiomas entero se marque visualmente como inválido.
+                    // Esto es útil si validarCampo solo marcó un select individual.
+                    grupoIdiomasDiv?.classList.add('invalido');
+                } else {
+                    // Si al menos un par (idioma y nivel) es válido, la sección de idiomas es correcta.
+                    // Limpiar cualquier mensaje de error en #error-idiomas y la clase 'invalido' del grupo.
+                    if (errorIdiomasMsgElement) {
+                        errorIdiomasMsgElement.classList.add('oculto');
+                        errorIdiomasMsgElement.textContent = ''; // Limpiar mensaje
+                    }
+                    grupoIdiomasDiv?.classList.remove('invalido');
+
+                    // Limpiar también las clases 'invalido' de los selects individuales,
+                    // ya que pudieron haber sido marcados en una validación anterior.
+                    idioma1Select?.classList.remove('invalido');
+                    nivelIdioma1Select?.classList.remove('invalido');
+                    if (idioma2Select) idioma2Select.classList.remove('invalido');
+                    if (nivelIdioma2Select) nivelIdioma2Select.classList.remove('invalido');
                 }
 
                 // --- VALIDACIÓN DE HORARIO (AJUSTADA SEGÚN REQUERIMIENTO) ---
