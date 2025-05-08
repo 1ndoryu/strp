@@ -328,7 +328,7 @@ function newForm()
                         <div class="frm-grupo">
                             <label for="nombre" class="frm-etiqueta">Crea un nombre para tu perfil</label>
                             <!-- MAPEO: name="name" esperado por backend -->
-                            <input type="text" name="name" id="nombre" class="frm-campo" required maxlength="50" value="<?php echo htmlspecialchars($form_data['name'] ?? ($_SESSION['data']['name'] ?? '')); ?>">
+                            <input type="text" name="name" id="nombre" class="frm-campo" required maxlength="50">
                             <div class="error-msg oculto" id="error-nombre">El nombre es obligatorio.</div>
                         </div>
 
@@ -387,7 +387,7 @@ function newForm()
                             </select>
                             <div class="error-msg oculto" id="error-categoria">Debes seleccionar una categoría.</div>
                         </div>
-                                
+
                         <div class="frm-grupo">
                             <label for="provincia" class="frm-etiqueta">Selecciona una provincia *</label>
 
@@ -468,9 +468,9 @@ function newForm()
                                     // 4. Iterar sobre los servicios de la base de datos
                                     foreach ($db_services as $db_servicio) {
                                         // 5. Preparar los datos para el checkbox
-                                        $valor_servicio = $db_servicio['value']; 
-                                        $nombre_servicio = $db_servicio['name']; 
-                                        $id_categoria = $db_servicio['category']; 
+                                        $valor_servicio = $db_servicio['value'];
+                                        $nombre_servicio = $db_servicio['name'];
+                                        $id_categoria = $db_servicio['category'];
 
                                         $checked = in_array($valor_servicio, $selected_services) ? 'checked' : '';
                                         console_log($checked);
@@ -482,7 +482,6 @@ function newForm()
                                     }
                                 } else {
                                     echo '<p>No hay servicios disponibles para seleccionar en este momento.</p>';
-
                                 }
                                 ?>
                             </div>

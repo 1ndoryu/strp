@@ -1404,6 +1404,8 @@ p.numero-etapa {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap: 10px;
+        column-gap: 40px;
+        margin: -3px;
     }
     .subir-banner {
         gap: 15px;
@@ -1813,7 +1815,6 @@ select.frm-campo.frm-select.corto {
     flex-wrap: wrap;
     margin-bottom: 10px;
 }
-
 
 label.opcion-checkbox-no-name.opcion-extra input {
     display: none;

@@ -69,6 +69,7 @@
 
     let selectPosicion = null;
     let etapaActualIndex = 0;
+    let horarioConfirmadoParaAvanzar = false;
 
     if (contenedorInputLateral) {
         contenedorInputLateral.addEventListener('click', () => {
@@ -119,7 +120,14 @@
                 console.error('No se pudo encontrar el botón de horario clonado.');
             }
         }
-        cargarHorarioDesdeStorage();
+        // Llama a cargarHorarioDesdeStorage pero sin confirmar para avanzar inicialmente
+        cargarHorarioDesdeStorage(false); // <--- MODIFICADO
+
+        // Asegurarse de que el estado de confirmación se reinicie si la etapa activa inicial es la del anuncio
+        if (etapas[etapaActualIndex] && etapas[etapaActualIndex].id === 'etapa-anuncio') {
+            // <--- AÑADIDO
+            horarioConfirmadoParaAvanzar = false;
+        }
     }
 
     function abrirGestorHorario(event) {
@@ -129,9 +137,14 @@
         actualizarFeedbackHorario('gestionando');
     }
 
-    function cargarHorarioDesdeStorage() {
+    function cargarHorarioDesdeStorage(confirmarParaAvanzarEtapa = false) {
+        // <--- PARÁMETRO AÑADIDO
         const savedData = localStorage.getItem(HORARIO_STORAGE_KEY);
-        if (horarioSubmitErrorDiv) horarioSubmitErrorDiv.classList.add('oculto');
+        // Referencia al div de error específico de la etapa, si existe
+        const errorHorarioEtapaMsgEl = form.querySelector('#error-horario-etapa');
+        if (errorHorarioEtapaMsgEl) errorHorarioEtapaMsgEl.classList.add('oculto'); // Limpiar error específico de etapa
+
+        if (horarioSubmitErrorDiv) horarioSubmitErrorDiv.classList.add('oculto'); // Limpiar error de submit final
 
         if (savedData) {
             try {
@@ -168,21 +181,25 @@
 
                     actualizarFeedbackHorario('cargado', {dias: diasSeleccionados.length, inicio: hiddenHorarioInicio.value, fin: hiddenHorarioFinal.value});
 
-                    if (contenedorHorario) {
-                        validarCampo(contenedorHorario, '#error-horario', true, '');
+                    if (confirmarParaAvanzarEtapa) {
+                        // <--- MODIFICADO
+                        horarioConfirmadoParaAvanzar = true;
+                        console.log('Horario confirmado para avanzar.');
                     }
-                    if (horarioSubmitErrorDiv) horarioSubmitErrorDiv.classList.add('oculto');
+                    // Validar el campo visualmente (limpiar error si lo había)
+                    // El propio validarEtapaActual se encargará de mostrar el error si es necesario basado en horarioConfirmadoParaAvanzar
+                    validarCampo(horarioFeedbackDiv, '#error-horario-etapa', true, '');
                 } else {
-                    limpiarDatosHorarioOcultosYStorage(false);
+                    limpiarDatosHorarioOcultosYStorage(false); // Esto ya pone horarioConfirmadoParaAvanzar = false
                     actualizarFeedbackHorario('error_carga', {message: 'Los datos guardados no tienen días disponibles.'});
                 }
             } catch (e) {
                 console.error('Error al parsear horario desde localStorage:', e);
-                limpiarDatosHorarioOcultosYStorage(false);
+                limpiarDatosHorarioOcultosYStorage(false); // Esto ya pone horarioConfirmadoParaAvanzar = false
                 actualizarFeedbackHorario('error_carga', {message: 'Error al leer los datos guardados.'});
             }
         } else {
-            limpiarDatosHorarioOcultosYStorage(false);
+            limpiarDatosHorarioOcultosYStorage(false); // Esto ya pone horarioConfirmadoParaAvanzar = false
             actualizarFeedbackHorario('no_configurado');
         }
     }
@@ -191,40 +208,54 @@
         hiddenDis.value = '0';
         hiddenHorarioInicio.value = '00:00';
         hiddenHorarioFinal.value = '00:00';
+        horarioConfirmadoParaAvanzar = false; // <--- AÑADIDO
         if (removeFromStorage) {
             localStorage.removeItem(HORARIO_STORAGE_KEY);
             console.log('Datos del horario borrados de localStorage.');
-            actualizarFeedbackHorario('no_configurado');
+            actualizarFeedbackHorario('no_configurado'); // Esto también debería resetear la confirmación visualmente
         }
     }
 
     function actualizarFeedbackHorario(estado, data = {}) {
         let mensajeHTML = '';
+        const existeHorarioStorage = !!localStorage.getItem(HORARIO_STORAGE_KEY);
+
         switch (estado) {
-            case 'gestionando':
-                mensajeHTML = `<button type="button" class="botones-horario-pestana" id="btn-recargar-horario">Recargar horario guardado</button>`;
+            case 'gestionando': // Este estado es menos probable que se use directamente
+                mensajeHTML = `<p>El gestor de horario está abierto. Guarda los cambios allí y luego haz clic en "Recargar horario" aquí.</p>
+                               <button type="button" class="botones-horario-pestana" id="btn-recargar-horario-feedback">Recargar horario guardado</button>`;
                 break;
             case 'cargado':
-                mensajeHTML = `<button class="botones-horario-pestana" type="button" id="btn-modificar-horario">Administrar horario</button>`;
+                mensajeHTML = `<p>Horario cargado: ${data.dias} día(s), de ${data.inicio} a ${data.fin}.</p>
+                               <button class="botones-horario-pestana" type="button" id="btn-modificar-horario-feedback">Modificar horario</button>
+                               <button type="button" class="botones-horario-pestana" id="btn-recargar-horario-feedback">Recargar para confirmar</button>
+                               <button type="button" class="botones-horario-pestana" id="btn-borrar-horario-feedback">Borrar horario</button>`;
                 break;
             case 'error_carga':
-                mensajeHTML = `<button type="button" class="botones-horario-pestana" id="btn-intentar-gestor">Administrar horario</button>`;
+                mensajeHTML = `<p class="error-text">Error al cargar horario: ${data.message}</p>
+                               <button type="button" class="botones-horario-pestana" id="btn-intentar-gestor-feedback">Abrir gestor de horario</button>`;
+                if (existeHorarioStorage) {
+                    mensajeHTML += `<button type="button" class="botones-horario-pestana" id="btn-recargar-horario-feedback">Intentar recargar</button>`;
+                }
                 break;
             case 'no_configurado':
             default:
-                mensajeHTML = `<button type="button" class="botones-horario-pestana" id="btn-administrar-horario-feedback">Administrar horario</button>`;
+                mensajeHTML = `<p>Aún no has configurado tu horario.</p>
+                               <button type="button" class="botones-horario-pestana" id="btn-administrar-horario-feedback">Configurar horario</button>`;
                 break;
         }
         horarioFeedbackDiv.innerHTML = mensajeHTML;
 
-        horarioFeedbackDiv.querySelector('#btn-recargar-horario')?.addEventListener('click', cargarHorarioDesdeStorage);
-        horarioFeedbackDiv.querySelector('#btn-modificar-horario')?.addEventListener('click', abrirGestorHorario);
-        horarioFeedbackDiv.querySelector('#btn-borrar-horario')?.addEventListener('click', () => {
+        // Los botones llaman a cargarHorarioDesdeStorage(true) o abrirGestorHorario
+        // El (true) es para marcar que el usuario interactuó y el horario está "confirmado"
+        horarioFeedbackDiv.querySelector('#btn-recargar-horario-feedback')?.addEventListener('click', () => cargarHorarioDesdeStorage(true));
+        horarioFeedbackDiv.querySelector('#btn-modificar-horario-feedback')?.addEventListener('click', abrirGestorHorario);
+        horarioFeedbackDiv.querySelector('#btn-borrar-horario-feedback')?.addEventListener('click', () => {
             if (confirm('¿Estás seguro de que quieres borrar la configuración del horario?')) {
                 limpiarDatosHorarioOcultosYStorage(true);
             }
         });
-        horarioFeedbackDiv.querySelector('#btn-intentar-gestor')?.addEventListener('click', abrirGestorHorario);
+        horarioFeedbackDiv.querySelector('#btn-intentar-gestor-feedback')?.addEventListener('click', abrirGestorHorario);
         horarioFeedbackDiv.querySelector('#btn-administrar-horario-feedback')?.addEventListener('click', abrirGestorHorario);
     }
 
@@ -372,7 +403,17 @@
 
         // FIN DE NUEVOS LISTENERS
 
-        window.addEventListener('focus', cargarHorarioDesdeStorage);
+        window.addEventListener('focus', () => {
+            const etapaActual = etapas[etapaActualIndex];
+            // Solo recargar y confirmar si estamos en la etapa del anuncio
+            if (etapaActual && etapaActual.id === 'etapa-anuncio') {
+                console.log('Ventana principal recuperó el foco, recargando horario y marcando como confirmado para avanzar.');
+                cargarHorarioDesdeStorage(true); // <--- SE PASA TRUE
+            } else {
+                // Opcional: un log para saber por qué no se recarga si quieres depurar
+                // console.log("Ventana recuperó el foco, pero no en etapa de anuncio. No se recarga/confirma horario.");
+            }
+        });
         form.addEventListener('submit', manejarEnvioFinal);
         // ... (resto de los listeners originales que no fueron modificados arriba)
     }
@@ -409,6 +450,16 @@
             etapaActualIndex = nuevoIndex;
             etapas[etapaActualIndex].classList.add('activa');
             etapas[etapaActualIndex].classList.remove('oculto');
+
+            // Si la nueva etapa es la del anuncio, resetear la confirmación del horario
+            if (etapas[etapaActualIndex].id === 'etapa-anuncio') {
+                horarioConfirmadoParaAvanzar = false;
+                console.log('Cambiando a etapa-anuncio, horarioConfirmadoParaAvanzar reseteado.');
+                // Opcionalmente, refrescar el display del horario (sin confirmar)
+                // para que el usuario vea el estado actual de localStorage al entrar a la etapa.
+                cargarHorarioDesdeStorage(false);
+            }
+
             window.scrollTo({top: form.offsetTop - 20, behavior: 'smooth'});
         }
     }
@@ -494,20 +545,30 @@
                     }
                 }
 
-                const horarioGuardadoEtapa = localStorage.getItem(HORARIO_STORAGE_KEY);
-                const horarioRequeridoEtapa = true;
-                const errorHorarioEtapaSelector = '#error-horario-etapa';
 
-                if (horarioRequeridoEtapa && !horarioGuardadoEtapa) {
-                    if (!validarCampo(horarioFeedbackDiv, errorHorarioEtapaSelector, false, 'Debes configurar y guardar tu horario.')) {
+                // --- VALIDACIÓN DE HORARIO AJUSTADA ---
+                const existeHorarioEnStorageEtapa = !!localStorage.getItem(HORARIO_STORAGE_KEY);
+                const selectorErrorHorarioEtapa = '#error-horario-etapa'; // Asegúrate que este div exista o créalo.
+
+                if (!existeHorarioEnStorageEtapa) {
+                    // Si no hay nada guardado en localStorage
+                    if (!validarCampo(horarioFeedbackDiv, selectorErrorHorarioEtapa, false, 'Debes configurar y guardar tu horario para continuar.')) {
                         esValido = false;
-                        const currentBtnMostrarHorario = document.getElementById('btn-mostrar-horario');
-                        inputsInvalidos.push(currentBtnMostrarHorario || horarioFeedbackDiv);
+                        const btnHorarioFeedback = horarioFeedbackDiv.querySelector('button'); // Primer botón del feedback
+                        inputsInvalidos.push(btnHorarioFeedback || horarioFeedbackDiv);
                     }
-                    if (horarioSubmitErrorDiv) horarioSubmitErrorDiv.classList.add('oculto');
+                } else if (!horarioConfirmadoParaAvanzar) {
+                    // Si hay algo en localStorage, pero no ha sido "confirmado" en esta visita a la etapa
+                    if (!validarCampo(horarioFeedbackDiv, selectorErrorHorarioEtapa, false, 'Por favor, recarga o administra tu horario para confirmar y continuar.')) {
+                        esValido = false;
+                        const btnHorarioFeedback = horarioFeedbackDiv.querySelector('button'); // Primer botón del feedback
+                        inputsInvalidos.push(btnHorarioFeedback || horarioFeedbackDiv);
+                    }
                 } else {
-                    validarCampo(horarioFeedbackDiv, errorHorarioEtapaSelector, true, '');
+                    // Horario existe en localStorage Y ha sido confirmado para avanzar en esta etapa
+                    validarCampo(horarioFeedbackDiv, selectorErrorHorarioEtapa, true, ''); // Limpiar error si todo OK
                 }
+                // --- FIN VALIDACIÓN DE HORARIO AJUSTADA ---
 
                 const telefonoVal = telefonoInput?.value.replace(/\D/g, '') || '';
                 if (!validarCampo(telefonoInput, '#error-telefono', /^[0-9]{9,15}$/.test(telefonoVal), 'Introduce un teléfono válido (9-15 dígitos).')) {
