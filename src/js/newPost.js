@@ -94,6 +94,8 @@
     function inicializar() {
         selectPosicion = document.getElementById('select-posicion-foto');
 
+        limpiarDatosHorarioOcultosYStorage(true);
+
         etapas.forEach((etapa, index) => {
             if (etapa.classList.contains('activa')) {
                 etapaActualIndex = index;
