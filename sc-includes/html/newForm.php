@@ -559,7 +559,7 @@ function newForm()
                         <div class="error_msg" id="error_photo_generic" style="<?php echo (isset($form_data['photo_name']) && count($form_data['photo_name']) == 0 && $error_insert) ? 'display:block;' : 'display:none;'; ?>">Sube al menos una foto para tu anuncio.</div>
                     </div>
 
-                    <div class="frm-grupo" style="display: flex;">
+                    <div class="frm-grupo" style="display: flex; flex-direction: column;">
                         <label class="frm-etiqueta" id="btn-mostrar-horario" style="margin-bottom: 4px;">Administrar horario*</label>
 
                         <div class="ayuda-texto oculto" id="ayuda-horario">Marca los días que estás disponible y selecciona tu horario.</div>
