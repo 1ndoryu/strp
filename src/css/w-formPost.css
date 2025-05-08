@@ -1819,3 +1819,11 @@ select.frm-campo.frm-select.corto {
 label.opcion-checkbox-no-name.opcion-extra input {
     display: none;
 }
+
+button#btn-borrar-horario-feedback {
+    display: none;
+}
+
+button#btn-recargar-horario-feedback {
+    display: none;
+}
