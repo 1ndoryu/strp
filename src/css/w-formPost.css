@@ -1831,3 +1831,7 @@ button#btn-recargar-horario-feedback {
 #horario-feedback p {
     display: none;
 }
+
+div#error-horarioDos {
+    order: 1;
+}

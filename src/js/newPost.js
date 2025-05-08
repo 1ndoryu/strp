@@ -45,33 +45,32 @@
     errorHorarioDosDiv.id = 'error-horarioDos'; // ID solicitado
     errorHorarioDosDiv.classList.add('error-msg', 'oculto');
     errorHorarioDosDiv.textContent = 'Debes configurar el horario.'; // Texto fijo solicitado
-    
+
     // Crear el div para el feedback dinámico del horario
     const horarioFeedbackDiv = document.createElement('div');
     horarioFeedbackDiv.id = 'horario-feedback';
     horarioFeedbackDiv.style.marginTop = '10px';
-    
+
     // Crear el div para errores de horario en el SUBMIT FINAL del formulario
     const horarioSubmitErrorDiv = document.createElement('div');
     horarioSubmitErrorDiv.id = 'error-horario-submit';
     horarioSubmitErrorDiv.classList.add('error-msg', 'oculto');
-    
+
     // Insertar los divs relacionados con el horario en el DOM
     // El orden deseado es: (después de contenedorHorario) errorHorarioDosDiv, horarioFeedbackDiv, horarioSubmitErrorDiv
     if (contenedorHorario && contenedorHorario.parentNode) {
         let currentInsertionPoint = contenedorHorario; // Empezamos después del contenedorHorario
-    
+
         // Insertar errorHorarioDosDiv después de currentInsertionPoint
         currentInsertionPoint.insertAdjacentElement('afterend', errorHorarioDosDiv);
         currentInsertionPoint = errorHorarioDosDiv; // Actualizar punto para la siguiente inserción
-    
+
         // Insertar horarioFeedbackDiv después de currentInsertionPoint
         currentInsertionPoint.insertAdjacentElement('afterend', horarioFeedbackDiv);
         currentInsertionPoint = horarioFeedbackDiv; // Actualizar punto para la siguiente inserción
-    
+
         // Insertar horarioSubmitErrorDiv después de currentInsertionPoint
         currentInsertionPoint.insertAdjacentElement('afterend', horarioSubmitErrorDiv);
-    
     } else {
         // Fallback si contenedorHorario no se encuentra.
         // Busca un contenedor adecuado dentro de la etapa de anuncio o el formulario.
@@ -80,7 +79,7 @@
             etapaAnuncioFieldset.appendChild(errorHorarioDosDiv);
             etapaAnuncioFieldset.appendChild(horarioFeedbackDiv);
             etapaAnuncioFieldset.appendChild(horarioSubmitErrorDiv);
-            console.warn("contenedorHorario no encontrado. Los elementos de feedback y error del horario se han añadido a un contenedor de fallback.");
+            console.warn('contenedorHorario no encontrado. Los elementos de feedback y error del horario se han añadido a un contenedor de fallback.');
         } else {
             console.error('CRÍTICO: No se pudo encontrar contenedorHorario ni un contenedor de fallback para insertar los mensajes de horario.');
         }
@@ -174,11 +173,9 @@
     }
 
     function cargarHorarioDesdeStorage(confirmarParaAvanzarEtapa = false) {
-        // <--- PARÁMETRO AÑADIDO
         const savedData = localStorage.getItem(HORARIO_STORAGE_KEY);
-        // Referencia al div de error específico de la etapa, si existe
-        const errorHorarioEtapaMsgEl = form.querySelector('#error-horario-etapa');
-        if (errorHorarioEtapaMsgEl) errorHorarioEtapaMsgEl.classList.add('oculto'); // Limpiar error específico de etapa
+        //const errorHorarioEtapaMsgEl = form.querySelector('#error-horario-etapa'); // Ya no es necesario referenciarlo aquí directamente para ocultar
+        //if (errorHorarioEtapaMsgEl) errorHorarioEtapaMsgEl.classList.add('oculto'); // Se maneja por errorHorarioDosDiv
 
         if (horarioSubmitErrorDiv) horarioSubmitErrorDiv.classList.add('oculto'); // Limpiar error de submit final
 
@@ -209,7 +206,7 @@
                     else if (diasSeleccionados.length === 5 && primerDia === 0 && ultimoDia === 4) valorDis = '2';
                     else if (diasSeleccionados.length === 6 && primerDia === 0 && ultimoDia === 5) valorDis = '3';
                     else if (diasSeleccionados.length === 2 && primerDia === 5 && ultimoDia === 6) valorDis = '4';
-                    else valorDis = '1';
+                    else valorDis = '1'; // O un valor por defecto que indique configuración personalizada
 
                     hiddenDis.value = valorDis;
                     hiddenHorarioInicio.value = horarios.inicio === '23:59' ? '00:00' : horarios.inicio;
@@ -218,24 +215,28 @@
                     actualizarFeedbackHorario('cargado', {dias: diasSeleccionados.length, inicio: hiddenHorarioInicio.value, fin: hiddenHorarioFinal.value});
 
                     if (confirmarParaAvanzarEtapa) {
-                        // <--- MODIFICADO
                         horarioConfirmadoParaAvanzar = true;
                         console.log('Horario confirmado para avanzar.');
+                        // --- MODIFICACIÓN AQUÍ ---
+                        // Si el horario se cargó y se confirmó para avanzar, ocultamos el errorHorarioDosDiv
+                        if (errorHorarioDosDiv) {
+                            errorHorarioDosDiv.classList.add('oculto');
+                        }
+                        // --- FIN MODIFICACIÓN ---
                     }
-                    // Validar el campo visualmente (limpiar error si lo había)
-                    // El propio validarEtapaActual se encargará de mostrar el error si es necesario basado en horarioConfirmadoParaAvanzar
-                    validarCampo(horarioFeedbackDiv, '#error-horario-etapa', true, '');
+                    // La validación visual general se hará en validarEtapaActual
+                    // Ya no es necesario llamar a validarCampo aquí para el error específico de horario.
                 } else {
-                    limpiarDatosHorarioOcultosYStorage(false); // Esto ya pone horarioConfirmadoParaAvanzar = false
+                    limpiarDatosHorarioOcultosYStorage(false);
                     actualizarFeedbackHorario('error_carga', {message: 'Los datos guardados no tienen días disponibles.'});
                 }
             } catch (e) {
                 console.error('Error al parsear horario desde localStorage:', e);
-                limpiarDatosHorarioOcultosYStorage(false); // Esto ya pone horarioConfirmadoParaAvanzar = false
+                limpiarDatosHorarioOcultosYStorage(false);
                 actualizarFeedbackHorario('error_carga', {message: 'Error al leer los datos guardados.'});
             }
         } else {
-            limpiarDatosHorarioOcultosYStorage(false); // Esto ya pone horarioConfirmadoParaAvanzar = false
+            limpiarDatosHorarioOcultosYStorage(false);
             actualizarFeedbackHorario('no_configurado');
         }
     }
